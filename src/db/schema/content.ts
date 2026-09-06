@@ -19,6 +19,7 @@ export const homepageSections = pgTable("homepage_sections", {
     badge?: string;
     quote?: string;
     imagePosition?: "left" | "right";
+    imageUrl?: string;
   }>(),
   isEnabled: boolean("is_enabled").default(true).notNull(),
   displayOrder: integer("display_order").default(0).notNull(),

@@ -1,5 +1,10 @@
 import React from "react";
-import { getAllHomepageSectionsAdmin } from "@/db/repository";
+import {
+  getAllHomepageSectionsAdmin,
+  getArtworks,
+  getCollections,
+  getExhibitions,
+} from "@/db/repository";
 import { HomepageBuilderClient } from "@/components/admin/HomepageBuilderClient";
 import type { Metadata } from "next";
 
@@ -8,6 +13,20 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminHomepagePage() {
-  const sections = await getAllHomepageSectionsAdmin();
-  return <HomepageBuilderClient initialSections={sections} />;
+  const [sections, artworks, collections, exhibitions] = await Promise.all([
+    getAllHomepageSectionsAdmin(),
+    getArtworks(),
+    getCollections(),
+    getExhibitions(),
+  ]);
+
+  return (
+    <HomepageBuilderClient
+      initialSections={sections}
+      artworks={artworks}
+      collections={collections}
+      exhibitions={exhibitions}
+    />
+  );
 }
+
