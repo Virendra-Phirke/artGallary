@@ -38,6 +38,10 @@ export async function startARSession(config?: ARSessionConfig): Promise<ARSessio
 
   // Phase 2: Build tiered session configurations
   // Minimal requirement is ONLY 'hit-test'. Enhancements are optional.
+  if (config?.domOverlayRoot) {
+    config.domOverlayRoot.style.backgroundColor = "transparent";
+  }
+
   const domOverlayOption =
     config?.domOverlayRoot ? { root: config.domOverlayRoot } : undefined;
 

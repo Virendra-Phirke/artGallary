@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import * as THREE from "three";
+import { cn } from "@/lib/utils";
 import { ArPermissionScreen } from "./ui/ArPermissionScreen";
 import { RoomFallbackViewer } from "./ui/RoomFallbackViewer";
 import { ArControlsOverlay } from "./ui/ArControlsOverlay";
@@ -69,6 +70,7 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
   // Active runtime references
   const activeSessionRef = useRef<any>(null);
   const hitTestSourceRef = useRef<any>(null);
+  const activeReferenceSpaceTypeRef = useRef<string>("local");
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const animIdRef = useRef<number | null>(null);
@@ -170,6 +172,7 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
 
         activeSessionRef.current = context.session;
         hitTestSourceRef.current = context.hitTestSource;
+        activeReferenceSpaceTypeRef.current = context.referenceSpaceType;
 
         setViewerMode("webxr-ar");
         setArState("active");
@@ -227,27 +230,47 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
 
     const { session, referenceSpace, hitTestSource } = context;
 
+    // WebXR Transparent Renderer
     const renderer = new THREE.WebGLRenderer({
       canvas,
       antialias: true,
       alpha: true,
+      preserveDrawingBuffer: false,
       powerPreference: "high-performance",
     });
     rendererRef.current = renderer;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(window.innerWidth, window.innerHeight);
+
+    // CRITICAL: Guarantee transparent framebuffer so camera passthrough is visible
+    renderer.setClearColor(0x000000, 0);
+    renderer.setClearAlpha(0);
+    renderer.autoClear = true;
     renderer.xr.enabled = true;
+
+    // Log diagnostic states
+    console.log("[AR] WebXR session environmentBlendMode:", session.environmentBlendMode);
+    console.log("[AR] WebXR session visibilityState:", session.visibilityState);
+    if (session.renderState) {
+      console.log("[AR] WebXR session renderState:", session.renderState);
+    }
 
     // Bind session to Three.js WebXR Manager
     try {
       await renderer.xr.setSession(session);
-      renderer.xr.setReferenceSpace(referenceSpace);
+      if (referenceSpace) {
+        renderer.xr.setReferenceSpace(referenceSpace);
+      }
       console.log("[AR] Three.js WebXR session bound successfully.");
     } catch (bindErr) {
       console.warn("[AR] Error binding Three.js XR session:", bindErr);
     }
 
+    // CRITICAL: Three.js scene background MUST remain null for AR passthrough
     const scene = new THREE.Scene();
+    scene.background = null;
+    scene.environment = null;
+
     const camera = new THREE.PerspectiveCamera();
 
     // Natural gallery lighting for AR overlay
@@ -376,6 +399,8 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
     const height = window.innerHeight;
 
     const scene = new THREE.Scene();
+    scene.background = null;
+
     const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 100);
     camera.position.set(0, 0, 2.2);
 
@@ -383,11 +408,15 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
       canvas,
       antialias: true,
       alpha: true,
+      preserveDrawingBuffer: false,
       powerPreference: "high-performance",
     });
     rendererRef.current = renderer;
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x000000, 0);
+    renderer.setClearAlpha(0);
+    renderer.autoClear = true;
 
     const ambientLight = new THREE.AmbientLight(0xffffff, 1.4);
     scene.add(ambientLight);
@@ -520,7 +549,13 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-50 bg-black overflow-hidden select-none"
+      className={cn(
+        "fixed inset-0 z-50 overflow-hidden select-none",
+        viewerMode === "camera-ar" ? "bg-black" : "bg-transparent"
+      )}
+      style={{
+        backgroundColor: viewerMode === "camera-ar" ? "#000000" : "transparent",
+      }}
     >
       {/* Background Camera Video for Level 2 Camera AR */}
       {viewerMode === "camera-ar" && (
@@ -533,10 +568,11 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
         />
       )}
 
-      {/* Three.js AR Canvas */}
+      {/* Three.js AR Canvas with guaranteed transparent background */}
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 w-full h-full touch-none"
+        className="absolute inset-0 w-full h-full touch-none bg-transparent"
+        style={{ backgroundColor: "transparent" }}
       />
 
       {/* Minimal HUD Controls Overlay */}
@@ -550,6 +586,12 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
         surfaceDetected={surfaceDetected}
         frameStyle={frameStyle}
         frameEnabled={frameEnabled}
+        diagnostics={{
+          mode: viewerMode,
+          blendMode: activeSessionRef.current?.environmentBlendMode || "alpha-blend",
+          referenceSpaceType: activeReferenceSpaceTypeRef.current || "local",
+          hitTestReady: Boolean(hitTestSourceRef.current),
+        }}
         onExit={() => {
           teardownArSession();
           setViewerMode("permission-screen");

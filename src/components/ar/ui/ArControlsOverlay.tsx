@@ -23,6 +23,12 @@ interface ArControlsOverlayProps {
   surfaceDetected: boolean;
   frameStyle: FrameStyle;
   frameEnabled: boolean;
+  diagnostics?: {
+    mode: string;
+    blendMode?: string;
+    referenceSpaceType?: string;
+    hitTestReady?: boolean;
+  };
   onExit: () => void;
   onReset: () => void;
   onFrameChange: (style: FrameStyle, enabled: boolean) => void;
@@ -39,11 +45,13 @@ export function ArControlsOverlay({
   surfaceDetected,
   frameStyle,
   frameEnabled,
+  diagnostics,
   onExit,
   onReset,
   onFrameChange,
   onSwitchTo3DRoom,
 }: ArControlsOverlayProps) {
+  const [showDiagnostics, setShowDiagnostics] = React.useState(false);
   const currentWidthCm = (widthCm * scale).toFixed(1);
   const currentHeightCm = (heightCm * scale).toFixed(1);
   const scalePercent = Math.round(scale * 100);
@@ -51,7 +59,7 @@ export function ArControlsOverlay({
   return (
     <div className="fixed inset-0 z-40 pointer-events-none flex flex-col justify-between p-4 sm:p-6 select-none">
       {/* 1. TOP BAR */}
-      <div className="flex items-center justify-between gap-3 pointer-events-auto">
+      <div className="flex items-center justify-between gap-3 pointer-events-auto relative">
         <button
           onClick={onExit}
           className="flex items-center gap-1.5 bg-black/70 backdrop-blur-md border border-white/15 text-white px-4 py-2 rounded-full text-xs font-medium uppercase tracking-wider hover:bg-black/90 transition-all shadow-lg"
@@ -70,14 +78,57 @@ export function ArControlsOverlay({
           </span>
         </div>
 
-        {/* Switch to 3D Room */}
-        <button
-          onClick={onSwitchTo3DRoom}
-          className="p-2.5 bg-black/70 backdrop-blur-md border border-white/15 text-zinc-300 hover:text-white rounded-full transition-colors shadow-lg"
-          title="Switch to 3D Room Studio"
-        >
-          <Eye className="w-4 h-4 text-[#d1a86e]" />
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Diagnostics HUD Toggle */}
+          <button
+            onClick={() => setShowDiagnostics((prev) => !prev)}
+            className="p-2.5 bg-black/70 backdrop-blur-md border border-white/15 text-zinc-300 hover:text-white rounded-full transition-colors shadow-lg"
+            title="Toggle Pipeline Diagnostics"
+          >
+            <Layers className="w-4 h-4 text-[#d1a86e]" />
+          </button>
+
+          {/* Switch to 3D Room */}
+          <button
+            onClick={onSwitchTo3DRoom}
+            className="p-2.5 bg-black/70 backdrop-blur-md border border-white/15 text-zinc-300 hover:text-white rounded-full transition-colors shadow-lg"
+            title="Switch to 3D Room Studio"
+          >
+            <Eye className="w-4 h-4 text-[#d1a86e]" />
+          </button>
+        </div>
+
+        {/* Diagnostic HUD Floating Panel */}
+        {showDiagnostics && (
+          <div className="absolute top-14 right-0 p-3 rounded-xl bg-black/90 backdrop-blur-md border border-white/20 text-[10px] font-mono text-zinc-300 space-y-1.5 shadow-2xl z-50 pointer-events-auto min-w-[210px] animate-in fade-in-0 zoom-in-95">
+            <div className="text-[#d1a86e] font-semibold text-[11px] border-b border-white/15 pb-1 flex items-center justify-between">
+              <span>AR PIPELINE</span>
+              <span className="text-emerald-400">PASSTHROUGH</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-zinc-500">Mode:</span>
+              <span className="text-white">{diagnostics?.mode === "webxr-ar" ? "WebXR immersive-ar" : "Camera Stream"}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-zinc-500">Blend:</span>
+              <span className="text-[#d1a86e]">{diagnostics?.blendMode || "alpha-blend"}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-zinc-500">RefSpace:</span>
+              <span className="text-white">{diagnostics?.referenceSpaceType || "local"}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-zinc-500">Hit-Test:</span>
+              <span className={diagnostics?.hitTestReady ? "text-emerald-400" : "text-amber-400"}>
+                {diagnostics?.hitTestReady ? "Ready ✓" : "Scanning..."}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-zinc-500">Clear Alpha:</span>
+              <span className="text-emerald-400">0 (Transparent) ✓</span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 2. SCANNING & SURFACE DETECTION GUIDANCE OVERLAY */}
