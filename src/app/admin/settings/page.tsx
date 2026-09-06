@@ -15,9 +15,12 @@ export default async function AdminSettingsPage() {
         artistName: settings.artistName,
         siteTitle: settings.siteTitle,
         tagline: settings.tagline,
+        bioSummary: settings.bioSummary || "",
+        statement: settings.statement || "",
         contactEmail: settings.contactEmail,
         phone: settings.phone,
         location: settings.location,
+        socialLinks: settings.socialLinks || {},
         copyrightText: settings.copyrightText,
       }}
     />

@@ -102,8 +102,8 @@ export default async function AdminDashboardPage() {
           <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">
             Spatial AR Sessions
           </span>
-          <div className="font-serif text-3xl text-white">418</div>
-          <span className="text-xs text-zinc-400">98.4% placement rate</span>
+          <div className="font-serif text-3xl text-white">—</div>
+          <span className="text-xs text-zinc-400">Analytics tracking active</span>
         </Card>
 
         <Card className="p-5 space-y-1">

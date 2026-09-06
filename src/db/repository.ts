@@ -745,6 +745,264 @@ export async function getExhibitionBySlug(slug: string): Promise<MockExhibition 
   }
 }
 
+export async function saveCollection(data: Partial<MockCollection> & { title: string }): Promise<MockCollection> {
+  const db = getDb();
+  if (!db) throw new Error("Database connection unavailable");
+
+  try {
+    if (data.id) {
+      // Update existing
+      await db
+        .update(schema.collections)
+        .set({
+          title: data.title,
+          slug: data.slug || data.title.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, ""),
+          description: data.description || "",
+          curatorialStatement: data.curatorialStatement,
+          coverImageUrl: data.coverImageUrl,
+          isPublished: data.isPublished,
+          displayOrder: data.displayOrder,
+          updatedAt: new Date(),
+        })
+        .where(eq(schema.collections.id, data.id));
+
+      recordActivityLog("UPDATE_COLLECTION", "collection", `Updated collection '${data.title}'`, data.id);
+    } else {
+      // Create new
+      const slug = data.slug || data.title.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "");
+      const inserted = await db
+        .insert(schema.collections)
+        .values({
+          slug,
+          title: data.title,
+          description: data.description || "",
+          curatorialStatement: data.curatorialStatement || "",
+          coverImageUrl: data.coverImageUrl,
+          isPublished: data.isPublished ?? false,
+          displayOrder: data.displayOrder ?? 99,
+        })
+        .returning({ id: schema.collections.id });
+
+      data.id = inserted[0]?.id;
+      recordActivityLog("CREATE_COLLECTION", "collection", `Created collection '${data.title}'`, data.id);
+    }
+
+    // Refresh
+    const rows = await db
+      .select()
+      .from(schema.collections)
+      .where(eq(schema.collections.id, data.id!))
+      .limit(1);
+
+    if (rows.length === 0) throw new Error("Collection not found after save");
+
+    const r = rows[0];
+    const rels = await db
+      .select({ artworkSlug: schema.artworks.slug })
+      .from(schema.collectionArtworks)
+      .innerJoin(schema.artworks, eq(schema.artworks.id, schema.collectionArtworks.artworkId))
+      .where(eq(schema.collectionArtworks.collectionId, r.id))
+      .orderBy(asc(schema.collectionArtworks.displayOrder));
+
+    return {
+      id: r.id,
+      slug: r.slug,
+      title: r.title,
+      description: r.description,
+      curatorialStatement: r.curatorialStatement || "",
+      coverImageUrl: r.coverImageUrl || DEFAULT_VERIFIED_COVER,
+      isPublished: r.isPublished,
+      displayOrder: r.displayOrder,
+      artworkSlugs: rels.map((rel) => rel.artworkSlug),
+    };
+  } catch (e) {
+    console.error("Database saveCollection failed:", e);
+    throw e;
+  }
+}
+
+export async function deleteCollection(id: string): Promise<boolean> {
+  const db = getDb();
+  if (!db) return false;
+
+  try {
+    // Junction table rows cascade automatically due to FK onDelete: cascade
+    await db.delete(schema.collections).where(eq(schema.collections.id, id));
+    recordActivityLog("DELETE_COLLECTION", "collection", `Deleted collection ${id}`, id);
+    return true;
+  } catch (e) {
+    console.error("Database deleteCollection failed:", e);
+    return false;
+  }
+}
+
+export async function updateCollectionArtworks(
+  collectionId: string,
+  artworkIds: string[]
+): Promise<boolean> {
+  const db = getDb();
+  if (!db) return false;
+
+  try {
+    // Remove existing assignments
+    await db
+      .delete(schema.collectionArtworks)
+      .where(eq(schema.collectionArtworks.collectionId, collectionId));
+
+    // Insert new assignments
+    if (artworkIds.length > 0) {
+      await db.insert(schema.collectionArtworks).values(
+        artworkIds.map((artworkId, index) => ({
+          collectionId,
+          artworkId,
+          displayOrder: index,
+        }))
+      );
+    }
+
+    recordActivityLog("UPDATE_COLLECTION_ARTWORKS", "collection", `Updated artwork assignments for collection ${collectionId}`, collectionId);
+    return true;
+  } catch (e) {
+    console.error("Database updateCollectionArtworks failed:", e);
+    return false;
+  }
+}
+
+export async function saveExhibition(data: Partial<MockExhibition> & { title: string }): Promise<MockExhibition> {
+  const db = getDb();
+  if (!db) throw new Error("Database connection unavailable");
+
+  try {
+    if (data.id) {
+      // Update existing
+      await db
+        .update(schema.exhibitions)
+        .set({
+          title: data.title,
+          slug: data.slug || data.title.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, ""),
+          subtitle: data.subtitle,
+          description: data.description || "",
+          curatorNote: data.curatorNote,
+          location: data.location || "",
+          startDate: data.startDate ? new Date(data.startDate) : new Date(),
+          endDate: data.endDate ? new Date(data.endDate) : new Date(),
+          status: data.status || "upcoming",
+          coverImageUrl: data.coverImageUrl,
+          isPublished: data.isPublished,
+          displayOrder: data.displayOrder,
+          updatedAt: new Date(),
+        })
+        .where(eq(schema.exhibitions.id, data.id));
+
+      recordActivityLog("UPDATE_EXHIBITION", "exhibition", `Updated exhibition '${data.title}'`, data.id);
+    } else {
+      // Create new
+      const slug = data.slug || data.title.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "");
+      const inserted = await db
+        .insert(schema.exhibitions)
+        .values({
+          slug,
+          title: data.title,
+          subtitle: data.subtitle || "",
+          description: data.description || "",
+          curatorNote: data.curatorNote || "",
+          location: data.location || "",
+          startDate: data.startDate ? new Date(data.startDate) : new Date(),
+          endDate: data.endDate ? new Date(data.endDate) : new Date(),
+          status: data.status || "upcoming",
+          coverImageUrl: data.coverImageUrl,
+          isPublished: data.isPublished ?? false,
+          displayOrder: data.displayOrder ?? 99,
+        })
+        .returning({ id: schema.exhibitions.id });
+
+      data.id = inserted[0]?.id;
+      recordActivityLog("CREATE_EXHIBITION", "exhibition", `Created exhibition '${data.title}'`, data.id);
+    }
+
+    // Refresh
+    const rows = await db
+      .select()
+      .from(schema.exhibitions)
+      .where(eq(schema.exhibitions.id, data.id!))
+      .limit(1);
+
+    if (rows.length === 0) throw new Error("Exhibition not found after save");
+
+    const e = rows[0];
+    const rels = await db
+      .select({ artworkSlug: schema.artworks.slug })
+      .from(schema.exhibitionArtworks)
+      .innerJoin(schema.artworks, eq(schema.artworks.id, schema.exhibitionArtworks.artworkId))
+      .where(eq(schema.exhibitionArtworks.exhibitionId, e.id))
+      .orderBy(asc(schema.exhibitionArtworks.displayOrder));
+
+    return {
+      id: e.id,
+      slug: e.slug,
+      title: e.title,
+      subtitle: e.subtitle || "",
+      description: e.description,
+      curatorNote: e.curatorNote || "",
+      location: e.location,
+      startDate: e.startDate.toISOString(),
+      endDate: e.endDate.toISOString(),
+      status: e.status as any,
+      coverImageUrl: e.coverImageUrl || DEFAULT_VERIFIED_COVER,
+      isPublished: e.isPublished,
+      displayOrder: e.displayOrder,
+      artworkSlugs: rels.map((rel) => rel.artworkSlug),
+    };
+  } catch (e) {
+    console.error("Database saveExhibition failed:", e);
+    throw e;
+  }
+}
+
+export async function deleteExhibition(id: string): Promise<boolean> {
+  const db = getDb();
+  if (!db) return false;
+
+  try {
+    await db.delete(schema.exhibitions).where(eq(schema.exhibitions.id, id));
+    recordActivityLog("DELETE_EXHIBITION", "exhibition", `Deleted exhibition ${id}`, id);
+    return true;
+  } catch (e) {
+    console.error("Database deleteExhibition failed:", e);
+    return false;
+  }
+}
+
+export async function updateExhibitionArtworks(
+  exhibitionId: string,
+  artworkIds: string[]
+): Promise<boolean> {
+  const db = getDb();
+  if (!db) return false;
+
+  try {
+    await db
+      .delete(schema.exhibitionArtworks)
+      .where(eq(schema.exhibitionArtworks.exhibitionId, exhibitionId));
+
+    if (artworkIds.length > 0) {
+      await db.insert(schema.exhibitionArtworks).values(
+        artworkIds.map((artworkId, index) => ({
+          exhibitionId,
+          artworkId,
+          displayOrder: index,
+        }))
+      );
+    }
+
+    recordActivityLog("UPDATE_EXHIBITION_ARTWORKS", "exhibition", `Updated artwork assignments for exhibition ${exhibitionId}`, exhibitionId);
+    return true;
+  } catch (e) {
+    console.error("Database updateExhibitionArtworks failed:", e);
+    return false;
+  }
+}
+
 export async function getHomepageSections(): Promise<MockHomepageSection[]> {
   const db = getDb();
   if (!db) return [];
