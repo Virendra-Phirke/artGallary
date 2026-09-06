@@ -22,17 +22,26 @@ interface RoomFallbackViewerProps {
     id: string;
     slug: string;
     title: string;
-    year: number;
+    year?: number;
     medium: string;
     widthCm: number;
     heightCm: number;
     depthCm?: number;
+    price?: number;
+    currency?: string;
     coverImageUrl: string;
     arConfig?: {
-      isArEnabled: boolean;
-      frameEnabled: boolean;
-      frameType: FrameStyle;
-      matColor: string;
+      isArEnabled?: boolean;
+      frameEnabled?: boolean;
+      frameType?: FrameStyle | string;
+      frameDepthCm?: number;
+      frameWidthCm?: number;
+      matColor?: string;
+      defaultScale?: number;
+      defaultRotation?: number;
+      minScale?: number;
+      maxScale?: number;
+      placementMode?: string;
     };
   };
   onLaunchArCamera?: () => void;
@@ -48,7 +57,7 @@ export function RoomFallbackViewer({
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const [frameType, setFrameType] = useState<FrameStyle>(
-    artwork.arConfig?.frameType || "minimal_black"
+    (artwork.arConfig?.frameType as FrameStyle) || "minimal_black"
   );
   const [frameEnabled, setFrameEnabled] = useState<boolean>(
     artwork.arConfig?.frameEnabled ?? true
