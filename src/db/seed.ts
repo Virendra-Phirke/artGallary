@@ -30,7 +30,7 @@ async function runSeed() {
         email: "vishal",
         emailVerified: true,
         role: "ADMIN",
-        image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+        image: null,
       })
       .onConflictDoNothing()
       .returning({ id: schema.users.id });
@@ -55,7 +55,7 @@ async function runSeed() {
         email: "curator@latelier-lumineux.art",
         emailVerified: true,
         role: "ADMIN",
-        image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+        image: null,
       })
       .onConflictDoNothing()
       .returning({ id: schema.users.id });
@@ -80,7 +80,7 @@ async function runSeed() {
         email: "collector@haute-art.com",
         emailVerified: true,
         role: "USER",
-        image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80",
+        image: null,
       })
       .onConflictDoNothing()
       .returning({ id: schema.users.id });
@@ -298,7 +298,7 @@ async function runSeed() {
       await db
         .insert(schema.media)
         .values({
-          provider: "cloudflare",
+          provider: "imagekit",
           providerAssetId: art.id,
           fileName: `${art.slug}.webp`,
           fileKey: fileKey,

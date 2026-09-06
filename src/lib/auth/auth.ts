@@ -27,21 +27,18 @@ const DEFAULT_USERS: AuthUser[] = [
     name: "Vishal (Admin)",
     email: "vishal",
     role: "ADMIN",
-    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
   },
   {
     id: "usr-admin-1",
     name: "Elena Vance (Curator)",
     email: "curator@latelier-lumineux.art",
     role: "ADMIN",
-    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
   },
   {
     id: "usr-collector-1",
     name: "Henrietta Sterling",
     email: "collector@haute-art.com",
     role: "USER",
-    image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80",
   }
 ];
 

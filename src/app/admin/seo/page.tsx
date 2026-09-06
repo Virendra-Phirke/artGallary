@@ -53,8 +53,8 @@ export default function AdminSeoPage() {
           <div className="rounded-xl overflow-hidden border border-[#262833] bg-[#0d0e12]">
             <div className="relative aspect-[1.91/1] bg-black/40">
               <Image
-                src="https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=1200&q=85"
-                alt="Solitude in Ultramarine"
+                src="https://ik.imagekit.io/bpnsp30ni/artworks/gallery/1788717079935-kazuha__EB1yso0A.jpeg?updatedAt=1788717081490"
+                alt="Kazuha Digital Artwork"
                 fill
                 sizes="500px"
                 className="object-cover"

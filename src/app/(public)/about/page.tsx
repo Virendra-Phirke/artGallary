@@ -18,8 +18,8 @@ export default function AboutPage() {
         <div className="lg:col-span-5 relative">
           <div className="relative aspect-[3/4] rounded-2xl overflow-hidden border border-[#262833] shadow-2xl">
             <Image
-              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1200&q=85"
-              alt="Elena Vance in her studio"
+              src="https://ik.imagekit.io/bpnsp30ni/artworks/gallery/1788717079935-kazuha__EB1yso0A.jpeg?updatedAt=1788717081490"
+              alt="Vishal in the studio"
               fill
               priority
               sizes="(max-width: 1024px) 100vw, 40vw"
@@ -27,7 +27,7 @@ export default function AboutPage() {
             />
           </div>
           <div className="mt-3 text-center text-xs text-zinc-500">
-            Elena Vance in her Brittany studio, 2025. Photography by Marc Lefevre.
+            Studio showcase, 2026. L'Atelier Gallery Archive.
           </div>
         </div>
 

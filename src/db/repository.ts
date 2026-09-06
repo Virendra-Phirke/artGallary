@@ -24,7 +24,7 @@ export interface MediaRecord {
 }
 
 const DEFAULT_VERIFIED_COVER =
-  "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=1600&q=85";
+  "https://ik.imagekit.io/bpnsp30ni/artworks/gallery/1788717079935-kazuha__EB1yso0A.jpeg?updatedAt=1788717081490";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export function isUuid(value?: string | null): boolean {
@@ -623,9 +623,7 @@ export async function getExhibitions(): Promise<MockExhibition[]> {
       startDate: e.startDate.toISOString(),
       endDate: e.endDate.toISOString(),
       status: e.status as any,
-      coverImageUrl:
-        e.coverImageUrl ||
-        "https://images.unsplash.com/photo-1536924940846-227afb31e2a5?auto=format&fit=crop&w=1600&q=85",
+      coverImageUrl: e.coverImageUrl || DEFAULT_VERIFIED_COVER,
       isPublished: e.isPublished,
       displayOrder: e.displayOrder,
       artworkSlugs: slugsByExh.get(e.id) || [],
@@ -676,9 +674,7 @@ export async function getAllExhibitionsAdmin(): Promise<MockExhibition[]> {
       startDate: e.startDate.toISOString(),
       endDate: e.endDate.toISOString(),
       status: e.status as any,
-      coverImageUrl:
-        e.coverImageUrl ||
-        "https://images.unsplash.com/photo-1536924940846-227afb31e2a5?auto=format&fit=crop&w=1600&q=85",
+      coverImageUrl: e.coverImageUrl || DEFAULT_VERIFIED_COVER,
       isPublished: e.isPublished,
       displayOrder: e.displayOrder,
       artworkSlugs: slugsByExh.get(e.id) || [],
@@ -726,9 +722,7 @@ export async function getExhibitionBySlug(slug: string): Promise<MockExhibition 
       startDate: e.startDate.toISOString(),
       endDate: e.endDate.toISOString(),
       status: e.status as any,
-      coverImageUrl:
-        e.coverImageUrl ||
-        "https://images.unsplash.com/photo-1536924940846-227afb31e2a5?auto=format&fit=crop&w=1600&q=85",
+      coverImageUrl: e.coverImageUrl || DEFAULT_VERIFIED_COVER,
       isPublished: e.isPublished,
       displayOrder: e.displayOrder,
       artworkSlugs: relations.map((rel) => rel.artworkSlug),

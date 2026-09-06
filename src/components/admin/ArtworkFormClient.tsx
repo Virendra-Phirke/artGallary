@@ -43,8 +43,7 @@ export function ArtworkFormClient({
     initialArtwork?.status || "draft"
   );
   const [coverImageUrl, setCoverImageUrl] = useState(
-    initialArtwork?.coverImageUrl ||
-      "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=1600&q=85"
+    initialArtwork?.coverImageUrl || ""
   );
   const [altText, setAltText] = useState(initialArtwork?.altText || "");
   const [isFeatured, setIsFeatured] = useState(initialArtwork?.isFeatured || false);

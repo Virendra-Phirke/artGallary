@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth/auth";
 import { mediaService, MediaRole, MediaProviderName } from "@/modules/media";
 import { recordActivityLog } from "@/db/repository";
+import { getDb, schema } from "@/db";
 
 export const maxDuration = 60; // 60 seconds timeout for high-res image processing
 
@@ -47,16 +48,60 @@ export async function POST(request: NextRequest) {
       providerOverride || undefined
     );
 
+    // 3. Persist media record to Neon PostgreSQL
+    let persistedAsset = { ...asset };
+    const db = getDb();
+    if (db) {
+      try {
+        const fileUrl = asset.variants?.optimized || asset.variants?.original || "";
+        const variantsJson = asset.variants
+          ? {
+              original: asset.variants.original,
+              optimized: asset.variants.optimized,
+              thumbnail: asset.variants.thumbnail,
+              arTexture: asset.variants.arTexture,
+            }
+          : undefined;
+
+        const valuesToInsert: typeof schema.media.$inferInsert = {
+          provider: asset.provider,
+          providerAssetId: asset.providerAssetId,
+          fileName: asset.filename,
+          fileKey: asset.objectKey || `artworks/${Date.now()}-${asset.filename}`,
+          fileUrl,
+          mimeType: asset.mimeType,
+          byteSize: asset.size,
+          width: asset.width || 2400,
+          height: asset.height || 1800,
+          aspectRatio: String(asset.aspectRatio),
+          blurDataUrl: asset.blurDataUrl,
+          migrationStatus: "verified",
+          variantsJson,
+        };
+
+        const inserted = await db
+          .insert(schema.media)
+          .values(valuesToInsert)
+          .returning({ id: schema.media.id });
+
+        if (inserted[0]?.id) {
+          persistedAsset.id = inserted[0].id;
+        }
+      } catch (dbErr) {
+        console.error("[Upload API] Failed to save media row to DB:", dbErr);
+      }
+    }
+
     recordActivityLog(
       "UPLOAD_MEDIA",
       "media",
       `Uploaded artwork media via ${asset.provider.toUpperCase()}: ${file.name} (${asset.width}x${asset.height}, ${(asset.size / 1024).toFixed(0)}KB)`,
-      asset.id
+      persistedAsset.id
     );
 
     return NextResponse.json({
       success: true,
-      media: asset,
+      media: persistedAsset,
     });
   } catch (error: any) {
     console.error("[Upload API] Error:", error);
