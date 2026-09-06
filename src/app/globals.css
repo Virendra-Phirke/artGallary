@@ -1,26 +1,104 @@
 @import "tailwindcss";
 
+@theme {
+  --font-serif: var(--font-heading), "Playfair Display", Georgia, serif;
+  --font-sans: var(--font-sans), "Plus Jakarta Sans", system-ui, sans-serif;
+  
+  --color-onyx-950: #0a0b0d;
+  --color-onyx-900: #0f1013;
+  --color-onyx-850: #14151a;
+  --color-onyx-800: #18191e;
+  --color-onyx-700: #22232a;
+  --color-onyx-600: #2c2e37;
+  
+  --color-champagne-400: #e2c18d;
+  --color-champagne-500: #d1a86e;
+  --color-champagne-600: #b98e54;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0d0e12;
+  --foreground: #f4f4f6;
+  --surface: #14151a;
+  --surface-elevated: #1a1c23;
+  --surface-muted: #101116;
+  --border: #262833;
+  --border-subtle: #1c1d25;
+  --accent: #d1a86e;
+  --accent-hover: #e2c18d;
+  --accent-muted: rgba(209, 168, 110, 0.12);
+  --muted: #8e92a4;
+  --muted-foreground: #a6aabf;
+  --focus: #d1a86e;
+  --danger: #ef4444;
+  --success: #10b981;
+  --radius: 0.375rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+[data-theme="light"] {
+  --background: #fcfbf9;
+  --foreground: #16171a;
+  --surface: #ffffff;
+  --surface-elevated: #f4f3ef;
+  --surface-muted: #eeebe3;
+  --border: #e3dfd7;
+  --border-subtle: #ece9e2;
+  --accent: #ad7d40;
+  --accent-hover: #96672f;
+  --accent-muted: rgba(173, 125, 64, 0.1);
+  --muted: #6b6f7e;
+  --muted-foreground: #525666;
+  --focus: #ad7d40;
+  --danger: #dc2626;
+  --success: #059669;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  border-color: var(--border);
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  selection-background-color: var(--accent-muted);
+}
+
+::selection {
+  background-color: var(--accent);
+  color: #0d0e12;
+}
+
+/* Custom editorial typography styles */
+h1, h2, h3, .font-editorial {
+  font-family: var(--font-serif);
+  letter-spacing: -0.015em;
+}
+
+/* Accessible focus ring */
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Smooth scrolling for anchor jumps */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
 }
