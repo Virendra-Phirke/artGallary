@@ -1,0 +1,246 @@
+"use client";
+
+import React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  SidebarProvider,
+  Sidebar,
+  SidebarTrigger,
+  SidebarHeader,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarInset,
+  useSidebar,
+} from "@/components/ui/sidebar";
+import {
+  LayoutDashboard,
+  Palette,
+  FolderKanban,
+  Calendar,
+  Home,
+  Sparkles,
+  QrCode,
+  Paintbrush,
+  Accessibility,
+  Image as ImageIcon,
+  Mail,
+  BarChart3,
+  Search,
+  Activity,
+  Settings,
+  ExternalLink,
+  Shield,
+  LogOut,
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+
+interface AdminSidebarProps {
+  user: {
+    name: string;
+    email: string;
+    role?: string;
+  };
+  children: React.ReactNode;
+}
+
+const navSections = [
+  {
+    title: "DASHBOARD",
+    items: [
+      { label: "Overview", href: "/admin/dashboard", icon: LayoutDashboard },
+    ],
+  },
+  {
+    title: "CONTENT",
+    items: [
+      { label: "Artworks CMS", href: "/admin/artworks", icon: Palette },
+      { label: "Collections", href: "/admin/collections", icon: FolderKanban },
+      { label: "Exhibitions", href: "/admin/exhibitions", icon: Calendar },
+      { label: "Homepage Builder", href: "/admin/homepage", icon: Home },
+    ],
+  },
+  {
+    title: "EXPERIENCE",
+    items: [
+      { label: "AR Studio", href: "/admin/ar-studio", icon: Sparkles },
+      { label: "QR Code Tags", href: "/admin/qr-codes", icon: QrCode },
+    ],
+  },
+  {
+    title: "DESIGN",
+    items: [
+      { label: "Appearance / Theme", href: "/admin/appearance", icon: Paintbrush },
+      { label: "Accessibility (WCAG)", href: "/admin/accessibility", icon: Accessibility },
+    ],
+  },
+  {
+    title: "MEDIA",
+    items: [
+      { label: "Media Library", href: "/admin/media", icon: ImageIcon },
+    ],
+  },
+  {
+    title: "BUSINESS",
+    items: [
+      { label: "Inquiries", href: "/admin/inquiries", icon: Mail },
+      { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
+    ],
+  },
+  {
+    title: "DISCOVERY",
+    items: [
+      { label: "SEO & Meta", href: "/admin/seo", icon: Search },
+    ],
+  },
+  {
+    title: "SYSTEM",
+    items: [
+      { label: "Activity Audit Log", href: "/admin/activity", icon: Activity },
+      { label: "Settings", href: "/admin/settings", icon: Settings },
+    ],
+  },
+];
+
+function AdminSidebarInner({ user, children }: AdminSidebarProps) {
+  const pathname = usePathname();
+  const { state } = useSidebar();
+
+  return (
+    <>
+      <Sidebar collapsible="icon">
+        {/* Brand Header */}
+        <SidebarHeader>
+          <div className="flex items-center justify-between">
+            <Link
+              href="/admin/dashboard"
+              className="flex flex-col overflow-hidden transition-all"
+            >
+              <span className="font-serif text-base font-semibold tracking-[0.15em] text-white uppercase truncate">
+                {state === "collapsed" ? "LA" : "L'Atelier"}
+              </span>
+              {state !== "collapsed" && (
+                <span className="text-[9px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
+                  Studio Console
+                </span>
+              )}
+            </Link>
+            {state !== "collapsed" && (
+              <Badge variant="warning" className="text-[9px] font-mono font-bold">
+                ADMIN
+              </Badge>
+            )}
+          </div>
+        </SidebarHeader>
+
+        {/* Content Navigation */}
+        <SidebarContent>
+          {navSections.map((group) => (
+            <SidebarGroup key={group.title}>
+              <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
+              <SidebarMenu>
+                {group.items.map((item) => {
+                  const Icon = item.icon;
+                  const isActive =
+                    pathname === item.href ||
+                    (item.href !== "/admin/dashboard" && pathname?.startsWith(item.href));
+
+                  return (
+                    <SidebarMenuItem key={item.href}>
+                      <Link href={item.href}>
+                        <SidebarMenuButton
+                          isActive={isActive}
+                          tooltip={item.label}
+                        >
+                          <Icon className="w-4 h-4 shrink-0 text-[#d1a86e]" />
+                          {state !== "collapsed" && <span>{item.label}</span>}
+                        </SidebarMenuButton>
+                      </Link>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroup>
+          ))}
+        </SidebarContent>
+
+        {/* Footer */}
+        <SidebarFooter>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5 overflow-hidden">
+              <div className="w-7 h-7 rounded-full bg-[#1a1c23] border border-[#262833] flex items-center justify-center text-xs font-serif text-[#d1a86e] shrink-0 font-semibold">
+                {user.name?.[0] || "A"}
+              </div>
+              {state !== "collapsed" && (
+                <div className="flex flex-col truncate">
+                  <span className="text-xs text-white font-medium truncate">
+                    {user.name}
+                  </span>
+                  <span className="text-[10px] text-zinc-500 truncate">
+                    {user.email}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {state !== "collapsed" && (
+              <Link
+                href="/"
+                target="_blank"
+                className="p-1.5 text-zinc-500 hover:text-white transition-colors"
+                title="View live public gallery"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+              </Link>
+            )}
+          </div>
+        </SidebarFooter>
+      </Sidebar>
+
+      {/* Main Workspace Inset */}
+      <SidebarInset>
+        {/* Top Header Bar with SidebarTrigger */}
+        <header className="h-16 border-b border-[#1c1d25] px-6 md:px-10 flex items-center justify-between bg-[#0f1013]/80 backdrop-blur-md sticky top-0 z-30">
+          <div className="flex items-center gap-4">
+            <SidebarTrigger />
+            <div className="flex items-center gap-2 text-xs text-zinc-400">
+              <Shield className="w-4 h-4 text-[#d1a86e]" />
+              <span className="hidden sm:inline">
+                Curator Administration Workspace
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <Link
+              href="/gallery"
+              target="_blank"
+              className="flex items-center gap-1.5 text-xs text-zinc-400 hover:text-white transition-colors"
+            >
+              <span>View Public Gallery</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </header>
+
+        {/* Dynamic Route Children */}
+        <div className="flex-1 p-6 md:p-10 overflow-y-auto">
+          {children}
+        </div>
+      </SidebarInset>
+    </>
+  );
+}
+
+export function AdminSidebar({ user, children }: AdminSidebarProps) {
+  return (
+    <SidebarProvider>
+      <AdminSidebarInner user={user}>{children}</AdminSidebarInner>
+    </SidebarProvider>
+  );
+}

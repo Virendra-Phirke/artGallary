@@ -17,7 +17,10 @@ import {
   Layers,
   ChevronRight,
 } from "lucide-react";
-import { formatDimensions } from "@/lib/utils";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 export default async function AdminDashboardPage() {
   const [artworks, inquiries, activityLogs] = await Promise.all([
@@ -58,26 +61,24 @@ export default async function AdminDashboardPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Link
-            href="/admin/artworks/new"
-            className="flex items-center gap-2 bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors shadow-lg shadow-[#d1a86e]/10"
-          >
-            <Palette className="w-3.5 h-3.5" />
-            <span>New Artwork</span>
+          <Link href="/admin/artworks/new">
+            <Button size="sm" className="gap-2">
+              <Palette className="w-3.5 h-3.5" />
+              <span>New Artwork</span>
+            </Button>
           </Link>
-          <Link
-            href="/admin/ar-studio"
-            className="flex items-center gap-2 bg-[#18191e] hover:bg-[#22232a] border border-[#262833] text-zinc-300 hover:text-white px-4 py-2 rounded-lg text-xs font-medium uppercase tracking-wider transition-colors"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-[#d1a86e]" />
-            <span>AR Studio</span>
+          <Link href="/admin/ar-studio">
+            <Button variant="secondary" size="sm" className="gap-2">
+              <Sparkles className="w-3.5 h-3.5 text-[#d1a86e]" />
+              <span>AR Studio</span>
+            </Button>
           </Link>
         </div>
       </div>
 
       {/* Metrics Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-        <div className="p-5 bg-[#14151a] border border-[#262833] rounded-xl space-y-1">
+        <Card className="p-5 space-y-1">
           <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">
             Total Artworks
           </span>
@@ -85,9 +86,9 @@ export default async function AdminDashboardPage() {
           <span className="text-xs text-zinc-400">
             {publishedArtworks} published • {draftArtworks} drafts
           </span>
-        </div>
+        </Card>
 
-        <div className="p-5 bg-[#14151a] border border-[#262833] rounded-xl space-y-1">
+        <Card className="p-5 space-y-1">
           <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">
             Collector Inquiries
           </span>
@@ -95,27 +96,27 @@ export default async function AdminDashboardPage() {
           <span className="text-xs text-emerald-400 font-medium">
             {newInquiries} pending reply
           </span>
-        </div>
+        </Card>
 
-        <div className="p-5 bg-[#14151a] border border-[#262833] rounded-xl space-y-1">
+        <Card className="p-5 space-y-1">
           <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">
             Spatial AR Sessions
           </span>
           <div className="font-serif text-3xl text-white">418</div>
           <span className="text-xs text-zinc-400">98.4% placement rate</span>
-        </div>
+        </Card>
 
-        <div className="p-5 bg-[#14151a] border border-[#262833] rounded-xl space-y-1">
+        <Card className="p-5 space-y-1">
           <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">
             Acquisitions / Sold
           </span>
           <div className="font-serif text-3xl text-white">{soldArtworks}</div>
           <span className="text-xs text-zinc-400">Private collections</span>
-        </div>
+        </Card>
       </div>
 
       {/* Attention Required Panel */}
-      <div className="p-6 bg-[#14151a] border border-[#262833] rounded-2xl space-y-4">
+      <Card className="p-6 space-y-4">
         <div className="flex items-center justify-between border-b border-[#1f212b] pb-4">
           <div className="flex items-center gap-2.5">
             <AlertTriangle className="w-5 h-5 text-amber-400" />
@@ -193,12 +194,12 @@ export default async function AdminDashboardPage() {
             </div>
           )}
         </div>
-      </div>
+      </Card>
 
       {/* Two Column Layout: Recent Inquiries & Activity Logs */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Recent Inquiries (7 Cols) */}
-        <div className="lg:col-span-7 p-6 bg-[#14151a] border border-[#262833] rounded-2xl space-y-4">
+        <Card className="lg:col-span-7 p-6 space-y-4">
           <div className="flex items-center justify-between border-b border-[#1f212b] pb-3">
             <h2 className="font-serif text-xl text-white">Recent Inquiries</h2>
             <Link
@@ -217,17 +218,17 @@ export default async function AdminDashboardPage() {
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span
-                      className={`text-[9px] uppercase tracking-widest px-2 py-0.5 rounded font-semibold ${
+                    <Badge
+                      variant={
                         inq.status === "new"
-                          ? "bg-amber-950 text-amber-300 border border-amber-800"
+                          ? "warning"
                           : inq.status === "read"
-                          ? "bg-blue-950 text-blue-300 border border-blue-800"
-                          : "bg-emerald-950 text-emerald-300 border border-emerald-800"
-                      }`}
+                          ? "secondary"
+                          : "success"
+                      }
                     >
                       {inq.status}
-                    </span>
+                    </Badge>
                     <span className="text-xs text-white font-medium">
                       {inq.name}
                     </span>
@@ -242,10 +243,10 @@ export default async function AdminDashboardPage() {
               </div>
             ))}
           </div>
-        </div>
+        </Card>
 
         {/* Activity Logs (5 Cols) */}
-        <div className="lg:col-span-5 p-6 bg-[#14151a] border border-[#262833] rounded-2xl space-y-4">
+        <Card className="lg:col-span-5 p-6 space-y-4">
           <div className="flex items-center justify-between border-b border-[#1f212b] pb-3">
             <h2 className="font-serif text-xl text-white">Activity Trail</h2>
             <Link
@@ -277,7 +278,7 @@ export default async function AdminDashboardPage() {
               </div>
             ))}
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   );
