@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import crypto from "crypto";
 import { recordActivityLog } from "@/db/repository";
 import { getDb, schema } from "@/db";
-import { eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 
 export interface AuthUser {
   id: string;
@@ -22,6 +22,13 @@ const SECRET_KEY = process.env.BETTER_AUTH_SECRET || "art-gallery-secure-product
 
 // Built-in verified users for immediate access & demonstration
 const DEFAULT_USERS: AuthUser[] = [
+  {
+    id: "35473d32-66ae-4fdd-9e7a-69680ff1d2f6",
+    name: "Vishal (Admin)",
+    email: "vishal",
+    role: "ADMIN",
+    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+  },
   {
     id: "usr-admin-1",
     name: "Elena Vance (Curator)",
@@ -44,15 +51,21 @@ const runtimeUsers: Map<string, { user: AuthUser; passwordHash: string }> = new 
 // Initialize default users
 function ensureDefaultUsers() {
   if (runtimeUsers.size === 0) {
+    const vishalHash = hashPassword("2004");
+    runtimeUsers.set("vishal", {
+      user: DEFAULT_USERS[0],
+      passwordHash: vishalHash,
+    });
+
     const adminHash = hashPassword("Curator2026!");
     runtimeUsers.set("curator@latelier-lumineux.art", {
-      user: DEFAULT_USERS[0],
+      user: DEFAULT_USERS[1],
       passwordHash: adminHash,
     });
 
     const collectorHash = hashPassword("Collector2026!");
     runtimeUsers.set("collector@haute-art.com", {
-      user: DEFAULT_USERS[1],
+      user: DEFAULT_USERS[2],
       passwordHash: collectorHash,
     });
   }
@@ -134,11 +147,31 @@ export async function signIn(
 
   if (db) {
     try {
-      const userRows = await db
+      let userRows = await db
         .select()
         .from(schema.users)
-        .where(eq(schema.users.email, normalizedEmail))
+        .where(
+          or(
+            eq(schema.users.email, normalizedEmail),
+            eq(schema.users.name, normalizedEmail)
+          )
+        )
         .limit(1);
+
+      if (userRows.length === 0) {
+        const matchedAccounts = await db
+          .select()
+          .from(schema.accounts)
+          .where(eq(schema.accounts.accountId, normalizedEmail))
+          .limit(1);
+        if (matchedAccounts.length > 0) {
+          userRows = await db
+            .select()
+            .from(schema.users)
+            .where(eq(schema.users.id, matchedAccounts[0].userId))
+            .limit(1);
+        }
+      }
 
       if (userRows.length > 0) {
         const u = userRows[0];
@@ -188,7 +221,7 @@ export async function signIn(
   ensureDefaultUsers();
   const entry = runtimeUsers.get(normalizedEmail);
   if (!entry || !verifyPassword(password, entry.passwordHash)) {
-    return { success: false, error: "Invalid email or password" };
+    return { success: false, error: "Invalid ID/email or password" };
   }
 
   const token = signToken(entry.user);

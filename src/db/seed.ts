@@ -23,6 +23,31 @@ async function runSeed() {
   try {
     // Insert initial users & Better Auth credentials
     console.log("Seeding users and authentication credentials...");
+    const vishalAdmin = await db
+      .insert(schema.users)
+      .values({
+        name: "Vishal (Admin)",
+        email: "vishal",
+        emailVerified: true,
+        role: "ADMIN",
+        image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+      })
+      .onConflictDoNothing()
+      .returning({ id: schema.users.id });
+
+    if (vishalAdmin[0]?.id) {
+      await db
+        .insert(schema.accounts)
+        .values({
+          id: `acc-vishal-${Date.now()}`,
+          userId: vishalAdmin[0].id,
+          accountId: "vishal",
+          providerId: "credential",
+          passwordHash: "79f8c778f28ecebd274eaacafc9f1019644d5636907393c28c2b8f4daf077eac", // 2004
+        })
+        .onConflictDoNothing();
+    }
+
     const adminUser = await db
       .insert(schema.users)
       .values({

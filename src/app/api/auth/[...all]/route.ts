@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
   if (pathname.endsWith("/sign-in") || pathname.endsWith("/login")) {
     const { email, password } = body;
     if (!email || !password) {
-      return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
+      return NextResponse.json({ error: "Admin ID/Email and password are required" }, { status: 400 });
     }
     const result = await signIn(email, password);
     if (!result.success) {

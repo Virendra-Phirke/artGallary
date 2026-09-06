@@ -70,11 +70,11 @@ function LoginForm() {
         <div className="grid grid-cols-2 gap-2">
           <button
             type="button"
-            onClick={() => handleQuickLogin("curator@latelier-lumineux.art", "Curator2026!")}
-            className="flex items-center justify-center gap-1.5 p-2 bg-[#22242e] hover:bg-amber-950/40 hover:border-amber-700/60 border border-[#262833] rounded text-[11px] text-amber-200 transition-colors"
+            onClick={() => handleQuickLogin("vishal", "2004")}
+            className="flex items-center justify-center gap-1.5 p-2 bg-[#22242e] hover:bg-amber-950/40 hover:border-amber-700/60 border border-amber-800/40 rounded text-[11px] text-amber-200 transition-colors font-medium"
           >
             <Shield className="w-3.5 h-3.5 text-[#d1a86e]" />
-            <span>Admin / Curator</span>
+            <span>Admin (vishal)</span>
           </button>
           <button
             type="button"
@@ -97,14 +97,14 @@ function LoginForm() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-1.5">
-            Email Address
+            Admin ID or Email Address
           </label>
           <input
-            type="email"
+            type="text"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="curator@latelier-lumineux.art"
+            placeholder="vishal or curator@latelier-lumineux.art"
             className="w-full bg-[#1a1c23] border border-[#262833] rounded-lg px-4 py-3 text-sm text-white placeholder-zinc-600 focus:border-[#d1a86e] focus:outline-none"
           />
         </div>
