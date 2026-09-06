@@ -16,6 +16,7 @@ import {
 import { MockArtwork } from "@/db/mockData";
 import { slugify, formatDimensions } from "@/lib/utils";
 import { UnsplashPickerModal } from "./UnsplashPickerModal";
+import { ArStudioViewer } from "@/components/ar/ArStudioViewer";
 
 interface ArtworkFormClientProps {
   initialArtwork?: MockArtwork;
@@ -61,6 +62,16 @@ export function ArtworkFormClient({
   const [matColor, setMatColor] = useState(
     initialArtwork?.arConfig?.matColor || "#FFFFFF"
   );
+  const [minScale, setMinScale] = useState<number>(
+    initialArtwork?.arConfig?.minScale ?? 0.5
+  );
+  const [maxScale, setMaxScale] = useState<number>(
+    initialArtwork?.arConfig?.maxScale ?? 2.0
+  );
+  const [placementMode, setPlacementMode] = useState<"wall" | "floor">(
+    initialArtwork?.arConfig?.placementMode || "wall"
+  );
+  const [isTestArOpen, setIsTestArOpen] = useState(false);
 
   const [isUploading, setIsUploading] = useState(false);
   const [isUnsplashOpen, setIsUnsplashOpen] = useState(false);
@@ -151,6 +162,9 @@ export function ArtworkFormClient({
           defaultHeightCm: heightCm,
           defaultScale: 1.0,
           defaultRotation: 0.0,
+          minScale,
+          maxScale,
+          placementMode,
           frameEnabled,
           frameType: frameType as any,
           frameDepthCm: 3.5,
@@ -197,6 +211,16 @@ export function ArtworkFormClient({
         </div>
 
         <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setIsTestArOpen(true)}
+            className="flex items-center gap-1.5 bg-[#18191e] hover:bg-[#22232a] border border-[#d1a86e]/40 text-[#d1a86e] px-4 py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors shadow-sm"
+            title="Launch live 1:1 AR and 3D room calibration test"
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Test AR in Studio</span>
+          </button>
+
           {!isNew && slug && (
             <Link
               href={`/artwork/${slug}`}
@@ -571,9 +595,113 @@ export function ArtworkFormClient({
                 </select>
               </div>
             )}
+
+            {/* Placement Mode */}
+            <div>
+              <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-1.5">
+                Spatial Placement Mode
+              </label>
+              <select
+                value={placementMode}
+                onChange={(e: any) => setPlacementMode(e.target.value)}
+                className="w-full bg-[#1a1c23] border border-[#262833] rounded-lg px-3.5 py-2 text-xs text-white focus:border-[#d1a86e] focus:outline-none cursor-pointer"
+              >
+                <option value="wall">Wall Placement (Primary)</option>
+                <option value="floor">Floor / Easel Placement</option>
+              </select>
+            </div>
+
+            {/* Scale Constraint Bounds */}
+            <div className="grid grid-cols-2 gap-3 pt-1">
+              <div>
+                <label className="block text-[10px] uppercase tracking-wider text-zinc-400 mb-1">
+                  Min Scale Clamp
+                </label>
+                <input
+                  type="number"
+                  step="0.1"
+                  min="0.1"
+                  max="1.0"
+                  value={minScale}
+                  onChange={(e) => setMinScale(parseFloat(e.target.value) || 0.5)}
+                  className="w-full bg-[#1a1c23] border border-[#262833] rounded-lg px-3 py-1.5 text-xs text-white focus:border-[#d1a86e] focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] uppercase tracking-wider text-zinc-400 mb-1">
+                  Max Scale Clamp
+                </label>
+                <input
+                  type="number"
+                  step="0.1"
+                  min="1.0"
+                  max="5.0"
+                  value={maxScale}
+                  onChange={(e) => setMaxScale(parseFloat(e.target.value) || 2.0)}
+                  className="w-full bg-[#1a1c23] border border-[#262833] rounded-lg px-3 py-1.5 text-xs text-white focus:border-[#d1a86e] focus:outline-none"
+                />
+              </div>
+            </div>
+
+            {/* Quick Test AR Button inside card */}
+            <button
+              type="button"
+              onClick={() => setIsTestArOpen(true)}
+              className="w-full mt-2 flex items-center justify-center gap-2 bg-[#1a1c23] hover:bg-[#22242d] border border-[#262833] text-zinc-200 hover:text-white py-2.5 rounded-xl text-xs font-medium uppercase tracking-wider transition-colors"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-[#d1a86e]" />
+              <span>Launch Live AR Test</span>
+            </button>
           </div>
         </div>
       </div>
+
+      {/* Full-Screen Test AR Modal */}
+      {isTestArOpen && (
+        <div className="fixed inset-0 z-[100] bg-black flex flex-col">
+          <div className="fixed top-4 right-4 z-[110] flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setIsTestArOpen(false)}
+              className="bg-black/80 hover:bg-black text-white px-5 py-2 rounded-full border border-white/20 text-xs font-semibold uppercase tracking-wider shadow-2xl transition-all"
+            >
+              Close Studio Preview
+            </button>
+          </div>
+
+          <div className="flex-1 w-full h-full">
+            <ArStudioViewer
+              artwork={{
+                id: initialArtwork?.id || "test-preview",
+                slug: slug || "test-preview",
+                title: title || "Untitled Preview",
+                year: year || new Date().getFullYear(),
+                medium: medium || "Oil on Belgian linen",
+                widthCm,
+                heightCm,
+                depthCm,
+                price,
+                currency,
+                coverImageUrl: coverImageUrl || "https://ik.imagekit.io/bpnsp30ni/artworks/gallery/1788717079935-kazuha__EB1yso0A.jpeg?updatedAt=1788717081490",
+                arConfig: {
+                  isArEnabled,
+                  frameEnabled,
+                  frameType: frameType as any,
+                  frameDepthCm: 3.5,
+                  frameWidthCm: 3.0,
+                  matColor,
+                  defaultScale: 1.0,
+                  defaultRotation: 0.0,
+                  minScale,
+                  maxScale,
+                  placementMode,
+                },
+              }}
+            />
+          </div>
+        </div>
+      )}
 
       <UnsplashPickerModal
         isOpen={isUnsplashOpen}

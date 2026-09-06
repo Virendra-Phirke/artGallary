@@ -25,6 +25,40 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json().catch(() => ({}));
+    if (!body.title || typeof body.title !== "string" || body.title.trim().length < 2) {
+      return NextResponse.json({ error: "Artwork title is required" }, { status: 400 });
+    }
+
+    // Validate AR configuration parameters
+    if (body.arConfig) {
+      const minScale = Number(body.arConfig.minScale ?? 0.5);
+      const maxScale = Number(body.arConfig.maxScale ?? 2.0);
+      if (
+        isNaN(minScale) ||
+        isNaN(maxScale) ||
+        minScale < 0.1 ||
+        maxScale > 5.0 ||
+        minScale > maxScale
+      ) {
+        return NextResponse.json(
+          {
+            error:
+              "Invalid AR scale bounds. minScale must be >= 0.1 and <= maxScale (up to 5.0)",
+          },
+          { status: 400 }
+        );
+      }
+      if (
+        body.arConfig.placementMode &&
+        !["wall", "floor"].includes(body.arConfig.placementMode)
+      ) {
+        return NextResponse.json(
+          { error: "Invalid placementMode. Must be 'wall' or 'floor'" },
+          { status: 400 }
+        );
+      }
+    }
+
     const artwork = await saveArtwork(body);
     return NextResponse.json({ success: true, artwork });
   } catch (error: any) {

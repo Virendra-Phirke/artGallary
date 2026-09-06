@@ -27,6 +27,9 @@ export interface MockArtwork {
     defaultHeightCm: number;
     defaultScale: number;
     defaultRotation: number;
+    minScale?: number;
+    maxScale?: number;
+    placementMode?: "wall" | "floor";
     frameEnabled: boolean;
     frameType: "none" | "minimal_black" | "classic_gold" | "natural_wood" | "white_gallery";
     frameDepthCm: number;

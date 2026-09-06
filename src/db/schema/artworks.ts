@@ -47,6 +47,9 @@ export const artworkAr = pgTable("artwork_ar", {
   defaultHeightCm: numeric("default_height_cm", { precision: 8, scale: 2 }).notNull(),
   defaultScale: numeric("default_scale", { precision: 5, scale: 2 }).default("1.00").notNull(),
   defaultRotation: numeric("default_rotation", { precision: 5, scale: 2 }).default("0.00").notNull(),
+  minScale: numeric("min_scale", { precision: 5, scale: 2 }).default("0.50").notNull(),
+  maxScale: numeric("max_scale", { precision: 5, scale: 2 }).default("2.00").notNull(),
+  placementMode: varchar("placement_mode", { length: 20 }).default("wall").notNull(), // 'wall' | 'floor'
   frameEnabled: boolean("frame_enabled").default(false).notNull(),
   frameType: varchar("frame_type", { length: 50 }).default("minimal_black").notNull(), // 'none' | 'minimal_black' | 'classic_gold' | 'natural_wood' | 'white_gallery'
   frameDepthCm: numeric("frame_depth_cm", { precision: 5, scale: 2 }).default("3.00").notNull(),
