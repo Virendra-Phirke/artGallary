@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth/auth";
-import { getMediaItems, deleteMediaItem, recordActivityLog } from "@/db/repository";
+import { getMediaItems, getMediaItemRaw, deleteMediaItem, recordActivityLog } from "@/db/repository";
 import { getDb, schema } from "@/db";
+import { mediaService } from "@/modules/media";
+import type { MediaProviderName } from "@/modules/media/media.types";
 
 export async function GET(request: NextRequest) {
   try {
@@ -130,20 +132,123 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const deleted = await deleteMediaItem(id);
-    if (!deleted) {
+    // 1. Fetch the full media row to get provider details before deleting
+    const mediaRow = await getMediaItemRaw(id);
+    if (!mediaRow) {
       return NextResponse.json(
-        { error: "Asset not found or failed to delete" },
+        { error: "Media asset not found" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({ success: true, deletedId: id });
+    const provider = (mediaRow.provider || "imagekit") as MediaProviderName;
+    const providerAssetId = mediaRow.providerAssetId || mediaRow.fileKey || "";
+    const fileKey = mediaRow.fileKey || "";
+    const variants = mediaRow.variantsJson as {
+      original?: string;
+      optimized?: string;
+      thumbnail?: string;
+      arTexture?: string;
+    } | null;
+
+    let sourceDeleted = false;
+    let sourceError: string | null = null;
+
+    // 2. Attempt to delete from the source storage provider
+    try {
+      if (provider === "cloudflare") {
+        // For Cloudflare R2, collect all variant object keys for thorough cleanup
+        const variantKeys: string[] = [];
+
+        // The fileKey is typically the primary object key
+        if (fileKey && !fileKey.startsWith("imported/")) {
+          variantKeys.push(fileKey);
+        }
+
+        // Extract R2 object keys from variant URLs
+        if (variants) {
+          for (const variantUrl of Object.values(variants)) {
+            if (!variantUrl || typeof variantUrl !== "string") continue;
+            // Extract object key from full URL: https://bucket.r2.dev/artworks/cover/123-name.webp → artworks/cover/123-name.webp
+            const urlObj = safeParseUrl(variantUrl);
+            if (urlObj) {
+              const key = urlObj.pathname.replace(/^\//, "");
+              if (key && !variantKeys.includes(key)) {
+                variantKeys.push(key);
+              }
+            } else if (variantUrl.startsWith("artworks/") || variantUrl.startsWith("artists/")) {
+              if (!variantKeys.includes(variantUrl)) {
+                variantKeys.push(variantUrl);
+              }
+            }
+          }
+        }
+
+        if (variantKeys.length > 0) {
+          // Use the provider's multi-key delete for thorough cleanup
+          const { CloudflareR2Provider } = await import("@/modules/media/providers/cloudflare/cloudflare.provider");
+          const cfProvider = new CloudflareR2Provider();
+          const result = await cfProvider.deleteMultipleKeys(variantKeys);
+          sourceDeleted = result.deleted > 0;
+          if (result.errors.length > 0) {
+            sourceError = `Partial cleanup: ${result.errors.length} keys failed`;
+          }
+        } else {
+          // Fallback to single-key delete via mediaService
+          await mediaService.delete(providerAssetId, provider, fileKey);
+          sourceDeleted = true;
+        }
+      } else if (provider === "imagekit") {
+        // ImageKit uses providerAssetId (fileId) for deletion
+        if (providerAssetId) {
+          await mediaService.delete(providerAssetId, provider);
+          sourceDeleted = true;
+        }
+      }
+    } catch (providerErr: any) {
+      console.error(`[Admin Media DELETE] Source deletion from ${provider} failed:`, providerErr);
+      sourceError = providerErr?.message || `Failed to delete from ${provider}`;
+      // Continue to delete DB record even if source deletion fails
+    }
+
+    // 3. Delete the database record
+    const dbDeleted = await deleteMediaItem(id);
+    if (!dbDeleted) {
+      return NextResponse.json(
+        { error: "Failed to delete media database record" },
+        { status: 500 }
+      );
+    }
+
+    // 4. Log the permanent deletion with provider details
+    recordActivityLog(
+      "PERMANENT_DELETE_MEDIA",
+      "media",
+      `Permanently deleted media "${mediaRow.fileName}" from ${provider}${sourceDeleted ? " (source purged)" : " (DB only)"}`,
+      id
+    );
+
+    return NextResponse.json({
+      success: true,
+      deletedId: id,
+      provider,
+      sourceDeleted,
+      sourceError,
+    });
   } catch (error: any) {
     console.error("[Admin Media DELETE API] Error:", error);
     return NextResponse.json(
       { error: "Failed to delete media asset" },
       { status: 500 }
     );
+  }
+}
+
+/** Safely parse a URL string, returning null on failure */
+function safeParseUrl(urlStr: string): URL | null {
+  try {
+    return new URL(urlStr);
+  } catch {
+    return null;
   }
 }

@@ -211,6 +211,42 @@ export class CloudflareR2Provider implements MediaProvider {
     }
   }
 
+  /**
+   * Delete multiple object keys in parallel (for removing all variants of an upload).
+   * Silently skips keys that don't exist. Throws on genuine S3 errors.
+   */
+  public async deleteMultipleKeys(objectKeys: string[]): Promise<{ deleted: number; errors: string[] }> {
+    const config = getMediaConfig();
+    if (!config.cloudflare.isConfigured || !this.s3Client) {
+      return { deleted: 0, errors: [] };
+    }
+
+    const validKeys = objectKeys.filter(Boolean);
+    if (validKeys.length === 0) return { deleted: 0, errors: [] };
+
+    let deleted = 0;
+    const errors: string[] = [];
+
+    await Promise.allSettled(
+      validKeys.map(async (key) => {
+        try {
+          await this.s3Client!.send(
+            new DeleteObjectCommand({
+              Bucket: config.cloudflare.bucketName,
+              Key: key,
+            })
+          );
+          deleted++;
+        } catch (err: any) {
+          console.warn(`[CloudflareR2Provider] Failed to delete key '${key}':`, err?.message);
+          errors.push(key);
+        }
+      })
+    );
+
+    return { deleted, errors };
+  }
+
   public getUrl(
     asset: { providerAssetId?: string; objectKey?: string; fileUrl?: string },
     transform?: MediaTransform

@@ -1838,6 +1838,27 @@ export async function getMediaItems(): Promise<MediaRecord[]> {
   }
 }
 
+/**
+ * Retrieve the full raw media row for provider-level deletion.
+ * Returns provider, providerAssetId, fileKey, variantsJson, etc.
+ */
+export async function getMediaItemRaw(id: string) {
+  const db = getDb();
+  if (!db) return null;
+
+  try {
+    const rows = await db
+      .select()
+      .from(schema.media)
+      .where(eq(schema.media.id, id))
+      .limit(1);
+    return rows[0] || null;
+  } catch (e) {
+    console.error("Database getMediaItemRaw failed:", e);
+    return null;
+  }
+}
+
 export async function deleteMediaItem(id: string): Promise<boolean> {
   const db = getDb();
   if (!db) return false;
