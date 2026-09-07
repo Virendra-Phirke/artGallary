@@ -178,10 +178,24 @@ export function CollectionsManagerClient({
           </p>
         </div>
 
-        <Button onClick={openNew} className="gap-2">
-          <Plus className="w-4 h-4" />
-          <span>New Collection</span>
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button asChild variant="outline" size="sm" className="border-[#d1a86e]/40 text-[#d1a86e] hover:bg-[#d1a86e]/10 text-xs gap-1.5">
+            <Link href="/admin/settings?tab=collections">
+              <FolderKanban className="w-3.5 h-3.5" />
+              <span>Edit Page Header &amp; Intro</span>
+            </Link>
+          </Button>
+          <Button asChild variant="ghost" size="sm" className="text-zinc-400 hover:text-white text-xs gap-1.5">
+            <Link href="/collections" target="_blank">
+              <ExternalLink className="w-3.5 h-3.5" />
+              <span>Preview Storefront</span>
+            </Link>
+          </Button>
+          <Button onClick={openNew} size="sm" className="gap-1.5">
+            <Plus className="w-4 h-4" />
+            <span>New Collection</span>
+          </Button>
+        </div>
       </div>
 
       {/* Collections Grid */}

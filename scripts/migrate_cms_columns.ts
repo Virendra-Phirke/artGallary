@@ -30,6 +30,8 @@ async function run() {
     `ALTER TABLE "site_settings" ADD COLUMN IF NOT EXISTS "legal_pages_json" jsonb;`,
     `ALTER TABLE "site_settings" ADD COLUMN IF NOT EXISTS "maintenance_mode_json" jsonb;`,
     `ALTER TABLE "site_settings" ADD COLUMN IF NOT EXISTS "global_ar_defaults_json" jsonb;`,
+    `ALTER TABLE "site_settings" ADD COLUMN IF NOT EXISTS "collections_page_config_json" jsonb;`,
+    `ALTER TABLE "site_settings" ADD COLUMN IF NOT EXISTS "exhibitions_page_config_json" jsonb;`,
   ];
 
   for (const statement of alterStatements) {

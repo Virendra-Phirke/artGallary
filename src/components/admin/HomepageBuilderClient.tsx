@@ -345,6 +345,17 @@ export function HomepageBuilderClient({
             </div>
           )}
 
+          {/* Quick Storefront Pages Links */}
+          <div className="hidden lg:flex items-center gap-1 p-1 bg-[#1a1c23] border border-[#262833] rounded-xl text-xs">
+            <span className="px-2 text-[10px] text-zinc-500 uppercase tracking-widest font-mono">Storefront:</span>
+            <Link href="/" target="_blank" className="px-2 py-1 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors">Home</Link>
+            <Link href="/gallery" target="_blank" className="px-2 py-1 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors">Gallery</Link>
+            <Link href="/collections" target="_blank" className="px-2 py-1 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors">Collections</Link>
+            <Link href="/exhibitions" target="_blank" className="px-2 py-1 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors">Exhibitions</Link>
+            <Link href="/about" target="_blank" className="px-2 py-1 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors">About</Link>
+            <Link href="/contact" target="_blank" className="px-2 py-1 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors">Contact</Link>
+          </div>
+
           {/* Save Button */}
           <button
             onClick={handleSave}

@@ -2,7 +2,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { MapPin, Calendar, ArrowRight } from "lucide-react";
-import { getExhibitions } from "@/db/repository";
+import { getExhibitions, getSiteSettings } from "@/db/repository";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -19,19 +19,29 @@ import { Button } from "@/components/ui/button";
 import { ProgressiveImage } from "@/components/ui/progressive-image";
 
 export default async function ExhibitionsPage() {
-  const exhibitions = await getExhibitions();
+  const [exhibitions, settings] = await Promise.all([
+    getExhibitions(),
+    getSiteSettings(),
+  ]);
+
+  const cfg = settings.exhibitionsPageConfig;
+  const eyebrow = cfg?.eyebrow || cfg?.subtitle || "Public & Museum History";
+  const title = cfg?.title || "Exhibitions";
+  const description =
+    cfg?.description ||
+    "Chronological record of curated solo exhibitions, biennale participations, and institutional showcases across Paris, New York, London, and Tokyo.";
 
   return (
     <div className="max-w-7xl mx-auto px-6 md:px-12 pt-32 pb-24 space-y-16">
       <div className="max-w-2xl space-y-3">
         <span className="text-xs tracking-[0.25em] text-[#d1a86e] uppercase font-medium">
-          Public &amp; Museum History
+          {eyebrow}
         </span>
         <h1 className="font-serif text-4xl sm:text-5xl text-white">
-          Exhibitions
+          {title}
         </h1>
         <p className="text-sm text-[#a6aabf] leading-relaxed">
-          Chronological record of curated solo exhibitions, biennale participations, and institutional showcases across Paris, New York, London, and Tokyo.
+          {description}
         </p>
       </div>
 

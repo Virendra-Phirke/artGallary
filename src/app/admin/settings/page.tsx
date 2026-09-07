@@ -7,7 +7,17 @@ export const metadata: Metadata = {
   title: "Settings & System Status | Studio Administration",
 };
 
-export default async function AdminSettingsPage() {
+interface Props {
+  searchParams?: Promise<{ tab?: string }>;
+}
+
+export default async function AdminSettingsPage({ searchParams }: Props) {
+  const resolvedParams = searchParams ? await searchParams : undefined;
   const settings = await getSiteSettings();
-  return <SettingsClient initialSettings={settings} />;
+  return (
+    <SettingsClient
+      initialSettings={settings}
+      initialTab={resolvedParams?.tab || "identity"}
+    />
+  );
 }

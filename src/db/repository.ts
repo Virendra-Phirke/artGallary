@@ -1251,6 +1251,20 @@ export interface SiteSettingsData {
     };
     defaultSort: string;
   };
+  collectionsPageConfig: {
+    title?: string;
+    subtitle?: string;
+    description?: string;
+    coverImageUrl?: string;
+    eyebrow?: string;
+  };
+  exhibitionsPageConfig: {
+    title?: string;
+    subtitle?: string;
+    description?: string;
+    coverImageUrl?: string;
+    eyebrow?: string;
+  };
   aboutPageConfig: {
     intro?: string;
     bio?: string;
@@ -1396,6 +1410,20 @@ const DEFAULT_SITE_SETTINGS: SiteSettingsData = {
     },
     defaultSort: "featured",
   },
+  collectionsPageConfig: {
+    title: "Curated Series",
+    subtitle: "Thematic Bodies of Work",
+    description: "Elena Vance groups her artistic inquiries into multi-year cycles. Each series represents a focused exploration of specific pigments, geological binders, and spatial tensions.",
+    coverImageUrl: "",
+    eyebrow: "Thematic Bodies of Work",
+  },
+  exhibitionsPageConfig: {
+    title: "Exhibitions",
+    subtitle: "Public & Museum History",
+    description: "Chronological record of curated solo exhibitions, biennale participations, and institutional showcases across Paris, New York, London, and Tokyo.",
+    coverImageUrl: "",
+    eyebrow: "Public & Museum History",
+  },
   aboutPageConfig: {
     intro: "Biography & Studio Practice",
     bio: "Elena Vance is a contemporary fine artist whose paintings investigate the physics of optical depth, geological materiality, and oceanic stillness. Combining archaic mineral pigments—chiefly Afghan lapis lazuli and Roman pozzolana—with multi-layered stand-oil glazes on raw Belgian linen.",
@@ -1493,6 +1521,8 @@ export async function getSiteSettings(): Promise<SiteSettingsData> {
           : DEFAULT_SITE_SETTINGS.navigationItems,
         footerConfig: (s.footerConfigJson as any) || DEFAULT_SITE_SETTINGS.footerConfig,
         galleryPageConfig: (s.galleryPageConfigJson as any) || DEFAULT_SITE_SETTINGS.galleryPageConfig,
+        collectionsPageConfig: (s.collectionsPageConfigJson as any) || DEFAULT_SITE_SETTINGS.collectionsPageConfig,
+        exhibitionsPageConfig: (s.exhibitionsPageConfigJson as any) || DEFAULT_SITE_SETTINGS.exhibitionsPageConfig,
         aboutPageConfig: (s.aboutPageConfigJson as any) || DEFAULT_SITE_SETTINGS.aboutPageConfig,
         contactPageConfig: (s.contactPageConfigJson as any) || DEFAULT_SITE_SETTINGS.contactPageConfig,
         legalPages: (s.legalPagesJson as any) || DEFAULT_SITE_SETTINGS.legalPages,
@@ -1540,6 +1570,8 @@ export async function updateSiteSettings(settings: Partial<SiteSettingsData>): P
     if (settings.navigationItems !== undefined) updatePayload.navigationItemsJson = settings.navigationItems;
     if (settings.footerConfig !== undefined) updatePayload.footerConfigJson = settings.footerConfig;
     if (settings.galleryPageConfig !== undefined) updatePayload.galleryPageConfigJson = settings.galleryPageConfig;
+    if (settings.collectionsPageConfig !== undefined) updatePayload.collectionsPageConfigJson = settings.collectionsPageConfig;
+    if (settings.exhibitionsPageConfig !== undefined) updatePayload.exhibitionsPageConfigJson = settings.exhibitionsPageConfig;
     if (settings.aboutPageConfig !== undefined) updatePayload.aboutPageConfigJson = settings.aboutPageConfig;
     if (settings.contactPageConfig !== undefined) updatePayload.contactPageConfigJson = settings.contactPageConfig;
     if (settings.legalPages !== undefined) updatePayload.legalPagesJson = settings.legalPages;

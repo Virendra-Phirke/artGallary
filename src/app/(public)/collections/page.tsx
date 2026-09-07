@@ -2,7 +2,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { getCollections } from "@/db/repository";
+import { getCollections, getSiteSettings } from "@/db/repository";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -18,19 +18,29 @@ import { Button } from "@/components/ui/button";
 import { ProgressiveImage } from "@/components/ui/progressive-image";
 
 export default async function CollectionsPage() {
-  const collections = await getCollections();
+  const [collections, settings] = await Promise.all([
+    getCollections(),
+    getSiteSettings(),
+  ]);
+
+  const cfg = settings.collectionsPageConfig;
+  const eyebrow = cfg?.eyebrow || cfg?.subtitle || "Thematic Bodies of Work";
+  const title = cfg?.title || "Curated Series";
+  const description =
+    cfg?.description ||
+    "Elena Vance groups her artistic inquiries into multi-year cycles. Each series represents a focused exploration of specific pigments, geological binders, and spatial tensions.";
 
   return (
     <div className="max-w-7xl mx-auto px-6 md:px-12 pt-32 pb-24 space-y-16">
       <div className="max-w-2xl space-y-3">
         <span className="text-xs tracking-[0.25em] text-[#d1a86e] uppercase font-medium">
-          Thematic Bodies of Work
+          {eyebrow}
         </span>
         <h1 className="font-serif text-4xl sm:text-5xl text-white">
-          Curated Series
+          {title}
         </h1>
         <p className="text-sm text-[#a6aabf] leading-relaxed">
-          Elena Vance groups her artistic inquiries into multi-year cycles. Each series represents a focused exploration of specific pigments, geological binders, and spatial tensions.
+          {description}
         </p>
       </div>
 

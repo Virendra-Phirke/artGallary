@@ -36,6 +36,9 @@ import {
   MoveUp,
   MoveDown,
   Lock,
+  FolderKanban,
+  Calendar,
+  Home,
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
@@ -47,10 +50,12 @@ import { Separator } from "@/components/ui/separator";
 
 interface SettingsClientProps {
   initialSettings: SiteSettingsData;
+  initialTab?: string;
 }
 
-export function SettingsClient({ initialSettings }: SettingsClientProps) {
+export function SettingsClient({ initialSettings, initialTab = "identity" }: SettingsClientProps) {
   const [settings, setSettings] = useState<SiteSettingsData>(initialSettings);
+  const [activeTab, setActiveTab] = useState<string>(initialTab);
   const [saving, setSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState<"idle" | "success" | "error">("idle");
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -360,23 +365,35 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
 
       {/* Main Multi-Tab Storefront CMS */}
       <form onSubmit={handleSave}>
-        <Tabs defaultValue="identity">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="w-full flex-wrap justify-start gap-1 p-1 bg-[#14151a] border border-[#262833] rounded-xl h-auto">
             <TabsTrigger value="identity" className="gap-1.5 text-xs py-2 px-3">
               <User className="w-3.5 h-3.5" />
               <span>Identity &amp; Brand</span>
             </TabsTrigger>
-            <TabsTrigger value="announcement" className="gap-1.5 text-xs py-2 px-3">
-              <Megaphone className="w-3.5 h-3.5" />
-              <span>Announcement Bar</span>
-            </TabsTrigger>
             <TabsTrigger value="navigation" className="gap-1.5 text-xs py-2 px-3">
               <Compass className="w-3.5 h-3.5" />
               <span>Header &amp; Nav Menu</span>
             </TabsTrigger>
+            <TabsTrigger value="announcement" className="gap-1.5 text-xs py-2 px-3">
+              <Megaphone className="w-3.5 h-3.5" />
+              <span>Announcement Bar</span>
+            </TabsTrigger>
+            <TabsTrigger value="landing" className="gap-1.5 text-xs py-2 px-3">
+              <Home className="w-3.5 h-3.5" />
+              <span>Landing Page</span>
+            </TabsTrigger>
             <TabsTrigger value="gallery" className="gap-1.5 text-xs py-2 px-3">
               <LayoutGrid className="w-3.5 h-3.5" />
               <span>Gallery Catalogue</span>
+            </TabsTrigger>
+            <TabsTrigger value="collections" className="gap-1.5 text-xs py-2 px-3">
+              <FolderKanban className="w-3.5 h-3.5" />
+              <span>Collections Page</span>
+            </TabsTrigger>
+            <TabsTrigger value="exhibitions" className="gap-1.5 text-xs py-2 px-3">
+              <Calendar className="w-3.5 h-3.5" />
+              <span>Exhibitions Page</span>
             </TabsTrigger>
             <TabsTrigger value="about" className="gap-1.5 text-xs py-2 px-3">
               <BookOpen className="w-3.5 h-3.5" />
@@ -758,6 +775,60 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
             </Card>
           </TabsContent>
 
+          {/* TAB: LANDING PAGE & HERO STUDIO */}
+          <TabsContent value="landing" className="pt-4">
+            <Card className="p-6 space-y-6 bg-[#14151a] border-[#262833]">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h3 className="font-serif text-lg text-white mb-1">Customer Landing Page &amp; Hero Studio</h3>
+                  <p className="text-xs text-zinc-400">
+                    The public storefront homepage contains 7 curated sections. Use the Visual Builder for real-time split-screen editing, reordering, custom imagery, and live previewing.
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button asChild className="bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-xs gap-1.5 shadow-md shadow-[#d1a86e]/15">
+                    <Link href="/admin/homepage">
+                      <LayoutGrid className="w-3.5 h-3.5" />
+                      <span>Launch Visual Homepage Builder</span>
+                    </Link>
+                  </Button>
+                  <Button asChild variant="ghost" size="sm" className="text-zinc-400 hover:text-white text-xs gap-1.5">
+                    <Link href="/" target="_blank">
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span>Preview Live Landing Page</span>
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+              <Separator />
+
+              <div className="space-y-3">
+                <span className="text-xs uppercase tracking-wider text-zinc-400 font-semibold block">
+                  Public Storefront Sections (Managed via Visual Studio)
+                </span>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {[
+                    { no: "01", name: "Hero Stage", desc: "Hero canvas, luminous ambient light glow, badge, primary CTA button, and WebAR trigger." },
+                    { no: "02", name: "Featured Artworks", desc: "Curated highlight canvases with responsive layouts (Grid, Masonry, Carousel, Editorial)." },
+                    { no: "03", name: "Latest Series", desc: "Primary active collection highlight with curatorial narrative and direct series exploration." },
+                    { no: "04", name: "Artist Story", desc: "Studio monologue, authentic portrait, and philosophical statement blockquote." },
+                    { no: "05", name: "Spatial WebAR", desc: "Interactive room simulation inviting collectors to project true-scale canvases on physical walls." },
+                    { no: "06", name: "Current Exhibition", desc: "Active or upcoming museum showcase, gallery biennale dates, and location coordinates." },
+                    { no: "07", name: "Acquisitions Desk", desc: "Studio liaison correspondence prompt, response guarantee, and inquiry dispatch." },
+                  ].map((s) => (
+                    <div key={s.name} className="p-4 rounded-xl bg-[#1a1c23] border border-[#262833] space-y-1.5 hover:border-[#d1a86e]/30 transition-colors">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-serif text-white font-medium">{s.name}</span>
+                        <span className="text-[10px] font-mono text-[#d1a86e] font-semibold">{s.no}</span>
+                      </div>
+                      <p className="text-[11px] text-zinc-400 leading-relaxed">{s.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
+
           {/* TAB 4: GALLERY CATALOGUE */}
           <TabsContent value="gallery" className="pt-4">
             <Card className="p-6 space-y-6 bg-[#14151a] border-[#262833]">
@@ -855,6 +926,182 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
                       </label>
                     ))}
                   </div>
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
+
+          {/* TAB: COLLECTIONS / CURATED SERIES PAGE */}
+          <TabsContent value="collections" className="pt-4">
+            <Card className="p-6 space-y-6 bg-[#14151a] border-[#262833]">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h3 className="font-serif text-lg text-white mb-1">Curated Series &amp; Collections Page CMS</h3>
+                  <p className="text-xs text-zinc-400">
+                    Control the public /collections directory header, eyebrow category, and curatorial lead paragraph.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button asChild variant="outline" size="sm" className="border-[#d1a86e]/40 text-[#d1a86e] hover:bg-[#d1a86e]/10 text-xs gap-1.5">
+                    <Link href="/admin/collections">
+                      <FolderKanban className="w-3.5 h-3.5" />
+                      <span>Manage Series Records</span>
+                    </Link>
+                  </Button>
+                  <Button asChild variant="ghost" size="sm" className="text-zinc-400 hover:text-white text-xs gap-1.5">
+                    <Link href="/collections" target="_blank">
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span>Live Page</span>
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+              <Separator />
+
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs uppercase tracking-wider text-zinc-400 font-medium">
+                      Page Headline
+                    </label>
+                    <Input
+                      type="text"
+                      value={settings.collectionsPageConfig?.title || ""}
+                      onChange={(e) =>
+                        setSettings((prev) => ({
+                          ...prev,
+                          collectionsPageConfig: { ...prev.collectionsPageConfig, title: e.target.value },
+                        }))
+                      }
+                      placeholder="e.g., Curated Series"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="block text-xs uppercase tracking-wider text-zinc-400 font-medium">
+                      Eyebrow Badge
+                    </label>
+                    <Input
+                      type="text"
+                      value={settings.collectionsPageConfig?.eyebrow || settings.collectionsPageConfig?.subtitle || ""}
+                      onChange={(e) =>
+                        setSettings((prev) => ({
+                          ...prev,
+                          collectionsPageConfig: {
+                            ...prev.collectionsPageConfig,
+                            eyebrow: e.target.value,
+                            subtitle: e.target.value,
+                          },
+                        }))
+                      }
+                      placeholder="e.g., Thematic Bodies of Work"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-xs uppercase tracking-wider text-zinc-400 font-medium">
+                    Curatorial Lead Description
+                  </label>
+                  <Textarea
+                    rows={4}
+                    value={settings.collectionsPageConfig?.description || ""}
+                    onChange={(e) =>
+                      setSettings((prev) => ({
+                        ...prev,
+                        collectionsPageConfig: { ...prev.collectionsPageConfig, description: e.target.value },
+                      }))
+                    }
+                    placeholder="Describe the thematic scope and materials connecting the artist's series..."
+                  />
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
+
+          {/* TAB: EXHIBITIONS PAGE */}
+          <TabsContent value="exhibitions" className="pt-4">
+            <Card className="p-6 space-y-6 bg-[#14151a] border-[#262833]">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h3 className="font-serif text-lg text-white mb-1">Museum Exhibitions &amp; Retrospectives Page CMS</h3>
+                  <p className="text-xs text-zinc-400">
+                    Control the public /exhibitions directory header, historical record title, and archival summary.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button asChild variant="outline" size="sm" className="border-[#d1a86e]/40 text-[#d1a86e] hover:bg-[#d1a86e]/10 text-xs gap-1.5">
+                    <Link href="/admin/exhibitions">
+                      <Calendar className="w-3.5 h-3.5" />
+                      <span>Manage Exhibitions Records</span>
+                    </Link>
+                  </Button>
+                  <Button asChild variant="ghost" size="sm" className="text-zinc-400 hover:text-white text-xs gap-1.5">
+                    <Link href="/exhibitions" target="_blank">
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span>Live Page</span>
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+              <Separator />
+
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs uppercase tracking-wider text-zinc-400 font-medium">
+                      Page Headline
+                    </label>
+                    <Input
+                      type="text"
+                      value={settings.exhibitionsPageConfig?.title || ""}
+                      onChange={(e) =>
+                        setSettings((prev) => ({
+                          ...prev,
+                          exhibitionsPageConfig: { ...prev.exhibitionsPageConfig, title: e.target.value },
+                        }))
+                      }
+                      placeholder="e.g., Exhibitions"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="block text-xs uppercase tracking-wider text-zinc-400 font-medium">
+                      Eyebrow Badge
+                    </label>
+                    <Input
+                      type="text"
+                      value={settings.exhibitionsPageConfig?.eyebrow || settings.exhibitionsPageConfig?.subtitle || ""}
+                      onChange={(e) =>
+                        setSettings((prev) => ({
+                          ...prev,
+                          exhibitionsPageConfig: {
+                            ...prev.exhibitionsPageConfig,
+                            eyebrow: e.target.value,
+                            subtitle: e.target.value,
+                          },
+                        }))
+                      }
+                      placeholder="e.g., Public & Museum History"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-xs uppercase tracking-wider text-zinc-400 font-medium">
+                    Archival Record Description
+                  </label>
+                  <Textarea
+                    rows={4}
+                    value={settings.exhibitionsPageConfig?.description || ""}
+                    onChange={(e) =>
+                      setSettings((prev) => ({
+                        ...prev,
+                        exhibitionsPageConfig: { ...prev.exhibitionsPageConfig, description: e.target.value },
+                      }))
+                    }
+                    placeholder="Chronological narrative of solo museum exhibitions, biennials, and institutional showcases..."
+                  />
                 </div>
               </div>
             </Card>

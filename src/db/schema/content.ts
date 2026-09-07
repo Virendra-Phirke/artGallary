@@ -107,6 +107,20 @@ export const siteSettings = pgTable("site_settings", {
     };
     defaultSort?: string;
   }>(),
+  collectionsPageConfigJson: jsonb("collections_page_config_json").$type<{
+    title?: string;
+    subtitle?: string;
+    description?: string;
+    coverImageUrl?: string;
+    eyebrow?: string;
+  }>(),
+  exhibitionsPageConfigJson: jsonb("exhibitions_page_config_json").$type<{
+    title?: string;
+    subtitle?: string;
+    description?: string;
+    coverImageUrl?: string;
+    eyebrow?: string;
+  }>(),
   aboutPageConfigJson: jsonb("about_page_config_json").$type<{
     intro?: string;
     bio?: string;

@@ -67,11 +67,11 @@ const navSections: Array<{
     ],
   },
   {
-    title: "COLLECTION & CURATION",
+    title: "CURATION & WORKS",
     items: [
       { label: "Artworks Inventory", href: "/admin/artworks", icon: Palette },
       { label: "Series & Collections", href: "/admin/collections", icon: FolderKanban },
-      { label: "Exhibitions", href: "/admin/exhibitions", icon: Calendar },
+      { label: "Museum Exhibitions", href: "/admin/exhibitions", icon: Calendar },
     ],
   },
   {
@@ -87,8 +87,13 @@ const navSections: Array<{
     ],
   },
   {
-    title: "STUDIO & PRESENCE",
+    title: "STUDIO & STOREFRONT",
     items: [
+      {
+        label: "Landing Page Studio",
+        href: "/admin/homepage",
+        icon: Home,
+      },
       {
         label: "Spatial & QR Studio",
         href: "/admin/ar-studio",
@@ -96,12 +101,7 @@ const navSections: Array<{
         matchPrefixes: ["/admin/qr-codes"],
       },
       {
-        label: "Public Storefront",
-        href: "/admin/homepage",
-        icon: Home,
-      },
-      {
-        label: "Studio Settings",
+        label: "Storefront Settings & CMS",
         href: "/admin/settings",
         icon: Settings,
         matchPrefixes: [
@@ -258,7 +258,11 @@ function AdminSidebarInner({ user, pendingInquiriesCount, children }: AdminSideb
 export function AdminSidebar({ user, pendingInquiriesCount, children }: AdminSidebarProps) {
   return (
     <SidebarProvider>
-      <AdminSidebarInner user={user} pendingInquiriesCount={pendingInquiriesCount}>{children}</AdminSidebarInner>
+      <React.Suspense fallback={null}>
+        <AdminSidebarInner user={user} pendingInquiriesCount={pendingInquiriesCount}>
+          {children}
+        </AdminSidebarInner>
+      </React.Suspense>
     </SidebarProvider>
   );
 }
