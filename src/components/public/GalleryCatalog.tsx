@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ProgressiveImage } from "@/components/ui/progressive-image";
 
 interface GalleryCatalogProps {
   initialArtworks: MockArtwork[];
@@ -215,10 +216,12 @@ export function GalleryCatalog({ initialArtworks, collections }: GalleryCatalogP
             >
               {/* Image Frame */}
               <div className="relative aspect-[4/3] bg-black/40 overflow-hidden">
-                <Image
+                <ProgressiveImage
                   src={art.coverImageUrl}
                   alt={art.altText || art.title}
                   fill
+                  optimizeWidth={800}
+                  optimizeQuality={80}
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />

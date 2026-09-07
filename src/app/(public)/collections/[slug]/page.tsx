@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { getCollectionBySlug, getArtworks } from "@/db/repository";
 import { formatCurrency, formatDimensions } from "@/lib/utils";
 import { Sparkles, Eye, ArrowLeft } from "lucide-react";
+import { ProgressiveImage } from "@/components/ui/progressive-image";
 import type { Metadata } from "next";
 
 interface CollectionSlugProps {
@@ -24,6 +25,8 @@ export async function generateMetadata({
     description: col.description,
   };
 }
+
+export const revalidate = 60; // Cache ISR for 60 seconds
 
 export default async function CollectionDetailPage({ params }: CollectionSlugProps) {
   const { slug } = await params;
@@ -63,10 +66,11 @@ export default async function CollectionDetailPage({ params }: CollectionSlugPro
 
         <div className="lg:col-span-5">
           <div className="relative aspect-[4/3] rounded-xl overflow-hidden border border-[#262833] shadow-2xl">
-            <Image
+            <ProgressiveImage
               src={col.coverImageUrl}
               alt={col.title}
               fill
+              optimizeWidth={1000}
               sizes="(max-width: 1024px) 100vw, 40vw"
               className="object-cover"
             />
@@ -87,10 +91,11 @@ export default async function CollectionDetailPage({ params }: CollectionSlugPro
               className="group flex flex-col bg-[#14151a] border border-[#262833] rounded-xl overflow-hidden"
             >
               <div className="relative aspect-[4/3] bg-black/40">
-                <Image
+                <ProgressiveImage
                   src={art.coverImageUrl}
                   alt={art.altText}
                   fill
+                  optimizeWidth={800}
                   sizes="(max-width: 768px) 100vw, 33vw"
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />

@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { MockArtwork } from "@/db/mockData";
 import { formatCurrency, formatDimensions } from "@/lib/utils";
+import { ProgressiveImage } from "@/components/ui/progressive-image";
 import {
   Table,
   TableHeader,
@@ -201,10 +202,12 @@ export function ArtworksManagerClient({
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <div className="relative w-12 h-10 rounded-lg overflow-hidden bg-black/40 border border-[#262833] shrink-0">
-                        <Image
+                        <ProgressiveImage
                           src={art.coverImageUrl}
                           alt={art.altText || art.title}
                           fill
+                          optimizeWidth={120}
+                          optimizeQuality={75}
                           sizes="48px"
                           className="object-cover transition-transform group-hover:scale-105"
                         />
@@ -383,10 +386,12 @@ export function ArtworksManagerClient({
             <Card key={art.id} className="p-4 bg-[#14151a] space-y-3">
               <div className="flex items-start gap-3">
                 <div className="relative w-16 h-14 rounded-lg overflow-hidden bg-black/40 border border-[#262833] shrink-0">
-                  <Image
+                  <ProgressiveImage
                     src={art.coverImageUrl}
                     alt={art.altText || art.title}
                     fill
+                    optimizeWidth={140}
+                    optimizeQuality={75}
                     sizes="64px"
                     className="object-cover"
                   />

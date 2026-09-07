@@ -9,6 +9,8 @@ export const metadata: Metadata = {
     "Explore the complete collection of fine contemporary paintings by Elena Vance. Available for private collection acquisition with true-scale WebAR previews.",
 };
 
+export const revalidate = 60; // Cache ISR for 60 seconds
+
 export default async function GalleryPage() {
   const [artworks, collections] = await Promise.all([
     getArtworks(),

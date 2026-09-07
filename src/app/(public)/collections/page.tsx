@@ -11,8 +11,11 @@ export const metadata: Metadata = {
     "Explore the distinct thematic series of paintings by Elena Vance, including Chromatic Solitude and Ephemeral Terrains.",
 };
 
+export const revalidate = 60; // Cache ISR for 60 seconds
+
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { ProgressiveImage } from "@/components/ui/progressive-image";
 
 export default async function CollectionsPage() {
   const collections = await getCollections();
@@ -39,10 +42,11 @@ export default async function CollectionsPage() {
           >
             <div className={`lg:col-span-6 ${idx % 2 === 1 ? "lg:order-2" : ""}`}>
               <div className="relative aspect-[16/10] rounded-xl overflow-hidden bg-black/40 border border-[#262833]">
-                <Image
+                <ProgressiveImage
                   src={col.coverImageUrl}
                   alt={col.title}
                   fill
+                  optimizeWidth={1000}
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover"
                 />

@@ -11,9 +11,12 @@ export const metadata: Metadata = {
     "Current, upcoming, and archival solo and group exhibitions of Elena Vance's contemporary oil and mineral works.",
 };
 
+export const revalidate = 60; // Cache ISR for 60 seconds
+
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ProgressiveImage } from "@/components/ui/progressive-image";
 
 export default async function ExhibitionsPage() {
   const exhibitions = await getExhibitions();
@@ -40,10 +43,11 @@ export default async function ExhibitionsPage() {
           >
             <div className="lg:col-span-5">
               <div className="relative aspect-[16/10] rounded-xl overflow-hidden bg-black/40 border border-[#262833]">
-                <Image
+                <ProgressiveImage
                   src={exh.coverImageUrl}
                   alt={exh.title}
                   fill
+                  optimizeWidth={1000}
                   sizes="(max-width: 1024px) 100vw, 40vw"
                   className="object-cover"
                 />

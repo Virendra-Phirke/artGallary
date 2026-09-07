@@ -29,6 +29,8 @@ export async function generateMetadata({
   };
 }
 
+export const revalidate = 60; // Cache ISR for 60 seconds
+
 export default async function ArtworkPage({ params }: ArtworkPageProps) {
   const { slug } = await params;
   const artwork = await getArtworkBySlug(slug);

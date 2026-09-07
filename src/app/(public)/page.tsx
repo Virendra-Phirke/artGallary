@@ -19,6 +19,7 @@ import {
 import { formatCurrency, formatDimensions } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ProgressiveImage } from "@/components/ui/progressive-image";
 
 export const revalidate = 60; // ISR revalidation every 60s
 
@@ -128,11 +129,13 @@ export default async function HomePage() {
                   <div className="lg:col-span-6 relative flex justify-center z-10">
                     <div className="relative group w-full max-w-lg">
                       <div className="relative aspect-[4/3] rounded-lg overflow-hidden border border-[#262833] bg-[#14151a] shadow-2xl shadow-black/80">
-                        <Image
+                        <ProgressiveImage
                           src={heroImageUrl}
                           alt={heroArtwork?.altText || title}
                           fill
                           priority
+                          optimizeWidth={1200}
+                          optimizeQuality={85}
                           sizes="(max-width: 768px) 100vw, 50vw"
                           className="object-cover transition-transform duration-700 group-hover:scale-105"
                         />
@@ -203,10 +206,12 @@ export default async function HomePage() {
                 {artworks.slice(0, 6).map((art) => (
                   <div key={art.id} className="group flex flex-col space-y-4">
                     <div className="relative aspect-[4/3] rounded-lg overflow-hidden bg-[#14151a] border border-[#262833]">
-                      <Image
+                      <ProgressiveImage
                         src={art.coverImageUrl}
                         alt={art.altText}
                         fill
+                        optimizeWidth={800}
+                        optimizeQuality={80}
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
@@ -305,10 +310,12 @@ export default async function HomePage() {
                 {colImage && (
                   <div className="lg:col-span-7 relative">
                     <div className="relative aspect-[16/10] rounded-lg overflow-hidden border border-[#262833] shadow-2xl">
-                      <Image
+                      <ProgressiveImage
                         src={colImage}
                         alt={sec.title || featuredCollection?.title || "Featured Collection"}
                         fill
+                        optimizeWidth={1200}
+                        optimizeQuality={80}
                         sizes="(max-width: 1024px) 100vw, 60vw"
                         className="object-cover"
                       />
@@ -360,10 +367,12 @@ export default async function HomePage() {
 
                 {arCustomImage && (
                   <div className="mt-8 relative aspect-[21/9] rounded-xl overflow-hidden border border-[#262833] shadow-2xl">
-                    <Image
+                    <ProgressiveImage
                       src={arCustomImage}
                       alt="AR spatial preview"
                       fill
+                      optimizeWidth={1200}
+                      optimizeQuality={80}
                       sizes="(max-width: 1024px) 100vw, 1000px"
                       className="object-cover"
                     />
@@ -391,10 +400,12 @@ export default async function HomePage() {
 
               {storyImageUrl && (
                 <div className="relative aspect-[16/9] max-w-xl mx-auto rounded-xl overflow-hidden border border-[#262833] shadow-2xl">
-                  <Image
+                  <ProgressiveImage
                     src={storyImageUrl}
                     alt="Artist Atelier"
                     fill
+                    optimizeWidth={800}
+                    optimizeQuality={80}
                     sizes="(max-width: 768px) 100vw, 600px"
                     className="object-cover"
                   />
@@ -427,10 +438,12 @@ export default async function HomePage() {
                 {exhImageUrl && (
                   <div className="lg:col-span-7">
                     <div className="relative aspect-[16/9] rounded-lg overflow-hidden border border-[#262833]">
-                      <Image
+                      <ProgressiveImage
                         src={exhImageUrl}
                         alt={sec.title || currentExhibition?.title || "Exhibition"}
                         fill
+                        optimizeWidth={1200}
+                        optimizeQuality={80}
                         sizes="(max-width: 1024px) 100vw, 60vw"
                         className="object-cover"
                       />

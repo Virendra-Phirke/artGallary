@@ -22,6 +22,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { ProgressiveImage } from "@/components/ui/progressive-image";
 
 interface ArtworkDetailClientProps {
   artwork: MockArtwork;
@@ -76,11 +77,13 @@ export function ArtworkDetailClient({
         {/* Left Column: High-Res Imagery & Thumbnails (7 Cols) */}
         <div className="lg:col-span-7 space-y-4">
           <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-[#14151a] border border-[#262833] shadow-2xl">
-            <Image
+            <ProgressiveImage
               src={selectedImage}
               alt={artwork.altText || artwork.title}
               fill
               priority
+              optimizeWidth={1600}
+              optimizeQuality={85}
               sizes="(max-width: 1024px) 100vw, 60vw"
               className="object-cover"
             />
@@ -115,10 +118,11 @@ export function ArtworkDetailClient({
                       : "border-[#262833] opacity-60 hover:opacity-100"
                   }`}
                 >
-                  <Image
+                  <ProgressiveImage
                     src={img}
                     alt={`Thumbnail ${idx + 1}`}
                     fill
+                    optimizeWidth={200}
                     sizes="80px"
                     className="object-cover"
                   />
@@ -254,10 +258,11 @@ export function ArtworkDetailClient({
               >
                 <Link href={`/artwork/${rel.slug}`} className="block">
                   <div className="relative aspect-[4/3] bg-black/40 overflow-hidden">
-                    <Image
+                    <ProgressiveImage
                       src={rel.coverImageUrl}
                       alt={rel.altText || rel.title}
                       fill
+                      optimizeWidth={800}
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
