@@ -1,15 +1,29 @@
 import React from "react";
 import { ContactForm } from "@/components/public/ContactForm";
-import { MapPin, Mail, Phone, Clock, ShieldCheck } from "lucide-react";
+import { MapPin, Mail, Phone, Clock, ShieldCheck, MessageCircle } from "lucide-react";
+import { getSiteSettings } from "@/db/repository";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Contact & Acquisitions | Elena Vance Studio",
+  title: "Contact & Acquisitions | Curatorial Studio Office",
   description:
-    "Direct contact with Elena Vance's Paris and Brittany studio offices for private acquisitions, museum loans, and curatorial correspondence.",
+    "Direct contact with the studio office for private acquisitions, museum loans, and curatorial correspondence.",
 };
 
-export default function ContactPage() {
+export const revalidate = 60;
+
+export default async function ContactPage() {
+  const settings = await getSiteSettings();
+  const cfg = settings.contactPageConfig;
+  const title = cfg.title || "Inquiries & Acquisitions";
+  const description =
+    cfg.description ||
+    "For private acquisitions, curatorial loan requests, and press access, please correspond using our studio liaison desk.";
+  const recipientEmail = cfg.recipientEmail || settings.contactEmail;
+  const phone = settings.phone || "+33 (0)1 42 68 55 00";
+  const address = settings.address || "14 Rue de Beaune, 7th Arrondissement, 75007 Paris, France";
+  const hours = settings.businessHours || "Tuesday – Saturday, 10:00 – 18:00 CET (By Appointment)";
+
   return (
     <div className="max-w-7xl mx-auto px-6 md:px-12 pt-32 pb-24 space-y-16">
       <div className="max-w-2xl space-y-3">
@@ -17,10 +31,10 @@ export default function ContactPage() {
           Studio Liaison
         </span>
         <h1 className="font-serif text-4xl sm:text-5xl text-white">
-          Inquiries &amp; Acquisitions
+          {title}
         </h1>
         <p className="text-sm text-[#a6aabf] leading-relaxed">
-          For private acquisitions, curatorial loan requests, and press access, please correspond using the encrypted form below or contact our curatorial office directly.
+          {description}
         </p>
       </div>
 
@@ -43,32 +57,46 @@ export default function ContactPage() {
                     Curatorial Email
                   </span>
                   <a
-                    href="mailto:curator@latelier-lumineux.art"
+                    href={`mailto:${recipientEmail}`}
                     className="text-white hover:text-[#d1a86e] transition-colors"
                   >
-                    curator@latelier-lumineux.art
+                    {recipientEmail}
                   </a>
                 </div>
               </div>
 
-              <div className="flex items-start gap-3">
-                <Phone className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5" />
-                <div>
-                  <span className="text-zinc-500 uppercase tracking-wider block">
-                    Studio Desk
-                  </span>
-                  <span className="text-white">+33 (0)1 42 68 55 00</span>
+              {phone && (
+                <div className="flex items-start gap-3">
+                  <Phone className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5" />
+                  <div>
+                    <span className="text-zinc-500 uppercase tracking-wider block">
+                      Studio Desk
+                    </span>
+                    <span className="text-white">{phone}</span>
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {settings.whatsapp && (
+                <div className="flex items-start gap-3">
+                  <MessageCircle className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5" />
+                  <div>
+                    <span className="text-zinc-500 uppercase tracking-wider block">
+                      WhatsApp Liaison
+                    </span>
+                    <span className="text-white">{settings.whatsapp}</span>
+                  </div>
+                </div>
+              )}
 
               <div className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5" />
                 <div>
                   <span className="text-zinc-500 uppercase tracking-wider block">
-                    Paris Atelier (By Appointment)
+                    Atelier &amp; Private Gallery
                   </span>
                   <span className="text-white">
-                    4 Rue des Petits-Champs, 75001 Paris, France
+                    {address}
                   </span>
                 </div>
               </div>
@@ -80,7 +108,7 @@ export default function ContactPage() {
                     Studio Hours
                   </span>
                   <span className="text-white">
-                    Tuesday – Saturday, 10:00 – 18:00 CET
+                    {hours}
                   </span>
                 </div>
               </div>
@@ -94,7 +122,7 @@ export default function ContactPage() {
               <span>Confidentiality Protocol</span>
             </div>
             <p className="leading-relaxed">
-              All collector inquiries, institutional loans, and client identities are maintained under strict non-disclosure conventions.
+              All collector inquiries, institutional loans, and client identities are maintained under strict non-disclosure conventions. Authenticated certificates of authenticity accompany all acquisitions.
             </p>
           </div>
         </div>

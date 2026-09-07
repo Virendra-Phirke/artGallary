@@ -32,6 +32,8 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
+import { SiteSettingsData } from "@/db/repository";
+
 interface UserSession {
   id: string;
   name: string;
@@ -39,7 +41,11 @@ interface UserSession {
   role: "USER" | "ADMIN";
 }
 
-export function Header() {
+interface HeaderProps {
+  settings?: SiteSettingsData;
+}
+
+export function Header({ settings }: HeaderProps) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<UserSession | null>(null);
@@ -69,13 +75,22 @@ export function Header() {
     window.location.reload();
   };
 
-  const navLinks = [
-    { label: "Gallery", href: "/gallery" },
-    { label: "Collections", href: "/collections" },
-    { label: "Exhibitions", href: "/exhibitions" },
-    { label: "About", href: "/about" },
-    { label: "Contact", href: "/contact" },
-  ];
+  const navLinks = settings?.navigationItems
+    ? settings.navigationItems.filter((i) => i.isEnabled).sort((a, b) => a.order - b.order)
+    : [
+        { label: "Gallery", href: "/gallery" },
+        { label: "Collections", href: "/collections" },
+        { label: "Exhibitions", href: "/exhibitions" },
+        { label: "About", href: "/about" },
+        { label: "Contact", href: "/contact" },
+      ];
+
+  const brandTitle = settings?.siteTitle || "L'Atelier Lumineux";
+  const brandSubtitle = settings?.shortBrandName
+    ? `${settings.shortBrandName} Studio`
+    : settings?.artistName
+    ? `${settings.artistName} Studio`
+    : "Elena Vance Studio";
 
   return (
     <header
@@ -91,12 +106,18 @@ export function Header() {
           href="/"
           className="group flex flex-col items-start focus-visible:outline-none"
         >
-          <span className="font-serif text-lg sm:text-xl md:text-2xl tracking-[0.2em] font-medium text-white group-hover:text-[#d1a86e] transition-colors uppercase">
-            L&apos;Atelier Lumineux
-          </span>
-          <span className="text-[9px] sm:text-[10px] tracking-[0.3em] text-[#8e92a4] uppercase font-light -mt-0.5">
-            Elena Vance Studio
-          </span>
+          {settings?.headerConfig?.logoType === "image" && settings.logoUrl ? (
+            <img src={settings.logoUrl} alt={brandTitle} className="h-8 w-auto object-contain" />
+          ) : (
+            <>
+              <span className="font-serif text-lg sm:text-xl md:text-2xl tracking-[0.2em] font-medium text-white group-hover:text-[#d1a86e] transition-colors uppercase">
+                {brandTitle}
+              </span>
+              <span className="text-[9px] sm:text-[10px] tracking-[0.3em] text-[#8e92a4] uppercase font-light -mt-0.5">
+                {brandSubtitle}
+              </span>
+            </>
+          )}
         </Link>
 
         {/* Desktop Navigation */}
@@ -126,12 +147,21 @@ export function Header() {
 
         {/* Right Desktop CTA & Auth Dropdown */}
         <div className="hidden md:flex items-center space-x-4">
-          <Button asChild variant="outline" size="sm" className="rounded-full h-8 px-3.5 border-[#d1a86e]/40 hover:border-[#d1a86e] hover:bg-[#d1a86e]/10 text-[#d1a86e]">
-            <Link href="/gallery">
-              <Sparkles className="w-3.5 h-3.5 mr-1" />
-              <span>AR Preview</span>
-            </Link>
-          </Button>
+          {settings?.headerConfig?.showCta ? (
+            <Button asChild variant="outline" size="sm" className="rounded-full h-8 px-3.5 border-[#d1a86e]/40 hover:border-[#d1a86e] hover:bg-[#d1a86e]/10 text-[#d1a86e]">
+              <Link href={settings.headerConfig.ctaUrl || "/contact"}>
+                <Sparkles className="w-3.5 h-3.5 mr-1" />
+                <span>{settings.headerConfig.ctaLabel || "Inquire"}</span>
+              </Link>
+            </Button>
+          ) : (
+            <Button asChild variant="outline" size="sm" className="rounded-full h-8 px-3.5 border-[#d1a86e]/40 hover:border-[#d1a86e] hover:bg-[#d1a86e]/10 text-[#d1a86e]">
+              <Link href="/gallery">
+                <Sparkles className="w-3.5 h-3.5 mr-1" />
+                <span>AR Preview</span>
+              </Link>
+            </Button>
+          )}
 
           {user ? (
             <DropdownMenu>
@@ -234,10 +264,10 @@ export function Header() {
               <div className="space-y-6">
                 <SheetHeader className="text-left border-b border-[#1c1d25] pb-4">
                   <SheetTitle className="font-serif text-xl tracking-[0.15em] text-white uppercase font-light">
-                    L&apos;Atelier Lumineux
+                    {brandTitle}
                   </SheetTitle>
                   <span className="text-[9px] tracking-[0.3em] text-[#d1a86e] uppercase font-semibold">
-                    Elena Vance Studio
+                    {brandSubtitle}
                   </span>
                 </SheetHeader>
 
