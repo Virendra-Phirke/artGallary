@@ -4,44 +4,15 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  SidebarProvider,
-  Sidebar,
-  SidebarTrigger,
-  SidebarHeader,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarInset,
-  useSidebar,
-} from "@/components/ui/sidebar";
-import {
-  LayoutDashboard,
-  Palette,
-  FolderKanban,
-  Calendar,
-  Home,
-  Sparkles,
-  QrCode,
-  Paintbrush,
-  Accessibility,
-  Image as ImageIcon,
-  Mail,
-  BarChart3,
-  Search,
-  Activity,
-  Settings,
   ExternalLink,
   Shield,
-  LogOut,
+  Sparkles,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { AdminVerticalDock } from "@/components/admin/AdminVerticalDock";
 
-interface AdminSidebarProps {
+export interface AdminSidebarProps {
   user: {
     name: string;
     email: string;
@@ -51,238 +22,120 @@ interface AdminSidebarProps {
   children: React.ReactNode;
 }
 
-const navSections: Array<{
-  title: string;
-  items: Array<{
-    label: string;
-    href: string;
-    icon: any;
-    matchPrefixes?: string[];
-    showBadge?: boolean;
-  }>;
-}> = [
-  {
-    title: "DESK",
-    items: [
-      { label: "Overview", href: "/admin/dashboard", icon: LayoutDashboard },
-    ],
-  },
-  {
-    title: "CURATION & WORKS",
-    items: [
-      { label: "Artworks Inventory", href: "/admin/artworks", icon: Palette },
-      { label: "Series & Collections", href: "/admin/collections", icon: FolderKanban },
-      { label: "Museum Exhibitions", href: "/admin/exhibitions", icon: Calendar },
-    ],
-  },
-  {
-    title: "CLIENTELE",
-    items: [
-      {
-        label: "Collector Inquiries",
-        href: "/admin/inquiries",
-        icon: Mail,
-        matchPrefixes: ["/admin/analytics"],
-        showBadge: true,
-      },
-    ],
-  },
-  {
-    title: "STUDIO & STOREFRONT",
-    items: [
-      {
-        label: "Landing Page Studio",
-        href: "/admin/homepage",
-        icon: Home,
-      },
-      {
-        label: "Spatial & QR Studio",
-        href: "/admin/ar-studio",
-        icon: Sparkles,
-        matchPrefixes: ["/admin/qr-codes"],
-      },
-      {
-        label: "Storefront Settings & CMS",
-        href: "/admin/settings",
-        icon: Settings,
-        matchPrefixes: [
-          "/admin/appearance",
-          "/admin/accessibility",
-          "/admin/seo",
-          "/admin/activity",
-          "/admin/media",
-        ],
-      },
-    ],
-  },
-];
+const routeTitles: Record<string, string> = {
+  "/admin/dashboard": "Curator Executive Overview",
+  "/admin/artworks": "Artworks Inventory Management",
+  "/admin/collections": "Curated Series & Collections",
+  "/admin/exhibitions": "Museum & Gallery Exhibitions",
+  "/admin/inquiries": "Collector Inquiries & Acquisitions",
+  "/admin/homepage": "Landing Page Visual Studio",
+  "/admin/ar-studio": "Spatial Augmented Reality Studio",
+  "/admin/settings": "Storefront Settings & CMS Configuration",
+};
 
-function AdminSidebarInner({ user, pendingInquiriesCount, children }: AdminSidebarProps) {
+export function AdminSidebar({
+  user,
+  pendingInquiriesCount = 0,
+  children,
+}: AdminSidebarProps) {
   const pathname = usePathname();
-  const { state, setOpen } = useSidebar();
   const isStudio = pathname === "/admin/homepage";
 
-  // When opening Landing Page Studio, automatically collapse sidebar to give 100% screen!
-  React.useEffect(() => {
-    if (isStudio) {
-      setOpen(false);
-    }
-  }, [isStudio, setOpen]);
+  // Determine current section title
+  const currentTitle =
+    Object.entries(routeTitles).find(([prefix]) =>
+      pathname === prefix || (prefix !== "/admin/dashboard" && pathname?.startsWith(prefix))
+    )?.[1] || "Curator Administration Workspace";
 
   return (
-    <>
-      <Sidebar collapsible={isStudio ? "offcanvas" : "icon"}>
-        {/* Brand Header */}
-        <SidebarHeader>
-          <div className="flex items-center justify-between">
+    <div className="flex h-screen w-screen overflow-hidden bg-[#0d0e12] text-[#f4f4f6]">
+      {/* Magic UI Vertical Dock (Left side, reveals on hover or left-edge proximity) */}
+      <AdminVerticalDock
+        user={user}
+        pendingInquiriesCount={pendingInquiriesCount}
+      />
+
+      {/* 100% Full Width Workspace Container */}
+      <div className="flex flex-col flex-1 min-w-0 h-full overflow-hidden">
+        {/* Top Header Bar */}
+        <header
+          className={cn(
+            "shrink-0 border-b border-[#1c1d25] flex items-center justify-between bg-[#0b0c0f]/80 backdrop-blur-md z-30 transition-all duration-200",
+            isStudio ? "h-12 px-4 md:px-6" : "h-14 px-6 md:px-10"
+          )}
+        >
+          {/* Left: Studio Monogram + Current Section Breadcrumb */}
+          <div className="flex items-center gap-3">
             <Link
               href="/admin/dashboard"
-              className="flex flex-col overflow-hidden transition-all"
+              className="flex items-center gap-2 group"
+              title="Return to Dashboard Overview"
             >
-              <span className="font-serif text-base font-semibold tracking-[0.15em] text-white uppercase truncate">
-                {state === "collapsed" ? "LA" : "L'Atelier"}
+              <span className="font-serif text-sm font-bold tracking-[0.18em] text-white uppercase group-hover:text-[#d1a86e] transition-colors">
+                L&apos;Atelier
               </span>
-              {state !== "collapsed" && (
-                <span className="text-[9px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
-                  Studio Console
-                </span>
-              )}
+              <span className="text-[9px] tracking-[0.2em] text-[#d1a86e] uppercase font-semibold hidden sm:inline px-1.5 py-0.5 rounded bg-[#d1a86e]/10 border border-[#d1a86e]/20">
+                Studio
+              </span>
             </Link>
-            {state !== "collapsed" && (
-              <Badge variant="warning" className="text-[9px] font-mono font-bold">
-                ADMIN
-              </Badge>
-            )}
-          </div>
-        </SidebarHeader>
 
-        {/* Content Navigation */}
-        <SidebarContent>
-          {navSections.map((group) => (
-            <SidebarGroup key={group.title}>
-              <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
-              <SidebarMenu>
-                {group.items.map((item) => {
-                  const Icon = item.icon;
-                  const isActive =
-                    pathname === item.href ||
-                    (item.href !== "/admin/dashboard" && pathname?.startsWith(item.href)) ||
-                    Boolean(item.matchPrefixes?.some((p) => pathname?.startsWith(p)));
+            <span className="text-zinc-600">/</span>
 
-                  return (
-                    <SidebarMenuItem key={item.href}>
-                      <SidebarMenuButton
-                        asChild
-                        isActive={isActive}
-                        tooltip={item.label}
-                      >
-                        <Link href={item.href} className="flex items-center justify-between w-full">
-                          <div className="flex items-center gap-2.5 min-w-0">
-                            <Icon className="w-4 h-4 shrink-0 text-[#d1a86e]" />
-                            {state !== "collapsed" && <span className="truncate">{item.label}</span>}
-                          </div>
-                          {state !== "collapsed" && item.showBadge && typeof pendingInquiriesCount === "number" && pendingInquiriesCount > 0 && (
-                            <Badge variant="warning" className="text-[9px] px-1.5 py-0 h-4 font-mono font-bold shrink-0">
-                              {pendingInquiriesCount}
-                            </Badge>
-                          )}
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  );
-                })}
-              </SidebarMenu>
-            </SidebarGroup>
-          ))}
-        </SidebarContent>
-
-        {/* Footer */}
-        <SidebarFooter>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5 overflow-hidden">
-              <div className="w-7 h-7 rounded-full bg-[#1a1c23] border border-[#262833] flex items-center justify-center text-xs font-serif text-[#d1a86e] shrink-0 font-semibold">
-                {user.name?.[0] || "A"}
-              </div>
-              {state !== "collapsed" && (
-                <div className="flex flex-col truncate">
-                  <span className="text-xs text-white font-medium truncate">
-                    {user.name}
-                  </span>
-                  <span className="text-[10px] text-zinc-500 truncate">
-                    {user.email}
-                  </span>
-                </div>
-              )}
-            </div>
-
-            {state !== "collapsed" && (
-              <Link
-                href="/"
-                target="_blank"
-                className="p-1.5 text-zinc-500 hover:text-white transition-colors"
-                title="View live public gallery"
-              >
-                <ExternalLink className="w-3.5 h-3.5" />
-              </Link>
-            )}
-          </div>
-        </SidebarFooter>
-      </Sidebar>
-
-      {/* Main Workspace Inset */}
-      <SidebarInset>
-        {/* Top Header Bar with SidebarTrigger */}
-        <header className={cn(
-          "shrink-0 border-b border-[#1c1d25] flex items-center justify-between bg-[#0f1013]/80 backdrop-blur-md z-30 transition-all",
-          isStudio ? "h-13 px-4 md:px-6" : "h-16 px-6 md:px-10"
-        )}>
-          <div className="flex items-center gap-3">
-            <SidebarTrigger />
-            <div className="flex items-center gap-2 text-xs text-zinc-400">
-              <Shield className="w-4 h-4 text-[#d1a86e]" />
-              <span className="hidden sm:inline">
-                {isStudio ? "Storefront Studio" : "Curator Administration Workspace"}
+            <div className="flex items-center gap-2 text-xs text-zinc-300">
+              <span className="font-medium truncate max-w-[200px] sm:max-w-none">
+                {currentTitle}
               </span>
               {isStudio && (
-                <Badge variant="outline" className="text-[10px] text-[#d1a86e] border-[#d1a86e]/30 font-mono py-0 h-4 hidden md:inline-flex">
-                  100% Full Screen
+                <Badge
+                  variant="outline"
+                  className="text-[10px] text-[#d1a86e] border-[#d1a86e]/30 font-mono py-0 h-4 hidden md:inline-flex items-center gap-1"
+                >
+                  <Sparkles className="w-2.5 h-2.5" />
+                  100% Canvas Mode
                 </Badge>
               )}
             </div>
           </div>
 
+          {/* Right: Quick actions */}
           <div className="flex items-center gap-4">
+            {/* Quick left edge dock hover hint */}
+            <div className="hidden lg:flex items-center gap-1.5 text-[11px] text-zinc-500 font-mono">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#d1a86e]/60 animate-pulse" />
+              <span>Hover left edge for dock</span>
+            </div>
+
             <Link
               href="/gallery"
               target="_blank"
-              className="flex items-center gap-1.5 text-xs text-zinc-400 hover:text-white transition-colors"
+              className="flex items-center gap-1.5 text-xs text-zinc-400 hover:text-[#d1a86e] transition-colors py-1 px-2.5 rounded-md hover:bg-[#16171e]"
+              title="Open public gallery in new tab"
             >
-              <span>View Public Gallery</span>
-              <ExternalLink className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">View Live Store</span>
+              <ExternalLink className="w-3.5 h-3.5 text-[#d1a86e]" />
             </Link>
+
+            <div className="hidden sm:flex items-center gap-2 pl-2 border-l border-[#262833]">
+              <div className="w-6 h-6 rounded-full bg-[#181a22] border border-[#262833] flex items-center justify-center text-[10px] font-serif text-[#d1a86e] font-semibold">
+                {user.name?.[0] || "C"}
+              </div>
+              <span className="text-xs text-zinc-400 truncate max-w-[100px]">
+                {user.name}
+              </span>
+            </div>
           </div>
         </header>
 
-        {/* Dynamic Route Children - Separate Independent Scroll Container */}
-        <main className={cn(
-          "flex-1 min-h-0 overflow-y-auto overscroll-contain transition-all",
-          isStudio ? "p-3 sm:p-4 md:p-5" : "p-6 md:p-10"
-        )}>
+        {/* Dynamic Route Children - 100% Full Width Scroll Container */}
+        <main
+          className={cn(
+            "flex-1 min-h-0 overflow-y-auto overscroll-contain transition-all",
+            isStudio ? "p-3 sm:p-4 md:p-5" : "p-6 md:p-10"
+          )}
+        >
           {children}
         </main>
-      </SidebarInset>
-    </>
-  );
-}
-
-export function AdminSidebar({ user, pendingInquiriesCount, children }: AdminSidebarProps) {
-  return (
-    <SidebarProvider>
-      <React.Suspense fallback={null}>
-        <AdminSidebarInner user={user} pendingInquiriesCount={pendingInquiriesCount}>
-          {children}
-        </AdminSidebarInner>
-      </React.Suspense>
-    </SidebarProvider>
+      </div>
+    </div>
   );
 }
