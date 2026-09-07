@@ -19,6 +19,7 @@ export * from "./content";
 export * from "./inquiries";
 export * from "./subscribers";
 export * from "./emails";
+export * from "./campaigns";
 
 // Relations
 export const artworksRelations = relations(artworks, ({ one, many }) => ({

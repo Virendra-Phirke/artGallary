@@ -1581,6 +1581,41 @@ export async function getInquiries(): Promise<MockInquiry[]> {
   }
 }
 
+export async function getInquiryById(id: string): Promise<MockInquiry | null> {
+  const db = getDb();
+  if (!db) return null;
+
+  try {
+    const rows = await db
+      .select({
+        inquiry: schema.inquiries,
+        artworkTitle: schema.artworks.title,
+      })
+      .from(schema.inquiries)
+      .leftJoin(schema.artworks, eq(schema.artworks.id, schema.inquiries.artworkId))
+      .where(eq(schema.inquiries.id, id))
+      .limit(1);
+
+    if (rows.length === 0) return null;
+    const r = rows[0];
+    return {
+      id: r.inquiry.id,
+      artworkId: r.inquiry.artworkId || undefined,
+      artworkTitle: r.artworkTitle || undefined,
+      name: r.inquiry.name,
+      email: r.inquiry.email,
+      phone: r.inquiry.phone || undefined,
+      subject: r.inquiry.subject,
+      message: r.inquiry.message,
+      status: r.inquiry.status as any,
+      createdAt: r.inquiry.createdAt.toISOString(),
+    };
+  } catch (e) {
+    console.error("Database getInquiryById failed:", e);
+    return null;
+  }
+}
+
 export async function createInquiry(data: {
   userId?: string;
   artworkId?: string;
@@ -2170,7 +2205,12 @@ export async function recordSentEmail(data: schema.NewSentEmail): Promise<void> 
   const db = getDb();
   if (!db) return;
   try {
-    await db.insert(schema.sentEmails).values(data);
+    const cleanData = {
+      ...data,
+      artworkId: data.artworkId && isUuid(data.artworkId) ? data.artworkId : null,
+      inquiryId: data.inquiryId && isUuid(data.inquiryId) ? data.inquiryId : null,
+    };
+    await db.insert(schema.sentEmails).values(cleanData);
   } catch (e) {
     console.warn("Failed to record sent email log:", e);
   }
@@ -2205,5 +2245,220 @@ export async function getSentEmails(limit = 100): Promise<SentEmailRecord[]> {
     return [];
   }
 }
+
+// -----------------------------------------------------------------------------
+// Upstash QStash & Campaign State Management
+// -----------------------------------------------------------------------------
+
+export async function createCampaign(
+  data: schema.NewEmailCampaign
+): Promise<schema.EmailCampaign | null> {
+  const db = getDb();
+  if (!db) return null;
+  try {
+    const [inserted] = await db
+      .insert(schema.emailCampaigns)
+      .values(data)
+      .returning();
+    return inserted || null;
+  } catch (e) {
+    console.error("Database createCampaign failed:", e);
+    return null;
+  }
+}
+
+export async function getCampaignById(
+  id: string
+): Promise<schema.EmailCampaign | null> {
+  const db = getDb();
+  if (!db) return null;
+  try {
+    const [campaign] = await db
+      .select()
+      .from(schema.emailCampaigns)
+      .where(eq(schema.emailCampaigns.id, id))
+      .limit(1);
+    return campaign || null;
+  } catch (e) {
+    console.error("Database getCampaignById failed:", e);
+    return null;
+  }
+}
+
+export async function getAllCampaigns(
+  limit = 50
+): Promise<schema.EmailCampaign[]> {
+  const db = getDb();
+  if (!db) return [];
+  try {
+    return await db
+      .select()
+      .from(schema.emailCampaigns)
+      .orderBy(desc(schema.emailCampaigns.createdAt))
+      .limit(limit);
+  } catch (e) {
+    console.error("Database getAllCampaigns failed:", e);
+    return [];
+  }
+}
+
+export async function updateCampaign(
+  id: string,
+  data: Partial<schema.NewEmailCampaign>
+): Promise<boolean> {
+  const db = getDb();
+  if (!db) return false;
+  try {
+    await db
+      .update(schema.emailCampaigns)
+      .set({
+        ...data,
+        updatedAt: new Date(),
+      })
+      .where(eq(schema.emailCampaigns.id, id));
+    return true;
+  } catch (e) {
+    console.error("Database updateCampaign failed:", e);
+    return false;
+  }
+}
+
+export async function deleteCampaign(id: string): Promise<boolean> {
+  const db = getDb();
+  if (!db) return false;
+  try {
+    await db
+      .delete(schema.emailCampaigns)
+      .where(eq(schema.emailCampaigns.id, id));
+    return true;
+  } catch (e) {
+    console.error("Database deleteCampaign failed:", e);
+    return false;
+  }
+}
+
+export async function createEmailJobs(
+  jobs: schema.NewEmailJob[]
+): Promise<schema.EmailJob[]> {
+  const db = getDb();
+  if (!db || jobs.length === 0) return [];
+  try {
+    // Insert and ignore conflicts on (campaign_id, recipient_email, job_type)
+    const inserted = await db
+      .insert(schema.emailJobs)
+      .values(jobs)
+      .onConflictDoNothing()
+      .returning();
+    return inserted;
+  } catch (e) {
+    console.error("Database createEmailJobs failed:", e);
+    return [];
+  }
+}
+
+export async function getEmailJobById(
+  id: string
+): Promise<schema.EmailJob | null> {
+  const db = getDb();
+  if (!db) return null;
+  try {
+    const [job] = await db
+      .select()
+      .from(schema.emailJobs)
+      .where(eq(schema.emailJobs.id, id))
+      .limit(1);
+    return job || null;
+  } catch (e) {
+    console.error("Database getEmailJobById failed:", e);
+    return null;
+  }
+}
+
+export async function updateEmailJob(
+  id: string,
+  data: Partial<schema.NewEmailJob>
+): Promise<boolean> {
+  const db = getDb();
+  if (!db) return false;
+  try {
+    await db
+      .update(schema.emailJobs)
+      .set({
+        ...data,
+        updatedAt: new Date(),
+      })
+      .where(eq(schema.emailJobs.id, id));
+    return true;
+  } catch (e) {
+    console.error("Database updateEmailJob failed:", e);
+    return false;
+  }
+}
+
+export async function getCampaignJobs(
+  campaignId: string,
+  limit = 100
+): Promise<schema.EmailJob[]> {
+  const db = getDb();
+  if (!db) return [];
+  try {
+    return await db
+      .select()
+      .from(schema.emailJobs)
+      .where(eq(schema.emailJobs.campaignId, campaignId))
+      .orderBy(desc(schema.emailJobs.createdAt))
+      .limit(limit);
+  } catch (e) {
+    console.error("Database getCampaignJobs failed:", e);
+    return [];
+  }
+}
+
+export async function getRecentEmailJobs(
+  limit = 100
+): Promise<schema.EmailJob[]> {
+  const db = getDb();
+  if (!db) return [];
+  try {
+    return await db
+      .select()
+      .from(schema.emailJobs)
+      .orderBy(desc(schema.emailJobs.createdAt))
+      .limit(limit);
+  } catch (e) {
+    console.error("Database getRecentEmailJobs failed:", e);
+    return [];
+  }
+}
+
+export async function incrementCampaignCounts(
+  campaignId: string,
+  field: "sent" | "failed"
+): Promise<void> {
+  const db = getDb();
+  if (!db) return;
+  try {
+    if (field === "sent") {
+      await db
+        .update(schema.emailCampaigns)
+        .set({
+          sentCount: sql`sent_count + 1`,
+          updatedAt: new Date(),
+        })
+        .where(eq(schema.emailCampaigns.id, campaignId));
+    } else {
+      await db
+        .update(schema.emailCampaigns)
+        .set({
+          failedCount: sql`failed_count + 1`,
+          updatedAt: new Date(),
+        })
+        .where(eq(schema.emailCampaigns.id, campaignId));
+    }
+  } catch (e) {
+    console.warn("Database incrementCampaignCounts failed:", e);
+  }
+}
+
 
 

@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { MockInquiry, MockArtwork } from "@/db/mockData";
 import { SentEmailRecord, ActiveSubscriber } from "@/db/repository";
+import { EmailCampaign, EmailJob } from "@/db/schema/campaigns";
 import {
   Mail,
   Phone,
@@ -27,6 +28,10 @@ import {
   Square,
   Users,
   Check,
+  Calendar,
+  Layers,
+  Globe,
+  Radio,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -37,6 +42,8 @@ interface InquiriesManagerClientProps {
   initialSentEmails?: SentEmailRecord[];
   initialSubscribers?: ActiveSubscriber[];
   publishedArtworks?: MockArtwork[];
+  initialCampaigns?: EmailCampaign[];
+  initialEmailJobs?: EmailJob[];
 }
 
 export function InquiriesManagerClient({
@@ -44,12 +51,16 @@ export function InquiriesManagerClient({
   initialSentEmails = [],
   initialSubscribers = [],
   publishedArtworks = [],
+  initialCampaigns = [],
+  initialEmailJobs = [],
 }: InquiriesManagerClientProps) {
   const [activeTab, setActiveTab] = useState<"inquiries" | "sent_emails">("inquiries");
   const [inquiries, setInquiries] = useState<MockInquiry[]>(initialInquiries);
   const [sentEmails, setSentEmails] = useState<SentEmailRecord[]>(initialSentEmails);
   const [subscribers, setSubscribers] = useState<ActiveSubscriber[]>(initialSubscribers);
   const [artworks, setArtworks] = useState<MockArtwork[]>(publishedArtworks);
+  const [campaigns, setCampaigns] = useState<EmailCampaign[]>(initialCampaigns);
+  const [emailJobs, setEmailJobs] = useState<EmailJob[]>(initialEmailJobs);
 
   // Filters
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
@@ -73,21 +84,48 @@ export function InquiriesManagerClient({
     type: "success" | "error" | "info";
     message: string;
   } | null>(null);
-  const [isBroadcastStudioOpen, setIsBroadcastStudioOpen] = useState(true);
+
+  // Scheduling State
+  const [sendTiming, setSendTiming] = useState<"now" | "schedule">("now");
+  const [scheduledDate, setScheduledDate] = useState<string>(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    return d.toISOString().split("T")[0];
+  });
+  const [scheduledTime, setScheduledTime] = useState<string>("18:00");
+  const [timezone, setTimezone] = useState<string>("Asia/Kolkata");
+
+  useEffect(() => {
+    try {
+      const userTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (userTz) setTimezone(userTz);
+    } catch {
+      // Keep default
+    }
+  }, []);
 
   const selectedArtwork = artworks.find((a) => a.id === selectedArtworkId);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
-      const res = await fetch("/api/admin/inquiries");
-      if (res.ok) {
-        const data = await res.json();
+      const [inqRes, campRes] = await Promise.all([
+        fetch("/api/admin/inquiries"),
+        fetch("/api/admin/marketing/campaigns"),
+      ]);
+
+      if (inqRes.ok) {
+        const data = await inqRes.json();
         if (data.inquiries) setInquiries(data.inquiries);
         if (data.sentEmails) setSentEmails(data.sentEmails);
       }
 
-      // Also refresh subscribers & artworks
+      if (campRes.ok) {
+        const cData = await campRes.json();
+        if (cData.campaigns) setCampaigns(cData.campaigns);
+        if (cData.recentJobs) setEmailJobs(cData.recentJobs);
+      }
+
       const broadcastRes = await fetch("/api/admin/marketing/broadcast");
       if (broadcastRes.ok) {
         const bData = await broadcastRes.json();
@@ -128,7 +166,7 @@ export function InquiriesManagerClient({
     );
   };
 
-  // Trigger Broadcast
+  // Trigger Broadcast / Schedule Campaign
   const handleSendBroadcast = async () => {
     if (!selectedArtworkId) {
       setBroadcastStatus({
@@ -150,44 +188,57 @@ export function InquiriesManagerClient({
     setBroadcastStatus(null);
 
     try {
-      const res = await fetch("/api/admin/marketing/broadcast", {
+      let finalScheduledAt: string | null = null;
+      if (sendTiming === "schedule") {
+        const [hours, minutes] = scheduledTime.split(":").map(Number);
+        const [year, month, day] = scheduledDate.split("-").map(Number);
+        const targetDate = new Date(Date.UTC(year, month - 1, day, hours, minutes));
+        finalScheduledAt = targetDate.toISOString();
+      }
+
+      const res = await fetch("/api/admin/marketing/campaigns", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          title: `Release: ${selectedArtwork?.title || "Masterwork"}`,
+          subject: `Masterwork Release: “${selectedArtwork?.title || "New Canvas"}” by Elena Vance`,
           artworkId: selectedArtworkId,
           selectedSubscriberEmails,
+          scheduledAt: finalScheduledAt,
+          timezone,
         }),
       });
 
       const data = await res.json();
       if (res.ok && data.success) {
-        const count = data.result?.successCount ?? selectedSubscriberEmails.length;
         setBroadcastStatus({
           type: "success",
-          message: `✓ Release notice for “${selectedArtwork?.title || "Artwork"}” successfully dispatched to ${count} collector(s)!`,
+          message: data.message || `✓ Campaign processed for ${selectedSubscriberEmails.length} collector(s)!`,
         });
 
-        // Update local artwork notified timestamp
-        setArtworks((prev) =>
-          prev.map((a) =>
-            a.id === selectedArtworkId
-              ? { ...a, notifiedSubscribersAt: new Date().toISOString() }
-              : a
-          )
-        );
+        // Mark artwork as notified locally if sent immediately
+        if (sendTiming === "now") {
+          setArtworks((prev) =>
+            prev.map((a) =>
+              a.id === selectedArtworkId
+                ? { ...a, notifiedSubscribersAt: new Date().toISOString() }
+                : a
+            )
+          );
+        }
 
-        // Auto-refresh sent emails ledger
+        // Auto-refresh sent emails & campaigns ledger
         await handleRefresh();
       } else {
         setBroadcastStatus({
           type: "error",
-          message: data.error || "Failed to dispatch release notices.",
+          message: data.error || "Failed to process campaign dispatch.",
         });
       }
     } catch (err: any) {
       setBroadcastStatus({
         type: "error",
-        message: err.message || "Network error while dispatching broadcast.",
+        message: err.message || "Network error while dispatching campaign.",
       });
     } finally {
       setIsBroadcasting(false);
@@ -478,18 +529,20 @@ export function InquiriesManagerClient({
                   Send Release Announcement to Collectors
                 </h2>
                 <p className="text-xs text-zinc-400">
-                  Select a published artwork and choose which interested collectors will receive the release notification with AR preview.
+                  Select a published artwork, choose recipients with manual controls, and dispatch immediately or schedule with QStash.
                 </p>
               </div>
 
-              {/* Verified Sender Pill */}
-              <div className="text-[11px] bg-[#1a1c23] border border-emerald-900/60 rounded-xl px-3 py-2 flex items-center gap-2 text-zinc-300 shrink-0">
-                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <div className="space-y-0.5">
-                  <span className="text-[10px] uppercase tracking-wider text-emerald-400 font-bold block">
-                    Verified Domain Sender
-                  </span>
+              {/* Verified Sender & QStash Queue Pill */}
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="text-[11px] bg-[#1a1c23] border border-emerald-900/60 rounded-xl px-3 py-1.5 flex items-center gap-2 text-zinc-300">
+                  <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                   <span className="font-mono text-zinc-200 text-xs">quizmas@quizmastor.tech</span>
+                </div>
+
+                <div className="text-[11px] bg-[#1a1c23] border border-[#2b2d3d] rounded-xl px-3 py-1.5 flex items-center gap-1.5 text-zinc-300">
+                  <Layers className="w-3.5 h-3.5 text-[#d1a86e]" />
+                  <span>QStash Queue Active</span>
                 </div>
               </div>
             </div>
@@ -594,6 +647,64 @@ export function InquiriesManagerClient({
                     </div>
                   </div>
                 )}
+
+                {/* Scheduling Controls */}
+                <div className="p-3.5 bg-[#181920] border border-[#262833] rounded-xl space-y-3">
+                  <span className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold block">
+                    Schedule &amp; Timing
+                  </span>
+
+                  <div className="flex items-center gap-4 text-xs">
+                    <label className="flex items-center gap-2 cursor-pointer text-zinc-300">
+                      <input
+                        type="radio"
+                        name="sendTiming"
+                        checked={sendTiming === "now"}
+                        onChange={() => setSendTiming("now")}
+                        className="accent-[#d1a86e]"
+                      />
+                      <span>Send Immediately</span>
+                    </label>
+
+                    <label className="flex items-center gap-2 cursor-pointer text-zinc-300">
+                      <input
+                        type="radio"
+                        name="sendTiming"
+                        checked={sendTiming === "schedule"}
+                        onChange={() => setSendTiming("schedule")}
+                        className="accent-[#d1a86e]"
+                      />
+                      <span>Schedule for Later</span>
+                    </label>
+                  </div>
+
+                  {sendTiming === "schedule" && (
+                    <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#22242f]">
+                      <div>
+                        <label className="block text-[9px] uppercase text-zinc-500 mb-1">Date</label>
+                        <input
+                          type="date"
+                          value={scheduledDate}
+                          onChange={(e) => setScheduledDate(e.target.value)}
+                          className="w-full bg-[#121318] border border-[#2b2d3d] rounded-lg px-2 py-1.5 text-xs text-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[9px] uppercase text-zinc-500 mb-1">Time</label>
+                        <input
+                          type="time"
+                          value={scheduledTime}
+                          onChange={(e) => setScheduledTime(e.target.value)}
+                          className="w-full bg-[#121318] border border-[#2b2d3d] rounded-lg px-2 py-1.5 text-xs text-white"
+                        />
+                      </div>
+                      <div className="col-span-2 pt-1 text-[10px] text-zinc-400 flex items-center gap-1">
+                        <Globe className="w-3 h-3 text-[#d1a86e]" />
+                        <span>Timezone: {timezone}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Step 2: Recipient Selection */}
@@ -713,13 +824,13 @@ export function InquiriesManagerClient({
                     {isBroadcasting ? (
                       <>
                         <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                        <span>Dispatching notices...</span>
+                        <span>Enqueueing to QStash...</span>
                       </>
                     ) : (
                       <>
                         <Send className="w-3.5 h-3.5" />
                         <span>
-                          Dispatch Announcement ({selectedSubscriberEmails.length})
+                          {sendTiming === "schedule" ? "Schedule Campaign" : "Dispatch Now"} ({selectedSubscriberEmails.length})
                         </span>
                       </>
                     )}
@@ -742,14 +853,14 @@ export function InquiriesManagerClient({
               <span className="text-[11px] text-emerald-400/80 font-medium">Successfully accepted by Resend</span>
             </Card>
             <Card className="p-4 bg-[#14151a] border-[#262833] space-y-1">
-              <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">Sandbox Restricted</span>
-              <div className="font-serif text-2xl text-amber-400">{countSandbox}</div>
-              <span className="text-[11px] text-amber-400/80 font-medium">External domain unverified</span>
+              <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">Active Campaigns</span>
+              <div className="font-serif text-2xl text-amber-400">{campaigns.length}</div>
+              <span className="text-[11px] text-amber-400/80 font-medium">Tracked in Neon database</span>
             </Card>
             <Card className="p-4 bg-[#14151a] border-[#262833] space-y-1">
               <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">Failed</span>
               <div className="font-serif text-2xl text-red-400">{countFailed}</div>
-              <span className="text-[11px] text-red-400/80 font-medium">API errors / invalid format</span>
+              <span className="text-[11px] text-red-400/80 font-medium">Permanent delivery errors</span>
             </Card>
           </div>
 
