@@ -454,7 +454,7 @@ export async function saveArtwork(data: Partial<MockArtwork> & { collectionId?: 
           price: data.price ? String(data.price) : undefined,
           currency: data.currency || "USD",
           status: data.status || "draft",
-          coverImageUrl: data.coverImageUrl || DEFAULT_VERIFIED_COVER,
+          coverImageUrl: data.coverImageUrl || "",
           altText: data.altText || data.title || "Artwork",
           isFeatured: data.isFeatured || false,
           displayOrder: 99,

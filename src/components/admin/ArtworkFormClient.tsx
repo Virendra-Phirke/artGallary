@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -12,11 +12,16 @@ import {
   Save,
   ArrowLeft,
   Eye,
+  FolderOpen,
+  Loader2,
+  Image as ImageIcon,
 } from "lucide-react";
 import { MockArtwork, MockCollection } from "@/db/mockData";
 import { slugify, formatDimensions } from "@/lib/utils";
 import { UnsplashPickerModal } from "./UnsplashPickerModal";
+import { MediaLibraryModal, MediaItem } from "./MediaLibraryModal";
 import { ArStudioViewer } from "@/components/ar/ArStudioViewer";
+import { ProgressBar } from "@/components/ui/progress-bar";
 
 interface ArtworkFormClientProps {
   initialArtwork?: MockArtwork;
@@ -78,10 +83,25 @@ export function ArtworkFormClient({
   );
   const [isTestArOpen, setIsTestArOpen] = useState(false);
 
+  const [localPreviewUrl, setLocalPreviewUrl] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [uploadStatus, setUploadStatus] = useState<
+    "idle" | "uploading" | "processing" | "complete" | "error"
+  >("idle");
   const [isUploading, setIsUploading] = useState(false);
   const [isUnsplashOpen, setIsUnsplashOpen] = useState(false);
+  const [isMediaLibraryOpen, setIsMediaLibraryOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Memory cleanup for local object blob URLs
+  useEffect(() => {
+    return () => {
+      if (localPreviewUrl && localPreviewUrl.startsWith("blob:")) {
+        URL.revokeObjectURL(localPreviewUrl);
+      }
+    };
+  }, [localPreviewUrl]);
 
   // Auto-generate slug when title changes in new mode
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -92,36 +112,106 @@ export function ArtworkFormClient({
     }
   };
 
-  // Image Upload via /api/upload
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Image Upload via XMLHttpRequest for real-time progress reporting
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Revoke previous blob if any
+    if (localPreviewUrl && localPreviewUrl.startsWith("blob:")) {
+      URL.revokeObjectURL(localPreviewUrl);
+    }
+
+    // 1. Instant local preview
+    const blobUrl = URL.createObjectURL(file);
+    setLocalPreviewUrl(blobUrl);
+    setUploadStatus("uploading");
+    setUploadProgress(0);
     setIsUploading(true);
     setError(null);
 
+    // 2. Setup FormData and XHR
     const formData = new FormData();
     formData.append("file", file);
 
-    try {
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
+    const xhr = new XMLHttpRequest();
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Upload failed");
-
-      if (data.media?.fileUrl) {
-        setCoverImageUrl(data.media.fileUrl);
-        if (!altText) {
-          setAltText(`Original painting: ${title || file.name}`);
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) {
+        const percentComplete = Math.round((event.loaded / event.total) * 100);
+        setUploadProgress(percentComplete);
+        if (percentComplete >= 100) {
+          setUploadStatus("processing");
         }
       }
-    } catch (err: any) {
-      setError(err.message || "Failed to process image");
-    } finally {
+    };
+
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try {
+          const data = JSON.parse(xhr.responseText);
+          if (data.media?.fileUrl) {
+            setCoverImageUrl(data.media.fileUrl);
+            setUploadStatus("complete");
+            if (!altText) {
+              setAltText(`Original artwork: ${title || file.name.replace(/\.[^/.]+$/, "")}`);
+            }
+          } else {
+            throw new Error("No media file URL returned from upload server");
+          }
+        } catch (err: any) {
+          setError(err.message || "Failed to parse upload response");
+          setUploadStatus("error");
+        }
+      } else {
+        try {
+          const data = JSON.parse(xhr.responseText);
+          setError(data.error || "Upload failed");
+        } catch {
+          setError(`Upload failed with status ${xhr.status}`);
+        }
+        setUploadStatus("error");
+      }
       setIsUploading(false);
+    };
+
+    xhr.onerror = () => {
+      setError("Network error occurred during image upload");
+      setUploadStatus("error");
+      setIsUploading(false);
+    };
+
+    xhr.open("POST", "/api/upload");
+    xhr.send(formData);
+  };
+
+  // Select existing asset from gallery media library
+  const handleMediaSelect = (item: MediaItem) => {
+    if (localPreviewUrl && localPreviewUrl.startsWith("blob:")) {
+      URL.revokeObjectURL(localPreviewUrl);
+    }
+    setLocalPreviewUrl(null);
+    setCoverImageUrl(item.fileUrl);
+    setUploadStatus("complete");
+    if (!altText) {
+      setAltText(`Master painting: ${title || item.fileName.replace(/\.[^/.]+$/, "")}`);
+    }
+  };
+
+  // Select art from Unsplash
+  const handleUnsplashSelect = (img: any) => {
+    if (localPreviewUrl && localPreviewUrl.startsWith("blob:")) {
+      URL.revokeObjectURL(localPreviewUrl);
+    }
+    setLocalPreviewUrl(null);
+    setCoverImageUrl(img.imageUrl);
+    setUploadStatus("complete");
+    setAltText(img.altText);
+    if (!title || title === "Untitled" || isNew) {
+      setTitle(img.title);
+      if (isNew) {
+        setSlug(slugify(img.title));
+      }
     }
   };
 
@@ -130,13 +220,17 @@ export function ArtworkFormClient({
     title: Boolean(title.trim().length >= 2),
     slug: Boolean(slug.trim().length >= 2),
     description: Boolean(description.trim().length >= 10),
-    coverImage: Boolean(coverImageUrl.trim().length > 0),
+    coverImage: Boolean(coverImageUrl.trim().length > 0 || localPreviewUrl),
     altText: Boolean(altText.trim().length >= 5),
     dimensions: Boolean(widthCm > 0 && heightCm > 0),
     arConfig: Boolean(isArEnabled ? widthCm > 0 && heightCm > 0 : true),
   };
 
-  const isReadyToPublish = Object.values(checks).every(Boolean);
+  const isReadyToPublish =
+    Object.values(checks).every(Boolean) &&
+    uploadStatus !== "uploading" &&
+    uploadStatus !== "processing" &&
+    Boolean(coverImageUrl.trim().length > 0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -240,11 +334,28 @@ export function ArtworkFormClient({
 
           <button
             type="submit"
-            disabled={isSaving}
-            className="flex items-center gap-2 bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] px-5 sm:px-6 py-2 sm:py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all shadow-lg shadow-[#d1a86e]/10 disabled:opacity-50"
+            disabled={
+              isSaving ||
+              isUploading ||
+              uploadStatus === "uploading" ||
+              uploadStatus === "processing"
+            }
+            className="flex items-center gap-2 bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] px-5 sm:px-6 py-2 sm:py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all shadow-lg shadow-[#d1a86e]/10 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Save className="w-4 h-4" />
-            <span>{isSaving ? "Saving..." : "Save"}</span>
+            {isUploading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Save className="w-4 h-4" />
+            )}
+            <span>
+              {isSaving
+                ? "Saving..."
+                : uploadStatus === "uploading"
+                ? "Uploading..."
+                : uploadStatus === "processing"
+                ? "Processing..."
+                : "Save"}
+            </span>
           </button>
         </div>
       </div>
@@ -510,38 +621,101 @@ export function ArtworkFormClient({
 
           {/* Media Upload & Alt Text */}
           <div className="p-6 bg-[#14151a] border border-[#262833] rounded-2xl space-y-4">
-            <h2 className="font-serif text-lg text-white">Artwork Imagery</h2>
+            <div className="flex items-center justify-between">
+              <h2 className="font-serif text-lg text-white">Artwork Imagery</h2>
+              {coverImageUrl && !localPreviewUrl && (
+                <span className="text-[10px] uppercase font-mono tracking-wider text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 px-2 py-0.5 rounded">
+                  Cloud Asset Linked
+                </span>
+              )}
+            </div>
 
-            <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-black/40 border border-[#262833]">
-              {coverImageUrl ? (
-                <Image
-                  src={coverImageUrl}
-                  alt={altText || "Cover Image"}
-                  fill
-                  sizes="400px"
-                  className="object-cover"
-                />
+            {/* Display Image Box */}
+            <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-black/40 border border-[#262833] group">
+              {localPreviewUrl || coverImageUrl ? (
+                <>
+                  <Image
+                    src={localPreviewUrl || coverImageUrl}
+                    alt={altText || "Cover Image"}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 500px"
+                    unoptimized={Boolean(localPreviewUrl)}
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  {/* Overlay when uploading or processing */}
+                  {(uploadStatus === "uploading" || uploadStatus === "processing") && (
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex flex-col items-center justify-center p-4">
+                      <div className="w-full max-w-xs bg-[#121317]/95 p-4 rounded-xl border border-[#262833] shadow-2xl space-y-2">
+                        <ProgressBar
+                          label={
+                            uploadStatus === "processing"
+                              ? "Optimizing variants with Sharp..."
+                              : "Uploading high-res image..."
+                          }
+                          value={uploadProgress}
+                          isIndeterminate={uploadStatus === "processing"}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </>
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-zinc-600 text-xs">
-                  No image selected
+                <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-zinc-500 text-xs p-6 text-center">
+                  <ImageIcon className="w-8 h-8 stroke-1 text-zinc-600" />
+                  <p>No image selected yet.</p>
+                  <p className="text-[11px] text-zinc-600">
+                    Upload a file from your device, pick from Media Library, or use temporary art.
+                  </p>
                 </div>
               )}
             </div>
 
-            {/* Upload or Unsplash Selection Bar */}
+            {/* Progress Bar (Visible under preview while actively uploading/processing) */}
+            {(uploadStatus === "uploading" || uploadStatus === "processing") && (
+              <div className="p-3.5 bg-[#171821] border border-[#262833] rounded-xl">
+                <ProgressBar
+                  label={
+                    uploadStatus === "processing"
+                      ? "Generating WebP, thumbnail, and AR texture..."
+                      : `Uploading file (${uploadProgress}%)`
+                  }
+                  value={uploadProgress}
+                  isIndeterminate={uploadStatus === "processing"}
+                />
+              </div>
+            )}
+
+            {uploadStatus === "complete" && (
+              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-950/30 border border-emerald-800/40 text-emerald-400 text-xs">
+                <CheckCircle2 className="w-4 h-4 shrink-0" />
+                <span>Image uploaded &amp; processed successfully. Ready to save.</span>
+              </div>
+            )}
+
+            {/* Upload & Asset Picker Controls */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <label className="block text-xs uppercase tracking-wider text-zinc-400">
-                  Upload Image
+                  Select Artwork File
                 </label>
-                <button
-                  type="button"
-                  onClick={() => setIsUnsplashOpen(true)}
-                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-[#d1a86e]/30 bg-[#d1a86e]/10 text-[#d1a86e] hover:bg-[#d1a86e]/20 text-[11px] font-medium transition-colors"
-                >
-                  <Sparkles className="w-3 h-3" />
-                  <span>Use Unsplash Temp Art</span>
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsMediaLibraryOpen(true)}
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-[#262833] bg-[#1a1c23] hover:bg-[#262833] text-zinc-300 hover:text-white text-[11px] font-medium transition-colors"
+                  >
+                    <FolderOpen className="w-3 h-3 text-[#d1a86e]" />
+                    <span>Media Library</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsUnsplashOpen(true)}
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-[#d1a86e]/30 bg-[#d1a86e]/10 text-[#d1a86e] hover:bg-[#d1a86e]/20 text-[11px] font-medium transition-colors"
+                  >
+                    <Sparkles className="w-3 h-3" />
+                    <span>Unsplash Art</span>
+                  </button>
+                </div>
               </div>
               <div className="relative">
                 <input
@@ -549,13 +723,8 @@ export function ArtworkFormClient({
                   accept="image/jpeg,image/png,image/webp,image/avif"
                   onChange={handleFileUpload}
                   disabled={isUploading}
-                  className="w-full text-xs text-zinc-400 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-[#262833] file:text-white hover:file:bg-[#323544] file:cursor-pointer cursor-pointer"
+                  className="w-full text-xs text-zinc-400 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-[#262833] file:text-white hover:file:bg-[#323544] file:cursor-pointer cursor-pointer disabled:opacity-50"
                 />
-                {isUploading && (
-                  <span className="text-[11px] text-[#d1a86e] mt-1 block">
-                    Processing high-res image variants with Sharp...
-                  </span>
-                )}
               </div>
             </div>
 
@@ -707,7 +876,10 @@ export function ArtworkFormClient({
                 depthCm,
                 price,
                 currency,
-                coverImageUrl: coverImageUrl || "https://ik.imagekit.io/bpnsp30ni/artworks/gallery/1788717079935-kazuha__EB1yso0A.jpeg?updatedAt=1788717081490",
+                coverImageUrl:
+                  localPreviewUrl ||
+                  coverImageUrl ||
+                  "https://ik.imagekit.io/bpnsp30ni/artworks/gallery/1788717079935-kazuha__EB1yso0A.jpeg?updatedAt=1788717081490",
                 arConfig: {
                   isArEnabled,
                   frameEnabled,
@@ -730,16 +902,13 @@ export function ArtworkFormClient({
       <UnsplashPickerModal
         isOpen={isUnsplashOpen}
         onClose={() => setIsUnsplashOpen(false)}
-        onSelect={(img) => {
-          setCoverImageUrl(img.imageUrl);
-          setAltText(img.altText);
-          if (!title || title === "Untitled" || isNew) {
-            setTitle(img.title);
-            if (isNew) {
-              setSlug(slugify(img.title));
-            }
-          }
-        }}
+        onSelect={handleUnsplashSelect}
+      />
+
+      <MediaLibraryModal
+        isOpen={isMediaLibraryOpen}
+        onClose={() => setIsMediaLibraryOpen(false)}
+        onSelect={handleMediaSelect}
       />
     </form>
   );
