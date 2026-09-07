@@ -38,7 +38,13 @@ import {
   Sliders,
   ExternalLink,
   Compass,
+  PanelLeft,
+  Maximize2,
+  Minimize2,
+  ZoomIn,
+  ZoomOut,
 } from "lucide-react";
+import { useSidebar } from "@/components/ui/sidebar";
 import { formatCurrency, formatDimensions } from "@/lib/utils";
 import { NavbarLayoutModal } from "./studio/NavbarLayoutModal";
 import { GalleryPageEditor } from "./studio/GalleryPageEditor";
@@ -91,6 +97,10 @@ export function HomepageBuilderClient({
     initialSiteSettings || DEFAULT_SITE_SETTINGS
   );
   const [isNavbarModalOpen, setIsNavbarModalOpen] = useState(false);
+
+  const { open: isSidebarOpen, toggleSidebar } = useSidebar();
+  const [canvasZoom, setCanvasZoom] = useState<number>(100);
+  const [canvasRefreshKey, setCanvasRefreshKey] = useState<number>(0);
 
   const [expandedSectionId, setExpandedSectionId] = useState<string | null>(
     initialSections[0]?.id || null
@@ -338,6 +348,18 @@ export function HomepageBuilderClient({
     }
   };
 
+  // Keyboard shortcut: Ctrl+S / Cmd+S to publish
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        handleSave();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [sections, siteSettings, activePage]);
+
   const heroArtwork = artworks[0];
   const featuredCollection = collections[0];
   const currentExhibition = exhibitions[0];
@@ -385,24 +407,44 @@ export function HomepageBuilderClient({
   return (
     <div className="space-y-6">
       {/* 1. TOP BUILDER BAR */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-[#14151a] p-5 rounded-2xl border border-[#262833] shadow-lg">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
-              Live Storefront Studio
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-[#14151a] p-4 sm:p-5 rounded-2xl border border-[#262833] shadow-lg">
+        <div className="flex items-center gap-3">
+          {/* Sidebar Toggle Button */}
+          <button
+            type="button"
+            onClick={toggleSidebar}
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs transition-colors cursor-pointer shrink-0 ${
+              !isSidebarOpen
+                ? "bg-[#d1a86e]/10 border-[#d1a86e]/30 text-[#d1a86e] font-semibold"
+                : "bg-[#1a1c23] border-[#262833] text-zinc-400 hover:text-white"
+            }`}
+            title={isSidebarOpen ? "Collapse sidebar for 100% full screen" : "Show sidebar"}
+          >
+            <PanelLeft className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline font-mono text-[11px]">
+              {!isSidebarOpen ? "100% Screen" : "Sidebar"}
             </span>
-            <span className="text-zinc-600">•</span>
-            <span className="text-[11px] text-zinc-400 capitalize">
-              Editing {activePage} Page
-            </span>
+          </button>
+
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
+                Live Storefront Studio
+              </span>
+              <span className="text-zinc-600">•</span>
+              <span className="text-[11px] text-zinc-400 capitalize">
+                Editing {activePage} Page
+              </span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse hidden sm:inline-block" />
+            </div>
+            <h1 className="font-serif text-xl sm:text-2xl text-white font-medium mt-0.5">
+              {getPageTitle()}
+            </h1>
           </div>
-          <h1 className="font-serif text-2xl md:text-3xl text-white mt-1">
-            {getPageTitle()}
-          </h1>
         </div>
 
         {/* View Mode & Device Controls & Storefront Switcher */}
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           {/* View Mode Toggle */}
           <div className="flex items-center p-1 bg-[#1a1c23] border border-[#262833] rounded-xl">
             <button
@@ -479,6 +521,41 @@ export function HomepageBuilderClient({
               >
                 <Smartphone className="w-4 h-4" />
               </button>
+            </div>
+          )}
+
+          {/* Canvas Zoom Controls */}
+          {viewMode !== "editor" && (
+            <div className="flex items-center p-1 bg-[#1a1c23] border border-[#262833] rounded-xl text-xs">
+              <button
+                type="button"
+                onClick={() => setCanvasZoom((z) => Math.max(50, z - 10))}
+                className="p-1 text-zinc-400 hover:text-white transition-colors"
+                title="Zoom Out Canvas"
+              >
+                <ZoomOut className="w-3.5 h-3.5" />
+              </button>
+              <span className="px-1.5 text-[11px] font-mono text-zinc-300 min-w-[38px] text-center select-none">
+                {canvasZoom}%
+              </span>
+              <button
+                type="button"
+                onClick={() => setCanvasZoom((z) => Math.min(150, z + 10))}
+                className="p-1 text-zinc-400 hover:text-white transition-colors"
+                title="Zoom In Canvas"
+              >
+                <ZoomIn className="w-3.5 h-3.5" />
+              </button>
+              {canvasZoom !== 100 && (
+                <button
+                  type="button"
+                  onClick={() => setCanvasZoom(100)}
+                  className="text-[9px] text-[#d1a86e] px-1 hover:underline font-mono"
+                  title="Reset Zoom to 100%"
+                >
+                  Reset
+                </button>
+              )}
             </div>
           )}
 
@@ -585,9 +662,9 @@ export function HomepageBuilderClient({
 
       {/* 2. MAIN WORKSPACE CONTAINER (SPLIT / EDITOR / PREVIEW) */}
       <div
-        className={`grid gap-8 items-start ${
+        className={`grid gap-6 items-start ${
           viewMode === "split"
-            ? "grid-cols-1 xl:grid-cols-12"
+            ? "grid-cols-1 lg:grid-cols-12"
             : "grid-cols-1"
         }`}
       >
@@ -595,7 +672,7 @@ export function HomepageBuilderClient({
         {viewMode !== "preview" && (
           <div
             className={`space-y-4 ${
-              viewMode === "split" ? "xl:col-span-5" : "w-full max-w-4xl mx-auto"
+              viewMode === "split" ? "lg:col-span-5" : "w-full max-w-4xl mx-auto"
             }`}
           >
             {/* RENDER HOME PAGE EDITOR (7 EDITORIAL SECTIONS) */}
@@ -891,8 +968,8 @@ export function HomepageBuilderClient({
         {/* RIGHT COLUMN: INTERACTIVE VISUAL CANVAS PREVIEW */}
         {viewMode !== "editor" && (
           <div
-            className={`sticky top-6 ${
-              viewMode === "split" ? "xl:col-span-7" : "w-full"
+            className={`sticky top-4 ${
+              viewMode === "split" ? "lg:col-span-7" : "w-full"
             }`}
           >
             {/* Device Simulator Header */}
@@ -914,7 +991,22 @@ export function HomepageBuilderClient({
                   <ExternalLink className="w-3 h-3 text-[#d1a86e]" />
                 </a>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
+                <span className="text-[10px] font-mono text-zinc-500 hidden sm:inline">
+                  {deviceMode === "desktop"
+                    ? "100% Fluid"
+                    : deviceMode === "tablet"
+                    ? "768px (Tablet)"
+                    : "390px (Mobile)"}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setCanvasRefreshKey((k) => k + 1)}
+                  className="p-1 text-zinc-400 hover:text-white transition-colors"
+                  title="Re-render live preview canvas"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                </button>
                 <span className="text-[10px] uppercase tracking-widest text-[#d1a86e] font-semibold">
                   Live Canvas
                 </span>
@@ -926,6 +1018,7 @@ export function HomepageBuilderClient({
 
             {/* Real-time Multi-Page Simulated Canvas */}
             <PageLivePreview
+              key={canvasRefreshKey}
               activePage={activePage}
               sections={sections}
               siteSettings={siteSettings}
@@ -933,6 +1026,7 @@ export function HomepageBuilderClient({
               collections={collections}
               exhibitions={exhibitions}
               deviceMode={deviceMode}
+              zoom={canvasZoom}
             />
           </div>
         )}

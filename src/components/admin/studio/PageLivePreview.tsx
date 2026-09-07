@@ -33,6 +33,7 @@ interface PageLivePreviewProps {
   collections: MockCollection[];
   exhibitions: MockExhibition[];
   deviceMode: "desktop" | "tablet" | "mobile";
+  zoom?: number;
 }
 
 export function PageLivePreview({
@@ -43,6 +44,7 @@ export function PageLivePreview({
   collections = [],
   exhibitions = [],
   deviceMode,
+  zoom = 100,
 }: PageLivePreviewProps) {
   const heroArtwork = artworks[0];
   const featuredCollection = collections[0];
@@ -79,8 +81,9 @@ export function PageLivePreview({
   const contactCfg = siteSettings.contactPageConfig || {};
 
   return (
-    <div className="bg-[#0b0c0f] border-x border-b border-[#262833] rounded-b-2xl p-3 md:p-6 overflow-hidden flex justify-center shadow-2xl">
+    <div className="bg-[#0b0c0f] border-x border-b border-[#262833] rounded-b-2xl p-2 sm:p-4 md:p-5 overflow-hidden flex justify-center shadow-2xl">
       <div
+        style={zoom && zoom !== 100 ? { zoom: `${zoom}%` } : undefined}
         className={`transition-all duration-300 bg-[#0d0e12] rounded-xl overflow-y-auto max-h-[82vh] border border-[#1f212b] shadow-2xl ${
           deviceMode === "desktop"
             ? "w-full"

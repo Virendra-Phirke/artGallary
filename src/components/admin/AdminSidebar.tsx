@@ -39,6 +39,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 interface AdminSidebarProps {
   user: {
@@ -118,11 +119,19 @@ const navSections: Array<{
 
 function AdminSidebarInner({ user, pendingInquiriesCount, children }: AdminSidebarProps) {
   const pathname = usePathname();
-  const { state } = useSidebar();
+  const { state, setOpen } = useSidebar();
+  const isStudio = pathname === "/admin/homepage";
+
+  // When opening Landing Page Studio, automatically collapse sidebar to give 100% screen!
+  React.useEffect(() => {
+    if (isStudio) {
+      setOpen(false);
+    }
+  }, [isStudio, setOpen]);
 
   return (
     <>
-      <Sidebar collapsible="icon">
+      <Sidebar collapsible={isStudio ? "offcanvas" : "icon"}>
         {/* Brand Header */}
         <SidebarHeader>
           <div className="flex items-center justify-between">
@@ -223,14 +232,22 @@ function AdminSidebarInner({ user, pendingInquiriesCount, children }: AdminSideb
       {/* Main Workspace Inset */}
       <SidebarInset>
         {/* Top Header Bar with SidebarTrigger */}
-        <header className="h-16 shrink-0 border-b border-[#1c1d25] px-6 md:px-10 flex items-center justify-between bg-[#0f1013]/80 backdrop-blur-md z-30">
-          <div className="flex items-center gap-4">
+        <header className={cn(
+          "shrink-0 border-b border-[#1c1d25] flex items-center justify-between bg-[#0f1013]/80 backdrop-blur-md z-30 transition-all",
+          isStudio ? "h-13 px-4 md:px-6" : "h-16 px-6 md:px-10"
+        )}>
+          <div className="flex items-center gap-3">
             <SidebarTrigger />
             <div className="flex items-center gap-2 text-xs text-zinc-400">
               <Shield className="w-4 h-4 text-[#d1a86e]" />
               <span className="hidden sm:inline">
-                Curator Administration Workspace
+                {isStudio ? "Storefront Studio" : "Curator Administration Workspace"}
               </span>
+              {isStudio && (
+                <Badge variant="outline" className="text-[10px] text-[#d1a86e] border-[#d1a86e]/30 font-mono py-0 h-4 hidden md:inline-flex">
+                  100% Full Screen
+                </Badge>
+              )}
             </div>
           </div>
 
@@ -247,7 +264,10 @@ function AdminSidebarInner({ user, pendingInquiriesCount, children }: AdminSideb
         </header>
 
         {/* Dynamic Route Children - Separate Independent Scroll Container */}
-        <main className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-6 md:p-10">
+        <main className={cn(
+          "flex-1 min-h-0 overflow-y-auto overscroll-contain transition-all",
+          isStudio ? "p-3 sm:p-4 md:p-5" : "p-6 md:p-10"
+        )}>
           {children}
         </main>
       </SidebarInset>
