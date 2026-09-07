@@ -125,7 +125,7 @@ export const SidebarProvider = React.forwardRef<HTMLDivElement, SidebarProviderP
             } as React.CSSProperties
           }
           className={cn(
-            "group/sidebar-wrapper flex min-h-svh w-full text-[#f4f4f6] has-[[data-variant=inset]]:bg-[#0a0b0d]",
+            "group/sidebar-wrapper flex h-svh max-h-svh w-full overflow-hidden text-[#f4f4f6] has-[[data-variant=inset]]:bg-[#0a0b0d]",
             className
           )}
           ref={ref}
@@ -211,7 +211,7 @@ export const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
         data-variant={variant}
         data-side={side}
         className={cn(
-          "group peer hidden md:block text-[#f4f4f6] shrink-0 transition-all duration-300 ease-in-out",
+          "group peer hidden md:block text-[#f4f4f6] shrink-0 h-full max-h-full overflow-hidden transition-all duration-300 ease-in-out",
           state === "expanded"
             ? "w-[var(--sidebar-width)]"
             : collapsible === "icon"
@@ -221,7 +221,7 @@ export const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
       >
         <div
           className={cn(
-            "flex h-full flex-col bg-[#0f1013] border-r border-[#1c1d25] transition-all duration-300 ease-in-out",
+            "flex h-full max-h-full flex-col bg-[#0f1013] border-r border-[#1c1d25] transition-all duration-300 ease-in-out overflow-hidden",
             state === "expanded"
               ? "w-[var(--sidebar-width)]"
               : collapsible === "icon"
@@ -275,7 +275,7 @@ export const SidebarHeader = React.forwardRef<
     <div
       ref={ref}
       data-sidebar="header"
-      className={cn("flex flex-col gap-2 p-4 border-b border-[#1c1d25]", className)}
+      className={cn("flex flex-col gap-2 p-4 border-b border-[#1c1d25] shrink-0", className)}
       {...props}
     />
   );
@@ -290,7 +290,7 @@ export const SidebarFooter = React.forwardRef<
     <div
       ref={ref}
       data-sidebar="footer"
-      className={cn("flex flex-col gap-2 p-4 border-t border-[#1c1d25] mt-auto bg-[#0d0e12]", className)}
+      className={cn("flex flex-col gap-2 p-4 border-t border-[#1c1d25] mt-auto bg-[#0d0e12] shrink-0", className)}
       {...props}
     />
   );
@@ -306,7 +306,7 @@ export const SidebarContent = React.forwardRef<
       ref={ref}
       data-sidebar="content"
       className={cn(
-        "flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-3 overflow-x-hidden",
+        "flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overflow-x-hidden overscroll-contain p-3",
         className
       )}
       {...props}
@@ -430,10 +430,10 @@ export const SidebarInset = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
   return (
-    <main
+    <div
       ref={ref}
       className={cn(
-        "relative flex min-h-svh flex-1 flex-col bg-[#0d0e12] overflow-x-hidden min-w-0",
+        "relative flex h-full max-h-full flex-1 flex-col bg-[#0d0e12] overflow-hidden min-w-0",
         className
       )}
       {...props}
