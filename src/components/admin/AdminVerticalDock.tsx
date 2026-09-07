@@ -13,7 +13,7 @@ import {
   FolderKanban,
   Calendar,
   Mail,
-  Home,
+  LayoutTemplate,
   Sparkles,
   Settings,
   Pin,
@@ -132,7 +132,7 @@ export function AdminVerticalDock({
     {
       label: "Landing Page Studio",
       href: "/admin/homepage",
-      icon: Home,
+      icon: LayoutTemplate,
       highlight: true,
     },
     {
