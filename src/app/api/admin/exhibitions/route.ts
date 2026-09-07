@@ -24,16 +24,24 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json().catch(() => ({}));
-    if (!body.title || typeof body.title !== "string" || body.title.trim().length < 2) {
-      return NextResponse.json({ error: "Exhibition title is required (min 2 characters)" }, { status: 400 });
-    }
+    const isUpdate = Boolean(body.id);
 
-    if (!body.location || typeof body.location !== "string") {
-      return NextResponse.json({ error: "Exhibition location is required" }, { status: 400 });
-    }
+    if (!isUpdate) {
+      if (!body.title || typeof body.title !== "string" || body.title.trim().length < 2) {
+        return NextResponse.json({ error: "Exhibition title is required (min 2 characters)" }, { status: 400 });
+      }
 
-    if (!body.startDate || !body.endDate) {
-      return NextResponse.json({ error: "Start and end dates are required" }, { status: 400 });
+      if (!body.location || typeof body.location !== "string") {
+        return NextResponse.json({ error: "Exhibition location is required" }, { status: 400 });
+      }
+
+      if (!body.startDate || !body.endDate) {
+        return NextResponse.json({ error: "Start and end dates are required" }, { status: 400 });
+      }
+    } else {
+      if (body.title !== undefined && (typeof body.title !== "string" || body.title.trim().length < 2)) {
+        return NextResponse.json({ error: "Exhibition title must be at least 2 characters" }, { status: 400 });
+      }
     }
 
     if (body.status && !["upcoming", "current", "past"].includes(body.status)) {
@@ -48,6 +56,10 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+export async function PATCH(request: NextRequest) {
+  return POST(request);
 }
 
 export async function DELETE(request: NextRequest) {

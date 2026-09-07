@@ -1,6 +1,6 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import { getArtworkById } from "@/db/repository";
+import { getArtworkById, getAllCollectionsAdmin } from "@/db/repository";
 import { ArtworkFormClient } from "@/components/admin/ArtworkFormClient";
 import type { Metadata } from "next";
 
@@ -22,11 +22,14 @@ export default async function EditArtworkPage({
   params,
 }: EditArtworkPageProps) {
   const { id } = await params;
-  const artwork = await getArtworkById(id);
+  const [artwork, collections] = await Promise.all([
+    getArtworkById(id),
+    getAllCollectionsAdmin(),
+  ]);
 
   if (!artwork) {
     notFound();
   }
 
-  return <ArtworkFormClient initialArtwork={artwork} isNew={false} />;
+  return <ArtworkFormClient initialArtwork={artwork} isNew={false} collections={collections} />;
 }

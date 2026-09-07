@@ -387,22 +387,35 @@ export interface SidebarMenuButtonProps
 export const SidebarMenuButton = React.forwardRef<
   HTMLButtonElement,
   SidebarMenuButtonProps
->(({ className, isActive, tooltip, children, ...props }, ref) => {
+>(({ className, isActive, tooltip, asChild = false, children, ...props }, ref) => {
   const { state } = useSidebar();
+
+  const buttonClasses = cn(
+    "flex w-full items-center gap-3 rounded-xl px-3 py-2 text-xs font-medium transition-colors text-left select-none cursor-pointer",
+    isActive
+      ? "bg-[#1a1c23] text-white border border-[#262833] font-semibold text-[#d1a86e]"
+      : "text-zinc-400 hover:bg-[#16171d] hover:text-white",
+    state === "collapsed" && "justify-center px-2",
+    className
+  );
+
+  if (asChild && React.isValidElement(children)) {
+    return React.cloneElement(children as React.ReactElement<any>, {
+      ref,
+      "data-sidebar": "menu-button",
+      "data-active": isActive,
+      className: cn(buttonClasses, (children.props as any)?.className),
+      title: state === "collapsed" ? tooltip : (children.props as any)?.title,
+      ...props,
+    });
+  }
 
   return (
     <button
       ref={ref}
       data-sidebar="menu-button"
       data-active={isActive}
-      className={cn(
-        "flex w-full items-center gap-3 rounded-xl px-3 py-2 text-xs font-medium transition-colors text-left select-none",
-        isActive
-          ? "bg-[#1a1c23] text-white border border-[#262833] font-semibold text-[#d1a86e]"
-          : "text-zinc-400 hover:bg-[#16171d] hover:text-white",
-        state === "collapsed" && "justify-center px-2",
-        className
-      )}
+      className={buttonClasses}
       title={state === "collapsed" ? tooltip : undefined}
       {...props}
     >

@@ -11,6 +11,10 @@ export const metadata: Metadata = {
     "Current, upcoming, and archival solo and group exhibitions of Elena Vance's contemporary oil and mineral works.",
 };
 
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+
 export default async function ExhibitionsPage() {
   const exhibitions = await getExhibitions();
 
@@ -28,11 +32,11 @@ export default async function ExhibitionsPage() {
         </p>
       </div>
 
-      <div className="space-y-12">
+      <div className="space-y-10 sm:space-y-12">
         {exhibitions.map((exh) => (
-          <div
+          <Card
             key={exh.id}
-            className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center p-8 rounded-2xl bg-[#14151a] border border-[#262833]"
+            className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center p-5 sm:p-8 md:p-10 rounded-2xl bg-[#14151a] border border-[#262833] overflow-hidden"
           >
             <div className="lg:col-span-5">
               <div className="relative aspect-[16/10] rounded-xl overflow-hidden bg-black/40 border border-[#262833]">
@@ -47,18 +51,18 @@ export default async function ExhibitionsPage() {
             </div>
 
             <div className="lg:col-span-7 space-y-4">
-              <div className="flex items-center gap-3">
-                <span
-                  className={`text-[10px] uppercase tracking-widest px-2.5 py-1 rounded-full font-medium ${
+              <div className="flex flex-wrap items-center gap-3">
+                <Badge
+                  variant={
                     exh.status === "current"
-                      ? "bg-emerald-950/90 text-emerald-300 border border-emerald-800/80"
+                      ? "success"
                       : exh.status === "upcoming"
-                      ? "bg-amber-950/90 text-amber-300 border border-amber-800/80"
-                      : "bg-zinc-900/90 text-zinc-400 border border-zinc-700/80"
-                  }`}
+                      ? "warning"
+                      : "secondary"
+                  }
                 >
                   {exh.status}
-                </span>
+                </Badge>
                 <span className="text-xs text-zinc-500 font-medium uppercase tracking-wider">
                   {new Date(exh.startDate).toLocaleDateString("en-US", {
                     month: "short",
@@ -72,7 +76,7 @@ export default async function ExhibitionsPage() {
                 </span>
               </div>
 
-              <h2 className="font-serif text-3xl text-white">{exh.title}</h2>
+              <h2 className="font-serif text-2xl sm:text-3xl text-white">{exh.title}</h2>
               <p className="text-xs text-[#d1a86e] font-medium">{exh.subtitle}</p>
 
               <div className="flex items-center gap-2 text-xs text-zinc-300">
@@ -85,16 +89,18 @@ export default async function ExhibitionsPage() {
               </p>
 
               <div className="pt-2">
-                <Link
-                  href={`/exhibitions/${exh.slug}`}
-                  className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[#d1a86e] hover:text-[#e2c18d] font-semibold transition-colors"
-                >
-                  <span>Exhibition Dossier &amp; Canvases</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
+                <Button asChild variant="outline" className="border-[#d1a86e]/40 hover:bg-[#d1a86e]/10 text-[#d1a86e] hover:text-[#e2c18d] text-xs uppercase tracking-[0.2em] font-semibold">
+                  <Link
+                    href={`/exhibitions/${exh.slug}`}
+                    className="inline-flex items-center gap-2"
+                  >
+                    <span>Exhibition Dossier &amp; Canvases</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </Button>
               </div>
             </div>
-          </div>
+          </Card>
         ))}
       </div>
     </div>

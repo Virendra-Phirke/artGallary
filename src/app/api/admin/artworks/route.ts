@@ -25,11 +25,20 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json().catch(() => ({}));
-    if (!body.title || typeof body.title !== "string" || body.title.trim().length < 2) {
-      return NextResponse.json({ error: "Artwork title is required" }, { status: 400 });
+    const isUpdate = Boolean(body.id);
+
+    // Title is required only when creating new artwork
+    if (!isUpdate) {
+      if (!body.title || typeof body.title !== "string" || body.title.trim().length < 2) {
+        return NextResponse.json({ error: "Artwork title is required (min 2 characters)" }, { status: 400 });
+      }
+    } else if (body.title !== undefined) {
+      if (typeof body.title !== "string" || body.title.trim().length < 2) {
+        return NextResponse.json({ error: "Artwork title must be at least 2 characters" }, { status: 400 });
+      }
     }
 
-    // Validate AR configuration parameters
+    // Validate AR configuration parameters if provided
     if (body.arConfig) {
       const minScale = Number(body.arConfig.minScale ?? 0.5);
       const maxScale = Number(body.arConfig.maxScale ?? 2.0);
@@ -64,6 +73,10 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     return NextResponse.json({ error: error.message || "Failed to save artwork" }, { status: 500 });
   }
+}
+
+export async function PATCH(request: NextRequest) {
+  return POST(request);
 }
 
 export async function DELETE(request: NextRequest) {

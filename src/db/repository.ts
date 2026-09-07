@@ -303,80 +303,112 @@ export async function getArtworkById(id: string): Promise<MockArtwork | null> {
   }
 }
 
-export async function saveArtwork(data: Partial<MockArtwork>): Promise<MockArtwork> {
+export async function saveArtwork(data: Partial<MockArtwork> & { collectionId?: string }): Promise<MockArtwork> {
   const db = getDb();
   if (!db) throw new Error("Database connection unavailable");
 
   try {
     const existing = await getArtworkById(data.id || data.slug || "");
     if (existing) {
+      const updateFields: Record<string, any> = { updatedAt: new Date() };
+      if (data.title !== undefined) updateFields.title = data.title;
+      if (data.slug !== undefined) updateFields.slug = data.slug;
+      if (data.description !== undefined) updateFields.description = data.description;
+      if (data.longDescription !== undefined) updateFields.longDescription = data.longDescription;
+      if (data.year !== undefined) updateFields.year = data.year;
+      if (data.medium !== undefined) updateFields.medium = data.medium;
+      if (data.widthCm !== undefined) updateFields.widthCm = String(data.widthCm);
+      if (data.heightCm !== undefined) updateFields.heightCm = String(data.heightCm);
+      if (data.depthCm !== undefined) updateFields.depthCm = data.depthCm ? String(data.depthCm) : null;
+      if (data.price !== undefined) updateFields.price = data.price ? String(data.price) : null;
+      if (data.currency !== undefined) updateFields.currency = data.currency;
+      if (data.status !== undefined) updateFields.status = data.status;
+      if (data.coverImageUrl !== undefined) updateFields.coverImageUrl = data.coverImageUrl;
+      if (data.altText !== undefined) updateFields.altText = data.altText;
+      if (data.isFeatured !== undefined) updateFields.isFeatured = data.isFeatured;
+      if (data.seoTitle !== undefined) updateFields.seoTitle = data.seoTitle;
+      if (data.seoDescription !== undefined) updateFields.seoDescription = data.seoDescription;
+
       await db
         .update(schema.artworks)
-        .set({
-          title: data.title,
-          slug: data.slug,
-          description: data.description,
-          longDescription: data.longDescription,
-          year: data.year,
-          medium: data.medium,
-          widthCm: data.widthCm ? String(data.widthCm) : undefined,
-          heightCm: data.heightCm ? String(data.heightCm) : undefined,
-          depthCm: data.depthCm ? String(data.depthCm) : undefined,
-          price: data.price ? String(data.price) : undefined,
-          currency: data.currency,
-          status: data.status,
-          coverImageUrl: data.coverImageUrl,
-          altText: data.altText,
-          isFeatured: data.isFeatured,
-          updatedAt: new Date(),
-        })
+        .set(updateFields)
         .where(eq(schema.artworks.id, existing.id));
 
+      // Handle Collection Association
+      if (data.collectionSlug !== undefined || data.collectionId !== undefined) {
+        let targetColId = data.collectionId;
+        if (!targetColId && data.collectionSlug) {
+          if (data.collectionSlug === "none" || data.collectionSlug === "") {
+            await db
+              .delete(schema.collectionArtworks)
+              .where(eq(schema.collectionArtworks.artworkId, existing.id));
+          } else {
+            const col = await db
+              .select({ id: schema.collections.id })
+              .from(schema.collections)
+              .where(eq(schema.collections.slug, data.collectionSlug))
+              .limit(1);
+            if (col.length > 0) targetColId = col[0].id;
+          }
+        }
+
+        if (targetColId) {
+          await db
+            .delete(schema.collectionArtworks)
+            .where(eq(schema.collectionArtworks.artworkId, existing.id));
+          await db.insert(schema.collectionArtworks).values({
+            collectionId: targetColId,
+            artworkId: existing.id,
+            displayOrder: 99,
+          });
+        }
+      }
+
       if (data.arConfig) {
+        const arFields: Record<string, any> = { updatedAt: new Date() };
+        if (data.arConfig.isArEnabled !== undefined) arFields.isArEnabled = data.arConfig.isArEnabled;
+        if (data.arConfig.defaultWidthCm !== undefined) arFields.defaultWidthCm = String(data.arConfig.defaultWidthCm);
+        if (data.arConfig.defaultHeightCm !== undefined) arFields.defaultHeightCm = String(data.arConfig.defaultHeightCm);
+        if (data.arConfig.defaultScale !== undefined) arFields.defaultScale = String(data.arConfig.defaultScale);
+        if (data.arConfig.defaultRotation !== undefined) arFields.defaultRotation = String(data.arConfig.defaultRotation);
+        if (data.arConfig.minScale !== undefined) arFields.minScale = String(data.arConfig.minScale);
+        if (data.arConfig.maxScale !== undefined) arFields.maxScale = String(data.arConfig.maxScale);
+        if (data.arConfig.placementMode !== undefined) arFields.placementMode = data.arConfig.placementMode;
+        if (data.arConfig.frameEnabled !== undefined) arFields.frameEnabled = data.arConfig.frameEnabled;
+        if (data.arConfig.frameType !== undefined) arFields.frameType = data.arConfig.frameType;
+        if (data.arConfig.frameDepthCm !== undefined) arFields.frameDepthCm = String(data.arConfig.frameDepthCm);
+        if (data.arConfig.frameWidthCm !== undefined) arFields.frameWidthCm = String(data.arConfig.frameWidthCm);
+        if (data.arConfig.matColor !== undefined) arFields.matColor = data.arConfig.matColor;
+        if (data.arConfig.arReadinessStatus !== undefined) arFields.arReadinessStatus = data.arConfig.arReadinessStatus;
+        if (data.arConfig.arInstructions !== undefined) arFields.arInstructions = data.arConfig.arInstructions;
+
         await db
           .insert(schema.artworkAr)
           .values({
             artworkId: existing.id,
-            isArEnabled: data.arConfig.isArEnabled,
-            defaultWidthCm: String(data.arConfig.defaultWidthCm),
-            defaultHeightCm: String(data.arConfig.defaultHeightCm),
+            isArEnabled: data.arConfig.isArEnabled ?? true,
+            defaultWidthCm: String(data.arConfig.defaultWidthCm ?? existing.widthCm),
+            defaultHeightCm: String(data.arConfig.defaultHeightCm ?? existing.heightCm),
             defaultScale: String(data.arConfig.defaultScale ?? 1.0),
             defaultRotation: String(data.arConfig.defaultRotation ?? 0.0),
             minScale: String(data.arConfig.minScale ?? 0.5),
             maxScale: String(data.arConfig.maxScale ?? 2.0),
             placementMode: data.arConfig.placementMode || "wall",
-            frameEnabled: data.arConfig.frameEnabled,
-            frameType: data.arConfig.frameType,
-            frameDepthCm: String(data.arConfig.frameDepthCm),
-            frameWidthCm: String(data.arConfig.frameWidthCm),
-            matColor: data.arConfig.matColor,
-            arReadinessStatus: data.arConfig.arReadinessStatus,
-            arInstructions: data.arConfig.arInstructions,
+            frameEnabled: data.arConfig.frameEnabled ?? false,
+            frameType: data.arConfig.frameType || "minimal_black",
+            frameDepthCm: String(data.arConfig.frameDepthCm ?? 3.5),
+            frameWidthCm: String(data.arConfig.frameWidthCm ?? 3.0),
+            matColor: data.arConfig.matColor || "#FFFFFF",
+            arReadinessStatus: data.arConfig.arReadinessStatus || "ready",
+            arInstructions: data.arConfig.arInstructions || "Point camera at eye level on a flat wall.",
           })
           .onConflictDoUpdate({
             target: schema.artworkAr.artworkId,
-            set: {
-              isArEnabled: data.arConfig.isArEnabled,
-              defaultWidthCm: String(data.arConfig.defaultWidthCm),
-              defaultHeightCm: String(data.arConfig.defaultHeightCm),
-              defaultScale: String(data.arConfig.defaultScale ?? 1.0),
-              defaultRotation: String(data.arConfig.defaultRotation ?? 0.0),
-              minScale: String(data.arConfig.minScale ?? 0.5),
-              maxScale: String(data.arConfig.maxScale ?? 2.0),
-              placementMode: data.arConfig.placementMode || "wall",
-              frameEnabled: data.arConfig.frameEnabled,
-              frameType: data.arConfig.frameType,
-              frameDepthCm: String(data.arConfig.frameDepthCm),
-              frameWidthCm: String(data.arConfig.frameWidthCm),
-              matColor: data.arConfig.matColor,
-              arReadinessStatus: data.arConfig.arReadinessStatus,
-              arInstructions: data.arConfig.arInstructions,
-              updatedAt: new Date(),
-            },
+            set: arFields,
           });
       }
 
-      recordActivityLog("UPDATE_ARTWORK", "artwork", `Updated artwork '${data.title}'`, existing.id);
+      recordActivityLog("UPDATE_ARTWORK", "artwork", `Updated artwork '${data.title || existing.title}'`, existing.id);
       const updated = await getArtworkById(existing.id);
       if (updated) return updated;
       return existing;
@@ -404,28 +436,49 @@ export async function saveArtwork(data: Partial<MockArtwork>): Promise<MockArtwo
         .returning({ id: schema.artworks.id });
 
       const newId = inserted[0]?.id;
+
+      // Handle Collection Association on Create
+      if (newId && (data.collectionSlug || data.collectionId)) {
+        let targetColId = data.collectionId;
+        if (!targetColId && data.collectionSlug && data.collectionSlug !== "none") {
+          const col = await db
+            .select({ id: schema.collections.id })
+            .from(schema.collections)
+            .where(eq(schema.collections.slug, data.collectionSlug))
+            .limit(1);
+          if (col.length > 0) targetColId = col[0].id;
+        }
+        if (targetColId) {
+          await db.insert(schema.collectionArtworks).values({
+            collectionId: targetColId,
+            artworkId: newId,
+            displayOrder: 99,
+          });
+        }
+      }
+
       if (newId && data.arConfig) {
         await db.insert(schema.artworkAr).values({
           artworkId: newId,
-          isArEnabled: data.arConfig.isArEnabled,
-          defaultWidthCm: String(data.arConfig.defaultWidthCm),
-          defaultHeightCm: String(data.arConfig.defaultHeightCm),
+          isArEnabled: data.arConfig.isArEnabled ?? true,
+          defaultWidthCm: String(data.arConfig.defaultWidthCm ?? data.widthCm ?? 100),
+          defaultHeightCm: String(data.arConfig.defaultHeightCm ?? data.heightCm ?? 80),
           defaultScale: String(data.arConfig.defaultScale ?? 1.0),
           defaultRotation: String(data.arConfig.defaultRotation ?? 0.0),
           minScale: String(data.arConfig.minScale ?? 0.5),
           maxScale: String(data.arConfig.maxScale ?? 2.0),
           placementMode: data.arConfig.placementMode || "wall",
-          frameEnabled: data.arConfig.frameEnabled,
-          frameType: data.arConfig.frameType,
-          frameDepthCm: String(data.arConfig.frameDepthCm),
-          frameWidthCm: String(data.arConfig.frameWidthCm),
-          matColor: data.arConfig.matColor,
-          arReadinessStatus: data.arConfig.arReadinessStatus,
-          arInstructions: data.arConfig.arInstructions,
+          frameEnabled: data.arConfig.frameEnabled ?? false,
+          frameType: data.arConfig.frameType || "minimal_black",
+          frameDepthCm: String(data.arConfig.frameDepthCm ?? 3.5),
+          frameWidthCm: String(data.arConfig.frameWidthCm ?? 3.0),
+          matColor: data.arConfig.matColor || "#FFFFFF",
+          arReadinessStatus: data.arConfig.arReadinessStatus || "ready",
+          arInstructions: data.arConfig.arInstructions || "Point camera at eye level on a flat wall.",
         });
       }
 
-      recordActivityLog("CREATE_ARTWORK", "artwork", `Created artwork '${data.title}'`, newId);
+      recordActivityLog("CREATE_ARTWORK", "artwork", `Created artwork '${data.title || "Untitled"}'`, newId);
       const created = await getArtworkById(newId);
       if (created) return created;
       throw new Error("Failed to retrieve created artwork");
@@ -745,46 +798,61 @@ export async function getExhibitionBySlug(slug: string): Promise<MockExhibition 
   }
 }
 
-export async function saveCollection(data: Partial<MockCollection> & { title: string }): Promise<MockCollection> {
+export async function saveCollection(
+  data: Partial<MockCollection> & { title?: string; artworkIds?: string[] }
+): Promise<MockCollection> {
   const db = getDb();
   if (!db) throw new Error("Database connection unavailable");
 
   try {
     if (data.id) {
       // Update existing
+      const updateFields: Record<string, any> = { updatedAt: new Date() };
+      if (data.title !== undefined) updateFields.title = data.title;
+      if (data.slug !== undefined) updateFields.slug = data.slug;
+      if (data.description !== undefined) updateFields.description = data.description;
+      if (data.curatorialStatement !== undefined) updateFields.curatorialStatement = data.curatorialStatement;
+      if (data.coverImageUrl !== undefined) updateFields.coverImageUrl = data.coverImageUrl;
+      if (data.isPublished !== undefined) updateFields.isPublished = data.isPublished;
+      if (data.displayOrder !== undefined) updateFields.displayOrder = data.displayOrder;
+
       await db
         .update(schema.collections)
-        .set({
-          title: data.title,
-          slug: data.slug || data.title.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, ""),
-          description: data.description || "",
-          curatorialStatement: data.curatorialStatement,
-          coverImageUrl: data.coverImageUrl,
-          isPublished: data.isPublished,
-          displayOrder: data.displayOrder,
-          updatedAt: new Date(),
-        })
+        .set(updateFields)
         .where(eq(schema.collections.id, data.id));
 
-      recordActivityLog("UPDATE_COLLECTION", "collection", `Updated collection '${data.title}'`, data.id);
+      if (data.artworkIds && Array.isArray(data.artworkIds)) {
+        await updateCollectionArtworks(data.id, data.artworkIds);
+      }
+
+      recordActivityLog("UPDATE_COLLECTION", "collection", `Updated collection '${data.title || data.id}'`, data.id);
     } else {
       // Create new
-      const slug = data.slug || data.title.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "");
+      const slug =
+        data.slug ||
+        (data.title
+          ? data.title.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "")
+          : `collection-${Date.now()}`);
       const inserted = await db
         .insert(schema.collections)
         .values({
           slug,
-          title: data.title,
+          title: data.title || "Untitled Collection",
           description: data.description || "",
           curatorialStatement: data.curatorialStatement || "",
-          coverImageUrl: data.coverImageUrl,
+          coverImageUrl: data.coverImageUrl || DEFAULT_VERIFIED_COVER,
           isPublished: data.isPublished ?? false,
           displayOrder: data.displayOrder ?? 99,
         })
         .returning({ id: schema.collections.id });
 
       data.id = inserted[0]?.id;
-      recordActivityLog("CREATE_COLLECTION", "collection", `Created collection '${data.title}'`, data.id);
+
+      if (data.id && data.artworkIds && Array.isArray(data.artworkIds)) {
+        await updateCollectionArtworks(data.id, data.artworkIds);
+      }
+
+      recordActivityLog("CREATE_COLLECTION", "collection", `Created collection '${data.title || "Untitled"}'`, data.id);
     }
 
     // Refresh
@@ -875,49 +943,53 @@ export async function saveExhibition(data: Partial<MockExhibition> & { title: st
   try {
     if (data.id) {
       // Update existing
+      const updateFields: Record<string, any> = { updatedAt: new Date() };
+      if (data.title !== undefined) updateFields.title = data.title;
+      if (data.slug !== undefined) updateFields.slug = data.slug;
+      if (data.subtitle !== undefined) updateFields.subtitle = data.subtitle;
+      if (data.description !== undefined) updateFields.description = data.description;
+      if (data.curatorNote !== undefined) updateFields.curatorNote = data.curatorNote;
+      if (data.location !== undefined) updateFields.location = data.location;
+      if (data.startDate !== undefined) updateFields.startDate = new Date(data.startDate);
+      if (data.endDate !== undefined) updateFields.endDate = new Date(data.endDate);
+      if (data.status !== undefined) updateFields.status = data.status;
+      if (data.coverImageUrl !== undefined) updateFields.coverImageUrl = data.coverImageUrl;
+      if (data.isPublished !== undefined) updateFields.isPublished = data.isPublished;
+      if (data.displayOrder !== undefined) updateFields.displayOrder = data.displayOrder;
+
       await db
         .update(schema.exhibitions)
-        .set({
-          title: data.title,
-          slug: data.slug || data.title.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, ""),
-          subtitle: data.subtitle,
-          description: data.description || "",
-          curatorNote: data.curatorNote,
-          location: data.location || "",
-          startDate: data.startDate ? new Date(data.startDate) : new Date(),
-          endDate: data.endDate ? new Date(data.endDate) : new Date(),
-          status: data.status || "upcoming",
-          coverImageUrl: data.coverImageUrl,
-          isPublished: data.isPublished,
-          displayOrder: data.displayOrder,
-          updatedAt: new Date(),
-        })
+        .set(updateFields)
         .where(eq(schema.exhibitions.id, data.id));
 
-      recordActivityLog("UPDATE_EXHIBITION", "exhibition", `Updated exhibition '${data.title}'`, data.id);
+      recordActivityLog("UPDATE_EXHIBITION", "exhibition", `Updated exhibition '${data.title || data.id}'`, data.id);
     } else {
       // Create new
-      const slug = data.slug || data.title.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "");
+      const slug =
+        data.slug ||
+        (data.title
+          ? data.title.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "")
+          : `exhibition-${Date.now()}`);
       const inserted = await db
         .insert(schema.exhibitions)
         .values({
           slug,
-          title: data.title,
+          title: data.title || "Untitled Exhibition",
           subtitle: data.subtitle || "",
           description: data.description || "",
           curatorNote: data.curatorNote || "",
-          location: data.location || "",
+          location: data.location || "Paris Contemporary Pavilion",
           startDate: data.startDate ? new Date(data.startDate) : new Date(),
-          endDate: data.endDate ? new Date(data.endDate) : new Date(),
+          endDate: data.endDate ? new Date(data.endDate) : new Date(Date.now() + 30 * 86400000),
           status: data.status || "upcoming",
-          coverImageUrl: data.coverImageUrl,
+          coverImageUrl: data.coverImageUrl || DEFAULT_VERIFIED_COVER,
           isPublished: data.isPublished ?? false,
           displayOrder: data.displayOrder ?? 99,
         })
         .returning({ id: schema.exhibitions.id });
 
       data.id = inserted[0]?.id;
-      recordActivityLog("CREATE_EXHIBITION", "exhibition", `Created exhibition '${data.title}'`, data.id);
+      recordActivityLog("CREATE_EXHIBITION", "exhibition", `Created exhibition '${data.title || "Untitled"}'`, data.id);
     }
 
     // Refresh

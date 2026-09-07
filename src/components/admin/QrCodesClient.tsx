@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { MockArtwork } from "@/db/mockData";
 import { QrCode, Download, Printer, Sparkles, ExternalLink } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 interface QrCodesClientProps {
   artworks: MockArtwork[];
@@ -52,7 +54,7 @@ export function QrCodesClient({ artworks }: QrCodesClientProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
         {/* Controls Column (5 Cols) */}
-        <div className="md:col-span-5 p-6 bg-[#14151a] border border-[#262833] rounded-2xl space-y-5">
+        <Card className="md:col-span-5 p-5 sm:p-6 bg-[#14151a] border-[#262833] rounded-2xl space-y-5">
           <h2 className="font-serif text-lg text-white">Select Artwork &amp; Target</h2>
 
           <div>
@@ -80,28 +82,30 @@ export function QrCodesClient({ artworks }: QrCodesClientProps) {
               Scan Destination
             </label>
             <div className="grid grid-cols-2 gap-2">
-              <button
+              <Button
                 type="button"
+                variant={targetType === "artwork" ? "default" : "secondary"}
                 onClick={() => setTargetType("artwork")}
-                className={`py-2 px-3 rounded-lg border text-xs font-medium transition-colors ${
+                className={`py-2 px-3 text-xs font-medium h-9 ${
                   targetType === "artwork"
-                    ? "bg-[#d1a86e] text-[#0d0e12] border-[#d1a86e] font-semibold"
-                    : "bg-[#1a1c23] text-zinc-400 border-[#262833]"
+                    ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
+                    : "bg-[#1a1c23] text-zinc-400 border border-[#262833]"
                 }`}
               >
                 Artwork Dossier
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
+                variant={targetType === "ar" ? "default" : "secondary"}
                 onClick={() => setTargetType("ar")}
-                className={`py-2 px-3 rounded-lg border text-xs font-medium transition-colors ${
+                className={`py-2 px-3 text-xs font-medium h-9 ${
                   targetType === "ar"
-                    ? "bg-[#d1a86e] text-[#0d0e12] border-[#d1a86e] font-semibold"
-                    : "bg-[#1a1c23] text-zinc-400 border-[#262833]"
+                    ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
+                    : "bg-[#1a1c23] text-zinc-400 border border-[#262833]"
                 }`}
               >
                 Direct AR Studio
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -110,26 +114,29 @@ export function QrCodesClient({ artworks }: QrCodesClientProps) {
             <span className="text-[#d1a86e]">{targetUrl}</span>
           </div>
 
-          <div className="pt-3 border-t border-[#1f212b] flex gap-3">
-            <button
+          <div className="pt-3 border-t border-[#1f212b] flex flex-col sm:flex-row gap-3">
+            <Button
               onClick={handlePrint}
-              className="flex-1 flex items-center justify-center gap-2 bg-[#22242e] hover:bg-[#2c2f3d] border border-[#262833] text-white py-2.5 rounded-lg text-xs font-medium uppercase tracking-wider transition-colors"
+              variant="outline"
+              className="flex-1 border-[#262833] bg-[#22242e] hover:bg-[#2c2f3d] text-white py-2.5 text-xs font-medium uppercase tracking-wider h-10"
             >
-              <Printer className="w-3.5 h-3.5" />
+              <Printer className="w-3.5 h-3.5 mr-2" />
               <span>Print Plaque</span>
-            </button>
+            </Button>
             {qrDataUrl && (
-              <a
-                href={qrDataUrl}
-                download={`qr-${selectedArtwork.slug}-${targetType}.png`}
-                className="flex-1 flex items-center justify-center gap-2 bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>Save PNG</span>
-              </a>
+              <Button asChild className="flex-1 bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] py-2.5 text-xs font-semibold uppercase tracking-wider h-10 shadow-md">
+                <a
+                  href={qrDataUrl}
+                  download={`qr-${selectedArtwork.slug}-${targetType}.png`}
+                  className="flex items-center justify-center gap-2"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Save PNG</span>
+                </a>
+              </Button>
             )}
           </div>
-        </div>
+        </Card>
 
         {/* Live Exhibition Plaque Preview (7 Cols) */}
         <div className="md:col-span-7 flex justify-center">

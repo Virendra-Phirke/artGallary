@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
+import Script from "next/script";
+import { DevErrorGuard } from "@/components/DevErrorGuard";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -61,7 +63,11 @@ export default function RootLayout({
       lang="en"
       className={`${playfair.variable} ${jakarta.variable} h-full antialiased`}
     >
+      <head>
+        <script src="/dev-guard.js" />
+      </head>
       <body className="min-h-full flex flex-col bg-[#0d0e12] text-[#f4f4f6]">
+        <DevErrorGuard />
         {children}
       </body>
     </html>

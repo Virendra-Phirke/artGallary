@@ -61,23 +61,23 @@ export default async function AdminDashboardPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Link href="/admin/artworks/new">
-            <Button size="sm" className="gap-2">
+          <Button asChild size="sm" className="gap-2">
+            <Link href="/admin/artworks/new">
               <Palette className="w-3.5 h-3.5" />
               <span>New Artwork</span>
-            </Button>
-          </Link>
-          <Link href="/admin/ar-studio">
-            <Button variant="secondary" size="sm" className="gap-2">
+            </Link>
+          </Button>
+          <Button asChild variant="secondary" size="sm" className="gap-2">
+            <Link href="/admin/ar-studio">
               <Sparkles className="w-3.5 h-3.5 text-[#d1a86e]" />
               <span>AR Studio</span>
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </div>
 
       {/* Metrics Row */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
         <Card className="p-5 space-y-1">
           <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">
             Total Artworks

@@ -53,6 +53,7 @@ const emptyForm = {
   curatorialStatement: "",
   coverImageUrl: "",
   isPublished: false,
+  artworkIds: [] as string[],
 };
 
 export function CollectionsManagerClient({
@@ -74,6 +75,9 @@ export function CollectionsManagerClient({
 
   const openEdit = (col: MockCollection) => {
     setEditingId(col.id);
+    const selectedArtworkIds = allArtworks
+      .filter((a) => col.artworkSlugs.includes(a.slug))
+      .map((a) => a.id);
     setForm({
       title: col.title,
       slug: col.slug,
@@ -81,6 +85,7 @@ export function CollectionsManagerClient({
       curatorialStatement: col.curatorialStatement,
       coverImageUrl: col.coverImageUrl,
       isPublished: col.isPublished,
+      artworkIds: selectedArtworkIds,
     });
     setDialogOpen(true);
   };
@@ -373,6 +378,41 @@ export function CollectionsManagerClient({
                 </div>
               )}
             </div>
+
+            {allArtworks.length > 0 && (
+              <div className="space-y-1.5">
+                <label className="text-xs uppercase tracking-wider text-zinc-400 font-medium">
+                  Associated Artworks ({form.artworkIds.length} selected)
+                </label>
+                <div className="max-h-36 overflow-y-auto space-y-1.5 p-2 bg-[#1a1c23] border border-[#262833] rounded-lg">
+                  {allArtworks.map((art) => (
+                    <label
+                      key={art.id}
+                      className="flex items-center gap-2.5 text-xs text-zinc-300 hover:text-white cursor-pointer select-none p-1 rounded hover:bg-[#22242d]"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={form.artworkIds.includes(art.id)}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          setForm((f) => ({
+                            ...f,
+                            artworkIds: checked
+                              ? [...f.artworkIds, art.id]
+                              : f.artworkIds.filter((id) => id !== art.id),
+                          }));
+                        }}
+                        className="w-3.5 h-3.5 rounded border-[#262833] bg-[#14151a] text-[#d1a86e] focus:ring-[#d1a86e]"
+                      />
+                      <span className="truncate">{art.title}</span>
+                      <span className="text-[10px] text-zinc-500 ml-auto font-mono">
+                        {art.status}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="flex items-center gap-3">
               <input

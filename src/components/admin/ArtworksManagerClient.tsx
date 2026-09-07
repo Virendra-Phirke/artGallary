@@ -29,6 +29,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -83,7 +84,7 @@ export function ArtworksManagerClient({
   ) => {
     try {
       const res = await fetch("/api/admin/artworks", {
-        method: "POST",
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: art.id, status: newStatus }),
       });
@@ -91,8 +92,13 @@ export function ArtworksManagerClient({
         setArtworks((prev) =>
           prev.map((a) => (a.id === art.id ? { ...a, status: newStatus } : a))
         );
+      } else {
+        const data = await res.json().catch(() => ({}));
+        console.error("Status update error:", data.error);
       }
-    } catch {}
+    } catch (err) {
+      console.error("Quick status change failed:", err);
+    }
   };
 
   const statusVariantMap: Record<
@@ -120,12 +126,12 @@ export function ArtworksManagerClient({
           </p>
         </div>
 
-        <Link href="/admin/artworks/new">
-          <Button className="gap-2 self-start sm:self-auto shadow-lg shadow-[#d1a86e]/10">
+        <Button asChild className="gap-2 self-start sm:self-auto shadow-lg shadow-[#d1a86e]/10">
+          <Link href="/admin/artworks/new">
             <Plus className="w-4 h-4" />
             <span>New Artwork</span>
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
 
       {/* Filter and Search Bar */}
@@ -165,8 +171,8 @@ export function ArtworksManagerClient({
         </div>
       </div>
 
-      {/* Responsive shadcn Table with Sticky Actions */}
-      <div className="bg-[#14151a] border border-[#262833] rounded-2xl overflow-hidden shadow-2xl">
+      {/* Desktop / Tablet Table View (hidden on mobile) */}
+      <div className="hidden md:block bg-[#14151a] border border-[#262833] rounded-2xl overflow-hidden shadow-2xl">
         <Table>
           <TableHeader>
             <TableRow>
@@ -253,20 +259,20 @@ export function ArtworksManagerClient({
                         <DropdownMenuLabel>Change Status</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         {(
-                          ["published", "draft", "reserved", "sold", "archived"] as const
+                          [
+                            "published",
+                            "draft",
+                            "reserved",
+                            "sold",
+                            "archived",
+                          ] as const
                         ).map((st) => (
                           <DropdownMenuItem
                             key={st}
                             onClick={() => handleQuickStatusChange(art, st)}
-                            className={art.status === st ? "text-[#d1a86e] font-semibold" : ""}
+                            className="capitalize font-mono text-xs"
                           >
-                            <Badge
-                              variant={statusVariantMap[st] || "secondary"}
-                              className="mr-2 text-[9px] px-1.5 py-0"
-                            >
-                              {st}
-                            </Badge>
-                            <span className="capitalize">{st}</span>
+                            {st}
                           </DropdownMenuItem>
                         ))}
                       </DropdownMenuContent>
@@ -276,19 +282,19 @@ export function ArtworksManagerClient({
                   {/* AR Readiness */}
                   <TableCell>
                     {art.arConfig?.arReadinessStatus === "ready" ? (
-                      <Badge variant="success" className="gap-1 text-[9px] font-mono">
-                        <CheckCircle2 className="w-3 h-3" />
+                      <Badge variant="success" className="gap-1 text-[9px]">
+                        <CheckCircle2 className="w-2.5 h-2.5" />
                         <span>READY</span>
                       </Badge>
                     ) : (
-                      <Badge variant="warning" className="gap-1 text-[9px] font-mono">
-                        <AlertCircle className="w-3 h-3" />
-                        <span>CALIBRATE</span>
+                      <Badge variant="warning" className="gap-1 text-[9px]">
+                        <AlertCircle className="w-2.5 h-2.5" />
+                        <span>NEEDS ATTENTION</span>
                       </Badge>
                     )}
                   </TableCell>
 
-                  {/* Actions Column (Sticky on right to never get clipped) */}
+                  {/* Actions Column (Sticky on right) */}
                   <TableCell className="text-right sticky right-0 bg-[#14151a] group-hover:bg-[#1a1c23]/90 transition-colors">
                     <div className="flex items-center justify-end gap-1.5">
                       <Link
@@ -364,6 +370,113 @@ export function ArtworksManagerClient({
             )}
           </TableBody>
         </Table>
+      </div>
+
+      {/* Mobile Card List View (visible only on small screens < 768px) */}
+      <div className="md:hidden space-y-3">
+        {filtered.length === 0 ? (
+          <Card className="p-8 text-center text-zinc-500 text-xs">
+            No artworks found matching your filter criteria.
+          </Card>
+        ) : (
+          filtered.map((art) => (
+            <Card key={art.id} className="p-4 bg-[#14151a] space-y-3">
+              <div className="flex items-start gap-3">
+                <div className="relative w-16 h-14 rounded-lg overflow-hidden bg-black/40 border border-[#262833] shrink-0">
+                  <Image
+                    src={art.coverImageUrl}
+                    alt={art.altText || art.title}
+                    fill
+                    sizes="64px"
+                    className="object-cover"
+                  />
+                </div>
+                <div className="flex-1 min-w-0 space-y-0.5">
+                  <span className="font-serif text-sm text-white font-medium block truncate">
+                    {art.title}
+                  </span>
+                  <p className="text-[11px] text-zinc-400 truncate">
+                    {art.medium} ({art.year})
+                  </p>
+                  <p className="text-xs font-semibold text-[#d1a86e] font-mono">
+                    {formatCurrency(art.price, art.currency)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-[#1f212b] flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        type="button"
+                        className="inline-flex items-center gap-1 focus:outline-none"
+                      >
+                        <Badge
+                          variant={statusVariantMap[art.status] || "secondary"}
+                          className="cursor-pointer text-[10px] font-mono font-bold"
+                        >
+                          <span>{art.status}</span>
+                          <ChevronDown className="w-2.5 h-2.5 opacity-70" />
+                        </Badge>
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start">
+                      <DropdownMenuLabel>Change Status</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      {(
+                        [
+                          "published",
+                          "draft",
+                          "reserved",
+                          "sold",
+                          "archived",
+                        ] as const
+                      ).map((st) => (
+                        <DropdownMenuItem
+                          key={st}
+                          onClick={() => handleQuickStatusChange(art, st)}
+                          className="capitalize font-mono text-xs"
+                        >
+                          {st}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+                  {art.arConfig?.arReadinessStatus === "ready" ? (
+                    <Badge variant="success" className="text-[9px] py-0 px-1.5">
+                      AR READY
+                    </Badge>
+                  ) : (
+                    <Badge variant="warning" className="text-[9px] py-0 px-1.5">
+                      ATTENTION
+                    </Badge>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-1">
+                  <Button asChild variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-white">
+                    <Link href={`/artwork/${art.slug}`} target="_blank" title="Preview">
+                      <Eye className="w-3.5 h-3.5" />
+                    </Link>
+                  </Button>
+                  <Button asChild variant="ghost" size="icon" className="h-8 w-8 text-[#d1a86e] hover:text-[#e2c18d]">
+                    <Link href={`/ar/${art.slug}`} target="_blank" title="AR">
+                      <Sparkles className="w-3.5 h-3.5" />
+                    </Link>
+                  </Button>
+                  <Button asChild variant="secondary" size="sm" className="h-8 px-2.5 text-xs">
+                    <Link href={`/admin/artworks/${art.id}`}>
+                      <Edit className="w-3.5 h-3.5 mr-1" />
+                      <span>Edit</span>
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          ))
+        )}
       </div>
     </div>
   );

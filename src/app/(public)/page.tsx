@@ -17,6 +17,8 @@ import {
   getSiteSettings,
 } from "@/db/repository";
 import { formatCurrency, formatDimensions } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 export const revalidate = 60; // ISR revalidation every 60s
 
@@ -80,43 +82,41 @@ export default async function HomePage() {
                     {description}
                   </p>
 
-                  <div className="pt-2 flex flex-wrap items-center gap-4">
-                    <Link
-                      href={ctaUrl}
-                      className="flex items-center gap-2.5 bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] px-7 py-3.5 rounded-full text-xs font-semibold uppercase tracking-[0.2em] transition-all shadow-xl shadow-[#d1a86e]/15"
-                    >
-                      <span>{ctaText}</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
+                  <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+                    <Button asChild size="lg" className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] shadow-xl shadow-[#d1a86e]/15">
+                      <Link href={ctaUrl} className="flex items-center justify-center gap-2.5">
+                        <span>{ctaText}</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                    </Button>
 
                     {heroArtwork && (
-                      <Link
-                        href={`/ar/${heroArtwork.slug}`}
-                        className="flex items-center gap-2 bg-[#18191e] hover:bg-[#22232a] border border-[#262833] text-white px-6 py-3.5 rounded-full text-xs font-medium uppercase tracking-[0.2em] transition-colors"
-                      >
-                        <Sparkles className="w-4 h-4 text-[#d1a86e]" />
-                        <span>View in Your Space (AR)</span>
-                      </Link>
+                      <Button asChild variant="secondary" size="lg" className="rounded-full border-[#262833] bg-[#18191e] hover:bg-[#22232a] text-white px-6 py-3.5 text-xs font-medium uppercase tracking-[0.2em]">
+                        <Link href={`/ar/${heroArtwork.slug}`} className="flex items-center justify-center gap-2">
+                          <Sparkles className="w-4 h-4 text-[#d1a86e]" />
+                          <span>View in Your Space (AR)</span>
+                        </Link>
+                      </Button>
                     )}
                   </div>
 
                   {/* Quick Metrics */}
-                  <div className="pt-8 border-t border-[#1c1d25] grid grid-cols-3 gap-6 text-left">
+                  <div className="pt-8 border-t border-[#1c1d25] grid grid-cols-3 gap-3 sm:gap-6 text-left">
                     <div>
-                      <span className="block font-serif text-2xl text-white">20+</span>
-                      <span className="text-[10px] tracking-widest uppercase text-zinc-500">
+                      <span className="block font-serif text-xl sm:text-2xl text-white">20+</span>
+                      <span className="text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest uppercase text-zinc-500">
                         Oil Glaze Layers
                       </span>
                     </div>
                     <div>
-                      <span className="block font-serif text-2xl text-white">1:1</span>
-                      <span className="text-[10px] tracking-widest uppercase text-zinc-500">
+                      <span className="block font-serif text-xl sm:text-2xl text-white">1:1</span>
+                      <span className="text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest uppercase text-zinc-500">
                         Spatial Scale AR
                       </span>
                     </div>
                     <div>
-                      <span className="block font-serif text-2xl text-white">Paris</span>
-                      <span className="text-[10px] tracking-widest uppercase text-zinc-500">
+                      <span className="block font-serif text-xl sm:text-2xl text-white">Paris</span>
+                      <span className="text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest uppercase text-zinc-500">
                         Permanent Studio
                       </span>
                     </div>
@@ -199,7 +199,7 @@ export default async function HomePage() {
                 </Link>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                 {artworks.slice(0, 6).map((art) => (
                   <div key={art.id} className="group flex flex-col space-y-4">
                     <div className="relative aspect-[4/3] rounded-lg overflow-hidden bg-[#14151a] border border-[#262833]">
@@ -207,23 +207,23 @@ export default async function HomePage() {
                         src={art.coverImageUrl}
                         alt={art.altText}
                         fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
 
                       {/* Status Badge */}
                       <div className="absolute top-3 left-3">
-                        <span
-                          className={`text-[10px] tracking-widest uppercase px-2.5 py-1 rounded-full font-medium ${
+                        <Badge
+                          variant={
                             art.status === "published"
-                              ? "bg-emerald-950/80 text-emerald-300 border border-emerald-800/60"
+                              ? "success"
                               : art.status === "reserved"
-                              ? "bg-amber-950/80 text-amber-300 border border-amber-800/60"
-                              : "bg-zinc-900/80 text-zinc-400 border border-zinc-700/60"
-                          }`}
+                              ? "warning"
+                              : "secondary"
+                          }
                         >
                           {art.status}
-                        </span>
+                        </Badge>
                       </div>
 
                       {/* Quick AR Action Hover */}
@@ -277,8 +277,8 @@ export default async function HomePage() {
           const colImage =
             sec.contentJson?.imageUrl || featuredCollection?.coverImageUrl;
           return (
-            <section key={sec.id} className="bg-[#101116] border-y border-[#1c1d25] py-24">
-              <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <section key={sec.id} className="bg-[#101116] border-y border-[#1c1d25] py-16 sm:py-24">
+              <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
                 <div className="lg:col-span-5 space-y-6">
                   <span className="text-xs tracking-[0.25em] text-[#d1a86e] uppercase font-medium">
                     {sec.subtitle || "Featured Series"}
@@ -329,7 +329,7 @@ export default async function HomePage() {
 
           return (
             <section key={sec.id} className="max-w-7xl mx-auto px-6 md:px-12">
-              <div className="relative rounded-2xl bg-gradient-to-br from-[#14151a] to-[#181920] border border-[#262833] p-8 md:p-14 overflow-hidden shadow-2xl">
+              <div className="relative rounded-2xl bg-gradient-to-br from-[#14151a] to-[#181920] border border-[#262833] p-6 sm:p-10 md:p-14 overflow-hidden shadow-2xl">
                 <div className="max-w-2xl space-y-6 relative z-10">
                   <div className="inline-flex items-center gap-2 text-xs tracking-widest text-[#d1a86e] uppercase font-semibold">
                     <Sparkles className="w-4 h-4" />
@@ -344,13 +344,12 @@ export default async function HomePage() {
                   </p>
 
                   <div className="flex flex-wrap items-center gap-4 pt-2">
-                    <Link
-                      href={ctaLink}
-                      className="flex items-center gap-2 bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] px-7 py-3.5 rounded-full text-xs font-semibold uppercase tracking-[0.2em] transition-all shadow-lg shadow-[#d1a86e]/10"
-                    >
-                      <span>{sec.contentJson?.ctaText || "Launch Spatial Studio"}</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
+                    <Button asChild size="lg" className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] shadow-lg shadow-[#d1a86e]/10">
+                      <Link href={ctaLink} className="flex items-center gap-2">
+                        <span>{sec.contentJson?.ctaText || "Launch Spatial Studio"}</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                    </Button>
                   </div>
 
                   <div className="flex items-center gap-2 text-[11px] text-zinc-400 pt-3">
@@ -481,7 +480,7 @@ export default async function HomePage() {
         if (sec.sectionKey === "contact_cta") {
           return (
             <section key={sec.id} className="max-w-5xl mx-auto px-6 md:px-12 text-center">
-              <div className="rounded-3xl border border-[#262833] bg-[#14151a] p-10 md:p-16 space-y-6 shadow-2xl relative overflow-hidden">
+              <div className="rounded-3xl border border-[#262833] bg-[#14151a] p-6 sm:p-10 md:p-16 space-y-6 shadow-2xl relative overflow-hidden">
                 <div className="inline-flex items-center gap-2 text-xs tracking-widest text-[#d1a86e] uppercase font-medium">
                   <Mail className="w-4 h-4" />
                   <span>{sec.subtitle || "Inquiries & Acquisitions"}</span>
@@ -494,13 +493,15 @@ export default async function HomePage() {
                     "Inquire about acquiring original works, scheduling a private studio viewing, or commissioning bespoke architectural artworks directly with Elena Vance."}
                 </p>
                 <div className="pt-3">
-                  <Link
-                    href={sec.contentJson?.ctaUrl || "/contact"}
-                    className="inline-flex items-center gap-2.5 bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] px-8 py-3.5 rounded-full text-xs font-semibold uppercase tracking-[0.2em] transition-all shadow-xl shadow-[#d1a86e]/15"
-                  >
-                    <span>{sec.contentJson?.ctaText || "Inquire with Studio"}</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
+                  <Button asChild size="lg" className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] px-8 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] shadow-xl shadow-[#d1a86e]/15">
+                    <Link
+                      href={sec.contentJson?.ctaUrl || "/contact"}
+                      className="inline-flex items-center gap-2.5"
+                    >
+                      <span>{sec.contentJson?.ctaText || "Inquire with Studio"}</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </Button>
                 </div>
               </div>
             </section>

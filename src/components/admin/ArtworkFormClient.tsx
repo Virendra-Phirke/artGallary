@@ -13,7 +13,7 @@ import {
   ArrowLeft,
   Eye,
 } from "lucide-react";
-import { MockArtwork } from "@/db/mockData";
+import { MockArtwork, MockCollection } from "@/db/mockData";
 import { slugify, formatDimensions } from "@/lib/utils";
 import { UnsplashPickerModal } from "./UnsplashPickerModal";
 import { ArStudioViewer } from "@/components/ar/ArStudioViewer";
@@ -21,11 +21,13 @@ import { ArStudioViewer } from "@/components/ar/ArStudioViewer";
 interface ArtworkFormClientProps {
   initialArtwork?: MockArtwork;
   isNew?: boolean;
+  collections?: MockCollection[];
 }
 
 export function ArtworkFormClient({
   initialArtwork,
   isNew = false,
+  collections = [],
 }: ArtworkFormClientProps) {
   const router = useRouter();
 
@@ -48,6 +50,9 @@ export function ArtworkFormClient({
   );
   const [altText, setAltText] = useState(initialArtwork?.altText || "");
   const [isFeatured, setIsFeatured] = useState(initialArtwork?.isFeatured || false);
+  const [collectionSlug, setCollectionSlug] = useState(
+    initialArtwork?.collectionSlug || "none"
+  );
 
   // AR Settings
   const [isArEnabled, setIsArEnabled] = useState(
@@ -156,6 +161,7 @@ export function ArtworkFormClient({
         coverImageUrl,
         altText,
         isFeatured,
+        collectionSlug: collectionSlug === "none" ? "" : collectionSlug,
         arConfig: {
           isArEnabled,
           defaultWidthCm: widthCm,
@@ -210,35 +216,35 @@ export function ArtworkFormClient({
           </h1>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5">
           <button
             type="button"
             onClick={() => setIsTestArOpen(true)}
-            className="flex items-center gap-1.5 bg-[#18191e] hover:bg-[#22232a] border border-[#d1a86e]/40 text-[#d1a86e] px-4 py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors shadow-sm"
+            className="flex items-center gap-1.5 bg-[#18191e] hover:bg-[#22232a] border border-[#d1a86e]/40 text-[#d1a86e] px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors shadow-sm"
             title="Launch live 1:1 AR and 3D room calibration test"
           >
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Test AR in Studio</span>
+            <span>Test AR</span>
           </button>
 
           {!isNew && slug && (
             <Link
               href={`/artwork/${slug}`}
               target="_blank"
-              className="flex items-center gap-1.5 bg-[#18191e] hover:bg-[#22232a] border border-[#262833] text-zinc-300 hover:text-white px-4 py-2.5 rounded-lg text-xs font-medium uppercase tracking-wider transition-colors"
+              className="flex items-center gap-1.5 bg-[#18191e] hover:bg-[#22232a] border border-[#262833] text-zinc-300 hover:text-white px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs font-medium uppercase tracking-wider transition-colors"
             >
               <Eye className="w-3.5 h-3.5" />
-              <span>Public Preview</span>
+              <span>Preview</span>
             </Link>
           )}
 
           <button
             type="submit"
             disabled={isSaving}
-            className="flex items-center gap-2 bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] px-6 py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all shadow-lg shadow-[#d1a86e]/10 disabled:opacity-50"
+            className="flex items-center gap-2 bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] px-5 sm:px-6 py-2 sm:py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all shadow-lg shadow-[#d1a86e]/10 disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
-            <span>{isSaving ? "Saving..." : "Save Canvas"}</span>
+            <span>{isSaving ? "Saving..." : "Save"}</span>
           </button>
         </div>
       </div>
@@ -284,7 +290,7 @@ export function ArtworkFormClient({
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-1.5">
                   Year of Creation
@@ -332,6 +338,24 @@ export function ArtworkFormClient({
 
             <div>
               <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-1.5">
+                Thematic Collection
+              </label>
+              <select
+                value={collectionSlug}
+                onChange={(e) => setCollectionSlug(e.target.value)}
+                className="w-full bg-[#1a1c23] border border-[#262833] rounded-lg px-3.5 py-2.5 text-sm text-white focus:border-[#d1a86e] focus:outline-none"
+              >
+                <option value="none">None (Independent Canvas)</option>
+                {collections.map((col) => (
+                  <option key={col.id} value={col.slug}>
+                    {col.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-1.5">
                 Curatorial Excerpt (Catalog Summary)
               </label>
               <textarea
@@ -362,7 +386,7 @@ export function ArtworkFormClient({
           <div className="p-6 bg-[#14151a] border border-[#262833] rounded-2xl space-y-4">
             <h2 className="font-serif text-lg text-white">Dimensions &amp; Valuation</h2>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
               <div>
                 <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-1.5">
                   Width (cm)
@@ -409,7 +433,7 @@ export function ArtworkFormClient({
               Formatted: {formatDimensions(widthCm, heightCm, depthCm)}
             </p>
 
-            <div className="grid grid-cols-2 gap-4 pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
               <div>
                 <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-1.5">
                   Price (Optional)

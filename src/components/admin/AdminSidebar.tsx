@@ -152,15 +152,16 @@ function AdminSidebarInner({ user, children }: AdminSidebarProps) {
 
                   return (
                     <SidebarMenuItem key={item.href}>
-                      <Link href={item.href}>
-                        <SidebarMenuButton
-                          isActive={isActive}
-                          tooltip={item.label}
-                        >
+                      <SidebarMenuButton
+                        asChild
+                        isActive={isActive}
+                        tooltip={item.label}
+                      >
+                        <Link href={item.href}>
                           <Icon className="w-4 h-4 shrink-0 text-[#d1a86e]" />
                           {state !== "collapsed" && <span>{item.label}</span>}
-                        </SidebarMenuButton>
-                      </Link>
+                        </Link>
+                      </SidebarMenuButton>
                     </SidebarMenuItem>
                   );
                 })}

@@ -160,7 +160,7 @@ export function DialogContent({
         role="dialog"
         aria-modal="true"
         className={cn(
-          "relative z-50 w-full max-w-lg rounded-2xl border border-[#262833] bg-[#14151a] p-6 text-[#f4f4f6] shadow-2xl duration-200 animate-in fade-in-0 zoom-in-95",
+          "relative z-50 w-full max-w-lg rounded-2xl border border-[#262833] bg-[#14151a] p-6 text-[#f4f4f6] shadow-2xl duration-200 animate-in fade-in-0 zoom-in-95 max-h-[90vh] overflow-y-auto",
           className
         )}
         {...props}

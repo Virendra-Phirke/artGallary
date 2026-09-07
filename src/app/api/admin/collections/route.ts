@@ -24,8 +24,16 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json().catch(() => ({}));
-    if (!body.title || typeof body.title !== "string" || body.title.trim().length < 2) {
-      return NextResponse.json({ error: "Collection title is required (min 2 characters)" }, { status: 400 });
+    const isUpdate = Boolean(body.id);
+
+    if (!isUpdate) {
+      if (!body.title || typeof body.title !== "string" || body.title.trim().length < 2) {
+        return NextResponse.json({ error: "Collection title is required (min 2 characters)" }, { status: 400 });
+      }
+    } else if (body.title !== undefined) {
+      if (typeof body.title !== "string" || body.title.trim().length < 2) {
+        return NextResponse.json({ error: "Collection title must be at least 2 characters" }, { status: 400 });
+      }
     }
 
     const collection = await saveCollection(body);
@@ -36,6 +44,10 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+export async function PATCH(request: NextRequest) {
+  return POST(request);
 }
 
 export async function DELETE(request: NextRequest) {

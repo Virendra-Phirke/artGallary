@@ -2,6 +2,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Award, GraduationCap, Building2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -27,7 +28,7 @@ export default function AboutPage() {
             />
           </div>
           <div className="mt-3 text-center text-xs text-zinc-500">
-            Studio showcase, 2026. L'Atelier Gallery Archive.
+            Studio showcase, 2026. L&apos;Atelier Gallery Archive.
           </div>
         </div>
 
@@ -55,19 +56,21 @@ export default function AboutPage() {
           </div>
 
           <div className="pt-4">
-            <Link
-              href="/contact"
-              className="inline-flex items-center gap-2 bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-[0.2em] transition-all"
-            >
-              <span>Contact the Studio</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+            <Button asChild size="lg" className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] px-7 py-3 text-xs font-semibold uppercase tracking-[0.2em] shadow-lg shadow-[#d1a86e]/10">
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-2"
+              >
+                <span>Contact the Studio</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </Button>
           </div>
         </div>
       </div>
 
       {/* Artist Statement Section */}
-      <section className="bg-[#14151a] border border-[#262833] rounded-2xl p-8 md:p-14 space-y-6 max-w-4xl mx-auto text-center">
+      <section className="bg-[#14151a] border border-[#262833] rounded-2xl p-6 sm:p-10 md:p-14 space-y-6 max-w-4xl mx-auto text-center">
         <span className="text-xs tracking-[0.25em] text-[#d1a86e] uppercase font-medium">
           Artist Statement
         </span>
@@ -80,7 +83,7 @@ export default function AboutPage() {
       </section>
 
       {/* Curriculum Vitae (CV) */}
-      <div className="border-t border-[#1c1d25] pt-16 grid grid-cols-1 lg:grid-cols-12 gap-12">
+      <div className="border-t border-[#1c1d25] pt-16 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12">
         <div className="lg:col-span-4 space-y-2">
           <span className="text-xs tracking-[0.25em] text-[#d1a86e] uppercase font-medium">
             Curriculum Vitae
@@ -96,13 +99,13 @@ export default function AboutPage() {
               <span>Education &amp; Training</span>
             </h3>
             <div className="space-y-3 text-sm">
-              <div className="flex justify-between border-b border-[#1f212b] pb-2">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline border-b border-[#1f212b] pb-2 gap-1 sm:gap-4">
                 <span className="text-white">École Nationale Supérieure des Beaux-Arts, Paris (DNSAP)</span>
-                <span className="text-zinc-500">2007 – 2011</span>
+                <span className="text-zinc-500 text-xs sm:text-sm">2007 – 2011</span>
               </div>
-              <div className="flex justify-between border-b border-[#1f212b] pb-2">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline border-b border-[#1f212b] pb-2 gap-1 sm:gap-4">
                 <span className="text-white">Research Residency, Mineral Pigment Chemistry, Florence</span>
-                <span className="text-zinc-500">2012</span>
+                <span className="text-zinc-500 text-xs sm:text-sm">2012</span>
               </div>
             </div>
           </div>
@@ -114,21 +117,21 @@ export default function AboutPage() {
               <span>Selected Solo Exhibitions</span>
             </h3>
             <div className="space-y-3 text-sm">
-              <div className="flex justify-between border-b border-[#1f212b] pb-2">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline border-b border-[#1f212b] pb-2 gap-1 sm:gap-4">
                 <span className="text-white">Luminescence at Twilight — Galerie Vivienne, Paris</span>
-                <span className="text-zinc-500">2026</span>
+                <span className="text-zinc-500 text-xs sm:text-sm">2026</span>
               </div>
-              <div className="flex justify-between border-b border-[#1f212b] pb-2">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline border-b border-[#1f212b] pb-2 gap-1 sm:gap-4">
                 <span className="text-white">The Mineral Horizon — Marlborough Fine Art, London</span>
-                <span className="text-zinc-500">2024</span>
+                <span className="text-zinc-500 text-xs sm:text-sm">2024</span>
               </div>
-              <div className="flex justify-between border-b border-[#1f212b] pb-2">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline border-b border-[#1f212b] pb-2 gap-1 sm:gap-4">
                 <span className="text-white">Subterranean Glazes — Ginza Contemporary, Tokyo</span>
-                <span className="text-zinc-500">2023</span>
+                <span className="text-zinc-500 text-xs sm:text-sm">2023</span>
               </div>
-              <div className="flex justify-between border-b border-[#1f212b] pb-2">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline border-b border-[#1f212b] pb-2 gap-1 sm:gap-4">
                 <span className="text-white">Breton Strata — Centre d’Art Passerelle, Brest</span>
-                <span className="text-zinc-500">2021</span>
+                <span className="text-zinc-500 text-xs sm:text-sm">2021</span>
               </div>
             </div>
           </div>
@@ -140,17 +143,17 @@ export default function AboutPage() {
               <span>Honors &amp; Collections</span>
             </h3>
             <div className="space-y-3 text-sm">
-              <div className="flex justify-between border-b border-[#1f212b] pb-2">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline border-b border-[#1f212b] pb-2 gap-1 sm:gap-4">
                 <span className="text-white">Prix Fondation d&apos;Entreprise Ricard (Nominee)</span>
-                <span className="text-zinc-500">2023</span>
+                <span className="text-zinc-500 text-xs sm:text-sm">2023</span>
               </div>
-              <div className="flex justify-between border-b border-[#1f212b] pb-2">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline border-b border-[#1f212b] pb-2 gap-1 sm:gap-4">
                 <span className="text-white">Permanent Acquisition, Geneva Heritage Trust</span>
-                <span className="text-zinc-500">2022</span>
+                <span className="text-zinc-500 text-xs sm:text-sm">2022</span>
               </div>
-              <div className="flex justify-between border-b border-[#1f212b] pb-2">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline border-b border-[#1f212b] pb-2 gap-1 sm:gap-4">
                 <span className="text-white">ADAGP French Registered Visual Artist</span>
-                <span className="text-zinc-500">Active</span>
+                <span className="text-zinc-500 text-xs sm:text-sm">Active</span>
               </div>
             </div>
           </div>

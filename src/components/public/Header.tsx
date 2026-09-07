@@ -3,7 +3,34 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Sparkles, User, Shield, LogOut } from "lucide-react";
+import {
+  Menu,
+  Sparkles,
+  User,
+  Shield,
+  LogOut,
+  ChevronDown,
+  LayoutDashboard,
+  Layers,
+} from "lucide-react";
+import {
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 interface UserSession {
   id: string;
@@ -54,28 +81,30 @@ export function Header() {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-[#0d0e12]/90 backdrop-blur-md border-b border-[#262833]/80 py-4 shadow-xl"
-          : "bg-gradient-to-b from-[#0d0e12]/80 to-transparent py-6"
+          ? "bg-[#0d0e12]/92 backdrop-blur-md border-b border-[#262833]/80 py-3.5 shadow-xl shadow-black/20"
+          : "bg-gradient-to-b from-[#0d0e12]/85 to-transparent py-5 md:py-6"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-5 sm:px-8 md:px-12 flex items-center justify-between">
         {/* Gallery Brand Title */}
         <Link
           href="/"
           className="group flex flex-col items-start focus-visible:outline-none"
         >
-          <span className="font-serif text-xl md:text-2xl tracking-[0.2em] font-medium text-white group-hover:text-[#d1a86e] transition-colors uppercase">
+          <span className="font-serif text-lg sm:text-xl md:text-2xl tracking-[0.2em] font-medium text-white group-hover:text-[#d1a86e] transition-colors uppercase">
             L&apos;Atelier Lumineux
           </span>
-          <span className="text-[10px] tracking-[0.3em] text-[#8e92a4] uppercase font-light -mt-0.5">
+          <span className="text-[9px] sm:text-[10px] tracking-[0.3em] text-[#8e92a4] uppercase font-light -mt-0.5">
             Elena Vance Studio
           </span>
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8">
+        <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
           {navLinks.map((link) => {
-            const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
+            const isActive =
+              pathname === link.href ||
+              (link.href !== "/" && pathname.startsWith(link.href));
             return (
               <Link
                 key={link.href}
@@ -95,130 +124,264 @@ export function Header() {
           })}
         </nav>
 
-        {/* Right CTA / Auth Status */}
-        <div className="hidden md:flex items-center space-x-5">
-          <Link
-            href="/gallery"
-            className="flex items-center gap-1.5 text-xs tracking-widest uppercase text-[#d1a86e] border border-[#d1a86e]/40 hover:border-[#d1a86e] px-3.5 py-1.5 rounded-full transition-all hover:bg-[#d1a86e]/10"
-          >
-            <Sparkles className="w-3 h-3" />
-            <span>AR Preview</span>
-          </Link>
+        {/* Right Desktop CTA & Auth Dropdown */}
+        <div className="hidden md:flex items-center space-x-4">
+          <Button asChild variant="outline" size="sm" className="rounded-full h-8 px-3.5 border-[#d1a86e]/40 hover:border-[#d1a86e] hover:bg-[#d1a86e]/10 text-[#d1a86e]">
+            <Link href="/gallery">
+              <Sparkles className="w-3.5 h-3.5 mr-1" />
+              <span>AR Preview</span>
+            </Link>
+          </Button>
 
           {user ? (
-            <div className="flex items-center gap-3">
-              {user.role === "ADMIN" && (
-                <Link
-                  href="/admin/dashboard"
-                  className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-amber-300 bg-amber-950/40 border border-amber-800/60 px-3 py-1.5 rounded-full hover:bg-amber-900/60 transition-colors"
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  className="flex items-center gap-2 p-1 pl-1.5 pr-2.5 rounded-full bg-[#14151a] border border-[#262833] hover:border-[#383a48] transition-all focus:outline-none"
                 >
-                  <Shield className="w-3.5 h-3.5" />
-                  <span>Admin CMS</span>
-                </Link>
-              )}
-              <Link
-                href="/account"
-                className="flex items-center gap-1.5 text-xs text-zinc-300 hover:text-white transition-colors"
-                title={user.email}
-              >
-                <div className="w-7 h-7 rounded-full bg-[#1a1c23] border border-[#262833] flex items-center justify-center text-xs font-serif text-[#d1a86e]">
-                  {user.name[0]}
-                </div>
-              </Link>
-              <button
-                onClick={handleSignOut}
-                className="text-zinc-500 hover:text-red-400 transition-colors p-1"
-                title="Sign out"
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
-            </div>
+                  <Avatar size="sm" className="h-6 w-6">
+                    <AvatarFallback className="text-[11px] text-[#d1a86e] font-serif">
+                      {user.name?.[0]?.toUpperCase() || "A"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-xs text-zinc-300 font-medium max-w-[90px] truncate">
+                    {user.name}
+                  </span>
+                  <ChevronDown className="w-3 h-3 text-zinc-500" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 p-2">
+                <DropdownMenuLabel className="px-2 py-1.5">
+                  <div className="flex flex-col space-y-0.5">
+                    <span className="text-xs font-semibold text-white truncate">
+                      {user.name}
+                    </span>
+                    <span className="text-[11px] text-zinc-500 font-mono truncate">
+                      {user.email}
+                    </span>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+
+                {user.role === "ADMIN" && (
+                  <DropdownMenuItem asChild>
+                    <Link
+                      href="/admin/dashboard"
+                      className="flex items-center gap-2 text-amber-300 hover:text-amber-200 cursor-pointer"
+                    >
+                      <Shield className="w-3.5 h-3.5 text-amber-400" />
+                      <span>Studio Admin CMS</span>
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+
+                <DropdownMenuItem asChild>
+                  <Link
+                    href="/account"
+                    className="flex items-center gap-2 cursor-pointer"
+                  >
+                    <User className="w-3.5 h-3.5 text-zinc-400" />
+                    <span>My Inquiries & Profile</span>
+                  </Link>
+                </DropdownMenuItem>
+
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={handleSignOut}
+                  className="text-red-400 hover:text-red-300 hover:bg-red-950/40 cursor-pointer"
+                >
+                  <LogOut className="w-3.5 h-3.5 mr-2" />
+                  <span>Sign Out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
-            <Link
-              href="/login"
-              className="text-xs uppercase tracking-[0.15em] text-[#a6aabf] hover:text-white transition-colors flex items-center gap-1.5"
-            >
-              <User className="w-3.5 h-3.5" />
-              <span>Sign In</span>
-            </Link>
+            <Button asChild variant="ghost" size="sm" className="rounded-full text-xs uppercase tracking-wider text-zinc-400 hover:text-white">
+              <Link href="/login">
+                <User className="w-3.5 h-3.5 mr-1.5" />
+                <span>Sign In</span>
+              </Link>
+            </Button>
           )}
         </div>
 
-        {/* Mobile Hamburger Toggle */}
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden text-white p-2 focus-visible:outline-none"
-          aria-label="Toggle navigation menu"
-        >
-          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
-      </div>
-
-      {/* Mobile Drawer Menu */}
-      {mobileMenuOpen && (
-        <div className="md:hidden bg-[#0d0e12] border-b border-[#262833] px-6 py-8 space-y-6 animate-in fade-in slide-in-from-top-4 duration-200">
-          <nav className="flex flex-col space-y-4">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-sm tracking-[0.2em] uppercase font-medium text-zinc-300 hover:text-[#d1a86e] transition-colors py-1"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-
-          <div className="pt-4 border-t border-[#262833] flex flex-col gap-3">
-            <Link
-              href="/gallery"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center justify-center gap-2 text-xs tracking-widest uppercase text-[#d1a86e] border border-[#d1a86e]/40 py-2.5 rounded-full"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Explore AR Studio</span>
+        {/* Mobile Navigation Trigger with shadcn Sheet */}
+        <div className="flex items-center gap-2 md:hidden">
+          <Button asChild variant="outline" size="sm" className="h-7 px-2.5 text-[10px] rounded-full border-[#d1a86e]/40 text-[#d1a86e]">
+            <Link href="/gallery">
+              <Sparkles className="w-3 h-3 mr-1" />
+              <span>AR</span>
             </Link>
+          </Button>
 
-            {user ? (
-              <div className="flex flex-col gap-2 pt-2">
-                {user.role === "ADMIN" && (
-                  <Link
-                    href="/admin/dashboard"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-center gap-2 text-xs uppercase tracking-wider text-amber-300 bg-amber-950/40 border border-amber-800/60 py-2.5 rounded-full"
-                  >
-                    <Shield className="w-4 h-4" />
-                    <span>Admin CMS</span>
-                  </Link>
-                )}
-                <Link
-                  href="/account"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-center gap-2 text-xs text-zinc-300 py-2"
-                >
-                  <User className="w-4 h-4" />
-                  <span>My Account ({user.name})</span>
-                </Link>
-                <button
-                  onClick={handleSignOut}
-                  className="text-xs text-red-400 py-1"
-                >
-                  Sign Out
-                </button>
-              </div>
-            ) : (
-              <Link
-                href="/login"
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-center text-xs uppercase tracking-widest text-zinc-400 hover:text-white py-2"
+          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9 text-white hover:bg-[#1a1c23]"
+                aria-label="Open navigation menu"
               >
-                Sign In / Register
-              </Link>
-            )}
-          </div>
+                <Menu className="w-5 h-5" />
+              </Button>
+            </SheetTrigger>
+
+            <SheetContent
+              side="right"
+              className="w-[85vw] max-w-sm bg-[#0d0e12] border-l border-[#262833] p-6 flex flex-col justify-between"
+            >
+              <div className="space-y-6">
+                <SheetHeader className="text-left border-b border-[#1c1d25] pb-4">
+                  <SheetTitle className="font-serif text-xl tracking-[0.15em] text-white uppercase font-light">
+                    L&apos;Atelier Lumineux
+                  </SheetTitle>
+                  <span className="text-[9px] tracking-[0.3em] text-[#d1a86e] uppercase font-semibold">
+                    Elena Vance Studio
+                  </span>
+                </SheetHeader>
+
+                {/* Navigation Links */}
+                <nav className="flex flex-col space-y-1">
+                  {navLinks.map((link) => {
+                    const isActive =
+                      pathname === link.href ||
+                      (link.href !== "/" && pathname.startsWith(link.href));
+                    return (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-xs uppercase tracking-[0.2em] font-medium transition-colors ${
+                          isActive
+                            ? "bg-[#1a1c23] text-[#d1a86e] font-semibold"
+                            : "text-zinc-400 hover:text-white hover:bg-[#14151a]"
+                        }`}
+                      >
+                        <span>{link.label}</span>
+                        {isActive && (
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#d1a86e]" />
+                        )}
+                      </Link>
+                    );
+                  })}
+                </nav>
+
+                {/* AR Studio CTA */}
+                <div className="p-4 bg-[#14151a] border border-[#262833] rounded-xl space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-white">
+                    <Sparkles className="w-4 h-4 text-[#d1a86e]" />
+                    <span>WebAR Showroom</span>
+                  </div>
+                  <p className="text-[11px] text-zinc-400 leading-relaxed">
+                    Preview original paintings in true 1:1 scale on your wall using device camera.
+                  </p>
+                  <Button
+                    asChild
+                    size="sm"
+                    className="w-full text-xs uppercase tracking-wider"
+                  >
+                    <Link
+                      href="/gallery"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Browse in AR
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+
+              {/* User Session Footer */}
+              <div className="pt-4 border-t border-[#1c1d25] space-y-3">
+                {user ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 p-2 rounded-lg bg-[#14151a]">
+                      <Avatar size="sm" className="h-8 w-8">
+                        <AvatarFallback className="text-xs text-[#d1a86e] font-serif">
+                          {user.name?.[0]?.toUpperCase() || "U"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col min-w-0 flex-1">
+                        <span className="text-xs text-white font-medium truncate">
+                          {user.name}
+                        </span>
+                        <span className="text-[10px] text-zinc-500 font-mono truncate">
+                          {user.email}
+                        </span>
+                      </div>
+                      {user.role === "ADMIN" && (
+                        <Badge variant="warning" className="text-[9px]">
+                          ADMIN
+                        </Badge>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      {user.role === "ADMIN" && (
+                        <Button
+                          asChild
+                          variant="secondary"
+                          size="sm"
+                          className="h-8 text-[11px]"
+                        >
+                          <Link
+                            href="/admin/dashboard"
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            <LayoutDashboard className="w-3.5 h-3.5 mr-1" />
+                            <span>CMS</span>
+                          </Link>
+                        </Button>
+                      )}
+                      <Button
+                        asChild
+                        variant="secondary"
+                        size="sm"
+                        className={`h-8 text-[11px] ${user.role !== "ADMIN" ? "col-span-2" : ""}`}
+                      >
+                        <Link
+                          href="/account"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          <User className="w-3.5 h-3.5 mr-1" />
+                          <span>Account</span>
+                        </Link>
+                      </Button>
+                    </div>
+
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        handleSignOut();
+                      }}
+                      className="w-full text-xs text-red-400 hover:text-red-300 hover:bg-red-950/40 h-8"
+                    >
+                      <LogOut className="w-3.5 h-3.5 mr-1.5" />
+                      <span>Sign Out</span>
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    <Button
+                      asChild
+                      className="w-full text-xs uppercase tracking-wider"
+                    >
+                      <Link
+                        href="/login"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        Sign In / Register
+                      </Link>
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
-      )}
+      </div>
     </header>
   );
 }

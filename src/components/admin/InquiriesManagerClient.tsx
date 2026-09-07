@@ -3,6 +3,9 @@
 import React, { useState } from "react";
 import { MockInquiry } from "@/db/mockData";
 import { Mail, Phone, Clock, CheckCircle2, MessageSquare, Shield } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface InquiriesManagerClientProps {
   initialInquiries: MockInquiry[];
@@ -47,33 +50,35 @@ export function InquiriesManagerClient({
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pb-1 max-w-full">
           {["all", "new", "read", "replied", "closed"].map((st) => (
-            <button
+            <Button
               key={st}
+              size="sm"
+              variant={selectedStatus === st ? "default" : "secondary"}
               onClick={() => setSelectedStatus(st)}
-              className={`text-[11px] uppercase tracking-wider px-3 py-1.5 rounded-md transition-colors ${
+              className={`text-[11px] uppercase tracking-wider h-8 px-3 rounded-md transition-colors ${
                 selectedStatus === st
-                  ? "bg-[#262833] text-[#d1a86e] font-semibold"
-                  : "text-zinc-500 hover:text-zinc-300"
+                  ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
+                  : "bg-[#181920] text-zinc-400 hover:text-zinc-200 border border-[#262833]"
               }`}
             >
               {st}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
 
       <div className="space-y-4">
         {filtered.length === 0 ? (
-          <div className="p-12 text-center bg-[#14151a]/40 border border-[#262833] rounded-2xl text-xs text-zinc-500">
+          <Card className="p-12 text-center bg-[#14151a]/40 border-[#262833] rounded-2xl text-xs text-zinc-500">
             No inquiries matching status &ldquo;{selectedStatus}&rdquo;.
-          </div>
+          </Card>
         ) : (
           filtered.map((inq) => (
-            <div
+            <Card
               key={inq.id}
-              className="p-6 bg-[#14151a] border border-[#262833] rounded-2xl space-y-4 shadow-xl"
+              className="p-5 sm:p-6 bg-[#14151a] border-[#262833] rounded-2xl space-y-4 shadow-xl"
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
@@ -99,7 +104,7 @@ export function InquiriesManagerClient({
                   <h3 className="font-serif text-lg text-white">{inq.name}</h3>
                 </div>
 
-                <div className="flex items-center gap-4 text-xs text-zinc-500">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs text-zinc-500">
                   <div className="flex items-center gap-1.5">
                     <Mail className="w-3.5 h-3.5 text-zinc-400" />
                     <a
@@ -130,15 +135,17 @@ export function InquiriesManagerClient({
               </div>
 
               <div className="pt-2 flex justify-end">
-                <a
-                  href={`mailto:${inq.email}?subject=Re: ${encodeURIComponent(inq.subject)}`}
-                  className="inline-flex items-center gap-2 bg-[#22242e] hover:bg-[#2c2f3d] border border-[#262833] text-white px-4 py-2 rounded-lg text-xs font-medium uppercase tracking-wider transition-colors"
-                >
-                  <Mail className="w-3.5 h-3.5 text-[#d1a86e]" />
-                  <span>Reply via Email</span>
-                </a>
+                <Button asChild size="sm" variant="outline" className="border-[#262833] bg-[#22242e] hover:bg-[#2c2f3d] text-white text-xs font-medium uppercase tracking-wider">
+                  <a
+                    href={`mailto:${inq.email}?subject=Re: ${encodeURIComponent(inq.subject)}`}
+                    className="inline-flex items-center gap-2"
+                  >
+                    <Mail className="w-3.5 h-3.5 text-[#d1a86e]" />
+                    <span>Reply via Email</span>
+                  </a>
+                </Button>
               </div>
-            </div>
+            </Card>
           ))
         )}
       </div>
