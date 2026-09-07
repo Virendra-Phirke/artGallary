@@ -49,11 +49,14 @@ export async function POST(request: NextRequest) {
     );
 
     // 3. Persist media record to Neon PostgreSQL
-    let persistedAsset = { ...asset };
+    const fileUrl = asset.variants?.optimized || asset.variants?.original || "";
+    let persistedAsset: any = {
+      ...asset,
+      fileUrl,
+    };
     const db = getDb();
     if (db) {
       try {
-        const fileUrl = asset.variants?.optimized || asset.variants?.original || "";
         const variantsJson = asset.variants
           ? {
               original: asset.variants.original,

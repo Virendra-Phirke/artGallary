@@ -150,8 +150,13 @@ export function ArtworkFormClient({
       if (xhr.status >= 200 && xhr.status < 300) {
         try {
           const data = JSON.parse(xhr.responseText);
-          if (data.media?.fileUrl) {
-            setCoverImageUrl(data.media.fileUrl);
+          const resolvedUrl =
+            data.media?.fileUrl ||
+            data.media?.variants?.optimized ||
+            data.media?.variants?.original ||
+            data.media?.url;
+          if (resolvedUrl) {
+            setCoverImageUrl(resolvedUrl);
             setUploadStatus("complete");
             if (!altText) {
               setAltText(`Original artwork: ${title || file.name.replace(/\.[^/.]+$/, "")}`);

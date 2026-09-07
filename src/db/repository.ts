@@ -65,7 +65,7 @@ function mapDbArtwork(
     price: row.price ? Number(row.price) : undefined,
     currency: row.currency || "USD",
     status: row.status as any,
-    coverImageUrl: row.coverImageUrl || DEFAULT_VERIFIED_COVER,
+    coverImageUrl: row.coverImageUrl || "",
     additionalImages: extra?.additionalImages || [],
     altText: row.altText || row.title,
     seoTitle: row.seoTitle || undefined,
