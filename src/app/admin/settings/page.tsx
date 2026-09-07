@@ -17,7 +17,7 @@ export default async function AdminSettingsPage({ searchParams }: Props) {
   return (
     <SettingsClient
       initialSettings={settings}
-      initialTab={resolvedParams?.tab || "identity"}
+      initialTab={resolvedParams?.tab || "landing"}
     />
   );
 }
