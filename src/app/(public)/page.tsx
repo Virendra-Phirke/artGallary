@@ -21,7 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ProgressiveImage } from "@/components/ui/progressive-image";
 
-export const revalidate = 60; // ISR revalidation every 60s
+export const revalidate = 3600; // ISR revalidation every 1 hour with instant write-invalidation
 
 export default async function HomePage() {
   const [artworks, collections, exhibitions, sections, settings] =
@@ -203,14 +203,15 @@ export default async function HomePage() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                {artworks.slice(0, 6).map((art) => (
+                {artworks.slice(0, 6).map((art, idx) => (
                   <div key={art.id} className="group flex flex-col space-y-4">
                     <div className="relative aspect-[4/3] rounded-lg overflow-hidden bg-[#14151a] border border-[#262833]">
                       <ProgressiveImage
                         src={art.coverImageUrl}
                         alt={art.altText}
                         fill
-                        optimizeWidth={800}
+                        priority={idx < 3}
+                        optimizeWidth={700}
                         optimizeQuality={80}
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         className="object-cover transition-transform duration-500 group-hover:scale-105"

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     "Current, upcoming, and archival solo and group exhibitions of Elena Vance's contemporary oil and mineral works.",
 };
 
-export const revalidate = 60; // Cache ISR for 60 seconds
+export const revalidate = 3600; // Cache ISR for 1 hour with instant write-invalidation
 
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

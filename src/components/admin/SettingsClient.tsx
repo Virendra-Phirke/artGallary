@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Building2,
@@ -20,6 +20,10 @@ import {
   Sparkles,
   ShieldCheck,
   Globe,
+  Zap,
+  Server,
+  Trash2,
+  RefreshCw,
 } from "lucide-react";
 import type { SiteSettingsData } from "@/db/mockData";
 import { Card } from "@/components/ui/card";
@@ -39,6 +43,61 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
   const [saveStatus, setSaveStatus] = useState<"idle" | "success" | "error">("idle");
   const [statusMessage, setStatusMessage] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Redis Performance & Cache State
+  const [redisStatus, setRedisStatus] = useState<{
+    connected: boolean;
+    latencyMs?: number;
+    keyCount?: number;
+    configured?: boolean;
+    error?: string;
+  } | null>(null);
+  const [loadingRedis, setLoadingRedis] = useState(false);
+  const [purgingRedis, setPurgingRedis] = useState(false);
+  const [cacheMessage, setCacheMessage] = useState<string | null>(null);
+
+  const fetchRedisStatus = async () => {
+    setLoadingRedis(true);
+    try {
+      const res = await fetch("/api/admin/cache");
+      const data = await res.json();
+      if (data?.health) {
+        setRedisStatus(data.health);
+      }
+    } catch (e) {
+      console.error("Failed to check Redis status:", e);
+    } finally {
+      setLoadingRedis(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchRedisStatus();
+  }, []);
+
+  const handlePurgeRedis = async () => {
+    setPurgingRedis(true);
+    setCacheMessage(null);
+    try {
+      const res = await fetch("/api/admin/cache", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "flush_all" }),
+      });
+      const data = await res.json();
+      if (data?.success) {
+        setCacheMessage("All Redis caches successfully purged!");
+        fetchRedisStatus();
+        setTimeout(() => setCacheMessage(null), 4000);
+      } else {
+        setCacheMessage(data?.error || "Failed to purge cache");
+      }
+    } catch (e) {
+      setCacheMessage("Network error while purging cache");
+    } finally {
+      setPurgingRedis(false);
+    }
+  };
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -615,6 +674,93 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
                     <span>Open Storefront</span>
                     <ExternalLink className="w-3 h-3 text-zinc-400" />
                   </Link>
+                </Button>
+              </div>
+            </Card>
+
+            {/* 5. Redis Performance & Edge Cache Engine */}
+            <Card className="p-6 bg-[#14151a] border-[#262833] space-y-4 shadow-xl relative overflow-hidden">
+              <div className="flex items-center justify-between border-b border-[#262833] pb-3">
+                <div className="flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-[#d1a86e]" />
+                  <span className="text-[11px] font-mono uppercase tracking-widest text-white font-semibold">
+                    Redis Cache Acceleration
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={fetchRedisStatus}
+                    disabled={loadingRedis}
+                    title="Refresh cache status"
+                    className="text-zinc-400 hover:text-white p-1 rounded transition-colors disabled:opacity-50 cursor-pointer"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${loadingRedis ? "animate-spin" : ""}`} />
+                  </button>
+                  {redisStatus?.connected ? (
+                    <Badge className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] font-mono font-normal">
+                      ONLINE
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-zinc-400 border-zinc-700 text-[10px] font-mono font-normal">
+                      STANDBY
+                    </Badge>
+                  )}
+                </div>
+              </div>
+
+              <div className="bg-[#0b0c10] border border-[#1f212a] rounded-xl p-4 space-y-2.5 text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-zinc-400">Provider</span>
+                  <span className="text-zinc-200 font-mono text-[11px]">Upstash Global KV</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-zinc-400">Edge Roundtrip Latency</span>
+                  <span className="text-[#d1a86e] font-mono text-[11px] font-semibold">
+                    {redisStatus?.latencyMs !== undefined ? `${redisStatus.latencyMs} ms` : "Measuring..."}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-zinc-400">Cache Strategy</span>
+                  <span className="text-zinc-300 text-[11px]">1h TTL + Instant Invalidation</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-zinc-400">Fallback Safety</span>
+                  <span className="text-emerald-400 text-[11px] flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" />
+                    Fail-open (Neon DB)
+                  </span>
+                </div>
+              </div>
+
+              {cacheMessage && (
+                <div className="p-2.5 rounded-lg text-xs bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 flex items-center gap-2">
+                  <Check className="w-3.5 h-3.5 shrink-0" />
+                  <span>{cacheMessage}</span>
+                </div>
+              )}
+
+              <div className="flex items-center justify-between pt-1">
+                <span className="text-[11px] text-zinc-500">Purge stale cache keys</span>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handlePurgeRedis}
+                  disabled={purgingRedis}
+                  className="text-xs border-red-900/40 hover:bg-red-950/30 text-red-300 gap-1.5 h-8 cursor-pointer"
+                >
+                  {purgingRedis ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Purging...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Purge Redis Cache</span>
+                    </>
+                  )}
                 </Button>
               </div>
             </Card>

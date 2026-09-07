@@ -6,7 +6,7 @@ const cspHeader = `
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
   img-src 'self' blob: data: https://images.unsplash.com https://plus.unsplash.com https://*.r2.dev https://*.r2.cloudflarestorage.com https://ik.imagekit.io https://*.imagekit.io;
   font-src 'self' https://fonts.gstatic.com data:;
-  connect-src 'self' https://*.r2.cloudflarestorage.com https://*.neon.tech https://*.vercel-insights.com https://*.imagekit.io;
+  connect-src 'self' https://*.r2.cloudflarestorage.com https://*.neon.tech https://*.vercel-insights.com https://*.imagekit.io https://*.upstash.io;
   media-src 'self' blob: data:;
   object-src 'none';
   base-uri 'self';

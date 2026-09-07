@@ -20,6 +20,22 @@ import {
 export type { MockArtwork, MockCollection, MockExhibition, MockHomepageSection, MockInquiry, SiteSettingsData, ThemeSettingsData };
 export { DEFAULT_NAVIGATION_ITEMS, DEFAULT_SITE_SETTINGS, DEFAULT_THEME_SETTINGS };
 
+import {
+  cachedGet,
+  invalidateCacheKeys,
+  flushCachePrefix,
+  CACHE_KEYS,
+} from "@/lib/redis/redis";
+
+export async function revalidateNextCache(path: string = "/", type: "page" | "layout" = "layout") {
+  try {
+    const { revalidatePath } = await import("next/cache");
+    revalidatePath(path, type);
+  } catch {
+    // Fail-open outside Next.js request context (e.g. standalone scripts or migrations)
+  }
+}
+
 export interface MediaRecord {
   id: string;
   fileName: string;
@@ -105,46 +121,54 @@ export async function getArtworks(filters?: {
   featuredOnly?: boolean;
   searchQuery?: string;
 }): Promise<MockArtwork[]> {
-  const db = getDb();
-  let list: MockArtwork[] = [];
+  const fullList = await cachedGet(
+    CACHE_KEYS.artworksAll,
+    async () => {
+      const db = getDb();
+      let list: MockArtwork[] = [];
 
-  if (db) {
-    try {
-      const results = await db
-        .select({
-          artwork: schema.artworks,
-          ar: schema.artworkAr,
-          collectionSlug: schema.collections.slug,
-          collectionName: schema.collections.title,
-        })
-        .from(schema.artworks)
-        .leftJoin(schema.artworkAr, eq(schema.artworkAr.artworkId, schema.artworks.id))
-        .leftJoin(
-          schema.collectionArtworks,
-          eq(schema.collectionArtworks.artworkId, schema.artworks.id)
-        )
-        .leftJoin(
-          schema.collections,
-          eq(schema.collections.id, schema.collectionArtworks.collectionId)
-        )
-        .orderBy(asc(schema.artworks.displayOrder));
+      if (db) {
+        try {
+          const results = await db
+            .select({
+              artwork: schema.artworks,
+              ar: schema.artworkAr,
+              collectionSlug: schema.collections.slug,
+              collectionName: schema.collections.title,
+            })
+            .from(schema.artworks)
+            .leftJoin(schema.artworkAr, eq(schema.artworkAr.artworkId, schema.artworks.id))
+            .leftJoin(
+              schema.collectionArtworks,
+              eq(schema.collectionArtworks.artworkId, schema.artworks.id)
+            )
+            .leftJoin(
+              schema.collections,
+              eq(schema.collections.id, schema.collectionArtworks.collectionId)
+            )
+            .orderBy(asc(schema.artworks.displayOrder));
 
-      list = results.map((r) =>
-        mapDbArtwork(r.artwork, r.ar, {
-          collectionSlug: r.collectionSlug || undefined,
-          collectionName: r.collectionName || undefined,
-        })
-      );
-    } catch (e) {
-      console.warn("Database getArtworks failed, using fallback:", e);
-    }
-  }
+          list = results.map((r) =>
+            mapDbArtwork(r.artwork, r.ar, {
+              collectionSlug: r.collectionSlug || undefined,
+              collectionName: r.collectionName || undefined,
+            })
+          );
+        } catch (e) {
+          console.warn("Database getArtworks failed, using fallback:", e);
+        }
+      }
 
-  if (list.length === 0) {
-    list = [...INITIAL_ARTWORKS];
-  }
+      if (list.length === 0) {
+        list = [...INITIAL_ARTWORKS];
+      }
 
-  list = list.filter((a) => a.status !== "archived");
+      return list;
+    },
+    3600
+  );
+
+  let list = fullList.filter((a) => a.status !== "archived");
 
   if (filters?.featuredOnly) {
     list = list.filter((a) => a.isFeatured && a.status === "published");
@@ -217,116 +241,128 @@ export async function getAllArtworksAdmin(): Promise<MockArtwork[]> {
 }
 
 export async function getArtworkBySlug(slug: string): Promise<MockArtwork | null> {
-  const db = getDb();
-  if (!db) {
-    return INITIAL_ARTWORKS.find((a) => a.slug === slug || a.id === slug) || null;
-  }
+  return cachedGet(
+    CACHE_KEYS.artworkSlug(slug),
+    async () => {
+      const db = getDb();
+      if (!db) {
+        return INITIAL_ARTWORKS.find((a) => a.slug === slug || a.id === slug) || null;
+      }
 
-  try {
-    const results = await db
-      .select({
-        artwork: schema.artworks,
-        ar: schema.artworkAr,
-        collectionSlug: schema.collections.slug,
-        collectionName: schema.collections.title,
-      })
-      .from(schema.artworks)
-      .leftJoin(schema.artworkAr, eq(schema.artworkAr.artworkId, schema.artworks.id))
-      .leftJoin(
-        schema.collectionArtworks,
-        eq(schema.collectionArtworks.artworkId, schema.artworks.id)
-      )
-      .leftJoin(
-        schema.collections,
-        eq(schema.collections.id, schema.collectionArtworks.collectionId)
-      )
-      .where(eq(schema.artworks.slug, slug))
-      .limit(1);
+      try {
+        const results = await db
+          .select({
+            artwork: schema.artworks,
+            ar: schema.artworkAr,
+            collectionSlug: schema.collections.slug,
+            collectionName: schema.collections.title,
+          })
+          .from(schema.artworks)
+          .leftJoin(schema.artworkAr, eq(schema.artworkAr.artworkId, schema.artworks.id))
+          .leftJoin(
+            schema.collectionArtworks,
+            eq(schema.collectionArtworks.artworkId, schema.artworks.id)
+          )
+          .leftJoin(
+            schema.collections,
+            eq(schema.collections.id, schema.collectionArtworks.collectionId)
+          )
+          .where(eq(schema.artworks.slug, slug))
+          .limit(1);
 
-    if (results.length === 0) {
-      return INITIAL_ARTWORKS.find((a) => a.slug === slug || a.id === slug) || null;
-    }
+        if (results.length === 0) {
+          return INITIAL_ARTWORKS.find((a) => a.slug === slug || a.id === slug) || null;
+        }
 
-    const item = results[0];
-    const additional = await db
-      .select()
-      .from(schema.artworkImages)
-      .where(
-        and(
-          eq(schema.artworkImages.artworkId, item.artwork.id),
-          eq(schema.artworkImages.isPrimary, false)
-        )
-      )
-      .orderBy(asc(schema.artworkImages.displayOrder));
+        const item = results[0];
+        const additional = await db
+          .select()
+          .from(schema.artworkImages)
+          .where(
+            and(
+              eq(schema.artworkImages.artworkId, item.artwork.id),
+              eq(schema.artworkImages.isPrimary, false)
+            )
+          )
+          .orderBy(asc(schema.artworkImages.displayOrder));
 
-    return mapDbArtwork(item.artwork, item.ar, {
-      collectionSlug: item.collectionSlug || undefined,
-      collectionName: item.collectionName || undefined,
-      additionalImages: additional.map((i) => i.imageUrl),
-    });
-  } catch (e) {
-    console.warn("Database getArtworkBySlug failed, using fallback:", e);
-    return INITIAL_ARTWORKS.find((a) => a.slug === slug || a.id === slug) || null;
-  }
+        return mapDbArtwork(item.artwork, item.ar, {
+          collectionSlug: item.collectionSlug || undefined,
+          collectionName: item.collectionName || undefined,
+          additionalImages: additional.map((i) => i.imageUrl),
+        });
+      } catch (e) {
+        console.warn("Database getArtworkBySlug failed, using fallback:", e);
+        return INITIAL_ARTWORKS.find((a) => a.slug === slug || a.id === slug) || null;
+      }
+    },
+    3600
+  );
 }
 
 export async function getArtworkById(id: string): Promise<MockArtwork | null> {
-  const db = getDb();
-  if (!db) {
-    return INITIAL_ARTWORKS.find((a) => a.id === id || a.slug === id) || null;
-  }
+  return cachedGet(
+    CACHE_KEYS.artworkId(id),
+    async () => {
+      const db = getDb();
+      if (!db) {
+        return INITIAL_ARTWORKS.find((a) => a.id === id || a.slug === id) || null;
+      }
 
-  try {
-    const isIdUuid = isUuid(id);
-    const results = await db
-      .select({
-        artwork: schema.artworks,
-        ar: schema.artworkAr,
-        collectionSlug: schema.collections.slug,
-        collectionName: schema.collections.title,
-      })
-      .from(schema.artworks)
-      .leftJoin(schema.artworkAr, eq(schema.artworkAr.artworkId, schema.artworks.id))
-      .leftJoin(
-        schema.collectionArtworks,
-        eq(schema.collectionArtworks.artworkId, schema.artworks.id)
-      )
-      .leftJoin(
-        schema.collections,
-        eq(schema.collections.id, schema.collectionArtworks.collectionId)
-      )
-      .where(
-        isIdUuid
-          ? or(eq(schema.artworks.slug, id), eq(schema.artworks.id, id))
-          : eq(schema.artworks.slug, id)
-      )
-      .limit(1);
+      try {
+        const isIdUuid = isUuid(id);
+        const results = await db
+          .select({
+            artwork: schema.artworks,
+            ar: schema.artworkAr,
+            collectionSlug: schema.collections.slug,
+            collectionName: schema.collections.title,
+          })
+          .from(schema.artworks)
+          .leftJoin(schema.artworkAr, eq(schema.artworkAr.artworkId, schema.artworks.id))
+          .leftJoin(
+            schema.collectionArtworks,
+            eq(schema.collectionArtworks.artworkId, schema.artworks.id)
+          )
+          .leftJoin(
+            schema.collections,
+            eq(schema.collections.id, schema.collectionArtworks.collectionId)
+          )
+          .where(
+            isIdUuid
+              ? or(eq(schema.artworks.slug, id), eq(schema.artworks.id, id))
+              : eq(schema.artworks.slug, id)
+          )
+          .limit(1);
 
-    if (results.length === 0) {
-      return INITIAL_ARTWORKS.find((a) => a.id === id || a.slug === id) || null;
-    }
+        if (results.length === 0) {
+          return INITIAL_ARTWORKS.find((a) => a.id === id || a.slug === id) || null;
+        }
 
-    const item = results[0];
-    const additional = await db
-      .select()
-      .from(schema.artworkImages)
-      .where(
-        and(
-          eq(schema.artworkImages.artworkId, item.artwork.id),
-          eq(schema.artworkImages.isPrimary, false)
-        )
-      )
-      .orderBy(asc(schema.artworkImages.displayOrder));
+        const item = results[0];
+        const additional = await db
+          .select()
+          .from(schema.artworkImages)
+          .where(
+            and(
+              eq(schema.artworkImages.artworkId, item.artwork.id),
+              eq(schema.artworkImages.isPrimary, false)
+            )
+          )
+          .orderBy(asc(schema.artworkImages.displayOrder));
 
-    return mapDbArtwork(item.artwork, item.ar, {
-      collectionSlug: item.collectionSlug || undefined,
-      collectionName: item.collectionName || undefined,
-      additionalImages: additional.map((i) => i.imageUrl),
-    });
-  } catch (e) {
-    console.warn("Database getArtworkById failed, using fallback:", e);
-    return INITIAL_ARTWORKS.find((a) => a.id === id || a.slug === id) || null;
-  }
+        return mapDbArtwork(item.artwork, item.ar, {
+          collectionSlug: item.collectionSlug || undefined,
+          collectionName: item.collectionName || undefined,
+          additionalImages: additional.map((i) => i.imageUrl),
+        });
+      } catch (e) {
+        console.warn("Database getArtworkById failed, using fallback:", e);
+        return INITIAL_ARTWORKS.find((a) => a.id === id || a.slug === id) || null;
+      }
+    },
+    3600
+  );
 }
 
 export async function saveArtwork(data: Partial<MockArtwork> & { collectionId?: string }): Promise<MockArtwork> {
@@ -435,6 +471,12 @@ export async function saveArtwork(data: Partial<MockArtwork> & { collectionId?: 
       }
 
       recordActivityLog("UPDATE_ARTWORK", "artwork", `Updated artwork '${data.title || existing.title}'`, existing.id);
+      await flushCachePrefix("cache:artworks");
+      if (existing?.slug) await invalidateCacheKeys([CACHE_KEYS.artworkSlug(existing.slug), CACHE_KEYS.artworkId(existing.id)]);
+      if (data.slug && data.slug !== existing.slug) await invalidateCacheKeys(CACHE_KEYS.artworkSlug(data.slug));
+      await invalidateCacheKeys(CACHE_KEYS.homepageSections);
+      await revalidateNextCache();
+
       const updated = await getArtworkById(existing.id);
       if (updated) return updated;
       return existing;
@@ -505,6 +547,12 @@ export async function saveArtwork(data: Partial<MockArtwork> & { collectionId?: 
       }
 
       recordActivityLog("CREATE_ARTWORK", "artwork", `Created artwork '${data.title || "Untitled"}'`, newId);
+      await flushCachePrefix("cache:artworks");
+      if (newId) await invalidateCacheKeys(CACHE_KEYS.artworkId(newId));
+      if (data.slug) await invalidateCacheKeys(CACHE_KEYS.artworkSlug(data.slug));
+      await invalidateCacheKeys(CACHE_KEYS.homepageSections);
+      await revalidateNextCache();
+
       const created = await getArtworkById(newId);
       if (created) return created;
       throw new Error("Failed to retrieve created artwork");
@@ -530,6 +578,9 @@ export async function archiveArtwork(id: string): Promise<boolean> {
           : eq(schema.artworks.slug, id)
       );
     recordActivityLog("ARCHIVE_ARTWORK", "artwork", `Archived artwork ${id}`, id);
+    await flushCachePrefix("cache:artworks");
+    await invalidateCacheKeys([CACHE_KEYS.artworkId(id), CACHE_KEYS.artworkSlug(id), CACHE_KEYS.homepageSections]);
+    await revalidateNextCache();
     return true;
   } catch (e) {
     console.error("Database archiveArtwork failed:", e);
@@ -569,6 +620,9 @@ export async function deleteArtwork(id: string): Promise<boolean> {
     await db.delete(schema.artworks).where(eq(schema.artworks.id, targetId));
 
     recordActivityLog("DELETE_ARTWORK", "artwork", `Permanently deleted artwork "${title}" (${targetId})`, targetId);
+    await flushCachePrefix("cache:artworks");
+    await invalidateCacheKeys([CACHE_KEYS.artworkId(targetId), CACHE_KEYS.artworkSlug(targetId), CACHE_KEYS.homepageSections]);
+    await revalidateNextCache();
     return true;
   } catch (e) {
     console.error("Database deleteArtwork failed:", e);
@@ -577,50 +631,56 @@ export async function deleteArtwork(id: string): Promise<boolean> {
 }
 
 export async function getCollections(): Promise<MockCollection[]> {
-  const db = getDb();
-  if (!db) return [];
+  return cachedGet(
+    CACHE_KEYS.collectionsAll,
+    async () => {
+      const db = getDb();
+      if (!db) return [];
 
-  try {
-    const rows = await db
-      .select()
-      .from(schema.collections)
-      .where(eq(schema.collections.isPublished, true))
-      .orderBy(asc(schema.collections.displayOrder));
+      try {
+        const rows = await db
+          .select()
+          .from(schema.collections)
+          .where(eq(schema.collections.isPublished, true))
+          .orderBy(asc(schema.collections.displayOrder));
 
-    const relations = await db
-      .select({
-        collectionId: schema.collectionArtworks.collectionId,
-        artworkSlug: schema.artworks.slug,
-      })
-      .from(schema.collectionArtworks)
-      .innerJoin(
-        schema.artworks,
-        eq(schema.artworks.id, schema.collectionArtworks.artworkId)
-      )
-      .orderBy(asc(schema.collectionArtworks.displayOrder));
+        const relations = await db
+          .select({
+            collectionId: schema.collectionArtworks.collectionId,
+            artworkSlug: schema.artworks.slug,
+          })
+          .from(schema.collectionArtworks)
+          .innerJoin(
+            schema.artworks,
+            eq(schema.artworks.id, schema.collectionArtworks.artworkId)
+          )
+          .orderBy(asc(schema.collectionArtworks.displayOrder));
 
-    const slugsByCol = new Map<string, string[]>();
-    for (const r of relations) {
-      const arr = slugsByCol.get(r.collectionId) || [];
-      arr.push(r.artworkSlug);
-      slugsByCol.set(r.collectionId, arr);
-    }
+        const slugsByCol = new Map<string, string[]>();
+        for (const r of relations) {
+          const arr = slugsByCol.get(r.collectionId) || [];
+          arr.push(r.artworkSlug);
+          slugsByCol.set(r.collectionId, arr);
+        }
 
-    return rows.map((r) => ({
-      id: r.id,
-      slug: r.slug,
-      title: r.title,
-      description: r.description,
-      curatorialStatement: r.curatorialStatement || "",
-      coverImageUrl: r.coverImageUrl || DEFAULT_VERIFIED_COVER,
-      isPublished: r.isPublished,
-      displayOrder: r.displayOrder,
-      artworkSlugs: slugsByCol.get(r.id) || [],
-    }));
-  } catch (e) {
-    console.error("Database getCollections failed:", e);
-    return [];
-  }
+        return rows.map((r) => ({
+          id: r.id,
+          slug: r.slug,
+          title: r.title,
+          description: r.description,
+          curatorialStatement: r.curatorialStatement || "",
+          coverImageUrl: r.coverImageUrl || DEFAULT_VERIFIED_COVER,
+          isPublished: r.isPublished,
+          displayOrder: r.displayOrder,
+          artworkSlugs: slugsByCol.get(r.id) || [],
+        }));
+      } catch (e) {
+        console.error("Database getCollections failed:", e);
+        return [];
+      }
+    },
+    3600
+  );
 }
 
 export async function getAllCollectionsAdmin(): Promise<MockCollection[]> {
@@ -670,98 +730,110 @@ export async function getAllCollectionsAdmin(): Promise<MockCollection[]> {
 }
 
 export async function getCollectionBySlug(slug: string): Promise<MockCollection | null> {
-  const db = getDb();
-  if (!db) return null;
+  return cachedGet(
+    CACHE_KEYS.collectionSlug(slug),
+    async () => {
+      const db = getDb();
+      if (!db) return null;
 
-  try {
-    const rows = await db
-      .select()
-      .from(schema.collections)
-      .where(eq(schema.collections.slug, slug))
-      .limit(1);
+      try {
+        const rows = await db
+          .select()
+          .from(schema.collections)
+          .where(eq(schema.collections.slug, slug))
+          .limit(1);
 
-    if (rows.length === 0) return null;
+        if (rows.length === 0) return null;
 
-    const r = rows[0];
-    const relations = await db
-      .select({
-        artworkSlug: schema.artworks.slug,
-      })
-      .from(schema.collectionArtworks)
-      .innerJoin(
-        schema.artworks,
-        eq(schema.artworks.id, schema.collectionArtworks.artworkId)
-      )
-      .where(eq(schema.collectionArtworks.collectionId, r.id))
-      .orderBy(asc(schema.collectionArtworks.displayOrder));
+        const r = rows[0];
+        const relations = await db
+          .select({
+            artworkSlug: schema.artworks.slug,
+          })
+          .from(schema.collectionArtworks)
+          .innerJoin(
+            schema.artworks,
+            eq(schema.artworks.id, schema.collectionArtworks.artworkId)
+          )
+          .where(eq(schema.collectionArtworks.collectionId, r.id))
+          .orderBy(asc(schema.collectionArtworks.displayOrder));
 
-    return {
-      id: r.id,
-      slug: r.slug,
-      title: r.title,
-      description: r.description,
-      curatorialStatement: r.curatorialStatement || "",
-      coverImageUrl: r.coverImageUrl || DEFAULT_VERIFIED_COVER,
-      isPublished: r.isPublished,
-      displayOrder: r.displayOrder,
-      artworkSlugs: relations.map((rel) => rel.artworkSlug),
-    };
-  } catch (e) {
-    console.error("Database getCollectionBySlug failed:", e);
-    return null;
-  }
+        return {
+          id: r.id,
+          slug: r.slug,
+          title: r.title,
+          description: r.description,
+          curatorialStatement: r.curatorialStatement || "",
+          coverImageUrl: r.coverImageUrl || DEFAULT_VERIFIED_COVER,
+          isPublished: r.isPublished,
+          displayOrder: r.displayOrder,
+          artworkSlugs: relations.map((rel) => rel.artworkSlug),
+        };
+      } catch (e) {
+        console.error("Database getCollectionBySlug failed:", e);
+        return null;
+      }
+    },
+    3600
+  );
 }
 
 export async function getExhibitions(): Promise<MockExhibition[]> {
-  const db = getDb();
-  if (!db) return [];
+  return cachedGet(
+    CACHE_KEYS.exhibitionsAll,
+    async () => {
+      const db = getDb();
+      if (!db) return [];
 
-  try {
-    const rows = await db
-      .select()
-      .from(schema.exhibitions)
-      .where(eq(schema.exhibitions.isPublished, true))
-      .orderBy(asc(schema.exhibitions.displayOrder));
+      try {
+        const rows = await db
+          .select()
+          .from(schema.exhibitions)
+          .where(eq(schema.exhibitions.isPublished, true))
+          .orderBy(asc(schema.exhibitions.displayOrder));
 
-    const relations = await db
-      .select({
-        exhibitionId: schema.exhibitionArtworks.exhibitionId,
-        artworkSlug: schema.artworks.slug,
-      })
-      .from(schema.exhibitionArtworks)
-      .innerJoin(
-        schema.artworks,
-        eq(schema.artworks.id, schema.exhibitionArtworks.artworkId)
-      )
-      .orderBy(asc(schema.exhibitionArtworks.displayOrder));
+        const relations = await db
+          .select({
+            exhibitionId: schema.exhibitionArtworks.exhibitionId,
+            artworkSlug: schema.artworks.slug,
+          })
+          .from(schema.exhibitionArtworks)
+          .innerJoin(
+            schema.artworks,
+            eq(schema.artworks.id, schema.exhibitionArtworks.artworkId)
+          )
+          .orderBy(asc(schema.exhibitionArtworks.displayOrder));
 
-    const slugsByExh = new Map<string, string[]>();
-    for (const r of relations) {
-      const arr = slugsByExh.get(r.exhibitionId) || [];
-      arr.push(r.artworkSlug);
-      slugsByExh.set(r.exhibitionId, arr);
-    }
+        const slugsByExh = new Map<string, string[]>();
+        for (const r of relations) {
+          const arr = slugsByExh.get(r.exhibitionId) || [];
+          arr.push(r.artworkSlug);
+          slugsByExh.set(r.exhibitionId, arr);
+        }
 
-    return rows.map((e) => ({
-      id: e.id,
-      slug: e.slug,
-      title: e.title,
-      subtitle: e.subtitle || "",
-      description: e.description,
-      curatorNote: e.curatorNote || "",
-      location: e.location,
-      startDate: e.startDate.toISOString(),
-      endDate: e.endDate.toISOString(),
-      status: e.status as any,
-      coverImageUrl: e.coverImageUrl || DEFAULT_VERIFIED_COVER,
-      isPublished: e.isPublished,
-      displayOrder: e.displayOrder,
-      artworkSlugs: slugsByExh.get(e.id) || [],
-    }));
-  } catch (e) {
-    console.error("Database getExhibitions failed:", e);
-    return [];
-  }
+        return rows.map((e) => ({
+          id: e.id,
+          slug: e.slug,
+          title: e.title,
+          subtitle: e.subtitle || "",
+          description: e.description,
+          curatorNote: e.curatorNote || "",
+          location: e.location,
+          startDate: e.startDate.toISOString(),
+          endDate: e.endDate.toISOString(),
+          status: e.status as any,
+          coverImageUrl: e.coverImageUrl || DEFAULT_VERIFIED_COVER,
+          isPublished: e.isPublished,
+          displayOrder: e.displayOrder,
+          artworkSlugs: slugsByExh.get(e.id) || [],
+        }));
+      } catch (e) {
+        console.error("Database getExhibitions failed:", e);
+        return [];
+      }
+    },
+    3600
+  );
 }
 
 export async function getAllExhibitionsAdmin(): Promise<MockExhibition[]> {
@@ -816,51 +888,57 @@ export async function getAllExhibitionsAdmin(): Promise<MockExhibition[]> {
 }
 
 export async function getExhibitionBySlug(slug: string): Promise<MockExhibition | null> {
-  const db = getDb();
-  if (!db) return null;
+  return cachedGet(
+    CACHE_KEYS.exhibitionSlug(slug),
+    async () => {
+      const db = getDb();
+      if (!db) return null;
 
-  try {
-    const rows = await db
-      .select()
-      .from(schema.exhibitions)
-      .where(eq(schema.exhibitions.slug, slug))
-      .limit(1);
+      try {
+        const rows = await db
+          .select()
+          .from(schema.exhibitions)
+          .where(eq(schema.exhibitions.slug, slug))
+          .limit(1);
 
-    if (rows.length === 0) return null;
+        if (rows.length === 0) return null;
 
-    const e = rows[0];
-    const relations = await db
-      .select({
-        artworkSlug: schema.artworks.slug,
-      })
-      .from(schema.exhibitionArtworks)
-      .innerJoin(
-        schema.artworks,
-        eq(schema.artworks.id, schema.exhibitionArtworks.artworkId)
-      )
-      .where(eq(schema.exhibitionArtworks.exhibitionId, e.id))
-      .orderBy(asc(schema.exhibitionArtworks.displayOrder));
+        const e = rows[0];
+        const relations = await db
+          .select({
+            artworkSlug: schema.artworks.slug,
+          })
+          .from(schema.exhibitionArtworks)
+          .innerJoin(
+            schema.artworks,
+            eq(schema.artworks.id, schema.exhibitionArtworks.artworkId)
+          )
+          .where(eq(schema.exhibitionArtworks.exhibitionId, e.id))
+          .orderBy(asc(schema.exhibitionArtworks.displayOrder));
 
-    return {
-      id: e.id,
-      slug: e.slug,
-      title: e.title,
-      subtitle: e.subtitle || "",
-      description: e.description,
-      curatorNote: e.curatorNote || "",
-      location: e.location,
-      startDate: e.startDate.toISOString(),
-      endDate: e.endDate.toISOString(),
-      status: e.status as any,
-      coverImageUrl: e.coverImageUrl || DEFAULT_VERIFIED_COVER,
-      isPublished: e.isPublished,
-      displayOrder: e.displayOrder,
-      artworkSlugs: relations.map((rel) => rel.artworkSlug),
-    };
-  } catch (e) {
-    console.error("Database getExhibitionBySlug failed:", e);
-    return null;
-  }
+        return {
+          id: e.id,
+          slug: e.slug,
+          title: e.title,
+          subtitle: e.subtitle || "",
+          description: e.description,
+          curatorNote: e.curatorNote || "",
+          location: e.location,
+          startDate: e.startDate.toISOString(),
+          endDate: e.endDate.toISOString(),
+          status: e.status as any,
+          coverImageUrl: e.coverImageUrl || DEFAULT_VERIFIED_COVER,
+          isPublished: e.isPublished,
+          displayOrder: e.displayOrder,
+          artworkSlugs: relations.map((rel) => rel.artworkSlug),
+        };
+      } catch (e) {
+        console.error("Database getExhibitionBySlug failed:", e);
+        return null;
+      }
+    },
+    3600
+  );
 }
 
 export async function saveCollection(
@@ -891,6 +969,10 @@ export async function saveCollection(
       }
 
       recordActivityLog("UPDATE_COLLECTION", "collection", `Updated collection '${data.title || data.id}'`, data.id);
+      await flushCachePrefix("cache:collections");
+      await flushCachePrefix("cache:artworks");
+      await invalidateCacheKeys(CACHE_KEYS.homepageSections);
+      await revalidateNextCache();
     } else {
       // Create new
       const slug =
@@ -918,6 +1000,10 @@ export async function saveCollection(
       }
 
       recordActivityLog("CREATE_COLLECTION", "collection", `Created collection '${data.title || "Untitled"}'`, data.id);
+      await flushCachePrefix("cache:collections");
+      await flushCachePrefix("cache:artworks");
+      await invalidateCacheKeys(CACHE_KEYS.homepageSections);
+      await revalidateNextCache();
     }
 
     // Refresh
@@ -962,6 +1048,10 @@ export async function deleteCollection(id: string): Promise<boolean> {
     // Junction table rows cascade automatically due to FK onDelete: cascade
     await db.delete(schema.collections).where(eq(schema.collections.id, id));
     recordActivityLog("DELETE_COLLECTION", "collection", `Deleted collection ${id}`, id);
+    await flushCachePrefix("cache:collections");
+    await flushCachePrefix("cache:artworks");
+    await invalidateCacheKeys(CACHE_KEYS.homepageSections);
+    await revalidateNextCache();
     return true;
   } catch (e) {
     console.error("Database deleteCollection failed:", e);
@@ -994,6 +1084,10 @@ export async function updateCollectionArtworks(
     }
 
     recordActivityLog("UPDATE_COLLECTION_ARTWORKS", "collection", `Updated artwork assignments for collection ${collectionId}`, collectionId);
+    await flushCachePrefix("cache:collections");
+    await flushCachePrefix("cache:artworks");
+    await invalidateCacheKeys(CACHE_KEYS.homepageSections);
+    await revalidateNextCache();
     return true;
   } catch (e) {
     console.error("Database updateCollectionArtworks failed:", e);
@@ -1028,6 +1122,9 @@ export async function saveExhibition(data: Partial<MockExhibition> & { title: st
         .where(eq(schema.exhibitions.id, data.id));
 
       recordActivityLog("UPDATE_EXHIBITION", "exhibition", `Updated exhibition '${data.title || data.id}'`, data.id);
+      await flushCachePrefix("cache:exhibitions");
+      await invalidateCacheKeys(CACHE_KEYS.homepageSections);
+      await revalidateNextCache();
     } else {
       // Create new
       const slug =
@@ -1055,6 +1152,9 @@ export async function saveExhibition(data: Partial<MockExhibition> & { title: st
 
       data.id = inserted[0]?.id;
       recordActivityLog("CREATE_EXHIBITION", "exhibition", `Created exhibition '${data.title || "Untitled"}'`, data.id);
+      await flushCachePrefix("cache:exhibitions");
+      await invalidateCacheKeys(CACHE_KEYS.homepageSections);
+      await revalidateNextCache();
     }
 
     // Refresh
@@ -1103,6 +1203,9 @@ export async function deleteExhibition(id: string): Promise<boolean> {
   try {
     await db.delete(schema.exhibitions).where(eq(schema.exhibitions.id, id));
     recordActivityLog("DELETE_EXHIBITION", "exhibition", `Deleted exhibition ${id}`, id);
+    await flushCachePrefix("cache:exhibitions");
+    await invalidateCacheKeys(CACHE_KEYS.homepageSections);
+    await revalidateNextCache();
     return true;
   } catch (e) {
     console.error("Database deleteExhibition failed:", e);
@@ -1133,6 +1236,9 @@ export async function updateExhibitionArtworks(
     }
 
     recordActivityLog("UPDATE_EXHIBITION_ARTWORKS", "exhibition", `Updated artwork assignments for exhibition ${exhibitionId}`, exhibitionId);
+    await flushCachePrefix("cache:exhibitions");
+    await invalidateCacheKeys(CACHE_KEYS.homepageSections);
+    await revalidateNextCache();
     return true;
   } catch (e) {
     console.error("Database updateExhibitionArtworks failed:", e);
@@ -1141,29 +1247,35 @@ export async function updateExhibitionArtworks(
 }
 
 export async function getHomepageSections(): Promise<MockHomepageSection[]> {
-  const db = getDb();
-  if (!db) return [];
+  return cachedGet(
+    CACHE_KEYS.homepageSections,
+    async () => {
+      const db = getDb();
+      if (!db) return [];
 
-  try {
-    const rows = await db
-      .select()
-      .from(schema.homepageSections)
-      .where(eq(schema.homepageSections.isEnabled, true))
-      .orderBy(asc(schema.homepageSections.displayOrder));
+      try {
+        const rows = await db
+          .select()
+          .from(schema.homepageSections)
+          .where(eq(schema.homepageSections.isEnabled, true))
+          .orderBy(asc(schema.homepageSections.displayOrder));
 
-    return rows.map((s) => ({
-      id: s.id,
-      sectionKey: s.sectionKey as any,
-      title: s.title,
-      subtitle: s.subtitle || "",
-      contentJson: (s.contentJson as any) || {},
-      isEnabled: s.isEnabled,
-      displayOrder: s.displayOrder,
-    }));
-  } catch (e) {
-    console.error("Database getHomepageSections failed:", e);
-    return [];
-  }
+        return rows.map((s) => ({
+          id: s.id,
+          sectionKey: s.sectionKey as any,
+          title: s.title,
+          subtitle: s.subtitle || "",
+          contentJson: (s.contentJson as any) || {},
+          isEnabled: s.isEnabled,
+          displayOrder: s.displayOrder,
+        }));
+      } catch (e) {
+        console.error("Database getHomepageSections failed:", e);
+        return [];
+      }
+    },
+    3600
+  );
 }
 
 export async function getAllHomepageSectionsAdmin(): Promise<MockHomepageSection[]> {
@@ -1214,6 +1326,8 @@ export async function updateHomepageSection(
       .where(eq(schema.homepageSections.sectionKey, sectionKey));
 
     recordActivityLog("UPDATE_HOMEPAGE_SECTION", "homepage", `Updated ${sectionKey} section`);
+    await invalidateCacheKeys(CACHE_KEYS.homepageSections);
+    await revalidateNextCache();
 
     const updatedRows = await db
       .select()
@@ -1242,56 +1356,62 @@ export async function updateHomepageSection(
 
 
 export async function getSiteSettings(): Promise<SiteSettingsData> {
-  const db = getDb();
-  if (!db) {
-    return DEFAULT_SITE_SETTINGS;
-  }
+  return cachedGet(
+    CACHE_KEYS.siteSettings,
+    async () => {
+      const db = getDb();
+      if (!db) {
+        return DEFAULT_SITE_SETTINGS;
+      }
 
-  try {
-    const rows = await db.select().from(schema.siteSettings).limit(1);
-    if (rows.length > 0) {
-      const s = rows[0];
-      return {
-        artistName: s.artistName || DEFAULT_SITE_SETTINGS.artistName,
-        siteTitle: s.siteTitle || DEFAULT_SITE_SETTINGS.siteTitle,
-        shortBrandName: s.shortBrandName || DEFAULT_SITE_SETTINGS.shortBrandName,
-        tagline: s.tagline || DEFAULT_SITE_SETTINGS.tagline,
-        logoUrl: s.logoUrl || "",
-        faviconUrl: s.faviconUrl || "",
-        bioSummary: s.bioSummary || DEFAULT_SITE_SETTINGS.bioSummary,
-        statement: s.statement || DEFAULT_SITE_SETTINGS.statement,
-        contactEmail: s.contactEmail || DEFAULT_SITE_SETTINGS.contactEmail,
-        phone: s.phone || DEFAULT_SITE_SETTINGS.phone,
-        whatsapp: s.whatsapp || DEFAULT_SITE_SETTINGS.whatsapp,
-        location: s.location || DEFAULT_SITE_SETTINGS.location,
-        address: s.address || DEFAULT_SITE_SETTINGS.address,
-        city: s.city || DEFAULT_SITE_SETTINGS.city,
-        country: s.country || DEFAULT_SITE_SETTINGS.country,
-        businessHours: s.businessHours || DEFAULT_SITE_SETTINGS.businessHours,
-        contactInstructions: s.contactInstructions || DEFAULT_SITE_SETTINGS.contactInstructions,
-        socialLinks: (s.socialLinksJson as any) || DEFAULT_SITE_SETTINGS.socialLinks,
-        announcementBar: (s.announcementBarJson as any) || DEFAULT_SITE_SETTINGS.announcementBar,
-        headerConfig: (s.headerConfigJson as any) || DEFAULT_SITE_SETTINGS.headerConfig,
-        navigationItems: Array.isArray(s.navigationItemsJson) && s.navigationItemsJson.length > 0
-          ? (s.navigationItemsJson as any)
-          : DEFAULT_SITE_SETTINGS.navigationItems,
-        footerConfig: (s.footerConfigJson as any) || DEFAULT_SITE_SETTINGS.footerConfig,
-        galleryPageConfig: (s.galleryPageConfigJson as any) || DEFAULT_SITE_SETTINGS.galleryPageConfig,
-        collectionsPageConfig: (s.collectionsPageConfigJson as any) || DEFAULT_SITE_SETTINGS.collectionsPageConfig,
-        exhibitionsPageConfig: (s.exhibitionsPageConfigJson as any) || DEFAULT_SITE_SETTINGS.exhibitionsPageConfig,
-        aboutPageConfig: (s.aboutPageConfigJson as any) || DEFAULT_SITE_SETTINGS.aboutPageConfig,
-        contactPageConfig: (s.contactPageConfigJson as any) || DEFAULT_SITE_SETTINGS.contactPageConfig,
-        legalPages: (s.legalPagesJson as any) || DEFAULT_SITE_SETTINGS.legalPages,
-        maintenanceMode: (s.maintenanceModeJson as any) || DEFAULT_SITE_SETTINGS.maintenanceMode,
-        globalArDefaults: (s.globalArDefaultsJson as any) || DEFAULT_SITE_SETTINGS.globalArDefaults,
-        copyrightText: s.copyrightText || DEFAULT_SITE_SETTINGS.copyrightText,
-      };
-    }
-  } catch (e) {
-    console.error("Database getSiteSettings failed, using fallbacks:", e);
-  }
+      try {
+        const rows = await db.select().from(schema.siteSettings).limit(1);
+        if (rows.length > 0) {
+          const s = rows[0];
+          return {
+            artistName: s.artistName || DEFAULT_SITE_SETTINGS.artistName,
+            siteTitle: s.siteTitle || DEFAULT_SITE_SETTINGS.siteTitle,
+            shortBrandName: s.shortBrandName || DEFAULT_SITE_SETTINGS.shortBrandName,
+            tagline: s.tagline || DEFAULT_SITE_SETTINGS.tagline,
+            logoUrl: s.logoUrl || "",
+            faviconUrl: s.faviconUrl || "",
+            bioSummary: s.bioSummary || DEFAULT_SITE_SETTINGS.bioSummary,
+            statement: s.statement || DEFAULT_SITE_SETTINGS.statement,
+            contactEmail: s.contactEmail || DEFAULT_SITE_SETTINGS.contactEmail,
+            phone: s.phone || DEFAULT_SITE_SETTINGS.phone,
+            whatsapp: s.whatsapp || DEFAULT_SITE_SETTINGS.whatsapp,
+            location: s.location || DEFAULT_SITE_SETTINGS.location,
+            address: s.address || DEFAULT_SITE_SETTINGS.address,
+            city: s.city || DEFAULT_SITE_SETTINGS.city,
+            country: s.country || DEFAULT_SITE_SETTINGS.country,
+            businessHours: s.businessHours || DEFAULT_SITE_SETTINGS.businessHours,
+            contactInstructions: s.contactInstructions || DEFAULT_SITE_SETTINGS.contactInstructions,
+            socialLinks: (s.socialLinksJson as any) || DEFAULT_SITE_SETTINGS.socialLinks,
+            announcementBar: (s.announcementBarJson as any) || DEFAULT_SITE_SETTINGS.announcementBar,
+            headerConfig: (s.headerConfigJson as any) || DEFAULT_SITE_SETTINGS.headerConfig,
+            navigationItems: Array.isArray(s.navigationItemsJson) && s.navigationItemsJson.length > 0
+              ? (s.navigationItemsJson as any)
+              : DEFAULT_SITE_SETTINGS.navigationItems,
+            footerConfig: (s.footerConfigJson as any) || DEFAULT_SITE_SETTINGS.footerConfig,
+            galleryPageConfig: (s.galleryPageConfigJson as any) || DEFAULT_SITE_SETTINGS.galleryPageConfig,
+            collectionsPageConfig: (s.collectionsPageConfigJson as any) || DEFAULT_SITE_SETTINGS.collectionsPageConfig,
+            exhibitionsPageConfig: (s.exhibitionsPageConfigJson as any) || DEFAULT_SITE_SETTINGS.exhibitionsPageConfig,
+            aboutPageConfig: (s.aboutPageConfigJson as any) || DEFAULT_SITE_SETTINGS.aboutPageConfig,
+            contactPageConfig: (s.contactPageConfigJson as any) || DEFAULT_SITE_SETTINGS.contactPageConfig,
+            legalPages: (s.legalPagesJson as any) || DEFAULT_SITE_SETTINGS.legalPages,
+            maintenanceMode: (s.maintenanceModeJson as any) || DEFAULT_SITE_SETTINGS.maintenanceMode,
+            globalArDefaults: (s.globalArDefaultsJson as any) || DEFAULT_SITE_SETTINGS.globalArDefaults,
+            copyrightText: s.copyrightText || DEFAULT_SITE_SETTINGS.copyrightText,
+          };
+        }
+      } catch (e) {
+        console.error("Database getSiteSettings failed, using fallbacks:", e);
+      }
 
-  return DEFAULT_SITE_SETTINGS;
+      return DEFAULT_SITE_SETTINGS;
+    },
+    3600
+  );
 }
 
 export async function updateSiteSettings(settings: Partial<SiteSettingsData>): Promise<SiteSettingsData> {
@@ -1345,6 +1465,8 @@ export async function updateSiteSettings(settings: Partial<SiteSettingsData>): P
       });
     }
     recordActivityLog("UPDATE_SITE_SETTINGS", "settings", "Updated studio site settings and storefront CMS");
+    await invalidateCacheKeys(CACHE_KEYS.siteSettings);
+    await revalidateNextCache();
   } catch (e) {
     console.error("Database updateSiteSettings failed:", e);
   }
@@ -1354,30 +1476,36 @@ export async function updateSiteSettings(settings: Partial<SiteSettingsData>): P
 
 
 export async function getThemeSettings(): Promise<ThemeSettingsData> {
-  const db = getDb();
-  if (!db) return DEFAULT_THEME_SETTINGS;
+  return cachedGet(
+    CACHE_KEYS.themeSettings,
+    async () => {
+      const db = getDb();
+      if (!db) return DEFAULT_THEME_SETTINGS;
 
-  try {
-    const rows = await db.select().from(schema.themeSettings).limit(1);
-    if (rows.length > 0) {
-      const t = rows[0];
-      return {
-        primaryColor: t.primaryColor || DEFAULT_THEME_SETTINGS.primaryColor,
-        accentColor: t.accentColor || DEFAULT_THEME_SETTINGS.accentColor,
-        backgroundColor: t.backgroundColor || DEFAULT_THEME_SETTINGS.backgroundColor,
-        foregroundColor: t.foregroundColor || DEFAULT_THEME_SETTINGS.foregroundColor,
-        headingFont: t.headingFont || DEFAULT_THEME_SETTINGS.headingFont,
-        bodyFont: t.bodyFont || DEFAULT_THEME_SETTINGS.bodyFont,
-        borderRadius: t.borderRadius || DEFAULT_THEME_SETTINGS.borderRadius,
-        containerWidth: t.containerWidth || DEFAULT_THEME_SETTINGS.containerWidth,
-        animationLevel: (t.animationLevel as any) || DEFAULT_THEME_SETTINGS.animationLevel,
-      };
-    }
-  } catch (e) {
-    console.error("Database getThemeSettings failed:", e);
-  }
+      try {
+        const rows = await db.select().from(schema.themeSettings).limit(1);
+        if (rows.length > 0) {
+          const t = rows[0];
+          return {
+            primaryColor: t.primaryColor || DEFAULT_THEME_SETTINGS.primaryColor,
+            accentColor: t.accentColor || DEFAULT_THEME_SETTINGS.accentColor,
+            backgroundColor: t.backgroundColor || DEFAULT_THEME_SETTINGS.backgroundColor,
+            foregroundColor: t.foregroundColor || DEFAULT_THEME_SETTINGS.foregroundColor,
+            headingFont: t.headingFont || DEFAULT_THEME_SETTINGS.headingFont,
+            bodyFont: t.bodyFont || DEFAULT_THEME_SETTINGS.bodyFont,
+            borderRadius: t.borderRadius || DEFAULT_THEME_SETTINGS.borderRadius,
+            containerWidth: t.containerWidth || DEFAULT_THEME_SETTINGS.containerWidth,
+            animationLevel: (t.animationLevel as any) || DEFAULT_THEME_SETTINGS.animationLevel,
+          };
+        }
+      } catch (e) {
+        console.error("Database getThemeSettings failed:", e);
+      }
 
-  return DEFAULT_THEME_SETTINGS;
+      return DEFAULT_THEME_SETTINGS;
+    },
+    3600
+  );
 }
 
 export async function updateThemeSettings(theme: Partial<ThemeSettingsData>): Promise<ThemeSettingsData> {
@@ -1409,6 +1537,8 @@ export async function updateThemeSettings(theme: Partial<ThemeSettingsData>): Pr
     }
 
     recordActivityLog("UPDATE_THEME_SETTINGS", "theme", `Updated design tokens and appearance`);
+    await invalidateCacheKeys(CACHE_KEYS.themeSettings);
+    await revalidateNextCache();
   } catch (e) {
     console.error("Database updateThemeSettings failed:", e);
   }

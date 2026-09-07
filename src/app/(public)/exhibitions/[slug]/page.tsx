@@ -26,7 +26,7 @@ export async function generateMetadata({
   };
 }
 
-export const revalidate = 60; // Cache ISR for 60 seconds
+export const revalidate = 3600; // Cache ISR for 1 hour with instant write-invalidation
 
 export default async function ExhibitionDetailPage({ params }: ExhibitionSlugProps) {
   const { slug } = await params;

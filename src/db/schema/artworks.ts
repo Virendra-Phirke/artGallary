@@ -1,43 +1,57 @@
-import { pgTable, text, timestamp, uuid, varchar, integer, numeric, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uuid, varchar, integer, numeric, boolean, index } from "drizzle-orm/pg-core";
 import { media } from "./system";
 
-export const artworks = pgTable("artworks", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  slug: varchar("slug", { length: 255 }).notNull().unique(),
-  title: varchar("title", { length: 255 }).notNull(),
-  description: text("description").notNull(),
-  longDescription: text("long_description"),
-  year: integer("year").notNull(),
-  medium: varchar("medium", { length: 255 }).notNull(),
-  widthCm: numeric("width_cm", { precision: 8, scale: 2 }).notNull(),
-  heightCm: numeric("height_cm", { precision: 8, scale: 2 }).notNull(),
-  depthCm: numeric("depth_cm", { precision: 8, scale: 2 }),
-  price: numeric("price", { precision: 12, scale: 2 }),
-  currency: varchar("currency", { length: 10 }).default("USD").notNull(),
-  status: varchar("status", { length: 20 }).default("draft").notNull(), // 'draft' | 'published' | 'reserved' | 'sold' | 'archived'
-  coverImageId: uuid("cover_image_id").references(() => media.id, { onDelete: "set null" }),
-  coverImageUrl: text("cover_image_url"), // Direct URL convenience for seed and caching
-  altText: text("alt_text").notNull(),
-  seoTitle: varchar("seo_title", { length: 255 }),
-  seoDescription: text("seo_description"),
-  isFeatured: boolean("is_featured").default(false).notNull(),
-  displayOrder: integer("display_order").default(0).notNull(),
-  publishedAt: timestamp("published_at", { mode: "date" }),
-  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
-  deletedAt: timestamp("deleted_at", { mode: "date" }),
-});
+export const artworks = pgTable(
+  "artworks",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    slug: varchar("slug", { length: 255 }).notNull().unique(),
+    title: varchar("title", { length: 255 }).notNull(),
+    description: text("description").notNull(),
+    longDescription: text("long_description"),
+    year: integer("year").notNull(),
+    medium: varchar("medium", { length: 255 }).notNull(),
+    widthCm: numeric("width_cm", { precision: 8, scale: 2 }).notNull(),
+    heightCm: numeric("height_cm", { precision: 8, scale: 2 }).notNull(),
+    depthCm: numeric("depth_cm", { precision: 8, scale: 2 }),
+    price: numeric("price", { precision: 12, scale: 2 }),
+    currency: varchar("currency", { length: 10 }).default("USD").notNull(),
+    status: varchar("status", { length: 20 }).default("draft").notNull(), // 'draft' | 'published' | 'reserved' | 'sold' | 'archived'
+    coverImageId: uuid("cover_image_id").references(() => media.id, { onDelete: "set null" }),
+    coverImageUrl: text("cover_image_url"), // Direct URL convenience for seed and caching
+    altText: text("alt_text").notNull(),
+    seoTitle: varchar("seo_title", { length: 255 }),
+    seoDescription: text("seo_description"),
+    isFeatured: boolean("is_featured").default(false).notNull(),
+    displayOrder: integer("display_order").default(0).notNull(),
+    publishedAt: timestamp("published_at", { mode: "date" }),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+    deletedAt: timestamp("deleted_at", { mode: "date" }),
+  },
+  (table) => [
+    index("artworks_status_order_idx").on(table.status, table.displayOrder),
+    index("artworks_status_featured_idx").on(table.status, table.isFeatured),
+    index("artworks_slug_idx").on(table.slug),
+  ]
+);
 
-export const artworkImages = pgTable("artwork_images", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  artworkId: uuid("artwork_id").notNull().references(() => artworks.id, { onDelete: "cascade" }),
-  mediaId: uuid("media_id").references(() => media.id, { onDelete: "cascade" }),
-  imageUrl: text("image_url").notNull(),
-  displayOrder: integer("display_order").default(0).notNull(),
-  caption: text("caption"),
-  isPrimary: boolean("is_primary").default(false).notNull(),
-  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-});
+export const artworkImages = pgTable(
+  "artwork_images",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    artworkId: uuid("artwork_id").notNull().references(() => artworks.id, { onDelete: "cascade" }),
+    mediaId: uuid("media_id").references(() => media.id, { onDelete: "cascade" }),
+    imageUrl: text("image_url").notNull(),
+    displayOrder: integer("display_order").default(0).notNull(),
+    caption: text("caption"),
+    isPrimary: boolean("is_primary").default(false).notNull(),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  },
+  (table) => [
+    index("artwork_images_artwork_id_idx").on(table.artworkId),
+  ]
+);
 
 export const artworkAr = pgTable("artwork_ar", {
   id: uuid("id").defaultRandom().primaryKey(),

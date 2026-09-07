@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     "Explore the distinct thematic series of paintings by Elena Vance, including Chromatic Solitude and Ephemeral Terrains.",
 };
 
-export const revalidate = 60; // Cache ISR for 60 seconds
+export const revalidate = 3600; // Cache ISR for 1 hour with instant write-invalidation
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

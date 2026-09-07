@@ -20,8 +20,21 @@ import { MockArtwork, MockCollection } from "@/db/mockData";
 import { slugify, formatDimensions } from "@/lib/utils";
 import { UnsplashPickerModal } from "./UnsplashPickerModal";
 import { MediaLibraryModal, MediaItem } from "./MediaLibraryModal";
-import { ArStudioViewer } from "@/components/ar/ArStudioViewer";
 import { ProgressBar } from "@/components/ui/progress-bar";
+import dynamic from "next/dynamic";
+
+const ArStudioViewer = dynamic(
+  () => import("@/components/ar/ArStudioViewer").then((mod) => mod.ArStudioViewer),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[450px] rounded-xl bg-[#0b0c10] border border-[#262833] flex flex-col items-center justify-center gap-3 text-zinc-500">
+        <Loader2 className="w-8 h-8 animate-spin text-[#d1a86e]" />
+        <span className="text-xs font-mono tracking-wider uppercase">Loading 3D AR Studio Engine...</span>
+      </div>
+    ),
+  }
+);
 
 interface ArtworkFormClientProps {
   initialArtwork?: MockArtwork;
