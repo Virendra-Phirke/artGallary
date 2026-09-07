@@ -1,11 +1,14 @@
 "use client";
 
 import * as React from "react";
+import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 
 interface DropdownMenuContextValue {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  containerRef: React.RefObject<HTMLDivElement | null>;
+  contentRef: React.RefObject<HTMLDivElement | null>;
 }
 
 const DropdownMenuContext = React.createContext<DropdownMenuContextValue | null>(null);
@@ -20,25 +23,43 @@ function useDropdownMenu() {
 
 export function DropdownMenu({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = React.useState(false);
-  const menuRef = React.useRef<HTMLDivElement>(null);
+  const containerRef = React.useRef<HTMLDivElement | null>(null);
+  const contentRef = React.useRef<HTMLDivElement | null>(null);
 
   React.useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+    if (!open) return;
+
+    const handlePointerDown = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as Node;
+      if (
+        contentRef.current?.contains(target) ||
+        containerRef.current?.contains(target)
+      ) {
+        return;
+      }
+      setOpen(false);
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
         setOpen(false);
       }
     };
-    if (open) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("touchstart", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("touchstart", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, [open]);
 
   return (
-    <DropdownMenuContext.Provider value={{ open, setOpen }}>
-      <div ref={menuRef} className="relative inline-block text-left">
+    <DropdownMenuContext.Provider value={{ open, setOpen, containerRef, contentRef }}>
+      <div ref={containerRef} className="relative inline-block text-left">
         {children}
       </div>
     </DropdownMenuContext.Provider>
@@ -54,9 +75,10 @@ export function DropdownMenuTrigger({
   const { open, setOpen } = useDropdownMenu();
 
   if (asChild && React.isValidElement(children)) {
-    return React.cloneElement(children as React.ReactElement<any>, {
+    const child = children as React.ReactElement<any>;
+    return React.cloneElement(child, {
       onClick: (e: React.MouseEvent) => {
-        (children as React.ReactElement<any>).props.onClick?.(e);
+        child.props.onClick?.(e);
         setOpen(!open);
       },
     });
@@ -80,26 +102,105 @@ export function DropdownMenuContent({
   align = "end",
   ...props
 }: React.HTMLAttributes<HTMLDivElement> & { align?: "start" | "end" | "center" }) {
-  const { open } = useDropdownMenu();
-  if (!open) return null;
+  const { open, setOpen, containerRef, contentRef } = useDropdownMenu();
+  const [mounted, setMounted] = React.useState(false);
+  const [coords, setCoords] = React.useState<{
+    top: number;
+    left: number;
+    placement: "top" | "bottom";
+  } | null>(null);
 
-  const alignClasses = {
-    start: "left-0",
-    center: "left-1/2 -translate-x-1/2",
-    end: "right-0",
-  };
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  return (
+  const calculatePosition = React.useCallback(() => {
+    const anchor =
+      (containerRef.current?.firstElementChild as HTMLElement) ||
+      containerRef.current;
+    if (!anchor) return null;
+    const rect = anchor.getBoundingClientRect();
+
+    // If trigger scrolled off viewport completely, dismiss menu
+    if (rect.bottom < 0 || rect.top > window.innerHeight) {
+      setOpen(false);
+      return null;
+    }
+
+    const menuWidth = contentRef.current?.offsetWidth || 175;
+    const menuHeight = contentRef.current?.offsetHeight || 210;
+
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+    const placeTop = spaceBelow < menuHeight + 16 && spaceAbove > spaceBelow;
+
+    let top: number;
+    if (placeTop) {
+      top = Math.max(8, rect.top - menuHeight - 6);
+    } else {
+      top = Math.min(window.innerHeight - menuHeight - 8, rect.bottom + 6);
+    }
+
+    let left: number;
+    if (align === "start") {
+      left = rect.left;
+    } else if (align === "end") {
+      left = rect.right - menuWidth;
+    } else {
+      left = rect.left + (rect.width - menuWidth) / 2;
+    }
+
+    // Keep dropdown inside screen boundaries
+    left = Math.max(8, Math.min(left, window.innerWidth - menuWidth - 8));
+
+    return { top, left, placement: placeTop ? ("top" as const) : ("bottom" as const) };
+  }, [align, containerRef, contentRef, setOpen]);
+
+  React.useLayoutEffect(() => {
+    if (open) {
+      const initial = calculatePosition();
+      if (initial) setCoords(initial);
+
+      const handleUpdate = () => {
+        const next = calculatePosition();
+        if (next) setCoords(next);
+      };
+
+      window.addEventListener("resize", handleUpdate);
+      window.addEventListener("scroll", handleUpdate, true);
+      return () => {
+        window.removeEventListener("resize", handleUpdate);
+        window.removeEventListener("scroll", handleUpdate, true);
+      };
+    } else {
+      setCoords(null);
+    }
+  }, [open, calculatePosition]);
+
+  // NEVER render when coords is null, preventing any top-left corner flash!
+  if (!open || !mounted || !coords) return null;
+
+  return createPortal(
     <div
+      ref={contentRef}
+      style={{
+        position: "fixed",
+        top: `${coords.top}px`,
+        left: `${coords.left}px`,
+        zIndex: 9999,
+      }}
       className={cn(
-        "absolute z-50 mt-1.5 min-w-[160px] rounded-xl border border-[#262833] bg-[#14151a] p-1.5 text-xs text-[#f4f4f6] shadow-2xl animate-in fade-in-0 zoom-in-95",
-        alignClasses[align],
+        "min-w-[170px] max-h-[320px] overflow-y-auto rounded-xl border border-[#262833] bg-[#14151a] p-1.5 text-xs text-[#f4f4f6] shadow-2xl shadow-black/95",
+        coords.placement === "top"
+          ? "animate-in fade-in-0 slide-in-from-bottom-2 duration-150"
+          : "animate-in fade-in-0 slide-in-from-top-2 duration-150",
         className
       )}
       {...props}
     >
       {children}
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -113,15 +214,16 @@ export function DropdownMenuItem({
   const { setOpen } = useDropdownMenu();
 
   if (asChild && React.isValidElement(children)) {
-    return React.cloneElement(children as React.ReactElement<any>, {
+    const child = children as React.ReactElement<any>;
+    return React.cloneElement(child, {
       onClick: (e: React.MouseEvent) => {
-        (children as React.ReactElement<any>).props.onClick?.(e);
+        child.props.onClick?.(e);
         onClick?.(e as any);
         setOpen(false);
       },
       className: cn(
-        "flex cursor-pointer select-none items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-zinc-300 transition-colors hover:bg-[#1f212b] hover:text-white",
-        (children as React.ReactElement<any>).props.className,
+        "flex w-full cursor-pointer select-none items-center gap-2 rounded-lg px-2.5 py-2 text-xs text-zinc-300 transition-colors hover:bg-[#1f212b] hover:text-white",
+        child.props.className,
         className
       ),
     });
@@ -135,7 +237,7 @@ export function DropdownMenuItem({
         setOpen(false);
       }}
       className={cn(
-        "flex cursor-pointer select-none items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-zinc-300 transition-colors hover:bg-[#1f212b] hover:text-white",
+        "flex w-full cursor-pointer select-none items-center gap-2 rounded-lg px-2.5 py-2 text-xs text-zinc-300 transition-colors hover:bg-[#1f212b] hover:text-white",
         className
       )}
       {...props}
@@ -151,7 +253,7 @@ export function DropdownMenuLabel({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-500", className)}
+      className={cn("px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-zinc-500", className)}
       {...props}
     />
   );
