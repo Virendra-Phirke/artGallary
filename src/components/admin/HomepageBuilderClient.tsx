@@ -39,12 +39,12 @@ import {
   ExternalLink,
   Compass,
   PanelLeft,
+  LayoutTemplate,
   Maximize2,
   Minimize2,
   ZoomIn,
   ZoomOut,
 } from "lucide-react";
-import { useSidebar } from "@/components/ui/sidebar";
 import { formatCurrency, formatDimensions } from "@/lib/utils";
 import { NavbarLayoutModal } from "./studio/NavbarLayoutModal";
 import { GalleryPageEditor } from "./studio/GalleryPageEditor";
@@ -98,7 +98,6 @@ export function HomepageBuilderClient({
   );
   const [isNavbarModalOpen, setIsNavbarModalOpen] = useState(false);
 
-  const { open: isSidebarOpen, toggleSidebar } = useSidebar();
   const [canvasZoom, setCanvasZoom] = useState<number>(100);
   const [canvasRefreshKey, setCanvasRefreshKey] = useState<number>(0);
 
@@ -406,257 +405,255 @@ export function HomepageBuilderClient({
 
   return (
     <div className="space-y-6">
-      {/* 1. TOP BUILDER BAR */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-[#14151a] p-4 sm:p-5 rounded-2xl border border-[#262833] shadow-lg">
-        <div className="flex items-center gap-3">
-          {/* Sidebar Toggle Button */}
-          <button
-            type="button"
-            onClick={toggleSidebar}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs transition-colors cursor-pointer shrink-0 ${
-              !isSidebarOpen
-                ? "bg-[#d1a86e]/10 border-[#d1a86e]/30 text-[#d1a86e] font-semibold"
-                : "bg-[#1a1c23] border-[#262833] text-zinc-400 hover:text-white"
-            }`}
-            title={isSidebarOpen ? "Collapse sidebar for 100% full screen" : "Show sidebar"}
-          >
-            <PanelLeft className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline font-mono text-[11px]">
-              {!isSidebarOpen ? "100% Screen" : "Sidebar"}
-            </span>
-          </button>
-
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
-                Live Storefront Studio
-              </span>
-              <span className="text-zinc-600">•</span>
-              <span className="text-[11px] text-zinc-400 capitalize">
-                Editing {activePage} Page
-              </span>
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse hidden sm:inline-block" />
+      {/* 1. STUDIO COMMAND BAR */}
+      <div className="bg-[#121318] border border-[#232530] rounded-2xl shadow-xl overflow-hidden">
+        {/* Tier 1: Main Control Toolbar */}
+        <div className="p-3.5 sm:p-4 border-b border-[#1f212b] flex flex-col xl:flex-row xl:items-center justify-between gap-4 bg-gradient-to-r from-[#14151c] to-[#101116]">
+          {/* Left: Branding & Current Editing Target */}
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-[#1b1d26] border border-[#2d303e] flex items-center justify-center text-[#d1a86e] shrink-0">
+              <LayoutTemplate className="w-4.5 h-4.5" />
             </div>
-            <h1 className="font-serif text-xl sm:text-2xl text-white font-medium mt-0.5">
-              {getPageTitle()}
-            </h1>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] tracking-[0.2em] text-[#d1a86e] uppercase font-bold">
+                  Storefront Studio
+                </span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-[10px] font-mono text-zinc-500 uppercase">
+                  100% Canvas Mode
+                </span>
+              </div>
+              <h1 className="font-serif text-lg sm:text-xl text-white font-medium">
+                {getPageTitle()}
+              </h1>
+            </div>
+          </div>
+
+          {/* Center: Viewport & View Mode Controls */}
+          <div className="flex flex-wrap items-center gap-2 bg-[#0c0d11] p-1.5 rounded-xl border border-[#20222a]">
+            {/* View Mode Segmented Control */}
+            <div className="flex items-center bg-[#15161d] p-0.5 rounded-lg border border-[#262833]">
+              <button
+                type="button"
+                onClick={() => setViewMode("split")}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium transition-all ${
+                  viewMode === "split"
+                    ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-sm"
+                    : "text-zinc-400 hover:text-white"
+                }`}
+                title="Split View: Editor & Live Preview"
+              >
+                <Split className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Split</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("editor")}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium transition-all ${
+                  viewMode === "editor"
+                    ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-sm"
+                    : "text-zinc-400 hover:text-white"
+                }`}
+                title="Editor Form Only"
+              >
+                <Sliders className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Editor</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("preview")}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium transition-all ${
+                  viewMode === "preview"
+                    ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-sm"
+                    : "text-zinc-400 hover:text-white"
+                }`}
+                title="Full Live Canvas"
+              >
+                <Eye className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Canvas</span>
+              </button>
+            </div>
+
+            {/* Device Simulator Toggle */}
+            {viewMode !== "editor" && (
+              <div className="flex items-center bg-[#15161d] p-0.5 rounded-lg border border-[#262833]">
+                <button
+                  type="button"
+                  onClick={() => setDeviceMode("desktop")}
+                  className={`p-1.5 rounded-md text-xs transition-colors ${
+                    deviceMode === "desktop"
+                      ? "bg-[#252834] text-[#d1a86e]"
+                      : "text-zinc-400 hover:text-white"
+                  }`}
+                  title="Desktop View (100% Fluid)"
+                >
+                  <Monitor className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDeviceMode("tablet")}
+                  className={`p-1.5 rounded-md text-xs transition-colors ${
+                    deviceMode === "tablet"
+                      ? "bg-[#252834] text-[#d1a86e]"
+                      : "text-zinc-400 hover:text-white"
+                  }`}
+                  title="Tablet View (768px)"
+                >
+                  <Tablet className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDeviceMode("mobile")}
+                  className={`p-1.5 rounded-md text-xs transition-colors ${
+                    deviceMode === "mobile"
+                      ? "bg-[#252834] text-[#d1a86e]"
+                      : "text-zinc-400 hover:text-white"
+                  }`}
+                  title="Mobile View (390px)"
+                >
+                  <Smartphone className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
+
+            {/* Zoom Controls */}
+            {viewMode !== "editor" && (
+              <div className="flex items-center px-1 text-xs">
+                <button
+                  type="button"
+                  onClick={() => setCanvasZoom((z) => Math.max(50, z - 10))}
+                  className="p-1 text-zinc-400 hover:text-white transition-colors"
+                  title="Zoom Out"
+                >
+                  <ZoomOut className="w-3.5 h-3.5" />
+                </button>
+                <span className="px-1.5 text-[11px] font-mono text-zinc-300 min-w-[38px] text-center select-none">
+                  {canvasZoom}%
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setCanvasZoom((z) => Math.min(150, z + 10))}
+                  className="p-1 text-zinc-400 hover:text-white transition-colors"
+                  title="Zoom In"
+                >
+                  <ZoomIn className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Right: Actions */}
+          <div className="flex items-center gap-2.5 shrink-0">
+            <button
+              type="button"
+              onClick={() => setIsNavbarModalOpen(true)}
+              className="px-3 py-1.5 rounded-xl bg-[#171821] hover:bg-[#20222d] text-zinc-300 hover:text-white flex items-center gap-1.5 transition-colors border border-[#292c3a] text-xs font-medium"
+              title="Configure Storefront Navigation Header & Links"
+            >
+              <Compass className="w-3.5 h-3.5 text-[#d1a86e]" />
+              <span>Navbar Layout</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={isSaving}
+              className="flex items-center gap-2 bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] px-4 py-1.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all shadow-md shadow-[#d1a86e]/20 disabled:opacity-50"
+            >
+              {isSaving ? (
+                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+              ) : savedSuccess ? (
+                <Check className="w-3.5 h-3.5 text-emerald-950 font-bold" />
+              ) : (
+                <Save className="w-3.5 h-3.5" />
+              )}
+              <span>
+                {isSaving
+                  ? "Saving..."
+                  : savedSuccess
+                  ? "Saved!"
+                  : activePage === "home"
+                  ? "Publish Layout"
+                  : `Publish ${activePage.charAt(0).toUpperCase() + activePage.slice(1)}`}
+              </span>
+            </button>
           </div>
         </div>
 
-        {/* View Mode & Device Controls & Storefront Switcher */}
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-          {/* View Mode Toggle */}
-          <div className="flex items-center p-1 bg-[#1a1c23] border border-[#262833] rounded-xl">
-            <button
-              onClick={() => setViewMode("split")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                viewMode === "split"
-                  ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
-                  : "text-zinc-400 hover:text-white"
-              }`}
-              title="Split View: Editor & Live Preview"
-            >
-              <Split className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Split</span>
-            </button>
-            <button
-              onClick={() => setViewMode("editor")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                viewMode === "editor"
-                  ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
-                  : "text-zinc-400 hover:text-white"
-              }`}
-              title="Editor Only"
-            >
-              <Sliders className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Editor</span>
-            </button>
-            <button
-              onClick={() => setViewMode("preview")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                viewMode === "preview"
-                  ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
-                  : "text-zinc-400 hover:text-white"
-              }`}
-              title="Preview Canvas"
-            >
-              <Eye className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Live Canvas</span>
-            </button>
-          </div>
-
-          {/* Device Simulator Toggle (visible if split or preview) */}
-          {viewMode !== "editor" && (
-            <div className="flex items-center p-1 bg-[#1a1c23] border border-[#262833] rounded-xl">
-              <button
-                onClick={() => setDeviceMode("desktop")}
-                className={`p-1.5 rounded-lg text-xs transition-colors ${
-                  deviceMode === "desktop"
-                    ? "bg-zinc-800 text-[#d1a86e]"
-                    : "text-zinc-400 hover:text-white"
-                }`}
-                title="Desktop View (Full Width)"
-              >
-                <Monitor className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setDeviceMode("tablet")}
-                className={`p-1.5 rounded-lg text-xs transition-colors ${
-                  deviceMode === "tablet"
-                    ? "bg-zinc-800 text-[#d1a86e]"
-                    : "text-zinc-400 hover:text-white"
-                }`}
-                title="Tablet View (768px)"
-              >
-                <Tablet className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setDeviceMode("mobile")}
-                className={`p-1.5 rounded-lg text-xs transition-colors ${
-                  deviceMode === "mobile"
-                    ? "bg-zinc-800 text-[#d1a86e]"
-                    : "text-zinc-400 hover:text-white"
-                }`}
-                title="Mobile View (390px)"
-              >
-                <Smartphone className="w-4 h-4" />
-              </button>
-            </div>
-          )}
-
-          {/* Canvas Zoom Controls */}
-          {viewMode !== "editor" && (
-            <div className="flex items-center p-1 bg-[#1a1c23] border border-[#262833] rounded-xl text-xs">
-              <button
-                type="button"
-                onClick={() => setCanvasZoom((z) => Math.max(50, z - 10))}
-                className="p-1 text-zinc-400 hover:text-white transition-colors"
-                title="Zoom Out Canvas"
-              >
-                <ZoomOut className="w-3.5 h-3.5" />
-              </button>
-              <span className="px-1.5 text-[11px] font-mono text-zinc-300 min-w-[38px] text-center select-none">
-                {canvasZoom}%
-              </span>
-              <button
-                type="button"
-                onClick={() => setCanvasZoom((z) => Math.min(150, z + 10))}
-                className="p-1 text-zinc-400 hover:text-white transition-colors"
-                title="Zoom In Canvas"
-              >
-                <ZoomIn className="w-3.5 h-3.5" />
-              </button>
-              {canvasZoom !== 100 && (
-                <button
-                  type="button"
-                  onClick={() => setCanvasZoom(100)}
-                  className="text-[9px] text-[#d1a86e] px-1 hover:underline font-mono"
-                  title="Reset Zoom to 100%"
-                >
-                  Reset
-                </button>
-              )}
-            </div>
-          )}
-
-          {/* Storefront Page Switcher Navbar */}
-          <div className="flex items-center gap-1 p-1 bg-[#1a1c23] border border-[#262833] rounded-xl text-xs">
-            <span className="px-2 text-[10px] text-zinc-500 uppercase tracking-widest font-mono hidden xl:inline">
-              Storefront:
+        {/* Tier 2: Dedicated Storefront Page Switcher Strip */}
+        <div className="px-4 py-2 bg-[#0e0f14] flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none py-0.5">
+            <span className="text-[10px] uppercase tracking-widest font-mono text-zinc-500 mr-2 shrink-0">
+              Pages:
             </span>
 
-            {/* Home Pill */}
-            <div className="flex items-center group relative">
-              <button
-                type="button"
-                onClick={() => setActivePage("home")}
-                className={`px-2.5 py-1 rounded-lg text-xs transition-all font-medium ${
-                  activePage === "home"
-                    ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-sm shadow-[#d1a86e]/30"
-                    : "text-zinc-400 hover:text-white hover:bg-zinc-800"
-                }`}
-              >
-                Home
-              </button>
+            {/* Home Tab */}
+            <button
+              type="button"
+              onClick={() => setActivePage("home")}
+              className={`px-3 py-1 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
+                activePage === "home"
+                  ? "bg-[#d1a86e]/15 text-[#d1a86e] border border-[#d1a86e]/40 font-semibold shadow-sm"
+                  : "text-zinc-400 hover:text-white hover:bg-[#181921] border border-transparent"
+              }`}
+            >
+              <span>Home</span>
               <a
                 href="/"
                 target="_blank"
                 rel="noopener noreferrer"
                 title="Open live / in new tab"
-                className={`p-1 text-zinc-500 hover:text-white transition-opacity ${
-                  activePage === "home" ? "opacity-70 hover:opacity-100" : "opacity-0 group-hover:opacity-70"
-                }`}
+                onClick={(e) => e.stopPropagation()}
+                className="text-zinc-500 hover:text-white"
               >
                 <ExternalLink className="w-2.5 h-2.5" />
               </a>
-            </div>
+            </button>
 
-            {/* Other Storefront Nav Pages */}
+            {/* Other Tabs */}
             {storefrontNavTabs.map((tab) => {
               const isActive = activePage === tab.key;
               return (
-                <div key={tab.key} className="flex items-center group relative">
-                  <button
-                    type="button"
-                    onClick={() => setActivePage(tab.key)}
-                    className={`px-2.5 py-1 rounded-lg text-xs transition-all font-medium ${
-                      isActive
-                        ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-sm shadow-[#d1a86e]/30"
-                        : "text-zinc-400 hover:text-white hover:bg-zinc-800"
-                    }`}
-                  >
-                    {tab.label}
-                  </button>
+                <button
+                  key={tab.key}
+                  type="button"
+                  onClick={() => setActivePage(tab.key)}
+                  className={`px-3 py-1 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
+                    isActive
+                      ? "bg-[#d1a86e]/15 text-[#d1a86e] border border-[#d1a86e]/40 font-semibold shadow-sm"
+                      : "text-zinc-400 hover:text-white hover:bg-[#181921] border border-transparent"
+                  }`}
+                >
+                  <span>{tab.label}</span>
                   <a
                     href={tab.href}
                     target="_blank"
                     rel="noopener noreferrer"
                     title={`Open live ${tab.href} in new tab`}
-                    className={`p-1 text-zinc-500 hover:text-white transition-opacity ${
-                      isActive ? "opacity-70 hover:opacity-100" : "opacity-0 group-hover:opacity-70"
-                    }`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-zinc-500 hover:text-white"
                   >
                     <ExternalLink className="w-2.5 h-2.5" />
                   </a>
-                </div>
+                </button>
               );
             })}
-
-            {/* Navbar Layout Manager Button */}
-            <button
-              type="button"
-              onClick={() => setIsNavbarModalOpen(true)}
-              className="ml-1 px-2.5 py-1 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 hover:text-white flex items-center gap-1.5 transition-colors border border-white/5"
-              title="Manage Navbar Layout & Navigation Links"
-            >
-              <Compass className="w-3.5 h-3.5 text-[#d1a86e]" />
-              <span className="text-[11px] font-medium hidden md:inline">Navbar Layout</span>
-            </button>
           </div>
 
-          {/* Save Button */}
-          <button
-            onClick={handleSave}
-            disabled={isSaving}
-            className="flex items-center gap-2 bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] px-5 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all shadow-md shadow-[#d1a86e]/15 disabled:opacity-50"
-          >
-            {isSaving ? (
-              <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-            ) : savedSuccess ? (
-              <Check className="w-3.5 h-3.5 text-emerald-950 font-bold" />
-            ) : (
-              <Save className="w-3.5 h-3.5" />
-            )}
-            <span>
-              {isSaving
-                ? "Saving..."
-                : savedSuccess
-                ? "Saved!"
-                : activePage === "home"
-                ? "Publish Layout"
-                : `Publish ${activePage.charAt(0).toUpperCase() + activePage.slice(1)}`}
-            </span>
-          </button>
+          <div className="flex items-center gap-3 text-[11px] text-zinc-500 font-mono">
+            <span className="hidden sm:inline">Press Ctrl+S to publish</span>
+            <span className="w-1 h-1 rounded-full bg-zinc-600" />
+            <a
+              href={activePage === "home" ? "/" : `/${activePage}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#d1a86e] hover:underline flex items-center gap-1"
+            >
+              <span>Live Store</span>
+              <ExternalLink className="w-2.5 h-2.5" />
+            </a>
+          </div>
         </div>
       </div>
 
@@ -711,14 +708,31 @@ export function HomepageBuilderClient({
                       }`}
                     >
                       {/* Card Header & Controls */}
-                      <div className="p-4 flex items-center justify-between gap-3">
+                      <div className="p-3.5 sm:p-4 flex items-center justify-between gap-3">
                         <div
                           onClick={() =>
                             setExpandedSectionId(isExpanded ? null : sec.id)
                           }
-                          className="flex items-center gap-3 cursor-pointer flex-1 select-none"
+                          className="flex items-center gap-3 cursor-pointer flex-1 select-none group"
                         >
-                          <div className="flex flex-col gap-0.5">
+                          {/* Number Badge */}
+                          <div className="w-8 h-8 rounded-xl bg-[#1a1c24] border border-[#2b2d3c] flex items-center justify-center font-mono text-xs text-[#d1a86e] font-semibold shrink-0 group-hover:border-[#d1a86e]/40 transition-colors">
+                            0{sec.displayOrder}
+                          </div>
+
+                          <div>
+                            <h3 className="text-sm font-medium text-white group-hover:text-[#d1a86e] transition-colors">
+                              {sec.title || sec.sectionKey}
+                            </h3>
+                            <span className="text-[10px] text-zinc-400 font-mono capitalize">
+                              {sec.sectionKey.replace(/_/g, " ")}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          {/* Reorder Up/Down */}
+                          <div className="flex items-center bg-[#15161e] border border-[#252834] rounded-lg p-0.5">
                             <button
                               type="button"
                               onClick={(e) => {
@@ -726,10 +740,10 @@ export function HomepageBuilderClient({
                                 moveSection(idx, "up");
                               }}
                               disabled={idx === 0}
-                              className="p-1 rounded text-zinc-400 hover:text-white hover:bg-zinc-800 disabled:opacity-20"
+                              className="p-1 rounded text-zinc-400 hover:text-white hover:bg-zinc-800 disabled:opacity-20 transition-colors"
                               title="Move Up"
                             >
-                              <MoveUp className="w-3 h-3" />
+                              <MoveUp className="w-3.5 h-3.5" />
                             </button>
                             <button
                               type="button"
@@ -738,63 +752,46 @@ export function HomepageBuilderClient({
                                 moveSection(idx, "down");
                               }}
                               disabled={idx === sections.length - 1}
-                              className="p-1 rounded text-zinc-400 hover:text-white hover:bg-zinc-800 disabled:opacity-20"
+                              className="p-1 rounded text-zinc-400 hover:text-white hover:bg-zinc-800 disabled:opacity-20 transition-colors"
                               title="Move Down"
                             >
-                              <MoveDown className="w-3 h-3" />
+                              <MoveDown className="w-3.5 h-3.5" />
                             </button>
                           </div>
 
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-xs font-mono text-zinc-500">
-                                0{sec.displayOrder}
-                              </span>
-                              <h3 className="text-sm font-medium text-white">
-                                {sec.title || sec.sectionKey}
-                              </h3>
-                            </div>
-                            <span className="text-[11px] text-[#d1a86e] capitalize font-mono">
-                              {sec.sectionKey.replace(/_/g, " ")}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2">
+                          {/* Visibility Toggle */}
                           <button
                             type="button"
                             onClick={() => toggleSection(sec.id)}
-                            className={`p-1.5 rounded-lg text-xs transition-colors ${
+                            className={`p-1.5 rounded-lg text-xs transition-colors border ${
                               sec.isEnabled
-                                ? "bg-emerald-950/60 text-emerald-400 border border-emerald-800/50"
-                                : "bg-zinc-800 text-zinc-500"
+                                ? "bg-emerald-950/40 text-emerald-400 border-emerald-800/50"
+                                : "bg-[#15161e] text-zinc-500 border-[#252834]"
                             }`}
-                            title={sec.isEnabled ? "Section Active" : "Section Hidden"}
+                            title={sec.isEnabled ? "Section Active (Click to Hide)" : "Section Hidden (Click to Show)"}
                           >
                             <Eye className="w-3.5 h-3.5" />
                           </button>
+
+                          {/* Expand/Collapse Chevron */}
                           <button
                             type="button"
                             onClick={() =>
                               setExpandedSectionId(isExpanded ? null : sec.id)
                             }
-                            className="p-1.5 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800"
+                            className="p-1.5 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors"
                           >
-                            {isExpanded ? (
-                              <ChevronUp className="w-4 h-4" />
-                            ) : (
-                              <ChevronDown className="w-4 h-4" />
-                            )}
+                            <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? "rotate-180 text-[#d1a86e]" : ""}`} />
                           </button>
                         </div>
                       </div>
 
                       {/* Expanded Section Editor */}
                       {isExpanded && (
-                        <div className="p-4 border-t border-[#1f212b] space-y-4 bg-[#101115]/50 rounded-b-2xl">
+                        <div className="p-4 sm:p-5 border-t border-[#1f212b] space-y-4 bg-[#0f1015]/80 rounded-b-2xl">
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div>
-                              <label className="text-[10px] uppercase tracking-wider text-zinc-400 block mb-1">
+                            <div className="space-y-1.5">
+                              <label className="text-[11px] font-medium text-zinc-300 block">
                                 Headline / Title
                               </label>
                               <input
@@ -803,11 +800,11 @@ export function HomepageBuilderClient({
                                 onChange={(e) =>
                                   updateSectionText(sec.id, "title", e.target.value)
                                 }
-                                className="w-full bg-[#181920] border border-[#262833] rounded-lg px-3 py-1.5 text-xs text-white focus:border-[#d1a86e] focus:outline-none"
+                                className="w-full bg-[#0d0e12] border border-[#262834] rounded-xl px-3.5 py-2 text-xs text-white focus:border-[#d1a86e]/70 focus:ring-1 focus:ring-[#d1a86e]/30 focus:outline-none transition-all placeholder:text-zinc-600"
                               />
                             </div>
-                            <div>
-                              <label className="text-[10px] uppercase tracking-wider text-zinc-400 block mb-1">
+                            <div className="space-y-1.5">
+                              <label className="text-[11px] font-medium text-zinc-300 block">
                                 Subtitle / Eyebrow
                               </label>
                               <input
@@ -816,17 +813,17 @@ export function HomepageBuilderClient({
                                 onChange={(e) =>
                                   updateSectionText(sec.id, "subtitle", e.target.value)
                                 }
-                                className="w-full bg-[#181920] border border-[#262833] rounded-lg px-3 py-1.5 text-xs text-white focus:border-[#d1a86e] focus:outline-none"
+                                className="w-full bg-[#0d0e12] border border-[#262834] rounded-xl px-3.5 py-2 text-xs text-white focus:border-[#d1a86e]/70 focus:ring-1 focus:ring-[#d1a86e]/30 focus:outline-none transition-all placeholder:text-zinc-600"
                               />
                             </div>
                           </div>
 
-                          <div>
-                            <label className="text-[10px] uppercase tracking-wider text-zinc-400 block mb-1">
+                          <div className="space-y-1.5">
+                            <label className="text-[11px] font-medium text-zinc-300 block">
                               Description / Curatorial Text
                             </label>
                             <textarea
-                              rows={2}
+                              rows={3}
                               value={sec.contentJson?.description || ""}
                               onChange={(e) =>
                                 updateSectionContent(
@@ -835,7 +832,7 @@ export function HomepageBuilderClient({
                                   e.target.value
                                 )
                               }
-                              className="w-full bg-[#181920] border border-[#262833] rounded-lg px-3 py-1.5 text-xs text-white focus:border-[#d1a86e] focus:outline-none"
+                              className="w-full bg-[#0d0e12] border border-[#262834] rounded-xl px-3.5 py-2 text-xs text-white focus:border-[#d1a86e]/70 focus:ring-1 focus:ring-[#d1a86e]/30 focus:outline-none transition-all placeholder:text-zinc-600 resize-none leading-relaxed"
                             />
                           </div>
 
