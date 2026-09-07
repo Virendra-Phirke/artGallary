@@ -22,7 +22,7 @@ export default async function AdminArStudioPage() {
   const artworks = await getAllArtworksAdmin();
 
   return (
-    <div className="space-y-8 max-w-6xl">
+    <div className="space-y-8 w-full">
       <div className="border-b border-[#1c1d25] pb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
@@ -109,7 +109,7 @@ export default async function AdminArStudioPage() {
           Artwork Calibration Roster ({artworks.length})
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {artworks.map((art) => {
             const isReady =
               art.widthCm > 0 &&

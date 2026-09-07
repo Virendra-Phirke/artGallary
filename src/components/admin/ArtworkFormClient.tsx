@@ -200,7 +200,7 @@ export function ArtworkFormClient({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-10 max-w-6xl">
+    <form onSubmit={handleSubmit} className="space-y-10 w-full">
       {/* Top Breadcrumb & Action Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#1c1d25] pb-6">
         <div className="space-y-1">

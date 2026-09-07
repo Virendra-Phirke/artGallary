@@ -38,8 +38,13 @@ export function InquiriesManagerClient({
     }
   };
 
+  const countNew = inquiries.filter((i) => i.status === "new").length;
+  const countRead = inquiries.filter((i) => i.status === "read").length;
+  const countReplied = inquiries.filter((i) => i.status === "replied").length;
+  const countClosed = inquiries.filter((i) => i.status === "closed").length;
+
   return (
-    <div className="space-y-8 max-w-5xl">
+    <div className="space-y-8 w-full">
       <div className="border-b border-[#1c1d25] pb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
@@ -79,6 +84,30 @@ export function InquiriesManagerClient({
             ))}
           </div>
         </div>
+      </div>
+
+      {/* 4-Metric Inquiries Telemetry Row */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+        <Card className="p-4 bg-[#14151a] border-[#262833] space-y-1">
+          <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">Total Inquiries</span>
+          <div className="font-serif text-2xl text-white">{inquiries.length}</div>
+          <span className="text-[11px] text-zinc-400">All registered correspondence</span>
+        </Card>
+        <Card className="p-4 bg-[#14151a] border-[#262833] space-y-1">
+          <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">Unreplied / New</span>
+          <div className="font-serif text-2xl text-amber-400">{countNew}</div>
+          <span className="text-[11px] text-amber-400/80 font-medium">Action required</span>
+        </Card>
+        <Card className="p-4 bg-[#14151a] border-[#262833] space-y-1">
+          <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">In Review (Read)</span>
+          <div className="font-serif text-2xl text-blue-400">{countRead}</div>
+          <span className="text-[11px] text-zinc-400">Dossier inspected</span>
+        </Card>
+        <Card className="p-4 bg-[#14151a] border-[#262833] space-y-1">
+          <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">Replied / Closed</span>
+          <div className="font-serif text-2xl text-emerald-400">{countReplied + countClosed}</div>
+          <span className="text-[11px] text-emerald-400/80 font-medium">Acquisitions processed</span>
+        </Card>
       </div>
 
       <div className="space-y-4">

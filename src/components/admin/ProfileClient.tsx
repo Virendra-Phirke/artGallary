@@ -138,7 +138,7 @@ export function ProfileClient({ initialUser }: ProfileClientProps) {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 pb-16">
+    <div className="w-full space-y-8 pb-16">
       {/* Editorial Header */}
       <div className="border-b border-[#262833] pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>

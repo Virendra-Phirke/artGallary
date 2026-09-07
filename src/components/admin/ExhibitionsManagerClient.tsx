@@ -194,7 +194,7 @@ export function ExhibitionsManagerClient({
   };
 
   return (
-    <div className="space-y-8 max-w-6xl">
+    <div className="space-y-8 w-full">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#1c1d25] pb-6">
         <div>
@@ -238,7 +238,7 @@ export function ExhibitionsManagerClient({
           </Button>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
           {exhibitions.map((exh) => (
             <Card key={exh.id} className="overflow-hidden">
               {/* Cover Image */}

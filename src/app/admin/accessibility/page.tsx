@@ -36,7 +36,7 @@ export default async function AdminAccessibilityPage() {
   const scorePercentage = Math.round((passedChecks / totalChecks) * 100);
 
   return (
-    <div className="space-y-8 max-w-5xl">
+    <div className="space-y-8 w-full">
       <div className="border-b border-[#1c1d25] pb-6">
         <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
           Inclusivity &amp; Standards
@@ -90,7 +90,7 @@ export default async function AdminAccessibilityPage() {
       <div className="space-y-4">
         <h2 className="font-serif text-xl text-white">Audited Elements</h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card className="p-4 sm:p-5 bg-[#14151a] border-[#262833] rounded-xl space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs text-white font-medium">

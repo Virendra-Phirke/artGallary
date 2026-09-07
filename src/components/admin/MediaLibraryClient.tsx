@@ -278,7 +278,7 @@ export function MediaLibraryClient() {
   const activeProviderName = health?.activeProvider || "cloudflare";
 
   return (
-    <div className="space-y-8 max-w-6xl">
+    <div className="space-y-8 w-full">
       {/* Header & Storage Status */}
       <div className="border-b border-[#1c1d25] pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -510,7 +510,7 @@ export function MediaLibraryClient() {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 2xl:grid-cols-6 gap-5">
           {filteredItems.map((item) => {
             const isSelected = selectedIds.has(item.id);
             return (

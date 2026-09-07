@@ -10,7 +10,7 @@ export default async function AdminActivityPage() {
   const logs = await getActivityLogs();
 
   return (
-    <div className="space-y-8 max-w-5xl">
+    <div className="space-y-8 w-full">
       <div className="border-b border-[#1c1d25] pb-6">
         <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
           Immutable Audit Trail

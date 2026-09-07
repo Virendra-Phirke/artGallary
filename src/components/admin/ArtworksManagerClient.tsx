@@ -499,7 +499,7 @@ export function ArtworksManagerClient({
 
       {/* 2. VISUAL IMAGE GRID VIEW */}
       {viewLayout === "grid" && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-5">
           {filtered.length === 0 ? (
             <div className="col-span-full py-16 text-center text-zinc-500 bg-[#14151a] border border-[#262833] rounded-2xl">
               No artworks found matching your filter criteria.
