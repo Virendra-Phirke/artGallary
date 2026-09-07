@@ -23,8 +23,8 @@ export interface DockProps {
 }
 
 const DEFAULT_SIZE = 40;
-const DEFAULT_MAGNIFICATION = 56;
-const DEFAULT_DISTANCE = 110;
+const DEFAULT_MAGNIFICATION = 45;
+const DEFAULT_DISTANCE = 70;
 const DEFAULT_DISABLEMAGNIFICATION = false;
 
 interface DockContextType {

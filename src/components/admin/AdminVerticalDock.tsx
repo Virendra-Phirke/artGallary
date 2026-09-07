@@ -16,11 +16,9 @@ import {
   Home,
   Sparkles,
   Settings,
-  ExternalLink,
   Pin,
   PinOff,
   ChevronRight,
-  Shield,
 } from "lucide-react";
 import { Dock, DockIcon } from "@/components/magicui/dock";
 import {
@@ -213,32 +211,11 @@ export function AdminVerticalDock({
       >
         <Dock
           orientation="vertical"
-          iconSize={42}
-          iconMagnification={58}
-          iconDistance={110}
-          className="bg-[#0b0c0f]/95 border-[#262833] backdrop-blur-2xl shadow-2xl shadow-black/80 rounded-2xl py-3 px-2 gap-1.5"
+          iconSize={40}
+          iconMagnification={45}
+          iconDistance={65}
+          className="bg-[#0b0c0f]/95 border-[#262833] backdrop-blur-2xl shadow-2xl shadow-black/80 rounded-2xl py-2.5 px-2 gap-1"
         >
-          {/* Brand Monogram */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Link href="/admin/dashboard" className="mb-1 focus:outline-none">
-                <DockIcon className="bg-[#14151b] border border-[#2b2d38] hover:border-[#d1a86e]/60 group">
-                  <div className="flex flex-col items-center justify-center">
-                    <span className="font-serif font-bold text-xs tracking-wider text-[#d1a86e] group-hover:scale-110 transition-transform">
-                      LA
-                    </span>
-                  </div>
-                </DockIcon>
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent side="right">
-              <div className="flex flex-col">
-                <span className="font-semibold text-white">L&apos;Atelier Studio</span>
-                <span className="text-[10px] text-zinc-400">Curator Workspace</span>
-              </div>
-            </TooltipContent>
-          </Tooltip>
-
           {/* Primary Desk & Curation Nav Items */}
           {mainNavItems.map((item) => {
             const active = isItemActive(item);
@@ -263,7 +240,7 @@ export function AdminVerticalDock({
 
                       <Icon
                         className={cn(
-                          "w-5 h-5 transition-colors",
+                          "w-4.5 h-4.5 transition-colors",
                           active ? "text-[#d1a86e]" : "text-zinc-400 group-hover:text-white"
                         )}
                       />
@@ -292,7 +269,7 @@ export function AdminVerticalDock({
           })}
 
           {/* Subtle Divider */}
-          <div className="w-7 h-[1px] bg-[#22242e] my-1" />
+          <div className="w-6 h-[1px] bg-[#22242e] my-1" />
 
           {/* Studio & Settings Items */}
           {studioNavItems.map((item) => {
@@ -317,7 +294,7 @@ export function AdminVerticalDock({
 
                       <Icon
                         className={cn(
-                          "w-5 h-5 transition-colors",
+                          "w-4.5 h-4.5 transition-colors",
                           active ? "text-[#d1a86e]" : "text-zinc-400 group-hover:text-white"
                         )}
                       />
@@ -332,25 +309,7 @@ export function AdminVerticalDock({
           })}
 
           {/* Subtle Divider */}
-          <div className="w-7 h-[1px] bg-[#22242e] my-1" />
-
-          {/* Live Storefront External Link */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Link
-                href="/gallery"
-                target="_blank"
-                className="focus:outline-none"
-              >
-                <DockIcon className="bg-[#121318] border-transparent text-zinc-400 hover:text-white hover:bg-[#1a1c24] hover:border-[#2b2d38]">
-                  <ExternalLink className="w-4 h-4 text-[#d1a86e]" />
-                </DockIcon>
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent side="right">
-              <span>View Live Storefront (New Tab)</span>
-            </TooltipContent>
-          </Tooltip>
+          <div className="w-6 h-[1px] bg-[#22242e] my-1" />
 
           {/* Pin / Auto-Hide Lock Toggle */}
           <Tooltip>
@@ -378,29 +337,6 @@ export function AdminVerticalDock({
             </TooltipTrigger>
             <TooltipContent side="right">
               <span>{isPinned ? "Unpin (Auto-hide when unhovered)" : "Pin Dock (Keep visible)"}</span>
-            </TooltipContent>
-          </Tooltip>
-
-          {/* Curator Avatar Info */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="focus:outline-none">
-                <DockIcon className="bg-[#151720] border border-[#262833] text-[#d1a86e] font-serif font-semibold text-xs">
-                  {user.name?.[0] || "C"}
-                </DockIcon>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent side="right">
-              <div className="flex flex-col">
-                <div className="flex items-center gap-1.5 font-medium text-white">
-                  <Shield className="w-3 h-3 text-[#d1a86e]" />
-                  <span>{user.name}</span>
-                </div>
-                <span className="text-[10px] text-zinc-400">{user.email}</span>
-                <span className="text-[9px] text-[#d1a86e] font-mono mt-0.5 uppercase">
-                  {user.role || "ADMIN"}
-                </span>
-              </div>
             </TooltipContent>
           </Tooltip>
         </Dock>
