@@ -31,6 +31,7 @@ const routeTitles: Record<string, string> = {
   "/admin/homepage": "Landing Page Visual Studio",
   "/admin/ar-studio": "Spatial Augmented Reality Studio",
   "/admin/settings": "Storefront Settings & CMS Configuration",
+  "/admin/profile": "Admin Account & Security Credentials",
 };
 
 export function AdminSidebar({
@@ -115,14 +116,18 @@ export function AdminSidebar({
               <ExternalLink className="w-3.5 h-3.5 text-[#d1a86e]" />
             </Link>
 
-            <div className="hidden sm:flex items-center gap-2 pl-2 border-l border-[#262833]">
+            <Link
+              href="/admin/profile"
+              className="hidden sm:flex items-center gap-2 pl-2 border-l border-[#262833] hover:opacity-80 transition-opacity"
+              title="Manage Admin Profile & Credentials"
+            >
               <div className="w-6 h-6 rounded-full bg-[#181a22] border border-[#262833] flex items-center justify-center text-[10px] font-serif text-[#d1a86e] font-semibold">
                 {user.name?.[0] || "C"}
               </div>
               <span className="text-xs text-zinc-400 truncate max-w-[100px]">
                 {user.name}
               </span>
-            </div>
+            </Link>
           </div>
         </header>
 

@@ -342,3 +342,150 @@ export async function signOut(): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.delete(COOKIE_NAME);
 }
+
+export async function updateAdminCredentials(
+  userId: string,
+  data: {
+    name?: string;
+    email?: string;
+    currentPassword?: string;
+    newPassword?: string;
+  }
+): Promise<{ success: boolean; user?: AuthUser; error?: string }> {
+  const db = getDb();
+  let updatedUser: AuthUser | null = null;
+
+  if (data.newPassword && (!data.currentPassword || data.currentPassword.trim() === "")) {
+    return { success: false, error: "Current password is required to set a new password." };
+  }
+
+  if (data.newPassword && data.newPassword.length < 4) {
+    return { success: false, error: "New password must be at least 4 characters." };
+  }
+
+  if (db) {
+    try {
+      const userRows = await db
+        .select()
+        .from(schema.users)
+        .where(eq(schema.users.id, userId))
+        .limit(1);
+
+      if (userRows.length > 0) {
+        const currentUser = userRows[0];
+
+        // Check password if updating password
+        if (data.newPassword) {
+          const accountRows = await db
+            .select()
+            .from(schema.accounts)
+            .where(eq(schema.accounts.userId, currentUser.id))
+            .limit(1);
+
+          if (accountRows.length > 0 && accountRows[0].passwordHash) {
+            if (!verifyPassword(data.currentPassword!, accountRows[0].passwordHash)) {
+              return { success: false, error: "Current password is incorrect." };
+            }
+
+            const newHash = hashPassword(data.newPassword);
+            await db
+              .update(schema.accounts)
+              .set({
+                passwordHash: newHash,
+                accountId: data.email ? data.email.toLowerCase().trim() : accountRows[0].accountId,
+                updatedAt: new Date(),
+              })
+              .where(eq(schema.accounts.id, accountRows[0].id));
+          }
+        }
+
+        // Update name or email if provided
+        const newName = data.name?.trim() || currentUser.name;
+        const newEmail = data.email?.toLowerCase().trim() || currentUser.email;
+
+        await db
+          .update(schema.users)
+          .set({
+            name: newName,
+            email: newEmail,
+            updatedAt: new Date(),
+          })
+          .where(eq(schema.users.id, currentUser.id));
+
+        updatedUser = {
+          id: currentUser.id,
+          name: newName,
+          email: newEmail,
+          role: currentUser.role as "USER" | "ADMIN",
+          image: currentUser.image || undefined,
+        };
+      }
+    } catch (e) {
+      console.error("Database updateAdminCredentials error:", e);
+    }
+  }
+
+  // Also check / update runtimeUsers
+  ensureDefaultUsers();
+  for (const [key, val] of runtimeUsers.entries()) {
+    if (val.user.id === userId || key === data.email?.toLowerCase().trim()) {
+      if (data.newPassword) {
+        if (!verifyPassword(data.currentPassword!, val.passwordHash)) {
+          return { success: false, error: "Current password is incorrect." };
+        }
+        val.passwordHash = hashPassword(data.newPassword);
+      }
+      if (data.name) val.user.name = data.name.trim();
+      if (data.email) {
+        val.user.email = data.email.toLowerCase().trim();
+        runtimeUsers.delete(key);
+        runtimeUsers.set(val.user.email, val);
+      }
+      if (!updatedUser) {
+        updatedUser = val.user;
+      }
+      break;
+    }
+  }
+
+  if (!updatedUser) {
+    // If not found in DB or runtimeUsers, construct from session
+    const session = await getSession();
+    if (session?.user && session.user.id === userId) {
+      updatedUser = {
+        ...session.user,
+        name: data.name?.trim() || session.user.name,
+        email: data.email?.toLowerCase().trim() || session.user.email,
+      };
+      if (data.newPassword) {
+        const newHash = hashPassword(data.newPassword);
+        runtimeUsers.set(updatedUser.email, { user: updatedUser, passwordHash: newHash });
+      }
+    }
+  }
+
+  if (!updatedUser) {
+    return { success: false, error: "User account not found." };
+  }
+
+  // Update session cookie with fresh credentials
+  const token = signToken(updatedUser);
+  const cookieStore = await cookies();
+  cookieStore.set(COOKIE_NAME, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 7 * 24 * 3600,
+  });
+
+  recordActivityLog(
+    "ADMIN_CREDENTIALS_UPDATE",
+    "auth",
+    `Admin updated credentials: ${updatedUser.email}`,
+    updatedUser.id
+  );
+
+  return { success: true, user: updatedUser };
+}
+

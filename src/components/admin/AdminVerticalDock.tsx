@@ -16,6 +16,7 @@ import {
   LayoutTemplate,
   Sparkles,
   Settings,
+  UserCog,
   Pin,
   PinOff,
   ChevronRight,
@@ -152,6 +153,11 @@ export function AdminVerticalDock({
         "/admin/activity",
         "/admin/media",
       ],
+    },
+    {
+      label: "Admin Profile & Credentials",
+      href: "/admin/profile",
+      icon: UserCog,
     },
   ];
 
