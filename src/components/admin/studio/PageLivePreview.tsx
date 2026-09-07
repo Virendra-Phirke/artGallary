@@ -81,15 +81,15 @@ export function PageLivePreview({
   const contactCfg = siteSettings.contactPageConfig || {};
 
   return (
-    <div className="bg-[#0b0c0f] border-x border-b border-[#262833] rounded-b-2xl p-2 sm:p-4 md:p-5 overflow-hidden flex justify-center shadow-2xl">
+    <div className="w-full flex justify-center">
       <div
         style={zoom && zoom !== 100 ? { zoom: `${zoom}%` } : undefined}
-        className={`transition-all duration-300 bg-[#0d0e12] rounded-xl overflow-y-auto max-h-[82vh] border border-[#1f212b] shadow-2xl ${
+        className={`transition-all duration-300 bg-[#0d0e12] overflow-y-auto max-h-[85vh] shadow-2xl relative scrollbar-thin scrollbar-thumb-[#2a2c38] scrollbar-track-transparent ${
           deviceMode === "desktop"
-            ? "w-full"
+            ? "w-full rounded-2xl border border-[#232530]"
             : deviceMode === "tablet"
-            ? "w-[768px] max-w-full"
-            : "w-[390px] max-w-full rounded-[36px] border-4 border-zinc-800"
+            ? "w-[768px] max-w-full rounded-2xl border-2 border-[#2b2d3b] my-2"
+            : "w-[390px] max-w-full rounded-[36px] border-4 border-zinc-800 my-2"
         }`}
       >
         {/* Mobile Phone Speaker Notch */}
