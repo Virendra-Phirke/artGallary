@@ -68,6 +68,16 @@ export default async function PublicLayout({
               --accent: ${theme.primaryColor};
               --accent-hover: ${theme.accentColor};
               --radius: ${theme.borderRadius};
+              ${
+                theme.headingFont === "Cormorant Garamond"
+                  ? "--font-heading: var(--font-cormorant), Georgia, serif;"
+                  : "--font-heading: var(--font-playfair), 'Playfair Display', Georgia, serif;"
+              }
+              ${
+                theme.bodyFont === "Inter"
+                  ? "--font-sans: var(--font-inter), 'Inter', sans-serif;"
+                  : "--font-sans: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;"
+              }
             }
           `,
         }}

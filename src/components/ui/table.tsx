@@ -8,7 +8,7 @@ const Table = React.forwardRef<
   <div className="relative w-full overflow-auto">
     <table
       ref={ref}
-      className={cn("w-full caption-bottom text-xs text-zinc-300", className)}
+      className={cn("w-full caption-bottom text-[13px] text-zinc-300", className)}
       {...props}
     />
   </div>
@@ -22,7 +22,7 @@ const TableHeader = React.forwardRef<
   <thead
     ref={ref}
     className={cn(
-      "bg-[#101116] border-b border-[#262833] text-[10px] uppercase tracking-widest text-zinc-500 font-semibold [&_tr]:border-b-0",
+      "bg-[#101116] border-b border-[#262833] text-[11px] uppercase tracking-[0.14em] text-zinc-400 font-semibold select-none [&_tr]:border-b-0",
       className
     )}
     {...props}

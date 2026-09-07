@@ -283,12 +283,12 @@ export function ArtworksManagerClient({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="min-w-[220px]">Artwork</TableHead>
-                <TableHead className="min-w-[160px]">Medium &amp; Year</TableHead>
-                <TableHead className="min-w-[140px]">Dimensions</TableHead>
-                <TableHead className="min-w-[100px]">Price</TableHead>
+                <TableHead className="min-w-[260px]">Artwork</TableHead>
+                <TableHead className="min-w-[180px]">Medium &amp; Year</TableHead>
+                <TableHead className="min-w-[160px]">Dimensions</TableHead>
+                <TableHead className="min-w-[110px]">Price</TableHead>
                 <TableHead className="min-w-[120px]">Status</TableHead>
-                <TableHead className="min-w-[110px]">AR Readiness</TableHead>
+                <TableHead className="min-w-[120px]">AR Readiness</TableHead>
                 <TableHead className="text-right min-w-[130px] sticky right-0 bg-[#101116]">
                   Actions
                 </TableHead>
@@ -319,10 +319,10 @@ export function ArtworksManagerClient({
                           />
                         </div>
                         <div className="min-w-0">
-                          <span className="font-serif text-sm text-white font-medium block truncate max-w-[180px]">
+                          <span className="font-serif text-[15px] text-white font-medium block truncate max-w-[260px] tracking-tight">
                             {art.title}
                           </span>
-                          <span className="text-[10px] text-zinc-500 font-mono block truncate">
+                          <span className="text-[11px] text-zinc-500 font-mono block truncate">
                             /{art.slug}
                           </span>
                         </div>
@@ -331,24 +331,24 @@ export function ArtworksManagerClient({
 
                     {/* Medium & Year */}
                     <TableCell>
-                      <span className="text-xs text-zinc-300 block truncate max-w-[160px]">
+                      <span className="text-xs text-zinc-300 block truncate max-w-[180px]">
                         {art.medium}
                       </span>
-                      <span className="text-[10px] text-zinc-500 font-mono">
+                      <span className="text-[11px] text-zinc-400 font-mono">
                         {art.year}
                       </span>
                     </TableCell>
 
                     {/* Dimensions */}
                     <TableCell>
-                      <span className="text-xs text-zinc-300 font-mono block">
+                      <span className="text-xs text-zinc-300 font-mono block tracking-tight">
                         {formatDimensions(art.widthCm, art.heightCm, art.depthCm)}
                       </span>
                     </TableCell>
 
                     {/* Price */}
                     <TableCell>
-                      <span className="text-xs font-semibold text-[#d1a86e] font-mono">
+                      <span className="text-sm font-semibold text-[#d1a86e] font-mono tracking-tight">
                         {formatCurrency(art.price, art.currency)}
                       </span>
                     </TableCell>

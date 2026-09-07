@@ -1,21 +1,51 @@
 import type { Metadata, Viewport } from "next";
-import { Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
+import {
+  Playfair_Display,
+  Plus_Jakarta_Sans,
+  JetBrains_Mono,
+  Cormorant_Garamond,
+  Inter,
+} from "next/font/google";
 import Script from "next/script";
 import { DevErrorGuard } from "@/components/DevErrorGuard";
 import "./globals.css";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
-  variable: "--font-heading",
+  variable: "--font-playfair",
+  display: "swap",
+  weight: ["400", "500", "600", "700", "800"],
+  style: ["normal", "italic"],
+});
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  variable: "--font-cormorant",
   display: "swap",
   weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
 });
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  variable: "--font-sans",
+  variable: "--font-jakarta",
+  display: "swap",
+  weight: ["300", "400", "500", "600", "700", "800"],
+  style: ["normal", "italic"],
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
   display: "swap",
   weight: ["300", "400", "500", "600", "700"],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
+  weight: ["400", "500", "600"],
 });
 
 export const viewport: Viewport = {
@@ -62,7 +92,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${playfair.variable} ${jakarta.variable} h-full antialiased`}
+      className={`${playfair.variable} ${cormorant.variable} ${jakarta.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <head>
         <script src="/dev-guard.js" />

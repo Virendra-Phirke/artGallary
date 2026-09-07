@@ -526,7 +526,7 @@ export function InquiriesManagerClient({
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs text-zinc-500">
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 font-mono text-zinc-400">
                         <Mail className="w-3.5 h-3.5 text-zinc-400" />
                         <a
                           href={`mailto:${inq.email}`}
@@ -536,12 +536,12 @@ export function InquiriesManagerClient({
                         </a>
                       </div>
                       {inq.phone && (
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-1.5 font-mono text-zinc-400">
                           <Phone className="w-3.5 h-3.5 text-zinc-400" />
                           <span>{inq.phone}</span>
                         </div>
                       )}
-                      <span>{new Date(inq.createdAt).toLocaleDateString()}</span>
+                      <span className="font-mono text-zinc-500">{new Date(inq.createdAt).toLocaleDateString()}</span>
                     </div>
                   </div>
 

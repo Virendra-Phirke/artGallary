@@ -1,8 +1,13 @@
 @import "tailwindcss";
 
 @theme {
-  --font-serif: var(--font-heading), "Playfair Display", Georgia, serif;
-  --font-sans: var(--font-sans), "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-serif: var(--font-heading, var(--font-playfair)), "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-sans, var(--font-jakarta)), "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-mono), "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-cormorant: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-inter: var(--font-inter), "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-playfair: var(--font-playfair), "Playfair Display", Georgia, serif;
+  --font-jakarta: var(--font-jakarta), "Plus Jakarta Sans", sans-serif;
   
   --color-onyx-950: #0a0b0d;
   --color-onyx-900: #0f1013;
@@ -17,6 +22,8 @@
 }
 
 :root {
+  --font-heading: var(--font-playfair);
+  --font-sans: var(--font-jakarta);
   --background: #0d0e12;
   --foreground: #f4f4f6;
   --surface: #14151a;
@@ -57,11 +64,20 @@
   border-color: var(--border);
 }
 
+html {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
 body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
   overflow-x: hidden;
+  line-height: 1.6;
+  letter-spacing: -0.005em;
   selection-background-color: var(--accent-muted);
 }
 
@@ -71,9 +87,68 @@ body {
 }
 
 /* Custom editorial typography styles */
-h1, h2, h3, .font-editorial {
+h1, h2, h3, h4, h5, h6, .font-serif, .font-editorial {
   font-family: var(--font-serif);
+  text-wrap: balance;
+}
+
+h1 {
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  font-weight: 500;
+}
+
+h2 {
+  letter-spacing: -0.02em;
+  line-height: 1.18;
+  font-weight: 500;
+}
+
+h3 {
   letter-spacing: -0.015em;
+  line-height: 1.25;
+  font-weight: 500;
+}
+
+h4 {
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+  font-weight: 500;
+}
+
+/* High-legibility monospaced data, prices, tags, dimensions, serials */
+.font-mono, [data-mono] {
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum" 1, "zero" 1;
+  letter-spacing: -0.015em;
+}
+
+/* Luxury Editorial Eyebrow & Micro-labels */
+.eyebrow, [data-eyebrow] {
+  font-size: 0.6875rem;
+  line-height: 1rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* Rich curatorial prose */
+.prose {
+  color: #c4c7d4;
+  line-height: 1.75;
+}
+.prose h1, .prose h2, .prose h3 {
+  color: #ffffff;
+  font-family: var(--font-serif);
+  margin-top: 1.8em;
+  margin-bottom: 0.6em;
+}
+.prose blockquote {
+  border-left: 2px solid #d1a86e;
+  padding-left: 1.25rem;
+  font-style: italic;
+  font-family: var(--font-serif);
+  color: #e2c18d;
 }
 
 /* Accessible focus ring */
