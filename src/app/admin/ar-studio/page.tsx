@@ -9,8 +9,10 @@ import {
   ExternalLink,
   Layers,
   Settings,
+  QrCode,
 } from "lucide-react";
 import { formatDimensions } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 export const metadata = {
   title: "AR Studio & Spatial Calibration | Studio Administration",
@@ -24,14 +26,30 @@ export default async function AdminArStudioPage() {
       <div className="border-b border-[#1c1d25] pb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
-            Spatial Computing &amp; WebAR
+            Spatial Computing &amp; Physical Gallery Experience
           </span>
           <h1 className="font-serif text-3xl text-white mt-1">
-            AR Studio Calibration
+            Spatial &amp; QR Studio
           </h1>
           <p className="text-xs text-zinc-400 mt-1">
-            Monitor true-scale 1:1 physical dimensions, virtual frame extrusions, and aspect ratio integrity.
+            Monitor true-scale 1:1 physical dimensions, virtual frame extrusions, and generate museum wall QR plaques.
           </p>
+        </div>
+
+        {/* Physical Space Sub-Navigation */}
+        <div className="flex items-center gap-2">
+          <Button asChild variant="secondary" size="sm" className="gap-2">
+            <Link href="/admin/ar-studio">
+              <Sparkles className="w-3.5 h-3.5 text-[#d1a86e]" />
+              <span>WebAR Calibration</span>
+            </Link>
+          </Button>
+          <Button asChild variant="outline" size="sm" className="gap-2 text-zinc-400 hover:text-white border-[#262833]">
+            <Link href="/admin/qr-codes">
+              <QrCode className="w-3.5 h-3.5 text-[#d1a86e]" />
+              <span>Wall QR Tags</span>
+            </Link>
+          </Button>
         </div>
       </div>
 

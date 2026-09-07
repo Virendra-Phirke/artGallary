@@ -1,5 +1,6 @@
 import React from "react";
 import { getSession } from "@/lib/auth/auth";
+import { getInquiries } from "@/db/repository";
 import { redirect } from "next/navigation";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 
@@ -13,6 +14,9 @@ export default async function AdminLayout({
     redirect("/login?redirect=/admin/dashboard");
   }
 
+  const inquiries = await getInquiries().catch(() => []);
+  const pendingInquiriesCount = inquiries.filter((i) => i.status === "new").length;
+
   return (
     <AdminSidebar
       user={{
@@ -20,6 +24,7 @@ export default async function AdminLayout({
         email: session.user.email || "curator@atelier.art",
         role: session.user.role,
       }}
+      pendingInquiriesCount={pendingInquiriesCount}
     >
       {children}
     </AdminSidebar>

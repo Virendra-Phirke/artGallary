@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { MockInquiry } from "@/db/mockData";
-import { Mail, Phone, Clock, CheckCircle2, MessageSquare, Shield } from "lucide-react";
+import { Mail, Phone, Clock, CheckCircle2, MessageSquare, Shield, BarChart3, ArrowUpRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -50,22 +51,33 @@ export function InquiriesManagerClient({
           </p>
         </div>
 
-        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pb-1 max-w-full">
-          {["all", "new", "read", "replied", "closed"].map((st) => (
-            <Button
-              key={st}
-              size="sm"
-              variant={selectedStatus === st ? "default" : "secondary"}
-              onClick={() => setSelectedStatus(st)}
-              className={`text-[11px] uppercase tracking-wider h-8 px-3 rounded-md transition-colors ${
-                selectedStatus === st
-                  ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
-                  : "bg-[#181920] text-zinc-400 hover:text-zinc-200 border border-[#262833]"
-              }`}
-            >
-              {st}
-            </Button>
-          ))}
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            href="/admin/analytics"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#262833] bg-[#14151a] hover:bg-[#1a1c23] hover:border-[#d1a86e]/40 text-zinc-300 hover:text-white text-xs transition-colors"
+          >
+            <BarChart3 className="w-3.5 h-3.5 text-[#d1a86e]" />
+            <span>Acquisition Telemetry</span>
+            <ArrowUpRight className="w-3 h-3 text-zinc-500" />
+          </Link>
+
+          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pb-1 max-w-full">
+            {["all", "new", "read", "replied", "closed"].map((st) => (
+              <Button
+                key={st}
+                size="sm"
+                variant={selectedStatus === st ? "default" : "secondary"}
+                onClick={() => setSelectedStatus(st)}
+                className={`text-[11px] uppercase tracking-wider h-8 px-3 rounded-md transition-colors ${
+                  selectedStatus === st
+                    ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
+                    : "bg-[#181920] text-zinc-400 hover:text-zinc-200 border border-[#262833]"
+                }`}
+              >
+                {st}
+              </Button>
+            ))}
+          </div>
         </div>
       </div>
 

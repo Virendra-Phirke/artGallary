@@ -42,14 +42,32 @@ export function QrCodesClient({ artworks }: QrCodesClientProps) {
 
   return (
     <div className="space-y-8 max-w-5xl">
-      <div className="border-b border-[#1c1d25] pb-6">
-        <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
-          Exhibition Labels &amp; Print Tags
-        </span>
-        <h1 className="font-serif text-3xl text-white mt-1">QR Code Generator</h1>
-        <p className="text-xs text-zinc-400 mt-1">
-          Generate high-resolution QR tags for physical gallery labels, museum catalogues, and direct AR wall-viewing invitations.
-        </p>
+      <div className="border-b border-[#1c1d25] pb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
+            Spatial Computing &amp; Physical Gallery Experience
+          </span>
+          <h1 className="font-serif text-3xl text-white mt-1">Museum Wall QR Tags</h1>
+          <p className="text-xs text-zinc-400 mt-1">
+            Generate high-resolution QR tags for physical gallery labels, museum catalogues, and direct AR wall-viewing invitations.
+          </p>
+        </div>
+
+        {/* Physical Space Sub-Navigation */}
+        <div className="flex items-center gap-2">
+          <Button asChild variant="outline" size="sm" className="gap-2 text-zinc-400 hover:text-white border-[#262833]">
+            <a href="/admin/ar-studio">
+              <Sparkles className="w-3.5 h-3.5 text-[#d1a86e]" />
+              <span>WebAR Calibration</span>
+            </a>
+          </Button>
+          <Button asChild variant="secondary" size="sm" className="gap-2">
+            <a href="/admin/qr-codes">
+              <QrCode className="w-3.5 h-3.5 text-[#d1a86e]" />
+              <span>Wall QR Tags</span>
+            </a>
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">

@@ -46,68 +46,77 @@ interface AdminSidebarProps {
     email: string;
     role?: string;
   };
+  pendingInquiriesCount?: number;
   children: React.ReactNode;
 }
 
-const navSections = [
+const navSections: Array<{
+  title: string;
+  items: Array<{
+    label: string;
+    href: string;
+    icon: any;
+    matchPrefixes?: string[];
+    showBadge?: boolean;
+  }>;
+}> = [
   {
-    title: "DASHBOARD",
+    title: "DESK",
     items: [
       { label: "Overview", href: "/admin/dashboard", icon: LayoutDashboard },
     ],
   },
   {
-    title: "CONTENT",
+    title: "COLLECTION & CURATION",
     items: [
-      { label: "Artworks CMS", href: "/admin/artworks", icon: Palette },
-      { label: "Collections", href: "/admin/collections", icon: FolderKanban },
+      { label: "Artworks Inventory", href: "/admin/artworks", icon: Palette },
+      { label: "Series & Collections", href: "/admin/collections", icon: FolderKanban },
       { label: "Exhibitions", href: "/admin/exhibitions", icon: Calendar },
-      { label: "Homepage Builder", href: "/admin/homepage", icon: Home },
     ],
   },
   {
-    title: "EXPERIENCE",
+    title: "CLIENTELE",
     items: [
-      { label: "AR Studio", href: "/admin/ar-studio", icon: Sparkles },
-      { label: "QR Code Tags", href: "/admin/qr-codes", icon: QrCode },
+      {
+        label: "Collector Inquiries",
+        href: "/admin/inquiries",
+        icon: Mail,
+        matchPrefixes: ["/admin/analytics"],
+        showBadge: true,
+      },
     ],
   },
   {
-    title: "DESIGN",
+    title: "STUDIO & PRESENCE",
     items: [
-      { label: "Appearance / Theme", href: "/admin/appearance", icon: Paintbrush },
-      { label: "Accessibility (WCAG)", href: "/admin/accessibility", icon: Accessibility },
-    ],
-  },
-  {
-    title: "MEDIA",
-    items: [
-      { label: "Media Library", href: "/admin/media", icon: ImageIcon },
-    ],
-  },
-  {
-    title: "BUSINESS",
-    items: [
-      { label: "Inquiries", href: "/admin/inquiries", icon: Mail },
-      { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
-    ],
-  },
-  {
-    title: "DISCOVERY",
-    items: [
-      { label: "SEO & Meta", href: "/admin/seo", icon: Search },
-    ],
-  },
-  {
-    title: "SYSTEM",
-    items: [
-      { label: "Activity Audit Log", href: "/admin/activity", icon: Activity },
-      { label: "Settings", href: "/admin/settings", icon: Settings },
+      {
+        label: "Spatial & QR Studio",
+        href: "/admin/ar-studio",
+        icon: Sparkles,
+        matchPrefixes: ["/admin/qr-codes"],
+      },
+      {
+        label: "Public Storefront",
+        href: "/admin/homepage",
+        icon: Home,
+      },
+      {
+        label: "Studio Settings",
+        href: "/admin/settings",
+        icon: Settings,
+        matchPrefixes: [
+          "/admin/appearance",
+          "/admin/accessibility",
+          "/admin/seo",
+          "/admin/activity",
+          "/admin/media",
+        ],
+      },
     ],
   },
 ];
 
-function AdminSidebarInner({ user, children }: AdminSidebarProps) {
+function AdminSidebarInner({ user, pendingInquiriesCount, children }: AdminSidebarProps) {
   const pathname = usePathname();
   const { state } = useSidebar();
 
@@ -148,7 +157,8 @@ function AdminSidebarInner({ user, children }: AdminSidebarProps) {
                   const Icon = item.icon;
                   const isActive =
                     pathname === item.href ||
-                    (item.href !== "/admin/dashboard" && pathname?.startsWith(item.href));
+                    (item.href !== "/admin/dashboard" && pathname?.startsWith(item.href)) ||
+                    Boolean(item.matchPrefixes?.some((p) => pathname?.startsWith(p)));
 
                   return (
                     <SidebarMenuItem key={item.href}>
@@ -157,9 +167,16 @@ function AdminSidebarInner({ user, children }: AdminSidebarProps) {
                         isActive={isActive}
                         tooltip={item.label}
                       >
-                        <Link href={item.href}>
-                          <Icon className="w-4 h-4 shrink-0 text-[#d1a86e]" />
-                          {state !== "collapsed" && <span>{item.label}</span>}
+                        <Link href={item.href} className="flex items-center justify-between w-full">
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <Icon className="w-4 h-4 shrink-0 text-[#d1a86e]" />
+                            {state !== "collapsed" && <span className="truncate">{item.label}</span>}
+                          </div>
+                          {state !== "collapsed" && item.showBadge && typeof pendingInquiriesCount === "number" && pendingInquiriesCount > 0 && (
+                            <Badge variant="warning" className="text-[9px] px-1.5 py-0 h-4 font-mono font-bold shrink-0">
+                              {pendingInquiriesCount}
+                            </Badge>
+                          )}
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -238,10 +255,10 @@ function AdminSidebarInner({ user, children }: AdminSidebarProps) {
   );
 }
 
-export function AdminSidebar({ user, children }: AdminSidebarProps) {
+export function AdminSidebar({ user, pendingInquiriesCount, children }: AdminSidebarProps) {
   return (
     <SidebarProvider>
-      <AdminSidebarInner user={user}>{children}</AdminSidebarInner>
+      <AdminSidebarInner user={user} pendingInquiriesCount={pendingInquiriesCount}>{children}</AdminSidebarInner>
     </SidebarProvider>
   );
 }

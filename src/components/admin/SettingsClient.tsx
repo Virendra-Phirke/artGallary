@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import {
   Settings,
   Check,
@@ -17,6 +18,12 @@ import {
   AlertCircle,
   Loader2,
   ExternalLink,
+  Search,
+  Eye,
+  History,
+  ImageIcon,
+  ArrowUpRight,
+  Sliders,
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
@@ -220,6 +227,129 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
           </div>
         </div>
       </Card>
+
+      {/* Studio Systems & Tools Hub */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="font-serif text-lg text-white">Studio Systems &amp; Configurations</h2>
+          <span className="text-[10px] uppercase tracking-wider text-zinc-400">Integrated Tools</span>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <Link
+            href="/admin/appearance"
+            className="group p-4 bg-[#14151a] hover:bg-[#1a1c23] border border-[#262833] hover:border-[#d1a86e]/40 rounded-xl transition-all flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-center justify-between text-zinc-400 group-hover:text-[#d1a86e] transition-colors">
+                <Palette className="w-4 h-4 text-[#d1a86e]" />
+                <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-[#d1a86e] transition-colors" />
+              </div>
+              <h3 className="font-medium text-sm text-white mt-2 group-hover:text-[#d1a86e] transition-colors">
+                Brand Aesthetics &amp; Theme
+              </h3>
+              <p className="text-[11px] text-zinc-400 mt-1 leading-relaxed">
+                Playfair typography, editorial palette tokens, radius, and animation curves.
+              </p>
+            </div>
+            <span className="text-[10px] text-zinc-500 mt-3 font-mono">/admin/appearance</span>
+          </Link>
+
+          <Link
+            href="/admin/seo"
+            className="group p-4 bg-[#14151a] hover:bg-[#1a1c23] border border-[#262833] hover:border-[#d1a86e]/40 rounded-xl transition-all flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-center justify-between text-zinc-400 group-hover:text-[#d1a86e] transition-colors">
+                <Search className="w-4 h-4 text-[#d1a86e]" />
+                <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-[#d1a86e] transition-colors" />
+              </div>
+              <h3 className="font-medium text-sm text-white mt-2 group-hover:text-[#d1a86e] transition-colors">
+                Search &amp; SEO Discovery
+              </h3>
+              <p className="text-[11px] text-zinc-400 mt-1 leading-relaxed">
+                Dynamic sitemap, OpenGraph metadata, Google indexing, and search tags.
+              </p>
+            </div>
+            <span className="text-[10px] text-zinc-500 mt-3 font-mono">/admin/seo</span>
+          </Link>
+
+          <Link
+            href="/admin/accessibility"
+            className="group p-4 bg-[#14151a] hover:bg-[#1a1c23] border border-[#262833] hover:border-[#d1a86e]/40 rounded-xl transition-all flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-center justify-between text-zinc-400 group-hover:text-[#d1a86e] transition-colors">
+                <Eye className="w-4 h-4 text-[#d1a86e]" />
+                <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-[#d1a86e] transition-colors" />
+              </div>
+              <h3 className="font-medium text-sm text-white mt-2 group-hover:text-[#d1a86e] transition-colors">
+                Accessibility &amp; WCAG
+              </h3>
+              <p className="text-[11px] text-zinc-400 mt-1 leading-relaxed">
+                WCAG 2.2 AA audit, alt text compliance, focus states, and screen reader tokens.
+              </p>
+            </div>
+            <span className="text-[10px] text-zinc-500 mt-3 font-mono">/admin/accessibility</span>
+          </Link>
+
+          <Link
+            href="/admin/activity"
+            className="group p-4 bg-[#14151a] hover:bg-[#1a1c23] border border-[#262833] hover:border-[#d1a86e]/40 rounded-xl transition-all flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-center justify-between text-zinc-400 group-hover:text-[#d1a86e] transition-colors">
+                <History className="w-4 h-4 text-[#d1a86e]" />
+                <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-[#d1a86e] transition-colors" />
+              </div>
+              <h3 className="font-medium text-sm text-white mt-2 group-hover:text-[#d1a86e] transition-colors">
+                Studio Activity Trail
+              </h3>
+              <p className="text-[11px] text-zinc-400 mt-1 leading-relaxed">
+                Immutable audit trail of artwork edits, publications, and administrative mutations.
+              </p>
+            </div>
+            <span className="text-[10px] text-zinc-500 mt-3 font-mono">/admin/activity</span>
+          </Link>
+
+          <Link
+            href="/admin/media"
+            className="group p-4 bg-[#14151a] hover:bg-[#1a1c23] border border-[#262833] hover:border-[#d1a86e]/40 rounded-xl transition-all flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-center justify-between text-zinc-400 group-hover:text-[#d1a86e] transition-colors">
+                <ImageIcon className="w-4 h-4 text-[#d1a86e]" />
+                <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-[#d1a86e] transition-colors" />
+              </div>
+              <h3 className="font-medium text-sm text-white mt-2 group-hover:text-[#d1a86e] transition-colors">
+                Cloud Media Assets
+              </h3>
+              <p className="text-[11px] text-zinc-400 mt-1 leading-relaxed">
+                Cloudflare R2 buckets, Sharp transformations, original master files, and CDN cache.
+              </p>
+            </div>
+            <span className="text-[10px] text-zinc-500 mt-3 font-mono">/admin/media</span>
+          </Link>
+
+          <Link
+            href="/admin/analytics"
+            className="group p-4 bg-[#14151a] hover:bg-[#1a1c23] border border-[#262833] hover:border-[#d1a86e]/40 rounded-xl transition-all flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-center justify-between text-zinc-400 group-hover:text-[#d1a86e] transition-colors">
+                <Sliders className="w-4 h-4 text-[#d1a86e]" />
+                <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-[#d1a86e] transition-colors" />
+              </div>
+              <h3 className="font-medium text-sm text-white mt-2 group-hover:text-[#d1a86e] transition-colors">
+                Visitor &amp; AR Analytics
+              </h3>
+              <p className="text-[11px] text-zinc-400 mt-1 leading-relaxed">
+                Exhibition footfall, artwork engagement, WebAR session completions, and conversions.
+              </p>
+            </div>
+            <span className="text-[10px] text-zinc-500 mt-3 font-mono">/admin/analytics</span>
+          </Link>
+        </div>
+      </div>
 
       {/* Tabbed Settings Form */}
       <form onSubmit={handleSave}>
