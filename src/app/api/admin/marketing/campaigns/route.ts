@@ -5,7 +5,11 @@ import {
   getRecentEmailJobs,
   getActiveSubscribers,
 } from "@/db/repository";
-import { dispatchArtworkCampaign } from "@/lib/qstash/emailQueue";
+import {
+  dispatchArtworkCampaign,
+  getQStashWebhookUrl,
+  isLoopbackUrl,
+} from "@/lib/qstash/emailQueue";
 import { hasQStashConfig } from "@/lib/qstash/client";
 import { getEmailDeliveryMode } from "@/lib/email/service";
 
@@ -22,6 +26,8 @@ export async function GET(request: NextRequest) {
 
   const qstashConfigured = hasQStashConfig();
   const deliveryMode = getEmailDeliveryMode();
+  const webhookUrl = getQStashWebhookUrl();
+  const isLocalLoopback = isLoopbackUrl(webhookUrl);
 
   return NextResponse.json({
     success: true,
@@ -30,7 +36,13 @@ export async function GET(request: NextRequest) {
     queueTelemetry: {
       mode: deliveryMode,
       qstashConfigured,
-      status: qstashConfigured ? "operational" : "direct_fallback",
+      isLocalLoopback,
+      webhookUrl,
+      status: qstashConfigured
+        ? isLocalLoopback
+          ? "local_hybrid"
+          : "operational"
+        : "direct_fallback",
     },
   });
 }

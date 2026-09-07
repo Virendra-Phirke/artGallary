@@ -30,9 +30,44 @@ export interface CampaignDispatchResult {
   success: boolean;
   campaignId?: string;
   enqueuedCount: number;
-  mode: "qstash" | "direct";
+  mode: "qstash" | "direct" | "direct_local_hybrid";
   message: string;
   error?: string;
+}
+
+export function isLoopbackUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.toLowerCase();
+    return (
+      host === "localhost" ||
+      host === "127.0.0.1" ||
+      host === "::1" ||
+      host === "0.0.0.0" ||
+      host.endsWith(".local")
+    );
+  } catch {
+    return url.includes("localhost") || url.includes("127.0.0.1") || url.includes("::1");
+  }
+}
+
+export function getQStashWebhookUrl(): string {
+  // 1. Explicit webhook override (e.g. ngrok tunnel)
+  if (process.env.QSTASH_WEBHOOK_URL?.trim()) {
+    return process.env.QSTASH_WEBHOOK_URL.trim();
+  }
+  // 2. Production public URLs if configured
+  const publicAppUrl = process.env.NEXT_PUBLIC_APP_URL?.trim() || "";
+  if (publicAppUrl && !isLoopbackUrl(publicAppUrl)) {
+    return `${publicAppUrl.replace(/\/$/, "")}/api/webhooks/qstash/email`;
+  }
+  const authUrl = process.env.BETTER_AUTH_URL?.trim() || "";
+  if (authUrl && !isLoopbackUrl(authUrl)) {
+    return `${authUrl.replace(/\/$/, "")}/api/webhooks/qstash/email`;
+  }
+  // 3. Fallback to base app url
+  const baseUrl = getAppBaseUrl();
+  return `${baseUrl}/api/webhooks/qstash/email`;
 }
 
 /**
@@ -114,11 +149,11 @@ export async function dispatchArtworkCampaign(
 
   const deliveryMode = getEmailDeliveryMode();
   const qstashConfigured = hasQStashConfig();
-  const baseUrl = getAppBaseUrl();
-  const webhookUrl = `${baseUrl}/api/webhooks/qstash/email`;
+  const webhookUrl = getQStashWebhookUrl();
+  const isLoopback = isLoopbackUrl(webhookUrl);
 
-  // 3A. Route via Upstash QStash Queue (Production Mode)
-  if (deliveryMode === "qstash" && qstashConfigured) {
+  // 3A. Route via Upstash QStash Queue (Requires a publicly reachable HTTPS webhook URL)
+  if (deliveryMode === "qstash" && qstashConfigured && !isLoopback) {
     let enqueuedSuccess = 0;
 
     // Dispatch each job to QStash asynchronously
@@ -160,11 +195,20 @@ export async function dispatchArtworkCampaign(
     };
   }
 
-  // 3B. Direct Execution Mode (Local Development / Fallback)
-  console.log(
-    `[Email Queue] Running in direct delivery mode (deliveryMode=${deliveryMode}, qstashConfigured=${qstashConfigured})`
-  );
+  // 3B. Direct / Localhost Hybrid Delivery Mode
+  // When running on localhost (where QStash cannot reach loopback ::1/127.0.0.1) or when deliveryMode="direct",
+  // execute deliveries directly through Resend while maintaining authoritative Neon campaign states.
+  if (deliveryMode === "qstash" && isLoopback) {
+    console.log(
+      `[Email Queue] Webhook URL (${webhookUrl}) is a local loopback address. Cloud QStash cannot reach localhost without a public HTTPS tunnel. Executing via local hybrid direct delivery with full Neon state tracking.`
+    );
+  } else {
+    console.log(
+      `[Email Queue] Running in direct delivery mode (deliveryMode=${deliveryMode}, qstashConfigured=${qstashConfigured})`
+    );
+  }
 
+  const baseUrl = getAppBaseUrl();
   let directSuccess = 0;
   for (const job of createdJobs) {
     try {
@@ -224,7 +268,9 @@ export async function dispatchArtworkCampaign(
     success: true,
     campaignId: campaign.id,
     enqueuedCount: directSuccess,
-    mode: "direct",
-    message: `Direct release broadcast completed (${directSuccess} delivered).`,
+    mode: isLoopback ? "direct_local_hybrid" : "direct",
+    message: isLoopback
+      ? `Successfully delivered ${directSuccess} email(s) via local hybrid mode (QStash cloud queue is active for production domains; local direct delivery used because localhost is a loopback address).`
+      : `Direct release broadcast completed (${directSuccess} delivered).`,
   };
 }
