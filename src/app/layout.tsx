@@ -61,6 +61,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${playfair.variable} ${jakarta.variable} h-full antialiased`}
     >
       <head>

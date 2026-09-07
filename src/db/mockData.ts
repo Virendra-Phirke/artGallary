@@ -340,22 +340,341 @@ export const INITIAL_HOMEPAGE_SECTIONS: MockHomepageSection[] = [
   },
 ];
 
-export const INITIAL_SITE_SETTINGS = {
+export interface SiteSettingsData {
+  artistName: string;
+  siteTitle: string;
+  shortBrandName: string;
+  tagline: string;
+  logoUrl: string;
+  faviconUrl: string;
+  bioSummary: string;
+  statement: string;
+  contactEmail: string;
+  phone: string;
+  whatsapp: string;
+  location: string;
+  address: string;
+  city: string;
+  country: string;
+  businessHours: string;
+  contactInstructions: string;
+  socialLinks: {
+    instagram?: string;
+    twitter?: string;
+    linkedin?: string;
+    artsy?: string;
+    facebook?: string;
+    pinterest?: string;
+  };
+  announcementBar: {
+    isEnabled: boolean;
+    message: string;
+    link?: string;
+    linkLabel?: string;
+    bg?: string;
+    textColor?: string;
+    dismissible?: boolean;
+  };
+  headerConfig: {
+    logoType: "text" | "image";
+    logoText?: string;
+    logoUrl?: string;
+    style: "transparent" | "solid" | "floating_pill";
+    showCta: boolean;
+    ctaLabel: string;
+    ctaUrl: string;
+  };
+  navigationItems: Array<{
+    id: string;
+    label: string;
+    href: string;
+    isEnabled: boolean;
+    order: number;
+  }>;
+  footerConfig: {
+    description: string;
+    columns: Array<{
+      title: string;
+      links: Array<{ label: string; href: string }>;
+    }>;
+    contactText: string;
+    copyrightText: string;
+    showNewsletterCta: boolean;
+  };
+  galleryPageConfig: {
+    title: string;
+    subtitle: string;
+    description: string;
+    coverImageUrl?: string;
+    defaultLayout: "grid" | "masonry" | "editorial";
+    enabledFilters: {
+      medium: boolean;
+      price: boolean;
+      year: boolean;
+      availability: boolean;
+      collection: boolean;
+    };
+    defaultSort: "featured" | "newest" | "price_asc" | "price_desc";
+  };
+  collectionsPageConfig: {
+    title: string;
+    subtitle: string;
+    description: string;
+    coverImageUrl?: string;
+    eyebrow?: string;
+  };
+  exhibitionsPageConfig: {
+    title: string;
+    subtitle: string;
+    description: string;
+    coverImageUrl?: string;
+    eyebrow?: string;
+  };
+  aboutPageConfig: {
+    intro: string;
+    bio: string;
+    artistImageUrl?: string;
+    story?: string;
+    philosophy?: string;
+    process?: string;
+    quote?: string;
+    exhibitions?: Array<{ year: string; title: string; location: string }>;
+    achievements?: string[];
+    ctaText?: string;
+    ctaUrl?: string;
+  };
+  contactPageConfig: {
+    title: string;
+    description: string;
+    recipientEmail: string;
+    officeAddress: string;
+    openingHours: string;
+    contactInstructions: string;
+    formFields: {
+      name: boolean;
+      email: boolean;
+      phone: boolean;
+      message: boolean;
+      artworkContext: boolean;
+    };
+    successMessage?: string;
+  };
+  legalPages: {
+    privacyPolicy?: string;
+    termsOfService?: string;
+    cookiePolicy?: string;
+    refundPolicy?: string;
+    shippingPolicy?: string;
+  };
+  maintenanceMode: {
+    isEnabled: boolean;
+    title?: string;
+    message?: string;
+    expectedReturn?: string;
+  };
+  globalArDefaults: {
+    defaultFrame: string;
+    defaultScale: number;
+    defaultPlacement: "wall" | "floor";
+    defaultInstructions?: string;
+    ctaLabel?: string;
+    fallbackMessage?: string;
+  };
+  copyrightText: string;
+}
+
+export const DEFAULT_NAVIGATION_ITEMS = [
+  { id: "nav-gallery", label: "Gallery", href: "/gallery", isEnabled: true, order: 1 },
+  { id: "nav-collections", label: "Collections", href: "/collections", isEnabled: true, order: 2 },
+  { id: "nav-exhibitions", label: "Exhibitions", href: "/exhibitions", isEnabled: true, order: 3 },
+  { id: "nav-about", label: "About", href: "/about", isEnabled: true, order: 4 },
+  { id: "nav-contact", label: "Contact", href: "/contact", isEnabled: true, order: 5 },
+];
+
+export const DEFAULT_SITE_SETTINGS: SiteSettingsData = {
   artistName: "Elena Vance",
   siteTitle: "L'Atelier Lumineux",
-  tagline: "Fine Contemporary Oil & Spatial AR Art Gallery",
-  bioSummary: "Elena Vance is a contemporary fine artist whose luminous oil paintings and mineral assemblages investigate geological memory, lapis glazes, and environmental stillness.",
-  statement: "I paint to reveal what happens when light travels through twenty layers of transparent oil glaze and strikes raw Belgian linen. My canvases are designed to breathe with the changing natural lighting of the rooms they inhabit.",
+  shortBrandName: "L'Atelier",
+  tagline: "Contemporary Fine Art Studio & WebAR Gallery",
+  logoUrl: "",
+  faviconUrl: "",
+  bioSummary: "Contemporary fine artist exploring oceanic silence and mineral materiality.",
+  statement: "A painting is an alteration of the atmospheric silence within a room.",
   contactEmail: "curator@latelier-lumineux.art",
-  phone: "+33 (0)1 42 68 55 00",
+  phone: "+33 1 42 68 55 00",
+  whatsapp: "+33 6 12 34 56 78",
   location: "Paris & Brittany, France",
+  address: "14 Rue de Beaune, 7th Arrondissement",
+  city: "Paris",
+  country: "France",
+  businessHours: "Monday – Saturday: 10:00 – 19:00 (By Appointment)",
+  contactInstructions: "For private acquisitions, curatorial loan requests, and press access, please correspond using our liaison desk.",
   socialLinks: {
-    instagram: "https://instagram.com/elenavance.art",
-    twitter: "https://twitter.com/elenavance",
-    artsy: "https://artsy.net/artist/elena-vance",
+    instagram: "https://instagram.com",
+    twitter: "https://twitter.com",
+    linkedin: "https://linkedin.com",
+    artsy: "https://artsy.net",
   },
-  copyrightText: "© 2026 Elena Vance. All rights reserved. Registered ADAGP.",
+  announcementBar: {
+    isEnabled: true,
+    message: "Spring 2026 Retrospective: New lapis lazuli originals now available for private acquisition.",
+    link: "/gallery",
+    linkLabel: "Explore Catalogue",
+    bg: "#18191e",
+    textColor: "#d1a86e",
+    dismissible: true,
+  },
+  headerConfig: {
+    logoType: "text",
+    logoText: "L'Atelier Lumineux",
+    logoUrl: "",
+    style: "transparent",
+    showCta: true,
+    ctaLabel: "Inquire",
+    ctaUrl: "/contact",
+  },
+  navigationItems: DEFAULT_NAVIGATION_ITEMS,
+  footerConfig: {
+    description: "The independent studio and private gallery of contemporary artist Elena Vance. Dedicated to exploring lapis lazuli glazes, geological materiality, and true-scale spatial WebAR curation.",
+    columns: [
+      {
+        title: "Explore",
+        links: [
+          { label: "All Artworks", href: "/gallery" },
+          { label: "Curated Series", href: "/collections" },
+          { label: "Exhibitions", href: "/exhibitions" },
+          { label: "Artist Monologue & CV", href: "/about" },
+          { label: "Acquisitions & Press", href: "/contact" },
+        ],
+      },
+      {
+        title: "Legal & Studio",
+        links: [
+          { label: "Privacy Policy", href: "/privacy" },
+          { label: "Terms of Acquisition", href: "/terms" },
+          { label: "Collector Inquiries", href: "/contact" },
+        ],
+      },
+    ],
+    contactText: "curator@latelier-lumineux.art",
+    copyrightText: "© 2026 Elena Vance Studio. All rights reserved.",
+    showNewsletterCta: true,
+  },
+  galleryPageConfig: {
+    title: "Original Canvases & Pigments",
+    subtitle: "The Studio Catalogue",
+    description: "Each painting is an original piece created using natural mineral pigments, French lapis lazuli glazes, and raw Belgian linen. Inquire for provenance or launch the 1:1 scale WebAR viewer.",
+    coverImageUrl: "",
+    defaultLayout: "grid",
+    enabledFilters: {
+      medium: true,
+      price: true,
+      year: true,
+      availability: true,
+      collection: true,
+    },
+    defaultSort: "featured",
+  },
+  collectionsPageConfig: {
+    title: "Curated Series",
+    subtitle: "Thematic Bodies of Work",
+    description: "Elena Vance groups her artistic inquiries into multi-year cycles. Each series represents a focused exploration of specific pigments, geological binders, and spatial tensions.",
+    coverImageUrl: "",
+    eyebrow: "Thematic Bodies of Work",
+  },
+  exhibitionsPageConfig: {
+    title: "Exhibitions",
+    subtitle: "Public & Museum History",
+    description: "Chronological record of curated solo exhibitions, biennale participations, and institutional showcases across Paris, New York, London, and Tokyo.",
+    coverImageUrl: "",
+    eyebrow: "Public & Museum History",
+  },
+  aboutPageConfig: {
+    intro: "Biography & Studio Practice",
+    bio: "Elena Vance is a contemporary fine artist whose paintings investigate the physics of optical depth, geological materiality, and oceanic stillness. Combining archaic mineral pigments—chiefly Afghan lapis lazuli and Roman pozzolana—with multi-layered stand-oil glazes on raw Belgian linen.",
+    artistImageUrl: "https://ik.imagekit.io/bpnsp30ni/artworks/gallery/1788717079935-kazuha__EB1yso0A.jpeg?updatedAt=1788717081490",
+    story: "Her studio practice resists the rapid consumption of images. Canvases are frequently held in progress across several seasons, receiving up to twenty gossamer layers of translucent stand-oil glaze.",
+    philosophy: "A painting is not merely a depiction; it is an alteration of the atmospheric stillness and light acoustics within a room.",
+    process: "Pure powdered lapis lazuli, crushed slate, cold-pressed walnut oil, and Belgian flax linen.",
+    quote: "Light does not strike the surface; it penetrates the mineral stratums and is reflected from within.",
+    exhibitions: [
+      { year: "2026", title: "Luminous Stillness Retrospective", location: "Fondation d'Art Contemporain, Paris" },
+      { year: "2025", title: "Mineral Stratum & Oceanic Silence", location: "Galerie Pompéi, Geneva" },
+      { year: "2024", title: "The Blue Horizon: Spatial Canvases", location: "Chelsea Arts Pavilion, New York" },
+    ],
+    achievements: [
+      "Lauréate du Prix Jean-François Millet pour la Peinture Contemporaine (2024)",
+      "Permanent collection acquisition: Fondation d'Art Contemporain, Geneva",
+      "ADAGP France Certified Contemporary Master (Registration #89421)",
+    ],
+    ctaText: "Contact Curatorial Office",
+    ctaUrl: "/contact",
+  },
+  contactPageConfig: {
+    title: "Inquiries & Acquisitions",
+    description: "For private acquisitions, curatorial loan requests, and press access, please correspond using our studio liaison desk.",
+    recipientEmail: "curator@latelier-lumineux.art",
+    officeAddress: "14 Rue de Beaune, 7th Arrondissement, 75007 Paris, France",
+    openingHours: "Monday – Saturday: 10:00 – 19:00 (By Appointment)",
+    contactInstructions: "Every acquisition is accompanied by a signed Certificate of Authenticity and custom museum-grade crating.",
+    formFields: {
+      name: true,
+      email: true,
+      phone: true,
+      message: true,
+      artworkContext: true,
+    },
+    successMessage: "Thank you for your correspondence. The curatorial studio office will review your inquiry and respond within one business day.",
+  },
+  legalPages: {
+    privacyPolicy: "We respect your collector privacy. Personal data submitted through inquiries or account registration is encrypted, never sold, and used solely for private studio correspondence, provenance records, and authenticated certificate delivery.",
+    termsOfService: "All artworks displayed on this platform are original copyright-protected creations of Elena Vance. Authenticated certificates of authenticity are registered with ADAGP France upon completion of acquisition.",
+    cookiePolicy: "This studio uses essential session cookies for collector authentication and anonymous telemetry to evaluate exhibition interest and true-scale AR room sessions. Camera data used in AR never leaves your local device.",
+    refundPolicy: "Private collection acquisitions include a 14-day inspection period upon white-glove crated delivery. Inquiries regarding condition reports and international transit insurance are handled directly by the curatorial office.",
+    shippingPolicy: "International museum-grade crating and climate-controlled freight are coordinated through specialized fine art logistics couriers (Crozier / Hasenkamp).",
+  },
+  maintenanceMode: {
+    isEnabled: false,
+    title: "Studio Under Curation",
+    message: "L'Atelier Lumineux is currently undergoing curatorial updates for an upcoming retrospective exhibition. The digital gallery will resume normal visitor access shortly.",
+    expectedReturn: "Returning Today at 18:00 CET",
+  },
+  globalArDefaults: {
+    defaultFrame: "minimal_black",
+    defaultScale: 1.0,
+    defaultPlacement: "wall",
+    defaultInstructions: "Point camera at a well-lit wall surface. Tap to position the canvas at true 1:1 physical scale.",
+    ctaLabel: "View in Your Space",
+    fallbackMessage: "AR requires a WebXR or camera-enabled mobile device. You can explore true-scale dimensions and virtual room views directly above.",
+  },
+  copyrightText: "© 2026 Elena Vance Studio. All rights reserved.",
 };
+
+export interface ThemeSettingsData {
+  primaryColor: string;
+  accentColor: string;
+  backgroundColor: string;
+  foregroundColor: string;
+  headingFont: string;
+  bodyFont: string;
+  borderRadius: string;
+  containerWidth: string;
+  animationLevel: "minimal" | "standard" | "cinematic";
+}
+
+export const DEFAULT_THEME_SETTINGS: ThemeSettingsData = {
+  primaryColor: "#d1a86e",
+  accentColor: "#e2c18d",
+  backgroundColor: "#0d0e12",
+  foregroundColor: "#f4f4f6",
+  headingFont: "Playfair Display",
+  bodyFont: "Plus Jakarta Sans",
+  borderRadius: "0.375rem",
+  containerWidth: "1440px",
+  animationLevel: "cinematic",
+};
+
+export const INITIAL_SITE_SETTINGS = DEFAULT_SITE_SETTINGS;
 
 export const INITIAL_INQUIRIES: MockInquiry[] = [
   {

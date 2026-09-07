@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/auth/auth";
 import { getSiteSettings, updateSiteSettings } from "@/db/repository";
 
@@ -21,6 +22,16 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const updated = await updateSiteSettings(body);
+    
+    // Immediately revalidate public storefront layout so new gallery name applies instantly
+    try {
+      revalidatePath("/", "layout");
+      revalidatePath("/");
+      revalidatePath("/gallery");
+      revalidatePath("/about");
+      revalidatePath("/contact");
+    } catch {}
+
     return NextResponse.json({ success: true, settings: updated });
   } catch (error: any) {
     return NextResponse.json(
@@ -28,4 +39,8 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+export async function PATCH(request: NextRequest) {
+  return POST(request);
 }

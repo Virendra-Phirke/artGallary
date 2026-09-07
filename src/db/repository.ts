@@ -6,9 +6,19 @@ import {
   MockExhibition,
   MockHomepageSection,
   MockInquiry,
+  SiteSettingsData,
+  ThemeSettingsData,
+  DEFAULT_NAVIGATION_ITEMS,
+  DEFAULT_SITE_SETTINGS,
+  DEFAULT_THEME_SETTINGS,
+  INITIAL_ARTWORKS,
+  INITIAL_COLLECTIONS,
+  INITIAL_EXHIBITIONS,
+  INITIAL_HOMEPAGE_SECTIONS,
 } from "./mockData";
 
-export type { MockArtwork, MockCollection, MockExhibition, MockHomepageSection, MockInquiry };
+export type { MockArtwork, MockCollection, MockExhibition, MockHomepageSection, MockInquiry, SiteSettingsData, ThemeSettingsData };
+export { DEFAULT_NAVIGATION_ITEMS, DEFAULT_SITE_SETTINGS, DEFAULT_THEME_SETTINGS };
 
 export interface MediaRecord {
   id: string;
@@ -96,111 +106,121 @@ export async function getArtworks(filters?: {
   searchQuery?: string;
 }): Promise<MockArtwork[]> {
   const db = getDb();
-  if (!db) return [];
+  let list: MockArtwork[] = [];
 
-  try {
-    const results = await db
-      .select({
-        artwork: schema.artworks,
-        ar: schema.artworkAr,
-        collectionSlug: schema.collections.slug,
-        collectionName: schema.collections.title,
-      })
-      .from(schema.artworks)
-      .leftJoin(schema.artworkAr, eq(schema.artworkAr.artworkId, schema.artworks.id))
-      .leftJoin(
-        schema.collectionArtworks,
-        eq(schema.collectionArtworks.artworkId, schema.artworks.id)
-      )
-      .leftJoin(
-        schema.collections,
-        eq(schema.collections.id, schema.collectionArtworks.collectionId)
-      )
-      .orderBy(asc(schema.artworks.displayOrder));
+  if (db) {
+    try {
+      const results = await db
+        .select({
+          artwork: schema.artworks,
+          ar: schema.artworkAr,
+          collectionSlug: schema.collections.slug,
+          collectionName: schema.collections.title,
+        })
+        .from(schema.artworks)
+        .leftJoin(schema.artworkAr, eq(schema.artworkAr.artworkId, schema.artworks.id))
+        .leftJoin(
+          schema.collectionArtworks,
+          eq(schema.collectionArtworks.artworkId, schema.artworks.id)
+        )
+        .leftJoin(
+          schema.collections,
+          eq(schema.collections.id, schema.collectionArtworks.collectionId)
+        )
+        .orderBy(asc(schema.artworks.displayOrder));
 
-    let list = results.map((r) =>
-      mapDbArtwork(r.artwork, r.ar, {
-        collectionSlug: r.collectionSlug || undefined,
-        collectionName: r.collectionName || undefined,
-      })
-    );
-
-    list = list.filter((a) => a.status !== "archived");
-
-    if (filters?.featuredOnly) {
-      list = list.filter((a) => a.isFeatured && a.status === "published");
-    }
-
-    if (filters?.status && filters.status !== "all") {
-      list = list.filter((a) => a.status === filters.status);
-    }
-
-    if (filters?.collectionSlug && filters.collectionSlug !== "all") {
-      list = list.filter((a) => a.collectionSlug === filters.collectionSlug);
-    }
-
-    if (filters?.medium && filters.medium !== "all") {
-      list = list.filter((a) =>
-        a.medium.toLowerCase().includes(filters.medium!.toLowerCase())
+      list = results.map((r) =>
+        mapDbArtwork(r.artwork, r.ar, {
+          collectionSlug: r.collectionSlug || undefined,
+          collectionName: r.collectionName || undefined,
+        })
       );
+    } catch (e) {
+      console.warn("Database getArtworks failed, using fallback:", e);
     }
-
-    if (filters?.searchQuery) {
-      const q = filters.searchQuery.toLowerCase();
-      list = list.filter(
-        (a) =>
-          a.title.toLowerCase().includes(q) ||
-          a.description.toLowerCase().includes(q) ||
-          a.medium.toLowerCase().includes(q)
-      );
-    }
-
-    return list;
-  } catch (e) {
-    console.error("Database getArtworks failed:", e);
-    return [];
   }
+
+  if (list.length === 0) {
+    list = [...INITIAL_ARTWORKS];
+  }
+
+  list = list.filter((a) => a.status !== "archived");
+
+  if (filters?.featuredOnly) {
+    list = list.filter((a) => a.isFeatured && a.status === "published");
+  }
+
+  if (filters?.status && filters.status !== "all") {
+    list = list.filter((a) => a.status === filters.status);
+  }
+
+  if (filters?.collectionSlug && filters.collectionSlug !== "all") {
+    list = list.filter((a) => a.collectionSlug === filters.collectionSlug);
+  }
+
+  if (filters?.medium && filters.medium !== "all") {
+    list = list.filter((a) =>
+      a.medium.toLowerCase().includes(filters.medium!.toLowerCase())
+    );
+  }
+
+  if (filters?.searchQuery) {
+    const q = filters.searchQuery.toLowerCase();
+    list = list.filter(
+      (a) =>
+        a.title.toLowerCase().includes(q) ||
+        a.description.toLowerCase().includes(q) ||
+        a.medium.toLowerCase().includes(q)
+    );
+  }
+
+  return list;
 }
 
 export async function getAllArtworksAdmin(): Promise<MockArtwork[]> {
   const db = getDb();
-  if (!db) return [];
+  if (db) {
+    try {
+      const results = await db
+        .select({
+          artwork: schema.artworks,
+          ar: schema.artworkAr,
+          collectionSlug: schema.collections.slug,
+          collectionName: schema.collections.title,
+        })
+        .from(schema.artworks)
+        .leftJoin(schema.artworkAr, eq(schema.artworkAr.artworkId, schema.artworks.id))
+        .leftJoin(
+          schema.collectionArtworks,
+          eq(schema.collectionArtworks.artworkId, schema.artworks.id)
+        )
+        .leftJoin(
+          schema.collections,
+          eq(schema.collections.id, schema.collectionArtworks.collectionId)
+        )
+        .orderBy(asc(schema.artworks.displayOrder));
 
-  try {
-    const results = await db
-      .select({
-        artwork: schema.artworks,
-        ar: schema.artworkAr,
-        collectionSlug: schema.collections.slug,
-        collectionName: schema.collections.title,
-      })
-      .from(schema.artworks)
-      .leftJoin(schema.artworkAr, eq(schema.artworkAr.artworkId, schema.artworks.id))
-      .leftJoin(
-        schema.collectionArtworks,
-        eq(schema.collectionArtworks.artworkId, schema.artworks.id)
-      )
-      .leftJoin(
-        schema.collections,
-        eq(schema.collections.id, schema.collectionArtworks.collectionId)
-      )
-      .orderBy(asc(schema.artworks.displayOrder));
-
-    return results.map((r) =>
-      mapDbArtwork(r.artwork, r.ar, {
-        collectionSlug: r.collectionSlug || undefined,
-        collectionName: r.collectionName || undefined,
-      })
-    );
-  } catch (e) {
-    console.error("Database getAllArtworksAdmin failed:", e);
-    return [];
+      if (results.length > 0) {
+        return results.map((r) =>
+          mapDbArtwork(r.artwork, r.ar, {
+            collectionSlug: r.collectionSlug || undefined,
+            collectionName: r.collectionName || undefined,
+          })
+        );
+      }
+    } catch (e) {
+      console.warn("Database getAllArtworksAdmin failed, using fallback:", e);
+    }
   }
+
+  return INITIAL_ARTWORKS;
 }
 
 export async function getArtworkBySlug(slug: string): Promise<MockArtwork | null> {
   const db = getDb();
-  if (!db) return null;
+  if (!db) {
+    return INITIAL_ARTWORKS.find((a) => a.slug === slug || a.id === slug) || null;
+  }
 
   try {
     const results = await db
@@ -223,7 +243,9 @@ export async function getArtworkBySlug(slug: string): Promise<MockArtwork | null
       .where(eq(schema.artworks.slug, slug))
       .limit(1);
 
-    if (results.length === 0) return null;
+    if (results.length === 0) {
+      return INITIAL_ARTWORKS.find((a) => a.slug === slug || a.id === slug) || null;
+    }
 
     const item = results[0];
     const additional = await db
@@ -243,14 +265,16 @@ export async function getArtworkBySlug(slug: string): Promise<MockArtwork | null
       additionalImages: additional.map((i) => i.imageUrl),
     });
   } catch (e) {
-    console.error("Database getArtworkBySlug failed:", e);
-    return null;
+    console.warn("Database getArtworkBySlug failed, using fallback:", e);
+    return INITIAL_ARTWORKS.find((a) => a.slug === slug || a.id === slug) || null;
   }
 }
 
 export async function getArtworkById(id: string): Promise<MockArtwork | null> {
   const db = getDb();
-  if (!db) return null;
+  if (!db) {
+    return INITIAL_ARTWORKS.find((a) => a.id === id || a.slug === id) || null;
+  }
 
   try {
     const isIdUuid = isUuid(id);
@@ -278,7 +302,9 @@ export async function getArtworkById(id: string): Promise<MockArtwork | null> {
       )
       .limit(1);
 
-    if (results.length === 0) return null;
+    if (results.length === 0) {
+      return INITIAL_ARTWORKS.find((a) => a.id === id || a.slug === id) || null;
+    }
 
     const item = results[0];
     const additional = await db
@@ -298,8 +324,8 @@ export async function getArtworkById(id: string): Promise<MockArtwork | null> {
       additionalImages: additional.map((i) => i.imageUrl),
     });
   } catch (e) {
-    console.error("Database getArtworkById failed:", e);
-    return null;
+    console.warn("Database getArtworkById failed, using fallback:", e);
+    return INITIAL_ARTWORKS.find((a) => a.id === id || a.slug === id) || null;
   }
 }
 
@@ -507,6 +533,45 @@ export async function archiveArtwork(id: string): Promise<boolean> {
     return true;
   } catch (e) {
     console.error("Database archiveArtwork failed:", e);
+    return false;
+  }
+}
+
+export async function deleteArtwork(id: string): Promise<boolean> {
+  const db = getDb();
+  if (!db) return false;
+
+  try {
+    const isIdUuid = isUuid(id);
+    const existing = await db
+      .select({ id: schema.artworks.id, title: schema.artworks.title })
+      .from(schema.artworks)
+      .where(
+        isIdUuid
+          ? or(eq(schema.artworks.id, id), eq(schema.artworks.slug, id))
+          : eq(schema.artworks.slug, id)
+      )
+      .limit(1);
+
+    if (existing.length === 0) return false;
+    const targetId = existing[0].id;
+    const title = existing[0].title;
+
+    await db.delete(schema.collectionArtworks).where(eq(schema.collectionArtworks.artworkId, targetId));
+    await db.delete(schema.exhibitionArtworks).where(eq(schema.exhibitionArtworks.artworkId, targetId));
+    await db.delete(schema.artworkImages).where(eq(schema.artworkImages.artworkId, targetId));
+    await db.delete(schema.artworkAr).where(eq(schema.artworkAr.artworkId, targetId));
+    await db
+      .update(schema.inquiries)
+      .set({ artworkId: null })
+      .where(eq(schema.inquiries.artworkId, targetId));
+
+    await db.delete(schema.artworks).where(eq(schema.artworks.id, targetId));
+
+    recordActivityLog("DELETE_ARTWORK", "artwork", `Permanently deleted artwork "${title}" (${targetId})`, targetId);
+    return true;
+  } catch (e) {
+    console.error("Database deleteArtwork failed:", e);
     return false;
   }
 }
@@ -1103,13 +1168,15 @@ export async function getHomepageSections(): Promise<MockHomepageSection[]> {
 
 export async function getAllHomepageSectionsAdmin(): Promise<MockHomepageSection[]> {
   const db = getDb();
-  if (!db) return [];
+  if (!db) return INITIAL_HOMEPAGE_SECTIONS;
 
   try {
     const rows = await db
       .select()
       .from(schema.homepageSections)
       .orderBy(asc(schema.homepageSections.displayOrder));
+
+    if (rows.length === 0) return INITIAL_HOMEPAGE_SECTIONS;
 
     return rows.map((s) => ({
       id: s.id,
@@ -1121,8 +1188,8 @@ export async function getAllHomepageSectionsAdmin(): Promise<MockHomepageSection
       displayOrder: s.displayOrder,
     }));
   } catch (e) {
-    console.error("Database getAllHomepageSectionsAdmin failed:", e);
-    return [];
+    console.error("Database getAllHomepageSectionsAdmin failed, using fallbacks:", e);
+    return INITIAL_HOMEPAGE_SECTIONS;
   }
 }
 
@@ -1173,317 +1240,6 @@ export async function updateHomepageSection(
   }
 }
 
-export interface SiteSettingsData {
-  artistName: string;
-  siteTitle: string;
-  shortBrandName: string;
-  tagline: string;
-  logoUrl?: string;
-  faviconUrl?: string;
-  bioSummary?: string;
-  statement?: string;
-  contactEmail: string;
-  phone?: string;
-  whatsapp?: string;
-  location: string;
-  address?: string;
-  city?: string;
-  country?: string;
-  businessHours?: string;
-  contactInstructions?: string;
-  socialLinks: {
-    instagram?: string;
-    twitter?: string;
-    linkedin?: string;
-    artsy?: string;
-    facebook?: string;
-    pinterest?: string;
-    youtube?: string;
-  };
-  announcementBar: {
-    isEnabled: boolean;
-    message: string;
-    link?: string;
-    linkLabel?: string;
-    bg?: string;
-    textColor?: string;
-    dismissible?: boolean;
-  };
-  headerConfig: {
-    logoType: "text" | "image";
-    logoText?: string;
-    logoUrl?: string;
-    style: "transparent" | "solid" | "sticky";
-    showCta: boolean;
-    ctaLabel?: string;
-    ctaUrl?: string;
-  };
-  navigationItems: Array<{
-    id: string;
-    label: string;
-    href: string;
-    isEnabled: boolean;
-    order: number;
-    openInNewTab?: boolean;
-  }>;
-  footerConfig: {
-    description?: string;
-    columns: Array<{
-      title: string;
-      links: Array<{ label: string; href: string }>;
-    }>;
-    contactText?: string;
-    copyrightText?: string;
-    showNewsletterCta?: boolean;
-  };
-  galleryPageConfig: {
-    title?: string;
-    subtitle?: string;
-    description?: string;
-    coverImageUrl?: string;
-    defaultLayout: "grid" | "masonry" | "editorial";
-    enabledFilters: {
-      medium: boolean;
-      price: boolean;
-      year: boolean;
-      availability: boolean;
-      collection: boolean;
-    };
-    defaultSort: string;
-  };
-  collectionsPageConfig: {
-    title?: string;
-    subtitle?: string;
-    description?: string;
-    coverImageUrl?: string;
-    eyebrow?: string;
-  };
-  exhibitionsPageConfig: {
-    title?: string;
-    subtitle?: string;
-    description?: string;
-    coverImageUrl?: string;
-    eyebrow?: string;
-  };
-  aboutPageConfig: {
-    intro?: string;
-    bio?: string;
-    artistImageUrl?: string;
-    story?: string;
-    philosophy?: string;
-    process?: string;
-    quote?: string;
-    exhibitions?: Array<{ year: string; title: string; location: string }>;
-    achievements?: string[];
-    ctaText?: string;
-    ctaUrl?: string;
-  };
-  contactPageConfig: {
-    title?: string;
-    description?: string;
-    recipientEmail?: string;
-    officeAddress?: string;
-    openingHours?: string;
-    contactInstructions?: string;
-    formFields: {
-      name: boolean;
-      email: boolean;
-      phone: boolean;
-      message: boolean;
-      artworkContext: boolean;
-    };
-    successMessage?: string;
-  };
-  legalPages: {
-    privacyPolicy?: string;
-    termsOfService?: string;
-    cookiePolicy?: string;
-    refundPolicy?: string;
-    shippingPolicy?: string;
-  };
-  maintenanceMode: {
-    isEnabled: boolean;
-    title?: string;
-    message?: string;
-    expectedReturn?: string;
-  };
-  globalArDefaults: {
-    defaultFrame: string;
-    defaultScale: number;
-    defaultPlacement: "wall" | "floor";
-    defaultInstructions?: string;
-    ctaLabel?: string;
-    fallbackMessage?: string;
-  };
-  copyrightText: string;
-}
-
-const DEFAULT_NAVIGATION_ITEMS = [
-  { id: "nav-gallery", label: "Gallery", href: "/gallery", isEnabled: true, order: 1 },
-  { id: "nav-collections", label: "Collections", href: "/collections", isEnabled: true, order: 2 },
-  { id: "nav-exhibitions", label: "Exhibitions", href: "/exhibitions", isEnabled: true, order: 3 },
-  { id: "nav-about", label: "About", href: "/about", isEnabled: true, order: 4 },
-  { id: "nav-contact", label: "Contact", href: "/contact", isEnabled: true, order: 5 },
-];
-
-const DEFAULT_SITE_SETTINGS: SiteSettingsData = {
-  artistName: "Elena Vance",
-  siteTitle: "L'Atelier Lumineux",
-  shortBrandName: "L'Atelier",
-  tagline: "Contemporary Fine Art Studio & WebAR Gallery",
-  logoUrl: "",
-  faviconUrl: "",
-  bioSummary: "Contemporary fine artist exploring oceanic silence and mineral materiality.",
-  statement: "A painting is an alteration of the atmospheric silence within a room.",
-  contactEmail: "curator@latelier-lumineux.art",
-  phone: "+33 1 42 68 55 00",
-  whatsapp: "+33 6 12 34 56 78",
-  location: "Paris & Brittany, France",
-  address: "14 Rue de Beaune, 7th Arrondissement",
-  city: "Paris",
-  country: "France",
-  businessHours: "Monday – Saturday: 10:00 – 19:00 (By Appointment)",
-  contactInstructions: "For private acquisitions, curatorial loan requests, and press access, please correspond using our liaison desk.",
-  socialLinks: {
-    instagram: "https://instagram.com",
-    twitter: "https://twitter.com",
-    linkedin: "https://linkedin.com",
-    artsy: "https://artsy.net",
-  },
-  announcementBar: {
-    isEnabled: true,
-    message: "Spring 2026 Retrospective: New lapis lazuli originals now available for private acquisition.",
-    link: "/gallery",
-    linkLabel: "Explore Catalogue",
-    bg: "#18191e",
-    textColor: "#d1a86e",
-    dismissible: true,
-  },
-  headerConfig: {
-    logoType: "text",
-    logoText: "L'Atelier Lumineux",
-    logoUrl: "",
-    style: "transparent",
-    showCta: true,
-    ctaLabel: "Inquire",
-    ctaUrl: "/contact",
-  },
-  navigationItems: DEFAULT_NAVIGATION_ITEMS,
-  footerConfig: {
-    description: "The independent studio and private gallery of contemporary artist Elena Vance. Dedicated to exploring lapis lazuli glazes, geological materiality, and true-scale spatial WebAR curation.",
-    columns: [
-      {
-        title: "Explore",
-        links: [
-          { label: "All Artworks", href: "/gallery" },
-          { label: "Curated Series", href: "/collections" },
-          { label: "Exhibitions", href: "/exhibitions" },
-          { label: "Artist Monologue & CV", href: "/about" },
-          { label: "Acquisitions & Press", href: "/contact" },
-        ],
-      },
-      {
-        title: "Legal & Studio",
-        links: [
-          { label: "Privacy Policy", href: "/privacy" },
-          { label: "Terms of Acquisition", href: "/terms" },
-          { label: "Collector Inquiries", href: "/contact" },
-        ],
-      },
-    ],
-    contactText: "curator@latelier-lumineux.art",
-    copyrightText: "© 2026 Elena Vance Studio. All rights reserved.",
-    showNewsletterCta: true,
-  },
-  galleryPageConfig: {
-    title: "Original Canvases & Pigments",
-    subtitle: "The Studio Catalogue",
-    description: "Each painting is an original piece created using natural mineral pigments, French lapis lazuli glazes, and raw Belgian linen. Inquire for provenance or launch the 1:1 scale WebAR viewer.",
-    coverImageUrl: "",
-    defaultLayout: "grid",
-    enabledFilters: {
-      medium: true,
-      price: true,
-      year: true,
-      availability: true,
-      collection: true,
-    },
-    defaultSort: "featured",
-  },
-  collectionsPageConfig: {
-    title: "Curated Series",
-    subtitle: "Thematic Bodies of Work",
-    description: "Elena Vance groups her artistic inquiries into multi-year cycles. Each series represents a focused exploration of specific pigments, geological binders, and spatial tensions.",
-    coverImageUrl: "",
-    eyebrow: "Thematic Bodies of Work",
-  },
-  exhibitionsPageConfig: {
-    title: "Exhibitions",
-    subtitle: "Public & Museum History",
-    description: "Chronological record of curated solo exhibitions, biennale participations, and institutional showcases across Paris, New York, London, and Tokyo.",
-    coverImageUrl: "",
-    eyebrow: "Public & Museum History",
-  },
-  aboutPageConfig: {
-    intro: "Biography & Studio Practice",
-    bio: "Elena Vance is a contemporary fine artist whose paintings investigate the physics of optical depth, geological materiality, and oceanic stillness. Combining archaic mineral pigments—chiefly Afghan lapis lazuli and Roman pozzolana—with multi-layered stand-oil glazes on raw Belgian linen.",
-    artistImageUrl: "https://ik.imagekit.io/bpnsp30ni/artworks/gallery/1788717079935-kazuha__EB1yso0A.jpeg?updatedAt=1788717081490",
-    story: "Her studio practice resists the rapid consumption of images. Canvases are frequently held in progress across several seasons, receiving up to twenty gossamer layers of translucent stand-oil glaze.",
-    philosophy: "A painting is not merely a depiction; it is an alteration of the atmospheric stillness and light acoustics within a room.",
-    process: "Pure powdered lapis lazuli, crushed slate, cold-pressed walnut oil, and Belgian flax linen.",
-    quote: "Light does not strike the surface; it penetrates the mineral stratums and is reflected from within.",
-    exhibitions: [
-      { year: "2026", title: "Luminous Stillness Retrospective", location: "Fondation d'Art Contemporain, Paris" },
-      { year: "2025", title: "Mineral Stratum & Oceanic Silence", location: "Galerie Pompéi, Geneva" },
-      { year: "2024", title: "The Blue Horizon: Spatial Canvases", location: "Chelsea Arts Pavilion, New York" },
-    ],
-    achievements: [
-      "Lauréate du Prix Jean-François Millet pour la Peinture Contemporaine (2024)",
-      "Permanent collection acquisition: Fondation d'Art Contemporain, Geneva",
-      "ADAGP France Certified Contemporary Master (Registration #89421)",
-    ],
-    ctaText: "Contact Curatorial Office",
-    ctaUrl: "/contact",
-  },
-  contactPageConfig: {
-    title: "Inquiries & Acquisitions",
-    description: "For private acquisitions, curatorial loan requests, and press access, please correspond using our studio liaison desk.",
-    recipientEmail: "curator@latelier-lumineux.art",
-    officeAddress: "14 Rue de Beaune, 7th Arrondissement, 75007 Paris, France",
-    openingHours: "Monday – Saturday: 10:00 – 19:00 (By Appointment)",
-    contactInstructions: "Every acquisition is accompanied by a signed Certificate of Authenticity and custom museum-grade crating.",
-    formFields: {
-      name: true,
-      email: true,
-      phone: true,
-      message: true,
-      artworkContext: true,
-    },
-    successMessage: "Thank you for your correspondence. The curatorial studio office will review your inquiry and respond within one business day.",
-  },
-  legalPages: {
-    privacyPolicy: "We respect your collector privacy. Personal data submitted through inquiries or account registration is encrypted, never sold, and used solely for private studio correspondence, provenance records, and authenticated certificate delivery.",
-    termsOfService: "All artworks displayed on this platform are original copyright-protected creations of Elena Vance. Authenticated certificates of authenticity are registered with ADAGP France upon completion of acquisition.",
-    cookiePolicy: "This studio uses essential session cookies for collector authentication and anonymous telemetry to evaluate exhibition interest and true-scale AR room sessions. Camera data used in AR never leaves your local device.",
-    refundPolicy: "Private collection acquisitions include a 14-day inspection period upon white-glove crated delivery. Inquiries regarding condition reports and international transit insurance are handled directly by the curatorial office.",
-    shippingPolicy: "International museum-grade crating and climate-controlled freight are coordinated through specialized fine art logistics couriers (Crozier / Hasenkamp).",
-  },
-  maintenanceMode: {
-    isEnabled: false,
-    title: "Studio Under Curation",
-    message: "L'Atelier Lumineux is currently undergoing curatorial updates for an upcoming retrospective exhibition. The digital gallery will resume normal visitor access shortly.",
-    expectedReturn: "Returning Today at 18:00 CET",
-  },
-  globalArDefaults: {
-    defaultFrame: "minimal_black",
-    defaultScale: 1.0,
-    defaultPlacement: "wall",
-    defaultInstructions: "Point camera at a well-lit wall surface. Tap to position the canvas at true 1:1 physical scale.",
-    ctaLabel: "View in Your Space",
-    fallbackMessage: "AR requires a WebXR or camera-enabled mobile device. You can explore true-scale dimensions and virtual room views directly above.",
-  },
-  copyrightText: "© 2026 Elena Vance Studio. All rights reserved.",
-};
 
 export async function getSiteSettings(): Promise<SiteSettingsData> {
   const db = getDb();
@@ -1579,7 +1335,15 @@ export async function updateSiteSettings(settings: Partial<SiteSettingsData>): P
     if (settings.globalArDefaults !== undefined) updatePayload.globalArDefaultsJson = settings.globalArDefaults;
     if (settings.copyrightText !== undefined) updatePayload.copyrightText = settings.copyrightText;
 
-    await db.update(schema.siteSettings).set(updatePayload);
+    const existing = await db.select({ id: schema.siteSettings.id }).from(schema.siteSettings).limit(1);
+    if (existing.length > 0) {
+      await db.update(schema.siteSettings).set(updatePayload).where(eq(schema.siteSettings.id, existing[0].id));
+    } else {
+      await db.insert(schema.siteSettings).values({
+        id: crypto.randomUUID(),
+        ...updatePayload,
+      });
+    }
     recordActivityLog("UPDATE_SITE_SETTINGS", "settings", "Updated studio site settings and storefront CMS");
   } catch (e) {
     console.error("Database updateSiteSettings failed:", e);
@@ -1588,29 +1352,6 @@ export async function updateSiteSettings(settings: Partial<SiteSettingsData>): P
   return getSiteSettings();
 }
 
-export interface ThemeSettingsData {
-  primaryColor: string;
-  accentColor: string;
-  backgroundColor: string;
-  foregroundColor: string;
-  headingFont: string;
-  bodyFont: string;
-  borderRadius: string;
-  containerWidth: string;
-  animationLevel: "minimal" | "standard" | "cinematic";
-}
-
-const DEFAULT_THEME_SETTINGS: ThemeSettingsData = {
-  primaryColor: "#d1a86e",
-  accentColor: "#e2c18d",
-  backgroundColor: "#0d0e12",
-  foregroundColor: "#f4f4f6",
-  headingFont: "Playfair Display",
-  bodyFont: "Plus Jakarta Sans",
-  borderRadius: "0.375rem",
-  containerWidth: "1440px",
-  animationLevel: "cinematic",
-};
 
 export async function getThemeSettings(): Promise<ThemeSettingsData> {
   const db = getDb();

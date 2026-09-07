@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { X, ArrowRight } from "lucide-react";
-import { SiteSettingsData } from "@/db/repository";
+import type { SiteSettingsData } from "@/db/mockData";
 
 interface AnnouncementBarProps {
   announcement?: SiteSettingsData["announcementBar"];

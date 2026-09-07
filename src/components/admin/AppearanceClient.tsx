@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ThemeSettingsData } from "@/db/repository";
+import type { ThemeSettingsData } from "@/db/mockData";
 import { Paintbrush, Check, Sparkles, Loader2, ArrowRight, Layers } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

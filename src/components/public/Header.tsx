@@ -31,8 +31,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-
-import { SiteSettingsData } from "@/db/repository";
+import type { SiteSettingsData } from "@/db/mockData";
 
 interface UserSession {
   id: string;

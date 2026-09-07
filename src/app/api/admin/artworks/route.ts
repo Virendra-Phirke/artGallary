@@ -4,6 +4,7 @@ import {
   getAllArtworksAdmin,
   saveArtwork,
   archiveArtwork,
+  deleteArtwork,
   getArtworkById,
 } from "@/db/repository";
 
@@ -87,9 +88,15 @@ export async function DELETE(request: NextRequest) {
 
   const { searchParams } = request.nextUrl;
   const id = searchParams.get("id");
+  const mode = searchParams.get("mode");
 
   if (!id) {
     return NextResponse.json({ error: "Artwork ID is required" }, { status: 400 });
+  }
+
+  if (mode === "permanent") {
+    const deleted = await deleteArtwork(id);
+    return NextResponse.json({ success: deleted });
   }
 
   const archived = await archiveArtwork(id);
