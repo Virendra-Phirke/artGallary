@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -45,6 +45,30 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+
+const PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
+
+function getPaginationRange(current: number, total: number) {
+  if (total <= 7) {
+    return Array.from({ length: total }, (_, i) => i + 1);
+  }
+  if (current <= 4) {
+    return [1, 2, 3, 4, 5, "...", total];
+  }
+  if (current >= total - 3) {
+    return [1, "...", total - 4, total - 3, total - 2, total - 1, total];
+  }
+  return [1, "...", current - 1, current, current + 1, "...", total];
+}
 
 interface ArtworksManagerClientProps {
   initialArtworks: MockArtwork[];
@@ -62,18 +86,34 @@ export function ArtworksManagerClient({
   const [artworkToDelete, setArtworkToDelete] = useState<MockArtwork | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const filtered = artworks.filter((art) => {
-    if (statusFilter !== "all" && art.status !== statusFilter) return false;
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      return (
-        art.title.toLowerCase().includes(q) ||
-        art.medium.toLowerCase().includes(q) ||
-        art.slug.toLowerCase().includes(q)
-      );
-    }
-    return true;
-  });
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  const filtered = useMemo(() => {
+    return artworks.filter((art) => {
+      if (statusFilter !== "all" && art.status !== statusFilter) return false;
+      if (search.trim()) {
+        const q = search.toLowerCase();
+        return (
+          art.title.toLowerCase().includes(q) ||
+          art.medium.toLowerCase().includes(q) ||
+          art.slug.toLowerCase().includes(q)
+        );
+      }
+      return true;
+    });
+  }, [artworks, statusFilter, search]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, statusFilter, pageSize]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const paginatedArtworks = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const startItem = filtered.length === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+  const endItem = Math.min(currentPage * pageSize, filtered.length);
+  const paginationRange = getPaginationRange(currentPage, totalPages);
 
   const handleArchive = async (id: string, title: string) => {
     if (!confirm(`Are you sure you want to archive "${title}"?`)) return;
@@ -275,7 +315,7 @@ export function ArtworksManagerClient({
                   </TableCell>
                 </TableRow>
               ) : (
-                filtered.map((art) => (
+                paginatedArtworks.map((art) => (
                   <TableRow key={art.id} className="group">
                     {/* Artwork Image & Title */}
                     <TableCell>
@@ -509,7 +549,7 @@ export function ArtworksManagerClient({
               No artworks found matching your filter criteria.
             </div>
           ) : (
-            filtered.map((art) => (
+            paginatedArtworks.map((art) => (
               <div
                 key={art.id}
                 className="group rounded-2xl border border-[#262833] bg-[#14151a] overflow-hidden hover:border-[#d1a86e]/40 transition-all flex flex-col shadow-lg"
@@ -664,7 +704,7 @@ export function ArtworksManagerClient({
               No artworks found matching your filter criteria.
             </Card>
           ) : (
-            filtered.map((art) => (
+            paginatedArtworks.map((art) => (
               <Card key={art.id} className="p-4 bg-[#14151a] space-y-3">
                 <div className="flex items-start gap-3">
                   <div className="relative w-16 h-14 rounded-lg overflow-hidden bg-black/40 border border-[#262833] shrink-0">
@@ -774,6 +814,80 @@ export function ArtworksManagerClient({
               </Card>
             ))
           )}
+        </div>
+      )}
+
+      {/* Pagination and Per-Page Control Bar */}
+      {totalPages > 1 && (
+        <div className="p-4 bg-[#14151a] border border-[#262833] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+          <div className="text-xs text-zinc-400 font-mono">
+            Showing <span className="text-white font-semibold">{startItem}–{endItem}</span> of{" "}
+            <span className="text-[#d1a86e] font-semibold">{filtered.length}</span> artworks
+          </div>
+
+          <div>
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    className={
+                      currentPage <= 1
+                        ? "pointer-events-none opacity-40"
+                        : "cursor-pointer"
+                    }
+                  />
+                </PaginationItem>
+
+                {paginationRange.map((item, idx) => (
+                  <PaginationItem key={idx}>
+                    {item === "..." ? (
+                      <PaginationEllipsis />
+                    ) : (
+                      <PaginationLink
+                        isActive={item === currentPage}
+                        onClick={() => setCurrentPage(Number(item))}
+                        className="cursor-pointer"
+                      >
+                        {item}
+                      </PaginationLink>
+                    )}
+                  </PaginationItem>
+                ))}
+
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    className={
+                      currentPage >= totalPages
+                        ? "pointer-events-none opacity-40"
+                        : "cursor-pointer"
+                    }
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-zinc-500 font-mono text-[11px] uppercase tracking-wider">Per Page:</span>
+            <div className="flex items-center rounded-lg border border-[#262833] bg-[#1a1c23] p-0.5">
+              {PAGE_SIZE_OPTIONS.map((size) => (
+                <button
+                  key={size}
+                  type="button"
+                  onClick={() => setPageSize(size)}
+                  className={`px-2.5 py-1 text-xs font-mono rounded transition-colors cursor-pointer ${
+                    pageSize === size
+                      ? "bg-[#d1a86e] text-black font-semibold shadow-sm"
+                      : "text-zinc-400 hover:text-white"
+                  }`}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       )}
 

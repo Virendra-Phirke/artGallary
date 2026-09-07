@@ -1,5 +1,5 @@
 import React from "react";
-import { getArtworks, getCollections, getSiteSettings } from "@/db/repository";
+import { getPaginatedArtworks, getCollections, getSiteSettings } from "@/db/repository";
 import { GalleryCatalog } from "@/components/public/GalleryCatalog";
 import type { Metadata } from "next";
 
@@ -11,9 +11,32 @@ export const metadata: Metadata = {
 
 export const revalidate = 3600; // Cache ISR for 1 hour with instant write-invalidation
 
-export default async function GalleryPage() {
-  const [artworks, collections, settings] = await Promise.all([
-    getArtworks(),
+interface GalleryPageProps {
+  searchParams?: Promise<{
+    page?: string;
+    limit?: string;
+    collection?: string;
+    status?: string;
+    search?: string;
+    sort?: string;
+  }>;
+}
+
+export default async function GalleryPage({ searchParams }: GalleryPageProps) {
+  const resolvedParams = searchParams ? await searchParams : {};
+  const page = Math.max(1, parseInt(resolvedParams.page || "1", 10) || 1);
+  const rawLimit = parseInt(resolvedParams.limit || "10", 10) || 10;
+  const limit = Math.min(100, Math.max(1, rawLimit));
+
+  const [paginatedResult, collections, settings] = await Promise.all([
+    getPaginatedArtworks({
+      page,
+      limit,
+      status: resolvedParams.status || "all",
+      collectionSlug: resolvedParams.collection || "all",
+      searchQuery: resolvedParams.search || undefined,
+      sortBy: (resolvedParams.sort as any) || "featured",
+    }),
     getCollections(),
     getSiteSettings(),
   ]);
@@ -40,7 +63,11 @@ export default async function GalleryPage() {
         </p>
       </div>
 
-      <GalleryCatalog initialArtworks={artworks} collections={collections} />
+      <GalleryCatalog
+        initialArtworks={paginatedResult.artworks}
+        initialPagination={paginatedResult.pagination}
+        collections={collections}
+      />
     </div>
   );
 }

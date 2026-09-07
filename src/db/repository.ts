@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import { getDb, schema } from "./index";
-import { eq, desc, asc, and, or, sql } from "drizzle-orm";
+import { eq, desc, asc, and, or, sql, ne, ilike } from "drizzle-orm";
 import {
   MockArtwork,
   MockCollection,
@@ -201,6 +201,156 @@ export async function getArtworks(filters?: {
   }
 
   return list;
+}
+
+export interface PaginatedArtworksResult {
+  artworks: MockArtwork[];
+  pagination: {
+    page: number;
+    limit: number;
+    totalCount: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+}
+
+export async function getPaginatedArtworks(options?: {
+  page?: number;
+  limit?: number;
+  status?: string;
+  collectionSlug?: string;
+  medium?: string;
+  searchQuery?: string;
+  sortBy?: "featured" | "newest" | "price-asc" | "price-desc";
+}): Promise<PaginatedArtworksResult> {
+  const page = Math.max(1, Number(options?.page) || 1);
+  const rawLimit = Number(options?.limit) || 10;
+  // Support 10, 20, 50, 100 or standard positive integers clamped between 1 and 100
+  const limit = Math.min(100, Math.max(1, rawLimit));
+  const offset = (page - 1) * limit;
+
+  const db = getDb();
+  if (db) {
+    try {
+      const conditions: any[] = [ne(schema.artworks.status, "archived")];
+
+      if (options?.status && options.status !== "all") {
+        conditions.push(eq(schema.artworks.status, options.status));
+      }
+
+      if (options?.collectionSlug && options.collectionSlug !== "all") {
+        conditions.push(eq(schema.collections.slug, options.collectionSlug));
+      }
+
+      if (options?.medium && options.medium !== "all") {
+        conditions.push(ilike(schema.artworks.medium, `%${options.medium.trim()}%`));
+      }
+
+      if (options?.searchQuery && options.searchQuery.trim()) {
+        const q = `%${options.searchQuery.trim()}%`;
+        conditions.push(
+          or(
+            ilike(schema.artworks.title, q),
+            ilike(schema.artworks.description, q),
+            ilike(schema.artworks.medium, q)
+          )!
+        );
+      }
+
+      // Count query executed directly on Neon PostgreSQL to determine total matches
+      const countResults = await db
+        .select({ count: sql<number>`count(distinct ${schema.artworks.id})::int` })
+        .from(schema.artworks)
+        .leftJoin(
+          schema.collectionArtworks,
+          eq(schema.collectionArtworks.artworkId, schema.artworks.id)
+        )
+        .leftJoin(
+          schema.collections,
+          eq(schema.collections.id, schema.collectionArtworks.collectionId)
+        )
+        .where(and(...conditions));
+
+      const totalCount = Number(countResults[0]?.count || 0);
+      const totalPages = Math.max(1, Math.ceil(totalCount / limit));
+
+      // Sorting clauses
+      let orderClause: any[] = [asc(schema.artworks.displayOrder)];
+      if (options?.sortBy === "newest") {
+        orderClause = [desc(schema.artworks.year), desc(schema.artworks.createdAt)];
+      } else if (options?.sortBy === "price-asc") {
+        orderClause = [asc(schema.artworks.price)];
+      } else if (options?.sortBy === "price-desc") {
+        orderClause = [desc(schema.artworks.price)];
+      }
+
+      // Targeted page query with SQL LIMIT & OFFSET so PostgreSQL only returns requested slice
+      const results = await db
+        .select({
+          artwork: schema.artworks,
+          ar: schema.artworkAr,
+          collectionSlug: schema.collections.slug,
+          collectionName: schema.collections.title,
+        })
+        .from(schema.artworks)
+        .leftJoin(schema.artworkAr, eq(schema.artworkAr.artworkId, schema.artworks.id))
+        .leftJoin(
+          schema.collectionArtworks,
+          eq(schema.collectionArtworks.artworkId, schema.artworks.id)
+        )
+        .leftJoin(
+          schema.collections,
+          eq(schema.collections.id, schema.collectionArtworks.collectionId)
+        )
+        .where(and(...conditions))
+        .orderBy(...orderClause)
+        .limit(limit)
+        .offset(offset);
+
+      const artworks = results.map((r) =>
+        mapDbArtwork(r.artwork, r.ar, {
+          collectionSlug: r.collectionSlug || undefined,
+          collectionName: r.collectionName || undefined,
+        })
+      );
+
+      // If database has records, return authoritative paginated response
+      if (totalCount > 0 || results.length > 0) {
+        return {
+          artworks,
+          pagination: {
+            page,
+            limit,
+            totalCount,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1,
+          },
+        };
+      }
+    } catch (e) {
+      console.warn("Database getPaginatedArtworks query failed, using in-memory fallback:", e);
+    }
+  }
+
+  // Graceful in-memory fallback
+  const all = await getArtworks(options);
+  const totalCount = all.length;
+  const totalPages = Math.max(1, Math.ceil(totalCount / limit));
+  const artworks = all.slice(offset, offset + limit);
+
+  return {
+    artworks,
+    pagination: {
+      page,
+      limit,
+      totalCount,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+    },
+  };
 }
 
 export async function getAllArtworksAdmin(): Promise<MockArtwork[]> {
