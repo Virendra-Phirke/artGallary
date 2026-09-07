@@ -21,6 +21,8 @@ export interface MockArtwork {
   displayOrder: number;
   collectionSlug?: string;
   collectionName?: string;
+  notifiedSubscribersAt?: string | null;
+  notifySubscribers?: boolean;
   arConfig: {
     isArEnabled: boolean;
     defaultWidthCm: number;

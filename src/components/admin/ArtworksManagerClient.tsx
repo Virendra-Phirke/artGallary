@@ -119,7 +119,11 @@ export function ArtworksManagerClient({
       const res = await fetch("/api/admin/artworks", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: art.id, status: newStatus }),
+        body: JSON.stringify({
+          id: art.id,
+          status: newStatus,
+          notifySubscribers: newStatus === "published" && !art.notifiedSubscribersAt,
+        }),
       });
       if (res.ok) {
         setArtworks((prev) =>

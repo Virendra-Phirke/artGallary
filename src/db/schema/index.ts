@@ -6,6 +6,8 @@ import { collections, collectionArtworks } from "./collections";
 import { exhibitions, exhibitionArtworks } from "./exhibitions";
 import { homepageSections, siteSettings, themeSettings } from "./content";
 import { inquiries } from "./inquiries";
+import { newsletterSubscribers } from "./subscribers";
+import { sentEmails } from "./emails";
 
 // Re-export all tables
 export * from "./auth";
@@ -15,6 +17,8 @@ export * from "./collections";
 export * from "./exhibitions";
 export * from "./content";
 export * from "./inquiries";
+export * from "./subscribers";
+export * from "./emails";
 
 // Relations
 export const artworksRelations = relations(artworks, ({ one, many }) => ({

@@ -15,6 +15,7 @@ import {
   FolderOpen,
   Loader2,
   Image as ImageIcon,
+  Mail,
 } from "lucide-react";
 import { MockArtwork, MockCollection } from "@/db/mockData";
 import { slugify, formatDimensions } from "@/lib/utils";
@@ -106,6 +107,48 @@ export function ArtworkFormClient({
   const [isMediaLibraryOpen, setIsMediaLibraryOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Marketing & Collector Broadcast
+  const [notifySubscribers, setNotifySubscribers] = useState(
+    !(initialArtwork as any)?.notifiedSubscribersAt
+  );
+  const [subscriberCount, setSubscriberCount] = useState<number | null>(null);
+  const [isSendingPreview, setIsSendingPreview] = useState(false);
+  const [previewFeedback, setPreviewFeedback] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/admin/marketing/broadcast")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.stats) {
+          setSubscriberCount(data.stats.activeCount);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const handleSendCuratorPreview = async () => {
+    if (!initialArtwork?.id) return;
+    setIsSendingPreview(true);
+    setPreviewFeedback(null);
+    try {
+      const res = await fetch("/api/admin/marketing/broadcast", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ artworkId: initialArtwork.id, mode: "test" }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setPreviewFeedback("✓ Preview dispatched to curator inbox!");
+      } else {
+        setPreviewFeedback(data.error || "Preview send failed");
+      }
+    } catch {
+      setPreviewFeedback("Failed to send preview email");
+    } finally {
+      setIsSendingPreview(false);
+    }
+  };
 
   // Memory cleanup for local object blob URLs
   useEffect(() => {
@@ -274,6 +317,7 @@ export function ArtworkFormClient({
         altText,
         isFeatured,
         collectionSlug: collectionSlug === "none" ? "" : collectionSlug,
+        notifySubscribers: status === "published" && notifySubscribers,
         arConfig: {
           isArEnabled,
           defaultWidthCm: widthCm,
@@ -439,7 +483,13 @@ export function ArtworkFormClient({
                 </label>
                 <select
                   value={status}
-                  onChange={(e: any) => setStatus(e.target.value)}
+                  onChange={(e: any) => {
+                    const newStatus = e.target.value;
+                    setStatus(newStatus);
+                    if (newStatus === "published" && !(initialArtwork as any)?.notifiedSubscribersAt) {
+                      setNotifySubscribers(true);
+                    }
+                  }}
                   className="w-full bg-[#1a1c23] border border-[#262833] rounded-lg px-3.5 py-2.5 text-sm text-white focus:border-[#d1a86e] focus:outline-none cursor-pointer"
                 >
                   <option value="draft">Draft (Private)</option>
@@ -449,6 +499,70 @@ export function ArtworkFormClient({
                   <option value="archived">Archived</option>
                 </select>
               </div>
+
+              {status === "published" && (
+                <div className="sm:col-span-2 bg-[#121318] border border-[#2b2d3d] rounded-xl p-4 space-y-3">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-amber-950/60 border border-amber-800/60 flex items-center justify-center text-[#d1a86e] shrink-0 mt-0.5">
+                        <Mail className="w-4 h-4" />
+                      </div>
+                      <div className="space-y-1">
+                        <label
+                          htmlFor="notify-subscribers"
+                          className="text-xs font-semibold uppercase tracking-wider text-white flex items-center gap-2 cursor-pointer"
+                        >
+                          <span>Email Announcement Broadcast</span>
+                          {subscriberCount !== null && (
+                            <span className="text-[10px] lowercase bg-[#1c1e28] text-amber-300 px-2 py-0.5 rounded-full border border-amber-900/40">
+                              {subscriberCount} interested collector{subscriberCount === 1 ? "" : "s"}
+                            </span>
+                          )}
+                        </label>
+                        <p className="text-xs text-zinc-400 leading-relaxed">
+                          Dispatches an editorial release notice with 1:1 spatial AR launch link and private inquiry button.
+                        </p>
+                      </div>
+                    </div>
+
+                    <input
+                      type="checkbox"
+                      id="notify-subscribers"
+                      checked={notifySubscribers}
+                      onChange={(e) => setNotifySubscribers(e.target.checked)}
+                      className="w-4 h-4 mt-1 accent-[#d1a86e] cursor-pointer rounded"
+                    />
+                  </div>
+
+                  {(initialArtwork as any)?.notifiedSubscribersAt && (
+                    <div className="text-[11px] text-zinc-500 bg-[#0d0e12] p-2.5 rounded border border-[#20222c] flex items-center justify-between gap-2">
+                      <span className="flex items-center gap-1.5 text-emerald-400/90">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span>Collectors notified on {new Date((initialArtwork as any).notifiedSubscribersAt).toLocaleDateString()}</span>
+                      </span>
+                      <span className="text-[10px] text-zinc-500">Checking box will send an update</span>
+                    </div>
+                  )}
+
+                  {!isNew && initialArtwork?.id && (
+                    <div className="pt-1 flex items-center justify-between border-t border-[#1e202b]">
+                      <button
+                        type="button"
+                        onClick={handleSendCuratorPreview}
+                        disabled={isSendingPreview}
+                        className="text-[11px] text-[#d1a86e] hover:text-[#e2c18d] hover:underline flex items-center gap-1.5 transition-colors disabled:opacity-50 cursor-pointer"
+                      >
+                        <Mail className="w-3 h-3" />
+                        <span>{isSendingPreview ? "Sending preview..." : "Send Test Preview to Curator Email"}</span>
+                      </button>
+
+                      {previewFeedback && (
+                        <span className="text-[11px] text-amber-300">{previewFeedback}</span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             <div>

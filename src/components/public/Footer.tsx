@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import type { SiteSettingsData } from "@/db/mockData";
+import { NewsletterSignup } from "./NewsletterSignup";
 
 interface FooterProps {
   settings?: SiteSettingsData;
@@ -43,7 +44,7 @@ export function Footer({ settings }: FooterProps) {
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
           {/* Col 1: Studio Monologue */}
-          <div className="md:col-span-5 space-y-4">
+          <div className="md:col-span-4 space-y-4">
             <h3 className="font-serif text-2xl tracking-[0.15em] text-white uppercase font-light">
               {brandTitle}
             </h3>
@@ -78,22 +79,26 @@ export function Footer({ settings }: FooterProps) {
             ))}
           </div>
 
-          {/* Col 3: Direct Inquiry & Provenance */}
-          <div className="md:col-span-3 space-y-3">
-            <h4 className="text-xs uppercase tracking-[0.25em] text-zinc-400 font-semibold mb-4">
-              Studio Provenance
-            </h4>
-            <p className="text-xs text-[#a6aabf] leading-relaxed">
-              Every canvas is accompanied by an authenticated certificate of authenticity signed by {settings?.artistName || "the artist"}, registered with ADAGP France.
-            </p>
-            <div className="pt-3">
-              <a
-                href={`mailto:${contactEmail}`}
-                className="inline-flex items-center gap-1.5 text-xs tracking-wider uppercase text-[#d1a86e] hover:text-[#e2c18d] transition-colors"
-              >
-                <span>{contactEmail}</span>
-                <ArrowUpRight className="w-3.5 h-3.5" />
-              </a>
+          {/* Col 3: Newsletter Dispatch & Provenance */}
+          <div className="md:col-span-4 space-y-6">
+            <NewsletterSignup />
+
+            <div className="pt-2 border-t border-[#1c1d25] space-y-2">
+              <h4 className="text-xs uppercase tracking-[0.25em] text-zinc-400 font-semibold">
+                Studio Provenance
+              </h4>
+              <p className="text-xs text-[#a6aabf] leading-relaxed">
+                Canvases are accompanied by an authenticated certificate signed by {settings?.artistName || "the artist"}, registered with ADAGP France.
+              </p>
+              <div className="pt-1">
+                <a
+                  href={`mailto:${contactEmail}`}
+                  className="inline-flex items-center gap-1.5 text-xs tracking-wider uppercase text-[#d1a86e] hover:text-[#e2c18d] transition-colors"
+                >
+                  <span>{contactEmail}</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </a>
+              </div>
             </div>
 
             {/* Social Links */}

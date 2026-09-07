@@ -238,7 +238,8 @@ export async function signIn(
 export async function signUp(
   name: string,
   email: string,
-  password: string
+  password: string,
+  marketingSubscribed: boolean = true
 ): Promise<{ success: boolean; user?: AuthUser; error?: string }> {
   const normalizedEmail = email.toLowerCase().trim();
 
@@ -260,12 +261,15 @@ export async function signUp(
       }
 
       const passwordHash = hashPassword(password);
+      const unsubscribeToken = crypto.randomUUID();
       const inserted = await db
         .insert(schema.users)
         .values({
           name: name.trim(),
           email: normalizedEmail,
           role: "USER",
+          marketingSubscribed,
+          unsubscribeToken,
         })
         .returning();
 

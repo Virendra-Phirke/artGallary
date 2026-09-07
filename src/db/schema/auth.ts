@@ -8,6 +8,8 @@ export const users = pgTable("user", {
   image: text("image"),
   role: varchar("role", { length: 20 }).default("USER").notNull(), // 'USER' | 'ADMIN'
   twoFactorEnabled: boolean("two_factor_enabled").default(false).notNull(),
+  marketingSubscribed: boolean("marketing_subscribed").default(true).notNull(),
+  unsubscribeToken: text("unsubscribe_token"),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
 });

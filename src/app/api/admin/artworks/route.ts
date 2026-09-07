@@ -6,7 +6,11 @@ import {
   archiveArtwork,
   deleteArtwork,
   getArtworkById,
+  getActiveSubscribers,
+  markArtworkSubscribersNotified,
+  recordActivityLog,
 } from "@/db/repository";
+import { broadcastArtworkAnnouncement } from "@/lib/email/resend";
 
 export async function GET(request: NextRequest) {
   const session = await getSession();
@@ -70,7 +74,31 @@ export async function POST(request: NextRequest) {
     }
 
     const artwork = await saveArtwork(body);
-    return NextResponse.json({ success: true, artwork });
+
+    // If requested and published, trigger email dispatch to interested collectors
+    const shouldBroadcast =
+      Boolean(body.notifySubscribers) && artwork.status === "published";
+
+    let sendResult: any = null;
+    if (shouldBroadcast) {
+      try {
+        const subscribers = await getActiveSubscribers();
+        if (subscribers.length > 0) {
+          sendResult = await broadcastArtworkAnnouncement({ artwork, subscribers });
+          await markArtworkSubscribersNotified(artwork.id);
+          recordActivityLog(
+            "BROADCAST_ARTWORK",
+            "marketing",
+            `Dispatched announcement for '${artwork.title}' (${sendResult.successCount} succeeded, ${sendResult.failureCount} failed/restricted)`,
+            artwork.id
+          );
+        }
+      } catch (dispatchErr) {
+        console.error("Marketing email broadcast failed:", dispatchErr);
+      }
+    }
+
+    return NextResponse.json({ success: true, artwork, sendResult });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || "Failed to save artwork" }, { status: 500 });
   }

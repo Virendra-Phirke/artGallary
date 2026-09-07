@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth/auth";
-import { getInquiries, updateInquiryStatus } from "@/db/repository";
+import { getInquiries, updateInquiryStatus, getSentEmails } from "@/db/repository";
 
 export async function GET() {
   const session = await getSession();
@@ -8,8 +8,11 @@ export async function GET() {
     return NextResponse.json({ error: "Forbidden: Admin required" }, { status: 403 });
   }
 
-  const inquiries = await getInquiries();
-  return NextResponse.json({ success: true, inquiries });
+  const [inquiries, sentEmails] = await Promise.all([
+    getInquiries(),
+    getSentEmails(100),
+  ]);
+  return NextResponse.json({ success: true, inquiries, sentEmails });
 }
 
 export async function PATCH(request: NextRequest) {

@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import { getDb, schema } from "./index";
 import { eq, desc, asc, and, or, sql } from "drizzle-orm";
 import {
@@ -90,6 +91,7 @@ function mapDbArtwork(
     displayOrder: row.displayOrder,
     collectionSlug: extra?.collectionSlug,
     collectionName: extra?.collectionName,
+    notifiedSubscribersAt: row.notifiedSubscribersAt ? row.notifiedSubscribersAt.toISOString() : undefined,
     arConfig: {
       isArEnabled: arRow?.isArEnabled ?? true,
       defaultWidthCm: arRow?.defaultWidthCm
@@ -1787,3 +1789,421 @@ export function recordActivityLog(
       .catch((e) => console.warn("Failed to insert activity log to DB:", e));
   }
 }
+
+// -----------------------------------------------------------------------------
+// NEWSLETTER & MARKETING SUBSCRIBERS REPOSITORY
+// -----------------------------------------------------------------------------
+
+export interface ActiveSubscriber {
+  email: string;
+  name?: string | null;
+  unsubscribeToken: string;
+}
+
+/**
+ * Returns all active marketing recipients (both registered users and guest subscribers),
+ * deduplicated by email address, each equipped with a secure unsubscribe token.
+ */
+export async function getActiveSubscribers(): Promise<ActiveSubscriber[]> {
+  const db = getDb();
+  if (!db) return [];
+
+  try {
+    const subscriberMap = new Map<string, ActiveSubscriber>();
+
+    // 1. Registered users who have marketingSubscribed === true
+    const userRows = await db
+      .select({
+        id: schema.users.id,
+        email: schema.users.email,
+        name: schema.users.name,
+        marketingSubscribed: schema.users.marketingSubscribed,
+        unsubscribeToken: schema.users.unsubscribeToken,
+      })
+      .from(schema.users)
+      .where(eq(schema.users.marketingSubscribed, true));
+
+    for (const u of userRows) {
+      if (!u.email || !u.email.includes("@")) continue;
+      const normalized = u.email.trim().toLowerCase();
+
+      // Ensure every user has a valid unsubscribe token
+      let token = u.unsubscribeToken;
+      if (!token) {
+        token = crypto.randomUUID();
+        db.update(schema.users)
+          .set({ unsubscribeToken: token })
+          .where(eq(schema.users.id, u.id))
+          .catch((err) => console.warn("Failed to set user unsubscribe token:", err));
+      }
+
+      subscriberMap.set(normalized, {
+        email: normalized,
+        name: u.name || undefined,
+        unsubscribeToken: token,
+      });
+    }
+
+    // 2. Guest newsletter subscribers who have isSubscribed === true
+    const guestRows = await db
+      .select({
+        id: schema.newsletterSubscribers.id,
+        email: schema.newsletterSubscribers.email,
+        name: schema.newsletterSubscribers.name,
+        isSubscribed: schema.newsletterSubscribers.isSubscribed,
+        unsubscribeToken: schema.newsletterSubscribers.unsubscribeToken,
+      })
+      .from(schema.newsletterSubscribers)
+      .where(eq(schema.newsletterSubscribers.isSubscribed, true));
+
+    for (const g of guestRows) {
+      if (!g.email || !g.email.includes("@")) continue;
+      const normalized = g.email.trim().toLowerCase();
+      // Only add if not already present from registered users
+      if (!subscriberMap.has(normalized)) {
+        subscriberMap.set(normalized, {
+          email: normalized,
+          name: g.name || undefined,
+          unsubscribeToken: g.unsubscribeToken,
+        });
+      }
+    }
+
+    return Array.from(subscriberMap.values());
+  } catch (e) {
+    console.error("Database getActiveSubscribers failed:", e);
+    return [];
+  }
+}
+
+/**
+ * Returns subscriber count statistics for admin dashboard and forms.
+ */
+export async function getSubscriberStats(): Promise<{
+  activeCount: number;
+  totalSubscribers: number;
+}> {
+  const db = getDb();
+  if (!db) return { activeCount: 0, totalSubscribers: 0 };
+
+  try {
+    const active = await getActiveSubscribers();
+    return {
+      activeCount: active.length,
+      totalSubscribers: active.length,
+    };
+  } catch (e) {
+    console.error("Database getSubscriberStats failed:", e);
+    return { activeCount: 0, totalSubscribers: 0 };
+  }
+}
+
+/**
+ * Unsubscribes a user or guest by their secure unsubscribe token.
+ */
+export async function unsubscribeByToken(token: string): Promise<{ success: boolean; email?: string }> {
+  const db = getDb();
+  if (!db || !token) return { success: false };
+
+  const trimmedToken = token.trim();
+  let foundEmail: string | undefined;
+
+  try {
+    // Check registered users
+    const matchedUsers = await db
+      .select({ id: schema.users.id, email: schema.users.email })
+      .from(schema.users)
+      .where(eq(schema.users.unsubscribeToken, trimmedToken))
+      .limit(1);
+
+    if (matchedUsers.length > 0) {
+      foundEmail = matchedUsers[0].email;
+      await db
+        .update(schema.users)
+        .set({ marketingSubscribed: false, updatedAt: new Date() })
+        .where(eq(schema.users.id, matchedUsers[0].id));
+    }
+
+    // Check newsletter_subscribers
+    const matchedGuests = await db
+      .select({ id: schema.newsletterSubscribers.id, email: schema.newsletterSubscribers.email })
+      .from(schema.newsletterSubscribers)
+      .where(eq(schema.newsletterSubscribers.unsubscribeToken, trimmedToken))
+      .limit(1);
+
+    if (matchedGuests.length > 0) {
+      foundEmail = foundEmail || matchedGuests[0].email;
+      await db
+        .update(schema.newsletterSubscribers)
+        .set({ isSubscribed: false, updatedAt: new Date() })
+        .where(eq(schema.newsletterSubscribers.id, matchedGuests[0].id));
+    }
+
+    if (foundEmail) {
+      recordActivityLog(
+        "NEWSLETTER_UNSUBSCRIBE",
+        "marketing",
+        `Recipient unsubscribed: ${foundEmail}`
+      );
+      return { success: true, email: foundEmail };
+    }
+
+    return { success: false };
+  } catch (e) {
+    console.error("Database unsubscribeByToken failed:", e);
+    return { success: false };
+  }
+}
+
+/**
+ * Re-subscribes a user or guest by their secure unsubscribe token.
+ */
+export async function resubscribeByToken(token: string): Promise<{ success: boolean; email?: string }> {
+  const db = getDb();
+  if (!db || !token) return { success: false };
+
+  const trimmedToken = token.trim();
+  let foundEmail: string | undefined;
+
+  try {
+    // Check registered users
+    const matchedUsers = await db
+      .select({ id: schema.users.id, email: schema.users.email })
+      .from(schema.users)
+      .where(eq(schema.users.unsubscribeToken, trimmedToken))
+      .limit(1);
+
+    if (matchedUsers.length > 0) {
+      foundEmail = matchedUsers[0].email;
+      await db
+        .update(schema.users)
+        .set({ marketingSubscribed: true, updatedAt: new Date() })
+        .where(eq(schema.users.id, matchedUsers[0].id));
+    }
+
+    // Check newsletter_subscribers
+    const matchedGuests = await db
+      .select({ id: schema.newsletterSubscribers.id, email: schema.newsletterSubscribers.email })
+      .from(schema.newsletterSubscribers)
+      .where(eq(schema.newsletterSubscribers.unsubscribeToken, trimmedToken))
+      .limit(1);
+
+    if (matchedGuests.length > 0) {
+      foundEmail = foundEmail || matchedGuests[0].email;
+      await db
+        .update(schema.newsletterSubscribers)
+        .set({ isSubscribed: true, updatedAt: new Date() })
+        .where(eq(schema.newsletterSubscribers.id, matchedGuests[0].id));
+    }
+
+    if (foundEmail) {
+      recordActivityLog(
+        "NEWSLETTER_RESUBSCRIBE",
+        "marketing",
+        `Recipient re-subscribed: ${foundEmail}`
+      );
+      return { success: true, email: foundEmail };
+    }
+
+    return { success: false };
+  } catch (e) {
+    console.error("Database resubscribeByToken failed:", e);
+    return { success: false };
+  }
+}
+
+/**
+ * Subscribes a guest visitor email to studio dispatches.
+ */
+export async function subscribeGuestEmail(
+  email: string,
+  name?: string,
+  source = "footer"
+): Promise<{ success: boolean; token?: string; error?: string }> {
+  const db = getDb();
+  if (!db) return { success: false, error: "Database unavailable" };
+
+  const normalizedEmail = email.trim().toLowerCase();
+  const token = crypto.randomUUID();
+
+  try {
+    // 1. If registered user exists, also update their preference
+    const matchedUsers = await db
+      .select({ id: schema.users.id })
+      .from(schema.users)
+      .where(eq(schema.users.email, normalizedEmail))
+      .limit(1);
+
+    if (matchedUsers.length > 0) {
+      await db
+        .update(schema.users)
+        .set({ marketingSubscribed: true, updatedAt: new Date() })
+        .where(eq(schema.users.id, matchedUsers[0].id));
+    }
+
+    // 2. Upsert in newsletter_subscribers
+    const existing = await db
+      .select()
+      .from(schema.newsletterSubscribers)
+      .where(eq(schema.newsletterSubscribers.email, normalizedEmail))
+      .limit(1);
+
+    if (existing.length > 0) {
+      await db
+        .update(schema.newsletterSubscribers)
+        .set({
+          isSubscribed: true,
+          name: name?.trim() || existing[0].name,
+          updatedAt: new Date(),
+        })
+        .where(eq(schema.newsletterSubscribers.id, existing[0].id));
+
+      return { success: true, token: existing[0].unsubscribeToken };
+    } else {
+      await db.insert(schema.newsletterSubscribers).values({
+        email: normalizedEmail,
+        name: name?.trim(),
+        isSubscribed: true,
+        unsubscribeToken: token,
+        source,
+      });
+
+      recordActivityLog("NEWSLETTER_SUBSCRIBE", "marketing", `New guest subscriber: ${normalizedEmail}`);
+      return { success: true, token };
+    }
+  } catch (e: any) {
+    console.error("Database subscribeGuestEmail failed:", e);
+    return { success: false, error: e.message || "Subscription failed" };
+  }
+}
+
+/**
+ * Updates a logged-in user's marketing email preference.
+ */
+export async function updateUserMarketingPreference(
+  userId: string,
+  subscribed: boolean
+): Promise<boolean> {
+  const db = getDb();
+  if (!db) return false;
+
+  try {
+    await db
+      .update(schema.users)
+      .set({
+        marketingSubscribed: subscribed,
+        updatedAt: new Date(),
+      })
+      .where(eq(schema.users.id, userId));
+
+    return true;
+  } catch (e) {
+    console.error("Database updateUserMarketingPreference failed:", e);
+    return false;
+  }
+}
+
+/**
+ * Retrieves a user's marketing email preference.
+ */
+export async function getUserMarketingPreference(userId: string): Promise<boolean> {
+  const db = getDb();
+  if (!db) return true; // Default to true
+
+  try {
+    const rows = await db
+      .select({ marketingSubscribed: schema.users.marketingSubscribed })
+      .from(schema.users)
+      .where(eq(schema.users.id, userId))
+      .limit(1);
+
+    return rows.length > 0 ? rows[0].marketingSubscribed : true;
+  } catch (e) {
+    console.error("Database getUserMarketingPreference failed:", e);
+    return true;
+  }
+}
+
+/**
+ * Sets notifiedSubscribersAt timestamp on an artwork record.
+ */
+export async function markArtworkSubscribersNotified(artworkId: string): Promise<boolean> {
+  const db = getDb();
+  if (!db) return false;
+
+  try {
+    await db
+      .update(schema.artworks)
+      .set({
+        notifiedSubscribersAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .where(eq(schema.artworks.id, artworkId));
+
+    return true;
+  } catch (e) {
+    console.error("Database markArtworkSubscribersNotified failed:", e);
+    return false;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// SENT EMAILS AUDIT & DISPATCH LEDGER
+// -----------------------------------------------------------------------------
+
+export interface SentEmailRecord {
+  id: string;
+  recipientEmail: string;
+  recipientName?: string | null;
+  emailType: string;
+  subject: string;
+  artworkId?: string | null;
+  inquiryId?: string | null;
+  status: string;
+  errorMessage?: string | null;
+  resendId?: string | null;
+  htmlContent?: string | null;
+  createdAt: string;
+}
+
+export async function recordSentEmail(data: schema.NewSentEmail): Promise<void> {
+  const db = getDb();
+  if (!db) return;
+  try {
+    await db.insert(schema.sentEmails).values(data);
+  } catch (e) {
+    console.warn("Failed to record sent email log:", e);
+  }
+}
+
+export async function getSentEmails(limit = 100): Promise<SentEmailRecord[]> {
+  const db = getDb();
+  if (!db) return [];
+  try {
+    const rows = await db
+      .select()
+      .from(schema.sentEmails)
+      .orderBy(desc(schema.sentEmails.createdAt))
+      .limit(limit);
+
+    return rows.map((r) => ({
+      id: r.id,
+      recipientEmail: r.recipientEmail,
+      recipientName: r.recipientName,
+      emailType: r.emailType,
+      subject: r.subject,
+      artworkId: r.artworkId,
+      inquiryId: r.inquiryId,
+      status: r.status,
+      errorMessage: r.errorMessage,
+      resendId: r.resendId,
+      htmlContent: r.htmlContent,
+      createdAt: r.createdAt.toISOString(),
+    }));
+  } catch (e) {
+    console.error("Database getSentEmails failed:", e);
+    return [];
+  }
+}
+
+

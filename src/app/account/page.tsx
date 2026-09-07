@@ -1,12 +1,13 @@
 import React from "react";
 import Link from "next/link";
 import { getSession } from "@/lib/auth/auth";
-import { getInquiries } from "@/db/repository";
+import { getInquiries, getUserMarketingPreference } from "@/db/repository";
 import { User, Mail, Shield, Sparkles, Clock, ArrowRight } from "lucide-react";
 import { redirect } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { MarketingPreferenceToggle } from "@/components/account/MarketingPreferenceToggle";
 
 export default async function AccountPage() {
   const session = await getSession();
@@ -19,6 +20,8 @@ export default async function AccountPage() {
   const userInquiries = allInquiries.filter(
     (i) => i.email.toLowerCase() === session.user.email.toLowerCase()
   );
+
+  const marketingSubscribed = await getUserMarketingPreference(session.user.id);
 
   return (
     <div className="space-y-12">
@@ -85,6 +88,9 @@ export default async function AccountPage() {
           </p>
         </Card>
       </div>
+
+      {/* Collector Email & Marketing Preferences */}
+      <MarketingPreferenceToggle initialSubscribed={marketingSubscribed} />
 
       {/* Inquiries Section */}
       <div className="space-y-6 pt-6">

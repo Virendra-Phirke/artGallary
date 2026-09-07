@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth/auth";
-import { createInquiry } from "@/db/repository";
+import { createInquiry, getArtworkById } from "@/db/repository";
 import { getInquiryLimiter, checkRateLimit } from "@/lib/redis/ratelimit";
+import {
+  sendInquiryConfirmation,
+  sendCuratorInquiryAlert,
+} from "@/lib/email/resend";
 
 export async function POST(request: NextRequest) {
   try {
@@ -56,6 +60,41 @@ export async function POST(request: NextRequest) {
       subject,
       message,
     });
+
+    // Lookup artwork title if linked
+    let artworkTitle: string | undefined;
+    let artworkSlug: string | undefined;
+    if (artworkId) {
+      try {
+        const art = await getArtworkById(artworkId);
+        if (art) {
+          artworkTitle = art.title;
+          artworkSlug = art.slug;
+        }
+      } catch (err) {
+        console.warn("Could not lookup artwork for inquiry email:", err);
+      }
+    }
+
+    // Dispatch confirmation to collector and alert to curator in the background
+    (async () => {
+      try {
+        await Promise.allSettled([
+          sendInquiryConfirmation({
+            inquiry,
+            artworkTitle,
+            artworkSlug,
+          }),
+          sendCuratorInquiryAlert({
+            inquiry,
+            artworkTitle,
+            artworkSlug,
+          }),
+        ]);
+      } catch (e) {
+        console.error("Failed to dispatch inquiry notification emails:", e);
+      }
+    })();
 
     return NextResponse.json({ success: true, inquiry });
   } catch (error: any) {

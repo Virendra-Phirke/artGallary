@@ -13,6 +13,7 @@ function RegisterForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [marketingSubscribed, setMarketingSubscribed] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,7 +26,7 @@ function RegisterForm() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, email, password, marketingSubscribed }),
       });
 
       const data = await res.json();
@@ -102,6 +103,19 @@ function RegisterForm() {
             placeholder="••••••••••••"
             className="w-full bg-[#1a1c23] border border-[#262833] rounded-lg px-4 py-3 text-sm text-white placeholder-zinc-600 focus:border-[#d1a86e] focus:outline-none"
           />
+        </div>
+
+        <div className="flex items-start gap-3 pt-1 pb-1">
+          <input
+            type="checkbox"
+            id="register-marketing-sub"
+            checked={marketingSubscribed}
+            onChange={(e) => setMarketingSubscribed(e.target.checked)}
+            className="w-4 h-4 mt-0.5 accent-[#d1a86e] cursor-pointer rounded"
+          />
+          <label htmlFor="register-marketing-sub" className="text-xs text-[#a6aabf] leading-relaxed cursor-pointer select-none">
+            Enroll in private studio dispatches, newly released masterwork alerts, and spatial AR catalogs. (Unsubscribe anytime in 1 click).
+          </label>
         </div>
 
         <button

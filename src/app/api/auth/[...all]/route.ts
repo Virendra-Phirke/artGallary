@@ -29,11 +29,12 @@ export async function POST(request: NextRequest) {
   }
 
   if (pathname.endsWith("/sign-up") || pathname.endsWith("/register")) {
-    const { name, email, password } = body;
+    const { name, email, password, marketingSubscribed } = body;
     if (!name || !email || !password) {
       return NextResponse.json({ error: "All fields are required" }, { status: 400 });
     }
-    const result = await signUp(name, email, password);
+    const isSubscribed = marketingSubscribed !== undefined ? Boolean(marketingSubscribed) : true;
+    const result = await signUp(name, email, password, isSubscribed);
     if (!result.success) {
       return NextResponse.json({ error: result.error }, { status: 400 });
     }

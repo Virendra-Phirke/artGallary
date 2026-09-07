@@ -15,6 +15,13 @@
       "when": 1788715827562,
       "tag": "0001_brainy_screwball",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788791798721,
+      "tag": "0002_nifty_demogoblin",
+      "breakpoints": true
     }
   ]
 }
