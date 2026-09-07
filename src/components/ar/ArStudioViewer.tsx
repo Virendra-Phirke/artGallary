@@ -13,7 +13,7 @@ import { detectARCapabilities, ARCapabilities } from "./engine/arCapability";
 import { startARSession, stopARSession, ARSessionContext } from "./engine/arSession";
 import { ARError, classifyARError } from "./engine/arErrors";
 
-interface ArStudioViewerProps {
+export interface ArStudioViewerProps {
   artwork: {
     id: string;
     slug: string;
