@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { MockInquiry, MockArtwork } from "@/db/mockData";
@@ -36,6 +36,18 @@ import {
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PAGE_SIZE_OPTIONS,
+  getPaginationRange,
+} from "@/components/ui/pagination";
 
 interface InquiriesManagerClientProps {
   initialInquiries: MockInquiry[];
@@ -245,26 +257,75 @@ export function InquiriesManagerClient({
     }
   };
 
-  // Inquiries filtering
-  const filteredInquiries = inquiries.filter((inq) => {
-    if (selectedStatus !== "all" && inq.status !== selectedStatus) return false;
-    return true;
-  });
+  // Inquiries Search & Pagination
+  const [inquirySearchQuery, setInquirySearchQuery] = useState("");
+  const [inquiryPage, setInquiryPage] = useState(1);
+  const [inquiryPageSize, setInquiryPageSize] = useState(10);
 
-  // Sent Emails filtering
-  const filteredEmails = sentEmails.filter((em) => {
-    if (selectedEmailType !== "all" && em.emailType !== selectedEmailType) return false;
-    if (selectedDeliveryStatus !== "all" && em.status !== selectedDeliveryStatus) return false;
-    if (emailSearchQuery.trim()) {
-      const q = emailSearchQuery.toLowerCase();
-      const matchEmail = em.recipientEmail.toLowerCase().includes(q);
-      const matchSubject = em.subject.toLowerCase().includes(q);
-      const matchName = (em.recipientName || "").toLowerCase().includes(q);
-      const matchId = (em.resendId || "").toLowerCase().includes(q);
-      if (!matchEmail && !matchSubject && !matchName && !matchId) return false;
-    }
-    return true;
-  });
+  const filteredInquiries = useMemo(() => {
+    return inquiries.filter((inq) => {
+      if (selectedStatus !== "all" && inq.status !== selectedStatus) return false;
+      if (inquirySearchQuery.trim()) {
+        const q = inquirySearchQuery.toLowerCase();
+        const matchName = inq.name.toLowerCase().includes(q);
+        const matchEmail = inq.email.toLowerCase().includes(q);
+        const matchPhone = (inq.phone || "").toLowerCase().includes(q);
+        const matchSubject = (inq.subject || "").toLowerCase().includes(q);
+        const matchMessage = inq.message.toLowerCase().includes(q);
+        const matchArt = (inq.artworkTitle || "").toLowerCase().includes(q);
+        if (!matchName && !matchEmail && !matchPhone && !matchSubject && !matchMessage && !matchArt) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }, [inquiries, selectedStatus, inquirySearchQuery]);
+
+  useEffect(() => {
+    setInquiryPage(1);
+  }, [inquirySearchQuery, selectedStatus, inquiryPageSize]);
+
+  const inquiryTotalPages = Math.max(1, Math.ceil(filteredInquiries.length / inquiryPageSize));
+  const paginatedInquiries = filteredInquiries.slice(
+    (inquiryPage - 1) * inquiryPageSize,
+    inquiryPage * inquiryPageSize
+  );
+  const inquiryStartItem = filteredInquiries.length === 0 ? 0 : (inquiryPage - 1) * inquiryPageSize + 1;
+  const inquiryEndItem = Math.min(inquiryPage * inquiryPageSize, filteredInquiries.length);
+  const inquiryPaginationRange = getPaginationRange(inquiryPage, inquiryTotalPages);
+
+  // Sent Emails Pagination
+  const [emailPage, setEmailPage] = useState(1);
+  const [emailPageSize, setEmailPageSize] = useState(10);
+
+  const filteredEmails = useMemo(() => {
+    return sentEmails.filter((em) => {
+      if (selectedEmailType !== "all" && em.emailType !== selectedEmailType) return false;
+      if (selectedDeliveryStatus !== "all" && em.status !== selectedDeliveryStatus) return false;
+      if (emailSearchQuery.trim()) {
+        const q = emailSearchQuery.toLowerCase();
+        const matchEmail = em.recipientEmail.toLowerCase().includes(q);
+        const matchSubject = em.subject.toLowerCase().includes(q);
+        const matchName = (em.recipientName || "").toLowerCase().includes(q);
+        const matchId = (em.resendId || "").toLowerCase().includes(q);
+        if (!matchEmail && !matchSubject && !matchName && !matchId) return false;
+      }
+      return true;
+    });
+  }, [sentEmails, selectedEmailType, selectedDeliveryStatus, emailSearchQuery]);
+
+  useEffect(() => {
+    setEmailPage(1);
+  }, [emailSearchQuery, selectedEmailType, selectedDeliveryStatus, emailPageSize]);
+
+  const emailTotalPages = Math.max(1, Math.ceil(filteredEmails.length / emailPageSize));
+  const paginatedEmails = filteredEmails.slice(
+    (emailPage - 1) * emailPageSize,
+    emailPage * emailPageSize
+  );
+  const emailStartItem = filteredEmails.length === 0 ? 0 : (emailPage - 1) * emailPageSize + 1;
+  const emailEndItem = Math.min(emailPage * emailPageSize, filteredEmails.length);
+  const emailPaginationRange = getPaginationRange(emailPage, emailTotalPages);
 
   const handleStatusChange = async (id: string, newStatus: any) => {
     setInquiries((prev) =>
@@ -397,33 +458,45 @@ export function InquiriesManagerClient({
             </Card>
           </div>
 
-          {/* Filter Bar */}
-          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pb-1">
-            {["all", "new", "read", "replied", "closed"].map((st) => (
-              <Button
-                key={st}
-                size="sm"
-                variant={selectedStatus === st ? "default" : "secondary"}
-                onClick={() => setSelectedStatus(st)}
-                className={`text-[11px] uppercase tracking-wider h-8 px-3 rounded-md transition-colors cursor-pointer ${
-                  selectedStatus === st
-                    ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
-                    : "bg-[#181920] text-zinc-400 hover:text-zinc-200 border border-[#262833]"
-                }`}
-              >
-                {st}
-              </Button>
-            ))}
+          {/* Search & Filter Bar */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+              <Input
+                value={inquirySearchQuery}
+                onChange={(e) => setInquirySearchQuery(e.target.value)}
+                placeholder="Search inquiries by collector, email, canvas, message..."
+                className="pl-10 bg-[#14151a] border-[#262833] text-xs text-white placeholder:text-zinc-500 rounded-xl"
+              />
+            </div>
+
+            <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pb-1 sm:pb-0">
+              {["all", "new", "read", "replied", "closed"].map((st) => (
+                <Button
+                  key={st}
+                  size="sm"
+                  variant={selectedStatus === st ? "default" : "secondary"}
+                  onClick={() => setSelectedStatus(st)}
+                  className={`text-[11px] uppercase tracking-wider h-8 px-3 rounded-md transition-colors cursor-pointer ${
+                    selectedStatus === st
+                      ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
+                      : "bg-[#181920] text-zinc-400 hover:text-zinc-200 border border-[#262833]"
+                  }`}
+                >
+                  {st}
+                </Button>
+              ))}
+            </div>
           </div>
 
           {/* Inquiries Cards */}
           <div className="space-y-4">
             {filteredInquiries.length === 0 ? (
               <Card className="p-12 text-center bg-[#14151a]/40 border-[#262833] rounded-2xl text-xs text-zinc-500">
-                No inquiries matching status &ldquo;{selectedStatus}&rdquo;.
+                No inquiries matching criteria.
               </Card>
             ) : (
-              filteredInquiries.map((inq) => (
+              paginatedInquiries.map((inq) => (
                 <Card
                   key={inq.id}
                   className="p-5 sm:p-6 bg-[#14151a] border-[#262833] rounded-2xl space-y-4 shadow-xl"
@@ -497,6 +570,80 @@ export function InquiriesManagerClient({
               ))
             )}
           </div>
+
+          {/* Inquiries Pagination and Per-Page Control Bar */}
+          {filteredInquiries.length > 0 && (
+            <div className="p-4 bg-[#14151a] border border-[#262833] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+              <div className="text-xs text-zinc-400 font-mono">
+                Showing <span className="text-white font-semibold">{inquiryStartItem}–{inquiryEndItem}</span> of{" "}
+                <span className="text-[#d1a86e] font-semibold">{filteredInquiries.length}</span> inquiries
+              </div>
+
+              <div>
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        onClick={() => setInquiryPage((p) => Math.max(1, p - 1))}
+                        className={
+                          inquiryPage <= 1
+                            ? "pointer-events-none opacity-40"
+                            : "cursor-pointer"
+                        }
+                      />
+                    </PaginationItem>
+
+                    {inquiryPaginationRange.map((item, idx) => (
+                      <PaginationItem key={idx}>
+                        {item === "..." ? (
+                          <PaginationEllipsis />
+                        ) : (
+                          <PaginationLink
+                            isActive={item === inquiryPage}
+                            onClick={() => setInquiryPage(Number(item))}
+                            className="cursor-pointer"
+                          >
+                            {item}
+                          </PaginationLink>
+                        )}
+                      </PaginationItem>
+                    ))}
+
+                    <PaginationItem>
+                      <PaginationNext
+                        onClick={() => setInquiryPage((p) => Math.min(inquiryTotalPages, p + 1))}
+                        className={
+                          inquiryPage >= inquiryTotalPages
+                            ? "pointer-events-none opacity-40"
+                            : "cursor-pointer"
+                        }
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-zinc-500 font-mono text-[11px] uppercase tracking-wider">Per Page:</span>
+                <div className="flex items-center rounded-lg border border-[#262833] bg-[#1a1c23] p-0.5">
+                  {PAGE_SIZE_OPTIONS.map((size) => (
+                    <button
+                      key={size}
+                      type="button"
+                      onClick={() => setInquiryPageSize(size)}
+                      className={`px-2.5 py-1 text-xs font-mono rounded transition-colors cursor-pointer ${
+                        inquiryPageSize === size
+                          ? "bg-[#d1a86e] text-black font-semibold shadow-sm"
+                          : "text-zinc-400 hover:text-white"
+                      }`}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -945,7 +1092,7 @@ export function InquiriesManagerClient({
                 No email dispatch records matching your criteria.
               </Card>
             ) : (
-              filteredEmails.map((email) => (
+              paginatedEmails.map((email) => (
                 <Card
                   key={email.id}
                   className="p-4 sm:p-5 bg-[#14151a] border-[#262833] rounded-xl space-y-3 shadow-lg"
@@ -1035,6 +1182,80 @@ export function InquiriesManagerClient({
               ))
             )}
           </div>
+
+          {/* Sent Emails Pagination and Per-Page Control Bar */}
+          {filteredEmails.length > 0 && (
+            <div className="p-4 bg-[#14151a] border border-[#262833] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+              <div className="text-xs text-zinc-400 font-mono">
+                Showing <span className="text-white font-semibold">{emailStartItem}–{emailEndItem}</span> of{" "}
+                <span className="text-[#d1a86e] font-semibold">{filteredEmails.length}</span> dispatches
+              </div>
+
+              <div>
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        onClick={() => setEmailPage((p) => Math.max(1, p - 1))}
+                        className={
+                          emailPage <= 1
+                            ? "pointer-events-none opacity-40"
+                            : "cursor-pointer"
+                        }
+                      />
+                    </PaginationItem>
+
+                    {emailPaginationRange.map((item, idx) => (
+                      <PaginationItem key={idx}>
+                        {item === "..." ? (
+                          <PaginationEllipsis />
+                        ) : (
+                          <PaginationLink
+                            isActive={item === emailPage}
+                            onClick={() => setEmailPage(Number(item))}
+                            className="cursor-pointer"
+                          >
+                            {item}
+                          </PaginationLink>
+                        )}
+                      </PaginationItem>
+                    ))}
+
+                    <PaginationItem>
+                      <PaginationNext
+                        onClick={() => setEmailPage((p) => Math.min(emailTotalPages, p + 1))}
+                        className={
+                          emailPage >= emailTotalPages
+                            ? "pointer-events-none opacity-40"
+                            : "cursor-pointer"
+                        }
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-zinc-500 font-mono text-[11px] uppercase tracking-wider">Per Page:</span>
+                <div className="flex items-center rounded-lg border border-[#262833] bg-[#1a1c23] p-0.5">
+                  {PAGE_SIZE_OPTIONS.map((size) => (
+                    <button
+                      key={size}
+                      type="button"
+                      onClick={() => setEmailPageSize(size)}
+                      className={`px-2.5 py-1 text-xs font-mono rounded transition-colors cursor-pointer ${
+                        emailPageSize === size
+                          ? "bg-[#d1a86e] text-black font-semibold shadow-sm"
+                          : "text-zinc-400 hover:text-white"
+                      }`}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -17,6 +17,7 @@ import {
   Check,
   AlertCircle,
   MoreVertical,
+  Search,
 } from "lucide-react";
 import { MockCollection, MockArtwork } from "@/db/mockData";
 import { slugify } from "@/lib/utils";
@@ -40,6 +41,17 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PAGE_SIZE_OPTIONS,
+  getPaginationRange,
+} from "@/components/ui/pagination";
 
 interface CollectionsManagerClientProps {
   initialCollections: MockCollection[];
@@ -66,6 +78,41 @@ export function CollectionsManagerClient({
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState<"idle" | "success" | "error">("idle");
+
+  // Filter & Pagination State
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | "published" | "draft">("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  const filteredCollections = useMemo(() => {
+    return collections.filter((col) => {
+      if (statusFilter === "published" && !col.isPublished) return false;
+      if (statusFilter === "draft" && col.isPublished) return false;
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        return (
+          col.title.toLowerCase().includes(q) ||
+          (col.description && col.description.toLowerCase().includes(q)) ||
+          col.slug.toLowerCase().includes(q)
+        );
+      }
+      return true;
+    });
+  }, [collections, statusFilter, searchQuery]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, statusFilter, pageSize]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredCollections.length / pageSize));
+  const paginatedCollections = filteredCollections.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+  const startItem = filteredCollections.length === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+  const endItem = Math.min(currentPage * pageSize, filteredCollections.length);
+  const paginationRange = getPaginationRange(currentPage, totalPages);
 
   const openNew = () => {
     setEditingId(null);
@@ -198,6 +245,43 @@ export function CollectionsManagerClient({
         </div>
       </div>
 
+      {/* Search & Filter Bar */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+          <Input
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search series by title, slug, or theme..."
+            className="pl-10 bg-[#14151a] border-[#262833] text-xs text-white placeholder:text-zinc-500 rounded-xl"
+          />
+        </div>
+
+        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none">
+          {(
+            [
+              { id: "all", label: "All Series" },
+              { id: "published", label: "Published" },
+              { id: "draft", label: "Drafts" },
+            ] as const
+          ).map((filter) => (
+            <Button
+              key={filter.id}
+              size="sm"
+              variant={statusFilter === filter.id ? "default" : "secondary"}
+              onClick={() => setStatusFilter(filter.id)}
+              className={`text-xs h-8 px-3 rounded-lg transition-colors cursor-pointer ${
+                statusFilter === filter.id
+                  ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
+                  : "bg-[#14151a] text-zinc-400 hover:text-white border border-[#262833]"
+              }`}
+            >
+              {filter.label}
+            </Button>
+          ))}
+        </div>
+      </div>
+
       {/* Collections Grid */}
       {collections.length === 0 ? (
         <Card className="p-12 text-center space-y-3">
@@ -208,9 +292,13 @@ export function CollectionsManagerClient({
             <span>Create your first collection</span>
           </Button>
         </Card>
+      ) : filteredCollections.length === 0 ? (
+        <Card className="p-12 text-center bg-[#14151a]/40 border-[#262833] rounded-2xl text-xs text-zinc-500">
+          No collections found matching your search or filter criteria.
+        </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
-          {collections.map((col) => (
+          {paginatedCollections.map((col) => (
             <Card key={col.id} className="overflow-hidden">
               {/* Cover Image */}
               <div className="relative aspect-[16/9] bg-black/40 border-b border-[#1f212b]">
@@ -303,6 +391,80 @@ export function CollectionsManagerClient({
               </div>
             </Card>
           ))}
+        </div>
+      )}
+
+      {/* Pagination and Per-Page Control Bar */}
+      {filteredCollections.length > 0 && (
+        <div className="p-4 bg-[#14151a] border border-[#262833] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+          <div className="text-xs text-zinc-400 font-mono">
+            Showing <span className="text-white font-semibold">{startItem}–{endItem}</span> of{" "}
+            <span className="text-[#d1a86e] font-semibold">{filteredCollections.length}</span> collections
+          </div>
+
+          <div>
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    className={
+                      currentPage <= 1
+                        ? "pointer-events-none opacity-40"
+                        : "cursor-pointer"
+                    }
+                  />
+                </PaginationItem>
+
+                {paginationRange.map((item, idx) => (
+                  <PaginationItem key={idx}>
+                    {item === "..." ? (
+                      <PaginationEllipsis />
+                    ) : (
+                      <PaginationLink
+                        isActive={item === currentPage}
+                        onClick={() => setCurrentPage(Number(item))}
+                        className="cursor-pointer"
+                      >
+                        {item}
+                      </PaginationLink>
+                    )}
+                  </PaginationItem>
+                ))}
+
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    className={
+                      currentPage >= totalPages
+                        ? "pointer-events-none opacity-40"
+                        : "cursor-pointer"
+                    }
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-zinc-500 font-mono text-[11px] uppercase tracking-wider">Per Page:</span>
+            <div className="flex items-center rounded-lg border border-[#262833] bg-[#1a1c23] p-0.5">
+              {PAGE_SIZE_OPTIONS.map((size) => (
+                <button
+                  key={size}
+                  type="button"
+                  onClick={() => setPageSize(size)}
+                  className={`px-2.5 py-1 text-xs font-mono rounded transition-colors cursor-pointer ${
+                    pageSize === size
+                      ? "bg-[#d1a86e] text-black font-semibold shadow-sm"
+                      : "text-zinc-400 hover:text-white"
+                  }`}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       )}
 

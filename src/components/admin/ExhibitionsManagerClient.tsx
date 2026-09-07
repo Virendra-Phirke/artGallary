@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -18,6 +18,7 @@ import {
   Check,
   AlertCircle,
   MoreVertical,
+  Search,
 } from "lucide-react";
 import { MockExhibition, MockArtwork } from "@/db/mockData";
 import { slugify } from "@/lib/utils";
@@ -41,6 +42,17 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PAGE_SIZE_OPTIONS,
+  getPaginationRange,
+} from "@/components/ui/pagination";
 
 interface ExhibitionsManagerClientProps {
   initialExhibitions: MockExhibition[];
@@ -79,6 +91,45 @@ export function ExhibitionsManagerClient({
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState<"idle" | "success" | "error">("idle");
+
+  // Filter & Pagination State
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | "current" | "upcoming" | "past">("all");
+  const [publishFilter, setPublishFilter] = useState<"all" | "published" | "draft">("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  const filteredExhibitions = useMemo(() => {
+    return exhibitions.filter((exh) => {
+      if (statusFilter !== "all" && exh.status !== statusFilter) return false;
+      if (publishFilter === "published" && !exh.isPublished) return false;
+      if (publishFilter === "draft" && exh.isPublished) return false;
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        return (
+          exh.title.toLowerCase().includes(q) ||
+          (exh.subtitle && exh.subtitle.toLowerCase().includes(q)) ||
+          (exh.location && exh.location.toLowerCase().includes(q)) ||
+          (exh.description && exh.description.toLowerCase().includes(q)) ||
+          exh.slug.toLowerCase().includes(q)
+        );
+      }
+      return true;
+    });
+  }, [exhibitions, statusFilter, publishFilter, searchQuery]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, statusFilter, publishFilter, pageSize]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredExhibitions.length / pageSize));
+  const paginatedExhibitions = filteredExhibitions.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+  const startItem = filteredExhibitions.length === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+  const endItem = Math.min(currentPage * pageSize, filteredExhibitions.length);
+  const paginationRange = getPaginationRange(currentPage, totalPages);
 
   const openNew = () => {
     setEditingId(null);
@@ -227,6 +278,72 @@ export function ExhibitionsManagerClient({
         </div>
       </div>
 
+      {/* Search & Filter Bar */}
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+          <Input
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search exhibitions by title, location, curator note..."
+            className="pl-10 bg-[#14151a] border-[#262833] text-xs text-white placeholder:text-zinc-500 rounded-xl"
+          />
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Status Filter */}
+          <div className="flex items-center gap-1 bg-[#14151a] p-1 rounded-xl border border-[#262833]">
+            {(
+              [
+                { id: "all", label: "All Statuses" },
+                { id: "current", label: "Current" },
+                { id: "upcoming", label: "Upcoming" },
+                { id: "past", label: "Past" },
+              ] as const
+            ).map((filter) => (
+              <Button
+                key={filter.id}
+                size="sm"
+                variant={statusFilter === filter.id ? "default" : "ghost"}
+                onClick={() => setStatusFilter(filter.id)}
+                className={`text-xs h-7 px-2.5 rounded-lg transition-colors cursor-pointer ${
+                  statusFilter === filter.id
+                    ? "bg-[#d1a86e] text-[#0d0e12] font-semibold hover:bg-[#d1a86e]"
+                    : "text-zinc-400 hover:text-white"
+                }`}
+              >
+                {filter.label}
+              </Button>
+            ))}
+          </div>
+
+          {/* Published/Draft Filter */}
+          <div className="flex items-center gap-1 bg-[#14151a] p-1 rounded-xl border border-[#262833]">
+            {(
+              [
+                { id: "all", label: "All" },
+                { id: "published", label: "Published" },
+                { id: "draft", label: "Draft" },
+              ] as const
+            ).map((filter) => (
+              <Button
+                key={filter.id}
+                size="sm"
+                variant={publishFilter === filter.id ? "default" : "ghost"}
+                onClick={() => setPublishFilter(filter.id)}
+                className={`text-xs h-7 px-2.5 rounded-lg transition-colors cursor-pointer ${
+                  publishFilter === filter.id
+                    ? "bg-zinc-700 text-white font-medium"
+                    : "text-zinc-400 hover:text-white"
+                }`}
+              >
+                {filter.label}
+              </Button>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* Exhibitions Grid */}
       {exhibitions.length === 0 ? (
         <Card className="p-12 text-center space-y-3">
@@ -237,9 +354,13 @@ export function ExhibitionsManagerClient({
             <span>Create your first exhibition</span>
           </Button>
         </Card>
+      ) : filteredExhibitions.length === 0 ? (
+        <Card className="p-12 text-center bg-[#14151a]/40 border-[#262833] rounded-2xl text-xs text-zinc-500">
+          No exhibitions found matching your search or filter criteria.
+        </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
-          {exhibitions.map((exh) => (
+          {paginatedExhibitions.map((exh) => (
             <Card key={exh.id} className="overflow-hidden">
               {/* Cover Image */}
               <div className="relative aspect-[16/9] bg-black/40 border-b border-[#1f212b]">
@@ -260,11 +381,12 @@ export function ExhibitionsManagerClient({
                   <Badge variant={statusColor(exh.status) as any}>
                     {exh.status}
                   </Badge>
-                  {!exh.isPublished && (
-                    <Badge variant="secondary">Draft</Badge>
-                  )}
+                  <Badge variant={exh.isPublished ? "success" : "secondary"}>
+                    {exh.isPublished ? "Published" : "Draft"}
+                  </Badge>
                 </div>
 
+                {/* Actions Overlay */}
                 <div className="absolute top-3 right-3">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -346,6 +468,80 @@ export function ExhibitionsManagerClient({
               </div>
             </Card>
           ))}
+        </div>
+      )}
+
+      {/* Pagination and Per-Page Control Bar */}
+      {filteredExhibitions.length > 0 && (
+        <div className="p-4 bg-[#14151a] border border-[#262833] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+          <div className="text-xs text-zinc-400 font-mono">
+            Showing <span className="text-white font-semibold">{startItem}–{endItem}</span> of{" "}
+            <span className="text-[#d1a86e] font-semibold">{filteredExhibitions.length}</span> exhibitions
+          </div>
+
+          <div>
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    className={
+                      currentPage <= 1
+                        ? "pointer-events-none opacity-40"
+                        : "cursor-pointer"
+                    }
+                  />
+                </PaginationItem>
+
+                {paginationRange.map((item, idx) => (
+                  <PaginationItem key={idx}>
+                    {item === "..." ? (
+                      <PaginationEllipsis />
+                    ) : (
+                      <PaginationLink
+                        isActive={item === currentPage}
+                        onClick={() => setCurrentPage(Number(item))}
+                        className="cursor-pointer"
+                      >
+                        {item}
+                      </PaginationLink>
+                    )}
+                  </PaginationItem>
+                ))}
+
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    className={
+                      currentPage >= totalPages
+                        ? "pointer-events-none opacity-40"
+                        : "cursor-pointer"
+                    }
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-zinc-500 font-mono text-[11px] uppercase tracking-wider">Per Page:</span>
+            <div className="flex items-center rounded-lg border border-[#262833] bg-[#1a1c23] p-0.5">
+              {PAGE_SIZE_OPTIONS.map((size) => (
+                <button
+                  key={size}
+                  type="button"
+                  onClick={() => setPageSize(size)}
+                  className={`px-2.5 py-1 text-xs font-mono rounded transition-colors cursor-pointer ${
+                    pageSize === size
+                      ? "bg-[#d1a86e] text-black font-semibold shadow-sm"
+                      : "text-zinc-400 hover:text-white"
+                  }`}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       )}
 
