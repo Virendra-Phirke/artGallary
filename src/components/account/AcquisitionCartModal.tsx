@@ -33,7 +33,7 @@ interface AcquisitionCartModalProps {
     id: string;
     name: string;
     email: string;
-  };
+  } | null;
   onInquirySubmitted?: (inquiryId: string) => void;
 }
 
@@ -67,7 +67,7 @@ export function AcquisitionCartModal({
 
   const handleSubmitAcquisition = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (cartArtworks.length === 0) return;
+    if (!user || cartArtworks.length === 0) return;
 
     setSubmitting(true);
     setError(null);
@@ -323,117 +323,158 @@ ${notes || "Please advise on availability, crating protocol, and private viewing
                 </div>
               </div>
 
-              {/* Inquiry Dispatch Form */}
-              <form onSubmit={handleSubmitAcquisition} className="space-y-4 pt-2 border-t border-[#22242f]">
-                <div className="space-y-1">
-                  <span className="text-[10px] tracking-[0.2em] text-[#d1a86e] uppercase font-bold">
-                    Acquisition Dispatch
-                  </span>
-                  <h3 className="font-serif text-xl text-white font-medium">
-                    Submit Purchase &amp; Acquisition Inquiry
-                  </h3>
-                  <p className="text-xs text-zinc-400">
-                    The studio will review your selected pieces, calculate bespoke shipping crates, and coordinate private acquisition terms.
-                  </p>
-                </div>
+              {/* Inquiry Dispatch Form or Guest Sign In Prompt */}
+              {user ? (
+                <form onSubmit={handleSubmitAcquisition} className="space-y-4 pt-2 border-t border-[#22242f]">
+                  <div className="space-y-1">
+                    <span className="text-[10px] tracking-[0.2em] text-[#d1a86e] uppercase font-bold">
+                      Acquisition Dispatch
+                    </span>
+                    <h3 className="font-serif text-xl text-white font-medium">
+                      Submit Purchase &amp; Acquisition Inquiry
+                    </h3>
+                    <p className="text-xs text-zinc-400">
+                      The studio will review your selected pieces, calculate bespoke shipping crates, and coordinate private acquisition terms.
+                    </p>
+                  </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-[11px] uppercase tracking-wider text-zinc-400">
-                      Collector Name
-                    </label>
-                    <input
-                      type="text"
-                      value={user.name}
-                      disabled
-                      className="w-full bg-[#161720] border border-[#2b2e3c] rounded-xl px-3.5 py-2 text-xs text-zinc-400 cursor-not-allowed"
-                    />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-[11px] uppercase tracking-wider text-zinc-400">
+                        Collector Name
+                      </label>
+                      <input
+                        type="text"
+                        value={user.name}
+                        disabled
+                        className="w-full bg-[#161720] border border-[#2b2e3c] rounded-xl px-3.5 py-2 text-xs text-zinc-400 cursor-not-allowed"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-[11px] uppercase tracking-wider text-zinc-400">
+                        Email Address
+                      </label>
+                      <input
+                        type="email"
+                        value={user.email}
+                        disabled
+                        className="w-full bg-[#161720] border border-[#2b2e3c] rounded-xl px-3.5 py-2 text-xs text-zinc-400 cursor-not-allowed"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-[11px] uppercase tracking-wider text-zinc-400 flex items-center gap-1">
+                        <Phone className="w-3 h-3 text-[#d1a86e]" />
+                        <span>Direct Telephone (Optional)</span>
+                      </label>
+                      <input
+                        type="tel"
+                        placeholder="+1 (555) 000-0000"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className="w-full bg-[#161720] border border-[#2b2e3c] rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#d1a86e]"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-[11px] uppercase tracking-wider text-zinc-400 flex items-center gap-1">
+                        <MapPin className="w-3 h-3 text-[#d1a86e]" />
+                        <span>Delivery Destination (City, Country)</span>
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Zurich, Switzerland / New York, USA"
+                        value={destination}
+                        onChange={(e) => setDestination(e.target.value)}
+                        className="w-full bg-[#161720] border border-[#2b2e3c] rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#d1a86e]"
+                      />
+                    </div>
                   </div>
 
                   <div className="space-y-1.5">
                     <label className="text-[11px] uppercase tracking-wider text-zinc-400">
-                      Email Address
+                      Acquisition Questions &amp; Notes
                     </label>
-                    <input
-                      type="email"
-                      value={user.email}
-                      disabled
-                      className="w-full bg-[#161720] border border-[#2b2e3c] rounded-xl px-3.5 py-2 text-xs text-zinc-400 cursor-not-allowed"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-[11px] uppercase tracking-wider text-zinc-400 flex items-center gap-1">
-                      <Phone className="w-3 h-3 text-[#d1a86e]" />
-                      <span>Direct Telephone (Optional)</span>
-                    </label>
-                    <input
-                      type="tel"
-                      placeholder="+1 (555) 000-0000"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="w-full bg-[#161720] border border-[#2b2e3c] rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#d1a86e]"
+                    <textarea
+                      rows={3}
+                      placeholder="Provide any custom framing requirements, installation questions, or foundation collection details..."
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      className="w-full bg-[#161720] border border-[#2b2e3c] rounded-xl p-3 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#d1a86e]"
                     />
                   </div>
 
-                  <div className="space-y-1.5">
-                    <label className="text-[11px] uppercase tracking-wider text-zinc-400 flex items-center gap-1">
-                      <MapPin className="w-3 h-3 text-[#d1a86e]" />
-                      <span>Delivery Destination (City, Country)</span>
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Zurich, Switzerland / New York, USA"
-                      value={destination}
-                      onChange={(e) => setDestination(e.target.value)}
-                      className="w-full bg-[#161720] border border-[#2b2e3c] rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#d1a86e]"
-                    />
+                  {error && (
+                    <div className="p-3 rounded-xl bg-rose-950/40 border border-rose-800 text-rose-300 text-xs">
+                      {error}
+                    </div>
+                  )}
+
+                  <div className="pt-2 flex items-center justify-between gap-4">
+                    <div className="text-[11px] text-zinc-500 font-mono">
+                      Direct studio acquisition • ADAGP Registered
+                    </div>
+
+                    <Button
+                      type="submit"
+                      disabled={submitting}
+                      className="rounded-full bg-gradient-to-r from-[#d1a86e] via-[#e2c18d] to-[#b98e54] text-[#0d0e12] font-semibold text-xs uppercase tracking-wider px-8 py-3 shadow-xl shadow-[#d1a86e]/20 hover:opacity-95"
+                    >
+                      {submitting ? (
+                        <span>Transmitting Dossier...</span>
+                      ) : (
+                        <span className="flex items-center gap-2">
+                          <Sparkles className="w-3.5 h-3.5" />
+                          <span>Send Acquisition Inquiry</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </span>
+                      )}
+                    </Button>
+                  </div>
+                </form>
+              ) : (
+                <div className="p-6 rounded-2xl bg-[#171822] border border-[#d1a86e]/40 space-y-4 pt-4 border-t border-[#22242f]">
+                  <div className="flex items-start gap-3.5">
+                    <div className="w-10 h-10 rounded-2xl bg-[#d1a86e]/15 border border-[#d1a86e]/30 flex items-center justify-center text-[#d1a86e] shrink-0 mt-0.5">
+                      <ShieldCheck className="w-5 h-5" />
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="font-serif text-lg text-white font-medium">
+                        Collector Sign In Required to Transmit Inquiry
+                      </h3>
+                      <p className="text-xs text-zinc-400 leading-relaxed">
+                        To submit your multi-artwork acquisition dossier to Elena Vance&apos;s studio and receive authenticated courier and viewing dispatch, please sign in. Your selected paintings will remain saved in your dossier.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                    <Button
+                      asChild
+                      className="flex-1 rounded-full bg-gradient-to-r from-[#d1a86e] via-[#e2c18d] to-[#b98e54] text-[#0d0e12] font-semibold text-xs tracking-wider uppercase h-10 shadow-lg shadow-[#d1a86e]/20"
+                    >
+                      <Link href="/login?redirect=/account">
+                        <span className="flex items-center justify-center gap-2">
+                          <span>Sign In with Email &amp; Password</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </span>
+                      </Link>
+                    </Button>
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="flex-1 rounded-full border-[#2b2e3c] bg-[#14151a] hover:bg-[#20222d] text-zinc-200 text-xs tracking-wider uppercase h-10"
+                    >
+                      <Link href="/register?redirect=/account">
+                        <span>Register Free Collector Account</span>
+                      </Link>
+                    </Button>
                   </div>
                 </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-[11px] uppercase tracking-wider text-zinc-400">
-                    Acquisition Questions &amp; Notes
-                  </label>
-                  <textarea
-                    rows={3}
-                    placeholder="Provide any custom framing requirements, installation questions, or foundation collection details..."
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    className="w-full bg-[#161720] border border-[#2b2e3c] rounded-xl p-3 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#d1a86e]"
-                  />
-                </div>
-
-                {error && (
-                  <div className="p-3 rounded-xl bg-rose-950/40 border border-rose-800 text-rose-300 text-xs">
-                    {error}
-                  </div>
-                )}
-
-                <div className="pt-2 flex items-center justify-between gap-4">
-                  <div className="text-[11px] text-zinc-500 font-mono">
-                    Direct studio acquisition • ADAGP Registered
-                  </div>
-
-                  <Button
-                    type="submit"
-                    disabled={submitting}
-                    className="rounded-full bg-gradient-to-r from-[#d1a86e] via-[#e2c18d] to-[#b98e54] text-[#0d0e12] font-semibold text-xs uppercase tracking-wider px-8 py-3 shadow-xl shadow-[#d1a86e]/20 hover:opacity-95"
-                  >
-                    {submitting ? (
-                      <span>Transmitting Dossier...</span>
-                    ) : (
-                      <span className="flex items-center gap-2">
-                        <Sparkles className="w-3.5 h-3.5" />
-                        <span>Send Acquisition Inquiry</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </span>
-                    )}
-                  </Button>
-                </div>
-              </form>
+              )}
             </div>
           )}
         </div>

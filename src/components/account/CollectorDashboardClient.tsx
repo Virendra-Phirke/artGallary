@@ -50,7 +50,7 @@ interface CollectorDashboardClientProps {
     email: string;
     role: string;
     image?: string | null;
-  };
+  } | null;
   artworks: MockArtwork[];
   collections: MockCollection[];
   exhibitions: MockExhibition[];
@@ -85,6 +85,9 @@ export function CollectorDashboardClient({
   // Cart / Acquisition Dossier State
   const [cartArtworkIds, setCartArtworkIds] = useState<string[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+
+  // Login Requirement Prompt State (triggered on Like or Contact without auth)
+  const [loginPromptReason, setLoginPromptReason] = useState<"like" | "contact" | "inquiries" | "profile" | null>(null);
 
   // Gallery Search & Filters
   const [gallerySearch, setGallerySearch] = useState("");
@@ -126,6 +129,12 @@ export function CollectorDashboardClient({
   }, []);
 
   const toggleSaveArtwork = (id: string) => {
+    // Only ask for login when the collector wants to like/save a painting or contact
+    if (!user) {
+      setLoginPromptReason("like");
+      return;
+    }
+
     setSavedArtworkIds((prev) => {
       const next = prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id];
       try {
@@ -553,7 +562,34 @@ export function CollectorDashboardClient({
               </div>
 
               {/* Collector Email Preferences */}
-              <MarketingPreferenceToggle initialSubscribed={marketingSubscribed} />
+              {user ? (
+                <MarketingPreferenceToggle initialSubscribed={marketingSubscribed} />
+              ) : (
+                <Card className="p-6 bg-[#14151a] border-[#262833] rounded-3xl space-y-3 shadow-xl">
+                  <div className="flex items-start gap-3.5">
+                    <div className="w-10 h-10 rounded-full bg-[#1c1d25] border border-[#262833] flex items-center justify-center text-[#d1a86e] shrink-0">
+                      <Mail className="w-5 h-5" />
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="font-serif text-lg text-white">Studio Dispatches &amp; Releases</h3>
+                      <p className="text-xs text-[#8e92a4] leading-relaxed">
+                        Sign in to receive private VIP invitations to solo retrospectives, vernissage releases, and acquisition catalogues.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="pt-1">
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="w-full rounded-full border-[#262833] bg-[#181920] hover:bg-[#22242e] text-[#d1a86e] text-xs uppercase tracking-wider"
+                    >
+                      <Link href="/login?redirect=/account">
+                        <span>Sign In to Subscribe</span>
+                      </Link>
+                    </Button>
+                  </div>
+                </Card>
+              )}
             </div>
           </div>
 
@@ -1063,7 +1099,29 @@ export function CollectorDashboardClient({
             </Button>
           </div>
 
-          {userInquiries.length === 0 ? (
+          {!user ? (
+            <Card className="p-12 text-center bg-[#14151a] border-[#262833] rounded-3xl space-y-4 max-w-xl mx-auto my-6">
+              <div className="w-14 h-14 rounded-full bg-[#1c1d25] border border-[#d1a86e]/30 flex items-center justify-center text-[#d1a86e] mx-auto">
+                <Mail className="w-6 h-6" />
+              </div>
+              <h3 className="font-serif text-2xl text-white">Acquisition Ledger Locked</h3>
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                Sign in to your collector account to review active inquiries, curatorial correspondence, and acquisition status.
+              </p>
+              <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+                <Button asChild className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] text-xs font-semibold uppercase tracking-wider px-6">
+                  <Link href="/login?redirect=/account?tab=inquiries">
+                    <span>Sign In to Access Ledger</span>
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="rounded-full border-[#262833] text-zinc-300 text-xs uppercase tracking-wider px-6">
+                  <Link href="/register?redirect=/account?tab=inquiries">
+                    <span>Register Account</span>
+                  </Link>
+                </Button>
+              </div>
+            </Card>
+          ) : userInquiries.length === 0 ? (
             <Card className="p-12 text-center bg-[#14151a]/50 border-[#262833] rounded-3xl space-y-4">
               <Mail className="w-10 h-10 text-zinc-600 mx-auto" />
               <h3 className="font-serif text-xl text-white">No active inquiries recorded</h3>
@@ -1181,75 +1239,99 @@ export function CollectorDashboardClient({
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            {/* Left Column: Profile Card & White-Glove Shipping */}
-            <div className="lg:col-span-7 space-y-6">
-              {/* Profile Card */}
-              <div className="bg-[#14151a] border border-[#262833] rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl">
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-[#1c1d25] border border-[#262833] flex items-center justify-center font-serif text-2xl text-[#d1a86e]">
-                    {user.name.charAt(0).toUpperCase()}
+          {!user ? (
+            <Card className="p-12 text-center bg-[#14151a] border-[#262833] rounded-3xl space-y-4 max-w-xl mx-auto my-6">
+              <div className="w-14 h-14 rounded-full bg-[#1c1d25] border border-[#d1a86e]/30 flex items-center justify-center text-[#d1a86e] mx-auto">
+                <User className="w-6 h-6" />
+              </div>
+              <h3 className="font-serif text-2xl text-white">Collector Profile Locked</h3>
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                Sign in to manage your collector profile, save fine art delivery destinations, and configure private vernissage invitations.
+              </p>
+              <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+                <Button asChild className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] text-xs font-semibold uppercase tracking-wider px-6">
+                  <Link href="/login?redirect=/account?tab=profile">
+                    <span>Sign In to Profile</span>
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="rounded-full border-[#262833] text-zinc-300 text-xs uppercase tracking-wider px-6">
+                  <Link href="/register?redirect=/account?tab=profile">
+                    <span>Register Account</span>
+                  </Link>
+                </Button>
+              </div>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              {/* Left Column: Profile Card & White-Glove Shipping */}
+              <div className="lg:col-span-7 space-y-6">
+                {/* Profile Card */}
+                <div className="bg-[#14151a] border border-[#262833] rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl">
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 rounded-full bg-[#1c1d25] border border-[#262833] flex items-center justify-center font-serif text-2xl text-[#d1a86e]">
+                      {user.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <h3 className="font-serif text-2xl text-white">{user.name}</h3>
+                      <p className="text-xs text-zinc-400 font-mono">{user.email}</p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <Badge variant="success">Verified Collector</Badge>
+                        <span className="text-[10px] text-zinc-500 font-mono">Role: {user.role}</span>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-serif text-2xl text-white">{user.name}</h3>
-                    <p className="text-xs text-zinc-400 font-mono">{user.email}</p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <Badge variant="success">Verified Collector</Badge>
-                      <span className="text-[10px] text-zinc-500 font-mono">Role: {user.role}</span>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-[#1c1d25] text-xs">
+                    <div className="space-y-1">
+                      <span className="text-zinc-500 uppercase tracking-wider text-[10px]">Collector ID</span>
+                      <p className="font-mono text-zinc-300 truncate">{user.id}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-zinc-500 uppercase tracking-wider text-[10px]">Membership Tier</span>
+                      <p className="text-zinc-300">Private Studio Client (Elena Vance Paris)</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-[#1c1d25] text-xs">
-                  <div className="space-y-1">
-                    <span className="text-zinc-500 uppercase tracking-wider text-[10px]">Collector ID</span>
-                    <p className="font-mono text-zinc-300 truncate">{user.id}</p>
+                {/* White-Glove Shipping & Delivery Info */}
+                <div className="bg-[#14151a] border border-[#262833] rounded-3xl p-6 sm:p-8 space-y-4 shadow-xl">
+                  <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-[#d1a86e] font-semibold">
+                    <Package className="w-4 h-4" />
+                    <span>Fine Art Delivery &amp; Crate Protocol</span>
                   </div>
-                  <div className="space-y-1">
-                    <span className="text-zinc-500 uppercase tracking-wider text-[10px]">Membership Tier</span>
-                    <p className="text-zinc-300">Private Studio Client (Elena Vance Paris)</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* White-Glove Shipping & Delivery Info */}
-              <div className="bg-[#14151a] border border-[#262833] rounded-3xl p-6 sm:p-8 space-y-4 shadow-xl">
-                <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-[#d1a86e] font-semibold">
-                  <Package className="w-4 h-4" />
-                  <span>Fine Art Delivery &amp; Crate Protocol</span>
-                </div>
-                <h4 className="font-serif text-lg text-white">
-                  Insured International Transit Standards
-                </h4>
-                <p className="text-xs text-zinc-400 leading-relaxed">
-                  All acquired canvases are encased in custom thermal-insulated wooden crates with hygrometric shock buffering. When you confirm an acquisition inquiry, your dedicated fine art courier details will appear here.
-                </p>
-              </div>
-            </div>
-
-            {/* Right Column: Preferences & Sign Out */}
-            <div className="lg:col-span-5 space-y-6">
-              {/* Marketing & Vernissage Dispatch Toggle */}
-              <MarketingPreferenceToggle initialSubscribed={marketingSubscribed} />
-
-              <div className="p-6 rounded-3xl bg-[#14151a] border border-[#262833] space-y-4 shadow-xl">
-                <div className="space-y-1">
-                  <h4 className="font-serif text-lg text-white">Session Management</h4>
-                  <p className="text-xs text-zinc-400">
-                    Sign out of your active private collector salon session.
+                  <h4 className="font-serif text-lg text-white">
+                    Insured International Transit Standards
+                  </h4>
+                  <p className="text-xs text-zinc-400 leading-relaxed">
+                    All acquired canvases are encased in custom thermal-insulated wooden crates with hygrometric shock buffering. When you confirm an acquisition inquiry, your dedicated fine art courier details will appear here.
                   </p>
                 </div>
-                <Button
-                  onClick={handleSignOut}
-                  variant="outline"
-                  className="w-full rounded-full border-[#262833] bg-[#181920] hover:bg-rose-950/40 hover:text-rose-400 text-zinc-300 text-xs uppercase tracking-wider h-10"
-                >
-                  <LogOut className="w-3.5 h-3.5 mr-2" />
-                  <span>Sign Out of Collector Salon</span>
-                </Button>
+              </div>
+
+              {/* Right Column: Preferences & Sign Out */}
+              <div className="lg:col-span-5 space-y-6">
+                {/* Marketing & Vernissage Dispatch Toggle */}
+                <MarketingPreferenceToggle initialSubscribed={marketingSubscribed} />
+
+                <div className="p-6 rounded-3xl bg-[#14151a] border border-[#262833] space-y-4 shadow-xl">
+                  <div className="space-y-1">
+                    <h4 className="font-serif text-lg text-white">Session Management</h4>
+                    <p className="text-xs text-zinc-400">
+                      Sign out of your active private collector salon session.
+                    </p>
+                  </div>
+                  <Button
+                    onClick={handleSignOut}
+                    variant="outline"
+                    className="w-full rounded-full border-[#262833] bg-[#181920] hover:bg-rose-950/40 hover:text-rose-400 text-zinc-300 text-xs uppercase tracking-wider h-10"
+                  >
+                    <LogOut className="w-3.5 h-3.5 mr-2" />
+                    <span>Sign Out of Collector Salon</span>
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       )}
 
@@ -1286,6 +1368,89 @@ export function CollectorDashboardClient({
           handleTabChange("inquiries");
         }}
       />
+
+      {/* 6. LOGIN REQUIRED MODAL (When liking paintings or contacting without an account) */}
+      {loginPromptReason && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
+          onClick={() => setLoginPromptReason(null)}
+        >
+          <div
+            className="relative w-full max-w-md bg-[#14151a] border border-[#2b2e3c] rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 text-center text-[#f4f4f6]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="w-14 h-14 rounded-full bg-[#d1a86e]/15 border border-[#d1a86e]/30 flex items-center justify-center text-[#d1a86e] mx-auto">
+              {loginPromptReason === "like" ? (
+                <Heart className="w-6 h-6 fill-current" />
+              ) : (
+                <ShieldCheck className="w-6 h-6" />
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-bold">
+                Private Salon Protocol
+              </span>
+              <h3 className="font-serif text-2xl text-white font-medium">
+                {loginPromptReason === "like"
+                  ? "Sign In to Save Paintings"
+                  : "Sign In to Contact Studio"}
+              </h3>
+              <p className="text-xs text-zinc-400 leading-relaxed">
+                {loginPromptReason === "like"
+                  ? "Sign in or create a complimentary collector account to curate your personal shortlist, synchronize liked works across devices, and request private studio viewings."
+                  : "To correspond directly with Madame Vance's curatorial desk and inquire about original acquisitions, please sign in with your collector credentials."}
+              </p>
+            </div>
+
+            <div className="p-4 rounded-xl bg-[#0f1015] border border-[#22242f] text-left text-xs text-zinc-300 space-y-2">
+              <div className="flex items-center gap-2 text-zinc-300">
+                <Check className="w-3.5 h-3.5 text-[#d1a86e]" />
+                <span>Private portfolio curation &amp; bookmarking</span>
+              </div>
+              <div className="flex items-center gap-2 text-zinc-300">
+                <Check className="w-3.5 h-3.5 text-[#d1a86e]" />
+                <span>Priority response from gallery liaison</span>
+              </div>
+              <div className="flex items-center gap-2 text-zinc-300">
+                <Check className="w-3.5 h-3.5 text-[#d1a86e]" />
+                <span>Preview paintings in AR without login</span>
+              </div>
+            </div>
+
+            <div className="space-y-2.5 pt-1">
+              <Button
+                asChild
+                className="w-full rounded-full bg-gradient-to-r from-[#d1a86e] via-[#e2c18d] to-[#b98e54] text-[#0d0e12] font-semibold text-xs tracking-wider uppercase h-11 shadow-lg shadow-[#d1a86e]/20"
+              >
+                <Link href={`/login?redirect=${encodeURIComponent("/account?tab=gallery")}`}>
+                  <span>Sign In with Email &amp; Password</span>
+                </Link>
+              </Button>
+
+              <Button
+                asChild
+                variant="outline"
+                className="w-full rounded-full border-[#2b2e3c] bg-[#181920] hover:bg-[#22242e] text-zinc-200 text-xs tracking-wider uppercase h-11"
+              >
+                <Link href={`/register?redirect=${encodeURIComponent("/account?tab=gallery")}`}>
+                  <span>Register Free Collector Account</span>
+                </Link>
+              </Button>
+
+              <button
+                onClick={() => setLoginPromptReason(null)}
+                className="text-xs text-zinc-500 hover:text-zinc-300 pt-2 transition-colors uppercase tracking-wider"
+              >
+                Continue Browsing as Guest
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

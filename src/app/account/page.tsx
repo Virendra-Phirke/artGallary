@@ -23,36 +23,40 @@ interface AccountPageProps {
 
 export default async function AccountPage({ searchParams }: AccountPageProps) {
   const session = await getSession();
-  if (!session?.user) {
-    redirect("/login?redirect=/account");
-  }
 
   const resolvedParams = searchParams ? await searchParams : {};
   const initialTab = (resolvedParams.tab as CollectorTab) || "overview";
 
-  const [artworks, collections, exhibitions, allInquiries, marketingSubscribed] =
-    await Promise.all([
-      getArtworks(),
-      getCollections(),
-      getExhibitions(),
-      getInquiries(),
-      getUserMarketingPreference(session.user.id),
-    ]);
+  const [artworks, collections, exhibitions, allInquiries] = await Promise.all([
+    getArtworks(),
+    getCollections(),
+    getExhibitions(),
+    getInquiries(),
+  ]);
 
-  // Filter inquiries for this user email
-  const userInquiries = allInquiries.filter(
-    (i) => i.email.toLowerCase() === session.user.email.toLowerCase()
-  );
+  let marketingSubscribed = false;
+  let userInquiries: any[] = [];
 
-  return (
-    <CollectorDashboardClient
-      user={{
+  if (session?.user) {
+    marketingSubscribed = await getUserMarketingPreference(session.user.id).catch(() => false);
+    userInquiries = allInquiries.filter(
+      (i) => i.email.toLowerCase() === session.user.email.toLowerCase()
+    );
+  }
+
+  const currentUser = session?.user
+    ? {
         id: session.user.id,
         name: session.user.name,
         email: session.user.email,
         role: session.user.role,
         image: session.user.image,
-      }}
+      }
+    : null;
+
+  return (
+    <CollectorDashboardClient
+      user={currentUser}
       artworks={artworks}
       collections={collections}
       exhibitions={exhibitions}
