@@ -117,27 +117,11 @@ export function CatalogueTab() {
   return (
     <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-200">
       {/* Top Filter & Search Bar */}
-      <div className="bg-[#121319] rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-xl shadow-black/40 space-y-4">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[9px] sm:text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-bold">
-                Catalogue Filter &amp; Search
-              </span>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#d1a86e]" />
-              <span className="text-[9px] sm:text-[10px] text-zinc-400 font-mono">
-                {processedArtworks.length} of {artworks.length} Match
-              </span>
-            </div>
-            <h2 className="font-serif text-xl sm:text-3xl text-white mt-0.5">
-              Private Curated Collection
-            </h2>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full lg:w-auto">
-            {/* Search Input */}
-            <div className="relative flex-1 min-w-0 sm:w-64 md:w-72">
-              <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-zinc-500 absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2" />
+      <div className="bg-[#121319] rounded-2xl sm:rounded-3xl p-3 sm:p-4 shadow-xl shadow-black/40">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-4">
+          {/* Search Input */}
+          <div className="relative flex-1 min-w-0 sm:max-w-md">
+            <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-zinc-500 absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 placeholder="Search artworks..."
@@ -281,7 +265,6 @@ export function CatalogueTab() {
                 </div>
               </DropdownMenuContent>
             </DropdownMenu>
-          </div>
         </div>
       </div>
 

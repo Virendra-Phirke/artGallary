@@ -26,22 +26,10 @@ export function InquiriesTab() {
 
   return (
     <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-200">
-      <div className="bg-[#121319] rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <span className="text-[9px] sm:text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-bold">
-            Studio Ledger
-          </span>
-          <h2 className="font-serif text-2xl sm:text-4xl text-white mt-0.5">
-            Your Inquiries
-          </h2>
-          <p className="text-xs sm:text-sm text-zinc-400 max-w-xl font-light leading-relaxed mt-1">
-            Direct correspondence recorded with Elena Vance's studio team.
-          </p>
-        </div>
-
+      <div className="flex items-center justify-end">
         <Button
           asChild
-          className="h-8 sm:h-10 px-4 sm:px-5 rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-[11px] sm:text-xs font-semibold uppercase tracking-wider shadow-md shadow-[#d1a86e]/15 self-start sm:self-auto cursor-pointer transition-all active:scale-[0.98]"
+          className="h-8 sm:h-9 px-4 sm:px-5 rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-xs font-semibold uppercase tracking-wider shadow-md shadow-[#d1a86e]/15 cursor-pointer transition-all active:scale-[0.98]"
         >
           <Link href="/contact">
             <Mail className="w-3.5 h-3.5 mr-1.5" />

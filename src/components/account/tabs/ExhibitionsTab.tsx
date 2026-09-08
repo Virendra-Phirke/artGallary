@@ -26,20 +26,8 @@ export function ExhibitionsTab() {
   const endItem = Math.min(currentPage * pageSize, exhibitions.length);
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-200">
-      <div className="bg-[#121319] rounded-3xl p-6 sm:p-8 shadow-xl shadow-black/40 space-y-2">
-        <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-bold">
-          Retrospectives &amp; Showcases
-        </span>
-        <h2 className="font-serif text-3xl sm:text-4xl text-white">
-          Curated Exhibitions
-        </h2>
-        <p className="text-xs sm:text-sm text-zinc-400 max-w-2xl font-light leading-relaxed">
-          Chronology of museum installations, solo gallery shows, and private vernissages.
-        </p>
-      </div>
-
-      <div className="space-y-6">
+    <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-200">
+      <div className="space-y-4 sm:space-y-6">
         {paginatedExhibitions.map((exh) => (
           <div
             key={exh.id}
