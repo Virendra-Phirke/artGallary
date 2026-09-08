@@ -92,7 +92,7 @@ export function HeroShowcaseClient({
                   className="flex items-center justify-center gap-1.5"
                 >
                   <Sparkles className="w-3 h-3 text-[#0d0e12] shrink-0" />
-                  <span className="truncate">{primaryCtaText || "Collector Salon"}</span>
+                  <span className="truncate">{primaryCtaText || "Collector Portal"}</span>
                   <ArrowRight className="w-3 h-3 shrink-0" />
                 </Link>
               </Button>

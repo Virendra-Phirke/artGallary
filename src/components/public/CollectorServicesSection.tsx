@@ -75,7 +75,7 @@ export function CollectorServicesSection() {
         {/* Footer Contact Banner */}
         <div className="pt-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <span className="text-[11px] sm:text-xs text-zinc-400 font-light">
-            Inquire for private foundation viewing appointments or enter the private salon.
+            Inquire for private foundation viewing appointments or enter the collector portal.
           </span>
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <Button
@@ -93,7 +93,7 @@ export function CollectorServicesSection() {
             >
               <Link href="/account" className="flex items-center justify-center gap-1.5">
                 <Sparkles className="w-3 h-3 shrink-0" />
-                <span>Collector Salon</span>
+                <span>Collector Portal</span>
               </Link>
             </Button>
           </div>

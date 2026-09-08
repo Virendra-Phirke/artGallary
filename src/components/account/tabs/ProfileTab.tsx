@@ -109,7 +109,7 @@ export function ProfileTab() {
               <div>
                 <span className="text-xs text-zinc-400 font-medium block">Active Session</span>
                 <p className="text-[10px] sm:text-[11px] text-zinc-500 mt-0.5 font-light">
-                  Sign out of your active private collector salon session.
+                  Sign out of your active collector portal session.
                 </p>
               </div>
               <Button
@@ -117,7 +117,7 @@ export function ProfileTab() {
                 className="w-full h-10 rounded-full bg-[#1c1d28] hover:bg-rose-950/50 hover:text-rose-300 text-zinc-300 text-[11px] sm:text-xs font-semibold uppercase tracking-wider cursor-pointer transition-all active:scale-[0.98] shadow-md"
               >
                 <LogOut className="w-3.5 h-3.5 mr-2" />
-                <span>Sign Out of Collector Salon</span>
+                <span>Sign Out of Collector Portal</span>
               </Button>
             </div>
           </div>

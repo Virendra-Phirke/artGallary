@@ -154,10 +154,15 @@ export function Header({ settings }: HeaderProps) {
 
         {/* Right Desktop CTA & Auth Dropdown */}
         <div className="hidden md:flex items-center space-x-3">
-          <Button asChild variant="ghost" size="sm" className="rounded-full h-8 px-3.5 bg-[#1c1e2b] hover:bg-[#252838] text-[#d1a86e] text-xs uppercase tracking-wider">
-            <Link href="/account" className="flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Collector Salon</span>
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="rounded-full border-[#d1a86e]/40 text-[#d1a86e] hover:bg-[#d1a86e]/10 text-xs uppercase tracking-wider h-8 px-3.5"
+          >
+            <Link href="/account" className="flex items-center">
+              <Sparkles className="w-3.5 h-3.5 mr-1.5 text-[#d1a86e]" />
+              <span>Collector Portal</span>
             </Link>
           </Button>
 
@@ -265,7 +270,7 @@ export function Header({ settings }: HeaderProps) {
           <Button asChild variant="ghost" size="sm" className="h-6.5 px-2 xs:px-2.5 text-[9px] xs:text-[10px] rounded-full bg-[#1c1e2b] hover:bg-[#252838] text-[#d1a86e]">
             <Link href="/account" className="flex items-center">
               <Sparkles className="w-2.5 h-2.5 mr-1 text-[#d1a86e]" />
-              <span>Salon</span>
+              <span>Portal</span>
             </Link>
           </Button>
 

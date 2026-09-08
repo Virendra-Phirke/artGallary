@@ -388,7 +388,7 @@ export function CollectorDock({
         <button
           onClick={() => setIsMobileOpen((prev) => !prev)}
           className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-[#151620]/95 backdrop-blur-md border border-white/15 active:scale-95 shadow-2xl shadow-black/90 text-white font-medium text-[11px] tracking-wider uppercase transition-all cursor-pointer group"
-          aria-label={isMobileOpen ? "Close Salon Navigation" : "Open Salon Navigation"}
+          aria-label={isMobileOpen ? "Close Collector Navigation" : "Open Collector Navigation"}
         >
           {isMobileOpen ? (
             <X className="w-3.5 h-3.5 text-[#d1a86e] transition-transform group-hover:rotate-90" />

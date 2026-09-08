@@ -6,7 +6,7 @@ import { Heart, ShieldCheck, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCollector } from "@/components/account/context/CollectorContext";
 
-export function SalonAuthGateModal() {
+export function CollectorAuthGateModal() {
   const { loginPromptReason, setLoginPromptReason } = useCollector();
 
   if (!loginPromptReason) return null;
@@ -32,7 +32,7 @@ export function SalonAuthGateModal() {
 
         <div className="space-y-1.5 sm:space-y-2">
           <span className="text-[9px] sm:text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-bold">
-            Private Salon Protocol
+            Private Collector Protocol
           </span>
           <h3 className="font-serif text-xl sm:text-2xl text-white font-medium">
             {loginPromptReason === "like"

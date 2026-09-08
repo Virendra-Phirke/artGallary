@@ -13,8 +13,8 @@ import { CollectorDashboardClient } from "@/components/account/CollectorDashboar
 import type { CollectorTab } from "@/components/account/CollectorDock";
 
 export const metadata: Metadata = {
-  title: "Collector Salon & Private Dashboard | Elena Vance",
-  description: "Private collector salon for reviewing original works, series cycles, exhibition vernissages, and studio acquisition correspondence.",
+  title: "Collector Portal & Private Dashboard | Elena Vance",
+  description: "Private collector portal for reviewing original works, series cycles, exhibition vernissages, and studio acquisition correspondence.",
 };
 
 interface AccountPageProps {

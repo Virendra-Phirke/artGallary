@@ -185,12 +185,12 @@ export function CollectorNav({ user, inquiriesCount = 0 }: CollectorNavProps) {
             </span>
           </button>
 
-          {/* Mobile Salon Sidebar Drawer Trigger */}
+          {/* Mobile Collector Sidebar Drawer Trigger */}
           <button
             onClick={() => window.dispatchEvent(new CustomEvent("atelier-toggle-mobile-sidebar"))}
             className="md:hidden w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#151620] hover:bg-[#20222e] flex items-center justify-center text-[#d1a86e] hover:text-white transition-all cursor-pointer shadow-sm shrink-0"
-            aria-label="Toggle Salon Navigation Menu"
-            title="Salon Navigation Menu"
+            aria-label="Toggle Collector Navigation Menu"
+            title="Collector Navigation Menu"
           >
             <Menu className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>

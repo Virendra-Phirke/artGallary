@@ -321,7 +321,7 @@ export default async function HomePage() {
                           className="flex items-center justify-center gap-1.5"
                         >
                           <Sparkles className="w-3 h-3 shrink-0" />
-                          <span>RSVP Salon</span>
+                          <span>RSVP Exhibition</span>
                         </Link>
                       </Button>
                       <Button

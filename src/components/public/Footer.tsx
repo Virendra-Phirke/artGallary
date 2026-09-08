@@ -24,7 +24,7 @@ export function Footer({ settings }: FooterProps) {
           links: [
             { label: "Artist Monologue & CV", href: "/about" },
             { label: "Studio Inquiries & Press", href: "/contact" },
-            { label: "Private Collector Salon", href: "/account" },
+            { label: "Collector Portal", href: "/account" },
           ],
         },
         {

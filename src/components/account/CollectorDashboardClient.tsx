@@ -18,7 +18,7 @@ import {
 import { CollectorTab, CollectorDock } from "@/components/account/CollectorDock";
 import { ArtworkQuickViewModal } from "@/components/public/ArtworkQuickViewModal";
 import { AcquisitionCartModal } from "@/components/account/AcquisitionCartModal";
-import { SalonAuthGateModal } from "@/components/account/modals/SalonAuthGateModal";
+import { CollectorAuthGateModal } from "@/components/account/modals/CollectorAuthGateModal";
 import {
   CollectorProvider,
   useCollector,
@@ -61,7 +61,7 @@ const TAB_METADATA: Record<CollectorTab, { title: string; subtitle: string; tag:
     subtitle: "Thematic bodies of work directly from the artist atelier.",
   },
   exhibitions: {
-    tag: "Vernissages & Salons",
+    tag: "Vernissages & Previews",
     title: "Exhibitions & Retrospectives",
     subtitle: "Upcoming museum retrospectives, gallery booths, and VIP opening receptions.",
   },
@@ -117,7 +117,7 @@ function CollectorDashboardContent() {
                 {currentMeta.tag}
               </span>
               <span className="text-[8px] sm:text-[10px] text-zinc-400 font-mono tracking-wider uppercase">
-                {user ? `Verified (${user.name})` : "Guest Salon Access"}
+                {user ? `Verified (${user.name})` : "Guest Collector Access"}
               </span>
             </div>
 
@@ -228,8 +228,8 @@ function CollectorDashboardContent() {
         }}
       />
 
-      {/* 6. CONTEXT-AWARE SALON AUTH GATE MODAL */}
-      <SalonAuthGateModal />
+      {/* 6. CONTEXT-AWARE COLLECTOR AUTH GATE MODAL */}
+      <CollectorAuthGateModal />
     </div>
   );
 }

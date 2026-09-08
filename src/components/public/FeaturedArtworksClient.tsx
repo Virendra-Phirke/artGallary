@@ -231,8 +231,8 @@ export function FeaturedArtworksClient({
           >
             <Link href="/account?tab=gallery" className="inline-flex items-center gap-1.5 sm:gap-2">
               <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#d1a86e] shrink-0" />
-              <span className="hidden sm:inline">Explore Full Catalogue in Salon</span>
-              <span className="inline sm:hidden">Full Catalogue in Salon</span>
+              <span className="hidden sm:inline">Explore Full Private Catalogue</span>
+              <span className="inline sm:hidden">Full Private Catalogue</span>
               <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#d1a86e] shrink-0" />
             </Link>
           </Button>
