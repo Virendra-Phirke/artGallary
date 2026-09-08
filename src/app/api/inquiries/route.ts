@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json().catch(() => ({}));
-    const { artworkId, name, email, phone, subject, message } = body;
+    const { artworkId, name, email, phone, preferredContactMethod, subject, message } = body;
 
     if (!message || message.trim().length < 5) {
       return NextResponse.json(
@@ -57,6 +57,7 @@ export async function POST(request: NextRequest) {
       name: name || session.user.name,
       email: email || session.user.email,
       phone,
+      preferredContactMethod: preferredContactMethod === "phone" ? "phone" : "email",
       subject,
       message,
     });

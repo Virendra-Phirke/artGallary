@@ -1,5 +1,5 @@
 import { Resend } from "resend";
-import { recordSentEmail } from "@/db/repository";
+import { recordSentEmail, updateInquiryStatus } from "@/db/repository";
 import {
   generateArtworkAnnouncementHtml,
   generateArtworkAnnouncementText,
@@ -492,3 +492,116 @@ export async function sendCuratorInquiryAlert(params: {
     });
   }
 }
+
+/**
+ * Sends a formal curatorial email reply from the admin to a customer inquiry,
+ * logs the dispatch in sent_emails, and sets inquiry status to 'replied'.
+ */
+export async function sendAdminInquiryReply(params: {
+  inquiryId: string;
+  recipientEmail: string;
+  recipientName: string;
+  subject: string;
+  messageText: string;
+}) {
+  const html = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #0b0c10; color: #d1d5db; margin: 0; padding: 24px; }
+          .card { max-width: 600px; margin: 0 auto; background-color: #12131a; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 36px 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+          .header { text-align: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 20px; margin-bottom: 28px; }
+          .atelier-tag { font-size: 10px; letter-spacing: 3px; color: #d1a86e; text-transform: uppercase; font-family: monospace; }
+          .title { font-size: 20px; color: #ffffff; margin: 8px 0 0 0; font-family: Georgia, serif; font-weight: normal; }
+          .content { font-size: 14px; line-height: 1.75; color: #e2e8f0; white-space: pre-wrap; word-break: break-word; }
+          .footer { margin-top: 36px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); text-align: center; font-size: 11px; color: #71717a; }
+          .ref { font-family: monospace; color: #a1a1aa; margin-top: 4px; }
+        </style>
+      </head>
+      <body>
+        <div class="card">
+          <div class="header">
+            <span class="atelier-tag">Contemporary Art Atelier</span>
+            <h1 class="title">Curatorial Correspondence</h1>
+          </div>
+          <div class="content">${params.messageText.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
+          <div class="footer">
+            <div>Helena Vance Fine Art Studio • Curatorial Liaison Office</div>
+            <div class="ref">Inquiry Reference: ${params.inquiryId}</div>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+
+  if (resend) {
+    try {
+      const res = await resend.emails.send({
+        from: SENDER_EMAIL,
+        to: params.recipientEmail,
+        subject: params.subject,
+        html,
+        text: params.messageText,
+      });
+
+      if (res.error) {
+        await recordSentEmail({
+          recipientEmail: params.recipientEmail,
+          recipientName: params.recipientName,
+          emailType: "inquiry_reply",
+          subject: params.subject,
+          inquiryId: params.inquiryId,
+          status: "sandbox_restricted",
+          errorMessage: res.error.message,
+          htmlContent: html,
+        });
+      } else {
+        await recordSentEmail({
+          recipientEmail: params.recipientEmail,
+          recipientName: params.recipientName,
+          emailType: "inquiry_reply",
+          subject: params.subject,
+          inquiryId: params.inquiryId,
+          status: "delivered",
+          resendId: res.data?.id,
+          htmlContent: html,
+        });
+      }
+    } catch (e: any) {
+      console.error("Failed to send admin reply email:", e);
+      await recordSentEmail({
+        recipientEmail: params.recipientEmail,
+        recipientName: params.recipientName,
+        emailType: "inquiry_reply",
+        subject: params.subject,
+        inquiryId: params.inquiryId,
+        status: "failed",
+        errorMessage: e.message,
+        htmlContent: html,
+      });
+    }
+  } else {
+    console.log(`[Resend DEV MOCK] Sent admin reply to ${params.recipientEmail}`);
+    await recordSentEmail({
+      recipientEmail: params.recipientEmail,
+      recipientName: params.recipientName,
+      emailType: "inquiry_reply",
+      subject: params.subject,
+      inquiryId: params.inquiryId,
+      status: "simulated",
+      htmlContent: html,
+    });
+  }
+
+  // Update inquiry status to replied
+  try {
+    await updateInquiryStatus(params.inquiryId, "replied");
+  } catch (err) {
+    console.warn("Could not update inquiry status in db:", err);
+  }
+
+  return { success: true };
+}
+

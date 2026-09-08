@@ -9,6 +9,7 @@ export const inquiries = pgTable("inquiries", {
   name: varchar("name", { length: 255 }).notNull(),
   email: varchar("email", { length: 255 }).notNull(),
   phone: varchar("phone", { length: 50 }),
+  preferredContactMethod: varchar("preferred_contact_method", { length: 20 }).default("email"),
   subject: varchar("subject", { length: 255 }).default("General Artwork Inquiry").notNull(),
   message: text("message").notNull(),
   status: varchar("status", { length: 20 }).default("new").notNull(), // 'new' | 'read' | 'replied' | 'closed'

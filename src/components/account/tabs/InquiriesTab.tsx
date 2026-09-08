@@ -2,30 +2,132 @@
 
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
-import { Mail, Clock, CheckCircle2, ChevronRight, X } from "lucide-react";
+import {
+  Mail,
+  Clock,
+  CheckCircle2,
+  ChevronRight,
+  X,
+  Phone,
+  PhoneCall,
+  Send,
+  Plus,
+  ShieldCheck,
+  Check,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { CollectorPaginationBar } from "@/components/account/shared/CollectorPaginationBar";
 import { useCollector } from "@/components/account/context/CollectorContext";
 import { PAGE_SIZE_OPTIONS } from "@/components/ui/pagination";
 import type { MockInquiry } from "@/db/mockData";
 
 export function InquiriesTab() {
-  const { user, userInquiries } = useCollector();
+  const { user, userInquiries, artworks } = useCollector();
 
   // Selection & Preview Modal State
   const [selectedInquiry, setSelectedInquiry] = useState<MockInquiry | null>(null);
+
+  // New Inquiry Modal State
+  const [isNewModalOpen, setIsNewModalOpen] = useState(false);
+  const [newName, setNewName] = useState(user?.name || "");
+  const [newEmail, setNewEmail] = useState(user?.email || "");
+  const [newPhone, setNewPhone] = useState("");
+  const [newPreference, setNewPreference] = useState<"email" | "phone">("email");
+  const [newArtwork, setNewArtwork] = useState("");
+  const [newSubject, setNewSubject] = useState("Private Acquisition Inquiry");
+  const [newMessage, setNewMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  // Local Inquiries override for optimistic additions
+  const [localInquiries, setLocalInquiries] = useState<MockInquiry[]>(userInquiries);
+
+  // Sync if context updates
+  React.useEffect(() => {
+    setLocalInquiries(userInquiries);
+  }, [userInquiries]);
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  const totalPages = Math.max(1, Math.ceil(userInquiries.length / pageSize));
+  const totalPages = Math.max(1, Math.ceil(localInquiries.length / pageSize));
   const paginatedInquiries = useMemo(() => {
-    return userInquiries.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-  }, [userInquiries, currentPage, pageSize]);
+    return localInquiries.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  }, [localInquiries, currentPage, pageSize]);
 
-  const startItem = userInquiries.length === 0 ? 0 : (currentPage - 1) * pageSize + 1;
-  const endItem = Math.min(currentPage * pageSize, userInquiries.length);
+  const startItem = localInquiries.length === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+  const endItem = Math.min(currentPage * pageSize, localInquiries.length);
+
+  // Handle New Inquiry Submission
+  const handleCreateInquiry = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitError(null);
+
+    if (newPreference === "phone" && !newPhone.trim()) {
+      setSubmitError("Please enter your mobile phone number for direct contact.");
+      return;
+    }
+
+    if (!newMessage.trim()) {
+      setSubmitError("Please enter your message or question for the studio.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const payload = {
+        name: newName || user?.name || "Collector",
+        email: newEmail || user?.email || "",
+        phone: newPhone.trim() || undefined,
+        preferredContactMethod: newPreference,
+        subject: newArtwork ? `Acquisition Inquiry: ${newArtwork}` : newSubject,
+        message: newMessage.trim(),
+      };
+
+      const res = await fetch("/api/inquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to submit inquiry.");
+      }
+
+      // Optimistic local add
+      const createdInq: MockInquiry = {
+        id: data.inquiry?.id || `inq-${Date.now()}`,
+        name: payload.name,
+        email: payload.email,
+        phone: payload.phone,
+        preferredContactMethod: newPreference,
+        subject: payload.subject,
+        message: payload.message,
+        artworkTitle: newArtwork || undefined,
+        status: "new",
+        createdAt: new Date().toISOString(),
+      };
+
+      setLocalInquiries((prev) => [createdInq, ...prev]);
+      setSubmitSuccess(true);
+      setTimeout(() => {
+        setIsNewModalOpen(false);
+        setSubmitSuccess(false);
+        setNewMessage("");
+        setNewPhone("");
+        setNewArtwork("");
+      }, 1500);
+    } catch (err: any) {
+      setSubmitError(err.message || "An unexpected error occurred. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="w-full max-w-[1720px] mx-auto space-y-4 sm:space-y-6 animate-in fade-in duration-200">
@@ -51,7 +153,7 @@ export function InquiriesTab() {
             </Button>
           </div>
         </div>
-      ) : userInquiries.length === 0 ? (
+      ) : localInquiries.length === 0 ? (
         <div className="p-5 sm:p-7 text-center bg-[#121319] rounded-2xl sm:rounded-3xl space-y-3 max-w-md mx-auto shadow-xl border border-white/5">
           <Mail className="w-6 h-6 sm:w-7 sm:h-7 text-zinc-600 mx-auto" />
           <h3 className="font-serif text-base sm:text-lg text-white">No active inquiries recorded</h3>
@@ -62,8 +164,12 @@ export function InquiriesTab() {
             <Button asChild className="rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-xs uppercase tracking-wider font-semibold shadow-md px-3.5 h-8">
               <Link href="/account?tab=gallery">Browse Gallery</Link>
             </Button>
-            <Button asChild variant="outline" className="rounded-full border-white/10 bg-transparent text-zinc-300 hover:text-white text-xs uppercase tracking-wider h-8 px-3.5">
-              <Link href="/contact">New Inquiry</Link>
+            <Button
+              onClick={() => setIsNewModalOpen(true)}
+              variant="outline"
+              className="rounded-full border-white/10 bg-transparent text-zinc-300 hover:text-white text-xs uppercase tracking-wider h-8 px-3.5 cursor-pointer"
+            >
+              New Inquiry
             </Button>
           </div>
         </div>
@@ -78,7 +184,7 @@ export function InquiriesTab() {
                   Total
                 </span>
                 <div className="font-serif text-sm sm:text-base text-white font-semibold">
-                  {userInquiries.length}
+                  {localInquiries.length}
                 </div>
               </div>
 
@@ -87,7 +193,7 @@ export function InquiriesTab() {
                   Replies
                 </span>
                 <div className="font-serif text-sm sm:text-base text-emerald-400 font-semibold">
-                  {userInquiries.filter((i) => i.status === "replied").length}
+                  {localInquiries.filter((i) => i.status === "replied").length}
                 </div>
               </div>
 
@@ -102,15 +208,13 @@ export function InquiriesTab() {
               </div>
             </div>
 
-            {/* Action Button */}
+            {/* Action Button: Opens In-Portal New Inquiry Modal */}
             <Button
-              asChild
-              className="h-8 px-3.5 rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-xs font-semibold uppercase tracking-wider shadow-md shadow-[#d1a86e]/15 self-stretch sm:self-auto cursor-pointer transition-all active:scale-[0.98] shrink-0"
+              onClick={() => setIsNewModalOpen(true)}
+              className="h-8 px-3.5 rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-xs font-semibold uppercase tracking-wider shadow-md shadow-[#d1a86e]/15 self-stretch sm:self-auto cursor-pointer transition-all active:scale-[0.98] shrink-0 gap-1.5"
             >
-              <Link href="/contact" className="flex items-center justify-center gap-1.5">
-                <Mail className="w-3.5 h-3.5" />
-                <span>New Inquiry</span>
-              </Link>
+              <Plus className="w-3.5 h-3.5" />
+              <span>New Inquiry</span>
             </Button>
           </div>
 
@@ -140,9 +244,30 @@ export function InquiriesTab() {
                         <span>{inq.status === "read" ? "In Review" : inq.status}</span>
                       </span>
 
+                      {/* Response Preference Flag Badge */}
+                      <span
+                        className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-mono ${
+                          inq.preferredContactMethod === "phone"
+                            ? "bg-emerald-950/50 text-emerald-400 border border-emerald-800/30"
+                            : "bg-blue-950/50 text-blue-400 border border-blue-800/30"
+                        }`}
+                      >
+                        {inq.preferredContactMethod === "phone" ? (
+                          <>
+                            <Phone className="w-2.5 h-2.5" />
+                            <span>Direct Call</span>
+                          </>
+                        ) : (
+                          <>
+                            <Mail className="w-2.5 h-2.5" />
+                            <span>Email</span>
+                          </>
+                        )}
+                      </span>
+
                       {inq.artworkTitle && (
                         <span className="text-[10px] text-[#d1a86e] bg-[#d1a86e]/10 px-2 py-0.5 rounded-md font-medium truncate max-w-[120px] sm:max-w-[160px]">
-                          Canvas: {inq.artworkTitle}
+                          {inq.artworkTitle}
                         </span>
                       )}
                     </div>
@@ -154,8 +279,6 @@ export function InquiriesTab() {
                           month: "short",
                           day: "numeric",
                           year: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
                         })}
                       </span>
                     </div>
@@ -189,7 +312,7 @@ export function InquiriesTab() {
           <CollectorPaginationBar
             currentPage={currentPage}
             totalPages={totalPages}
-            totalItems={userInquiries.length}
+            totalItems={localInquiries.length}
             startItem={startItem}
             endItem={endItem}
             itemName="inquiries"
@@ -256,6 +379,24 @@ export function InquiriesTab() {
 
             {/* Modal Body */}
             <div className="p-4 sm:p-5 overflow-y-auto space-y-3.5 text-xs">
+              {/* Preferred Contact Method Strip */}
+              <div className="bg-[#171822] p-2.5 sm:p-3 rounded-xl border border-white/5 flex items-center justify-between gap-2">
+                <span className="text-zinc-400 text-[11px]">Requested Response:</span>
+                <span className="text-xs font-medium flex items-center gap-1.5 font-mono">
+                  {selectedInquiry.preferredContactMethod === "phone" ? (
+                    <span className="text-emerald-400 flex items-center gap-1">
+                      <PhoneCall className="w-3 h-3" />
+                      <span>Direct Phone Call {selectedInquiry.phone ? `(${selectedInquiry.phone})` : ""}</span>
+                    </span>
+                  ) : (
+                    <span className="text-blue-400 flex items-center gap-1">
+                      <Mail className="w-3 h-3" />
+                      <span>Email Response ({selectedInquiry.email})</span>
+                    </span>
+                  )}
+                </span>
+              </div>
+
               {selectedInquiry.artworkTitle && (
                 <div className="bg-[#171822] p-2.5 sm:p-3 rounded-xl border border-white/5 flex items-center justify-between gap-2">
                   <span className="text-zinc-400 text-[11px]">Associated Artwork:</span>
@@ -295,7 +436,7 @@ export function InquiriesTab() {
                 className="h-8 px-4 rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-xs font-semibold uppercase tracking-wider shadow-md cursor-pointer transition-all active:scale-[0.98]"
               >
                 <Link
-                  href={`/contact?subject=Follow-up%20re:%20${encodeURIComponent(
+                  href={`/#contact?subject=Follow-up%20re:%20${encodeURIComponent(
                     selectedInquiry.subject || "Inquiry"
                   )}`}
                   onClick={() => setSelectedInquiry(null)}
@@ -309,7 +450,215 @@ export function InquiriesTab() {
           </div>
         </div>
       )}
+
+      {/* ==================================================================== */}
+      {/* IN-PORTAL NEW INQUIRY MODAL                                          */}
+      {/* ==================================================================== */}
+      {isNewModalOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-200"
+          onClick={() => setIsNewModalOpen(false)}
+        >
+          <div
+            className="bg-[#121319] rounded-2xl sm:rounded-3xl w-full max-w-lg max-h-[92vh] flex flex-col overflow-hidden shadow-2xl border border-white/10"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="p-4 sm:p-5 bg-[#161720] flex items-center justify-between border-b border-white/5">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-[#d1a86e]/15 text-[#d1a86e] flex items-center justify-center border border-[#d1a86e]/30">
+                  <Mail className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-serif text-base text-white">Transmit Curatorial Inquiry</h3>
+                  <p className="text-[11px] text-zinc-400">Direct query to the artist studio &amp; liaison desk</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsNewModalOpen(false)}
+                className="p-1.5 text-zinc-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Modal Body: The Form */}
+            <form onSubmit={handleCreateInquiry} className="p-4 sm:p-6 overflow-y-auto space-y-4 text-xs">
+              {submitError && (
+                <div className="p-3 bg-red-950/40 border border-red-800/60 rounded-xl text-red-300">
+                  {submitError}
+                </div>
+              )}
+
+              {submitSuccess && (
+                <div className="p-3 bg-emerald-950/40 border border-emerald-800/60 rounded-xl text-emerald-300 flex items-center gap-2">
+                  <Check className="w-4 h-4 text-emerald-400" />
+                  <span>Inquiry logged successfully! Updating ledger...</span>
+                </div>
+              )}
+
+              {/* Collector Details */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="block text-[10px] uppercase font-mono text-zinc-400">
+                    Collector Name <span className="text-red-400">*</span>
+                  </label>
+                  <Input
+                    type="text"
+                    required
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    placeholder="Your Name"
+                    className="h-9 bg-[#171822] border-white/10 text-xs"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="block text-[10px] uppercase font-mono text-zinc-400">
+                    Email Address <span className="text-red-400">*</span>
+                  </label>
+                  <Input
+                    type="email"
+                    required
+                    value={newEmail}
+                    onChange={(e) => setNewEmail(e.target.value)}
+                    placeholder="your.email@estate.com"
+                    className="h-9 bg-[#171822] border-white/10 text-xs"
+                  />
+                </div>
+              </div>
+
+              {/* Preferred Response Method Selection */}
+              <div className="space-y-1.5">
+                <label className="block text-[10px] uppercase font-mono text-zinc-400">
+                  Preferred Response Method <span className="text-red-400">*</span>
+                </label>
+                <div className="grid grid-cols-2 gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => setNewPreference("email")}
+                    className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex items-center gap-2.5 ${
+                      newPreference === "email"
+                        ? "bg-[#1d1f2d] border-[#d1a86e] text-white shadow"
+                        : "bg-[#161722] border-white/5 text-zinc-400 hover:border-white/10"
+                    }`}
+                  >
+                    <Mail className={`w-4 h-4 shrink-0 ${newPreference === "email" ? "text-[#d1a86e]" : "text-zinc-500"}`} />
+                    <div className="min-w-0">
+                      <div className="text-xs font-medium text-white">Email Response</div>
+                      <div className="text-[10px] text-zinc-400 truncate">Written appraisal</div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setNewPreference("phone")}
+                    className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex items-center gap-2.5 ${
+                      newPreference === "phone"
+                        ? "bg-[#1d1f2d] border-[#d1a86e] text-white shadow"
+                        : "bg-[#161722] border-white/5 text-zinc-400 hover:border-white/10"
+                    }`}
+                  >
+                    <PhoneCall className={`w-4 h-4 shrink-0 ${newPreference === "phone" ? "text-[#d1a86e]" : "text-zinc-500"}`} />
+                    <div className="min-w-0">
+                      <div className="text-xs font-medium text-white">Direct Phone Call</div>
+                      <div className="text-[10px] text-zinc-400 truncate">Call or WhatsApp</div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              {/* Mobile Number & Optional Artwork Selector */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="block text-[10px] uppercase font-mono text-zinc-400">
+                    Mobile Number {newPreference === "phone" ? <span className="text-red-400">* (Required)</span> : <span className="text-zinc-500">(Optional)</span>}
+                  </label>
+                  <Input
+                    type="tel"
+                    required={newPreference === "phone"}
+                    value={newPhone}
+                    onChange={(e) => setNewPhone(e.target.value)}
+                    placeholder="+33 6 12 34 56 78"
+                    className="h-9 bg-[#171822] border-white/10 text-xs"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="block text-[10px] uppercase font-mono text-zinc-400">
+                    Associated Artwork (Optional)
+                  </label>
+                  {artworks && artworks.length > 0 ? (
+                    <select
+                      value={newArtwork}
+                      onChange={(e) => setNewArtwork(e.target.value)}
+                      className="w-full h-9 bg-[#171822] border border-white/10 rounded-md px-3 text-xs text-white focus:outline-none focus:border-[#d1a86e] cursor-pointer"
+                    >
+                      <option value="">General Studio Inquiry</option>
+                      {artworks.map((art) => (
+                        <option key={art.id} value={art.title}>
+                          {art.title} ({art.year})
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <Input
+                      type="text"
+                      value={newArtwork}
+                      onChange={(e) => setNewArtwork(e.target.value)}
+                      placeholder="e.g. Solitude in Ultramarine"
+                      className="h-9 bg-[#171822] border-white/10 text-xs"
+                    />
+                  )}
+                </div>
+              </div>
+
+              {/* Message */}
+              <div className="space-y-1">
+                <label className="block text-[10px] uppercase font-mono text-zinc-400">
+                  Your Inquiry / Specifications <span className="text-red-400">*</span>
+                </label>
+                <Textarea
+                  rows={4}
+                  required
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  placeholder="Please describe your acquisition or curatorial question..."
+                  className="bg-[#171822] border-white/10 text-xs placeholder:text-zinc-600 focus-visible:ring-[#d1a86e]"
+                />
+              </div>
+
+              {/* Actions */}
+              <div className="pt-2 flex items-center justify-between gap-2 border-t border-white/5">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsNewModalOpen(false)}
+                  className="h-8 px-3 rounded-full text-zinc-400 hover:text-white text-xs cursor-pointer"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting || submitSuccess}
+                  size="sm"
+                  className="h-8 px-5 rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-xs font-semibold uppercase tracking-wider shadow cursor-pointer transition-all active:scale-[0.98] gap-1.5"
+                >
+                  {isSubmitting ? (
+                    <span>Dispatching...</span>
+                  ) : (
+                    <>
+                      <span>Transmit Inquiry</span>
+                      <Send className="w-3.5 h-3.5" />
+                    </>
+                  )}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-

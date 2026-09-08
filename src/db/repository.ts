@@ -1720,6 +1720,7 @@ export async function getInquiries(): Promise<MockInquiry[]> {
       name: r.inquiry.name,
       email: r.inquiry.email,
       phone: r.inquiry.phone || undefined,
+      preferredContactMethod: (r.inquiry as any).preferredContactMethod || "email",
       subject: r.inquiry.subject,
       message: r.inquiry.message,
       status: r.inquiry.status as any,
@@ -1755,6 +1756,7 @@ export async function getInquiryById(id: string): Promise<MockInquiry | null> {
       name: r.inquiry.name,
       email: r.inquiry.email,
       phone: r.inquiry.phone || undefined,
+      preferredContactMethod: (r.inquiry as any).preferredContactMethod || "email",
       subject: r.inquiry.subject,
       message: r.inquiry.message,
       status: r.inquiry.status as any,
@@ -1772,6 +1774,7 @@ export async function createInquiry(data: {
   name: string;
   email: string;
   phone?: string;
+  preferredContactMethod?: "email" | "phone";
   subject?: string;
   message: string;
 }): Promise<MockInquiry> {
@@ -1811,6 +1814,7 @@ export async function createInquiry(data: {
         name: data.name,
         email: data.email,
         phone: data.phone,
+        preferredContactMethod: data.preferredContactMethod || "email",
         subject: data.subject || "Artwork Inquiry",
         message: data.message,
         status: "new",
@@ -1818,7 +1822,7 @@ export async function createInquiry(data: {
       .returning();
 
     const inq = inserted[0];
-    recordActivityLog("CREATE_INQUIRY", "inquiry", `Inquiry received from ${data.name}`, inq?.id);
+    recordActivityLog("CREATE_INQUIRY", "inquiry", `Inquiry received from ${data.name} (Prefers: ${data.preferredContactMethod || "email"})`, inq?.id);
 
     return {
       id: inq.id,
@@ -1827,6 +1831,7 @@ export async function createInquiry(data: {
       name: inq.name,
       email: inq.email,
       phone: inq.phone || undefined,
+      preferredContactMethod: (inq as any).preferredContactMethod || data.preferredContactMethod || "email",
       subject: inq.subject,
       message: inq.message,
       status: inq.status as any,

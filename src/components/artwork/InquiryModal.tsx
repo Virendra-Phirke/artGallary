@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { X, Send, CheckCircle2, ShieldAlert, ArrowRight } from "lucide-react";
+import { X, Send, CheckCircle2, ShieldAlert, ArrowRight, Mail, Phone, PhoneCall } from "lucide-react";
 import { formatCurrency, formatDimensions } from "@/lib/utils";
 
 interface ArtworkSummary {
@@ -29,6 +29,7 @@ export function InquiryModal({ artwork, isOpen, onClose }: InquiryModalProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [preferredContactMethod, setPreferredContactMethod] = useState<"email" | "phone">("email");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -55,6 +56,7 @@ export function InquiryModal({ artwork, isOpen, onClose }: InquiryModalProps) {
         const parsed = JSON.parse(savedDraft);
         if (parsed.message) setMessage(parsed.message);
         if (parsed.phone) setPhone(parsed.phone);
+        if (parsed.preferredContactMethod) setPreferredContactMethod(parsed.preferredContactMethod);
         if (parsed.name && !name) setName(parsed.name);
         if (parsed.email && !email) setEmail(parsed.email);
       } catch {}
@@ -71,7 +73,7 @@ export function InquiryModal({ artwork, isOpen, onClose }: InquiryModalProps) {
     setMessage(val);
     sessionStorage.setItem(
       `inquiry_draft_${artwork.slug}`,
-      JSON.stringify({ name, email, phone, message: val })
+      JSON.stringify({ name, email, phone, preferredContactMethod, message: val })
     );
   };
 
@@ -79,11 +81,16 @@ export function InquiryModal({ artwork, isOpen, onClose }: InquiryModalProps) {
     e.preventDefault();
     setError(null);
 
+    if (preferredContactMethod === "phone" && !phone.trim()) {
+      setError("Please provide your mobile number so our curatorial team can contact you directly.");
+      return;
+    }
+
     // If unauthenticated, redirect to login while preserving destination and message
     if (!user) {
       sessionStorage.setItem(
         `inquiry_draft_${artwork.slug}`,
-        JSON.stringify({ name, email, phone, message })
+        JSON.stringify({ name, email, phone, preferredContactMethod, message })
       );
       window.location.href = `/login?redirect=${encodeURIComponent(
         `/artwork/${artwork.slug}?inquire=open`
@@ -100,7 +107,8 @@ export function InquiryModal({ artwork, isOpen, onClose }: InquiryModalProps) {
           artworkId: artwork.id,
           name: name || user.name,
           email: email || user.email,
-          phone,
+          phone: phone.trim() || undefined,
+          preferredContactMethod,
           subject: `Acquisition Inquiry: ${artwork.title}`,
           message,
         }),
@@ -237,12 +245,53 @@ export function InquiryModal({ artwork, isOpen, onClose }: InquiryModalProps) {
                 </div>
               </div>
 
+              {/* Preferred Response Method Selection Cards */}
+              <div className="space-y-1.5">
+                <label className="block text-xs uppercase tracking-wider text-zinc-400">
+                  Preferred Response Channel
+                </label>
+                <div className="grid grid-cols-2 gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => setPreferredContactMethod("email")}
+                    className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer flex items-center gap-2.5 ${
+                      preferredContactMethod === "email"
+                        ? "bg-[#1f202b] border-[#d1a86e] text-white"
+                        : "bg-[#161720] border-white/5 text-zinc-400 hover:border-white/10"
+                    }`}
+                  >
+                    <Mail className={`w-3.5 h-3.5 shrink-0 ${preferredContactMethod === "email" ? "text-[#d1a86e]" : "text-zinc-500"}`} />
+                    <div className="min-w-0">
+                      <div className="text-xs font-medium text-white">Email Response</div>
+                      <div className="text-[10px] text-zinc-400 truncate">Written appraisal</div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setPreferredContactMethod("phone")}
+                    className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer flex items-center gap-2.5 ${
+                      preferredContactMethod === "phone"
+                        ? "bg-[#1f202b] border-[#d1a86e] text-white"
+                        : "bg-[#161720] border-white/5 text-zinc-400 hover:border-white/10"
+                    }`}
+                  >
+                    <PhoneCall className={`w-3.5 h-3.5 shrink-0 ${preferredContactMethod === "phone" ? "text-[#d1a86e]" : "text-zinc-500"}`} />
+                    <div className="min-w-0">
+                      <div className="text-xs font-medium text-white">Direct Phone Call</div>
+                      <div className="text-[10px] text-zinc-400 truncate">Call or WhatsApp</div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
               <div>
                 <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-1.5">
-                  Phone (Optional for shipping logistics)
+                  Mobile Number {preferredContactMethod === "phone" ? <span className="text-red-400">* (Required for Direct Call)</span> : <span className="text-zinc-500">(Optional)</span>}
                 </label>
                 <input
                   type="tel"
+                  required={preferredContactMethod === "phone"}
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="+1 (555) 019-2834"

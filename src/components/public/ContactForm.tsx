@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Send, CheckCircle2, ShieldAlert, ArrowRight } from "lucide-react";
+import { Send, CheckCircle2, ShieldAlert, ArrowRight, Mail, Phone, PhoneCall } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,6 +14,7 @@ export function ContactForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [preferredContactMethod, setPreferredContactMethod] = useState<"email" | "phone">("email");
   const [subject, setSubject] = useState("Private Acquisition Inquiry");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -41,6 +42,7 @@ export function ContactForm() {
         if (parsed.name && !name) setName(parsed.name);
         if (parsed.email && !email) setEmail(parsed.email);
         if (parsed.phone) setPhone(parsed.phone);
+        if (parsed.preferredContactMethod) setPreferredContactMethod(parsed.preferredContactMethod);
         if (parsed.subject) setSubject(parsed.subject);
         if (parsed.message) setMessage(parsed.message);
       } catch {}
@@ -52,7 +54,7 @@ export function ContactForm() {
     setMessage(val);
     sessionStorage.setItem(
       "general_contact_draft",
-      JSON.stringify({ name, email, phone, subject, message: val })
+      JSON.stringify({ name, email, phone, preferredContactMethod, subject, message: val })
     );
   };
 
@@ -60,11 +62,16 @@ export function ContactForm() {
     e.preventDefault();
     setError(null);
 
+    if (preferredContactMethod === "phone" && !phone.trim()) {
+      setError("Please provide your mobile number so our curatorial team can contact you directly.");
+      return;
+    }
+
     // If not authenticated, preserve message and redirect to login
     if (!user) {
       sessionStorage.setItem(
         "general_contact_draft",
-        JSON.stringify({ name, email, phone, subject, message })
+        JSON.stringify({ name, email, phone, preferredContactMethod, subject, message })
       );
       window.location.href = `/login?redirect=${encodeURIComponent("/#contact?restored=1")}`;
       return;
@@ -78,7 +85,8 @@ export function ContactForm() {
         body: JSON.stringify({
           name: name || user.name,
           email: email || user.email,
-          phone,
+          phone: phone.trim() || undefined,
+          preferredContactMethod,
           subject,
           message,
         }),
@@ -106,12 +114,13 @@ export function ContactForm() {
         </div>
         <h2 className="font-serif text-2xl sm:text-3xl text-white">Inquiry Transmitted</h2>
         <p className="text-xs sm:text-sm text-[#a6aabf] max-w-md mx-auto leading-relaxed">
-          Thank you for corresponding with Madame Vance&apos;s curatorial office. Our gallery liaison will reply within two business days.
+          Thank you for corresponding with our curatorial office. Our gallery liaison will contact you via{" "}
+          <strong className="text-[#d1a86e]">{preferredContactMethod === "phone" ? "direct phone call / mobile" : "email"}</strong> within two business days.
         </p>
         <div className="pt-4">
           <Button asChild variant="outline" size="sm" className="text-xs uppercase tracking-wider text-[#d1a86e]">
-            <Link href="/account/inquiries">
-              Review Your Inquiries
+            <Link href="/account?tab=inquiries">
+              Review Your Inquiries Ledger
             </Link>
           </Button>
         </div>
@@ -126,7 +135,7 @@ export function ContactForm() {
           <div className="p-3.5 bg-amber-950/20 border border-amber-800/40 rounded-xl text-xs text-amber-200/90 flex items-start gap-2.5">
             <ShieldAlert className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5" />
             <p className="leading-relaxed">
-              <strong>Authentication Notice:</strong> Submitting inquiries to Elena Vance requires a registered account. Your message is automatically preserved across login.
+              <strong>Authentication Notice:</strong> Submitting inquiries requires a registered account. Your message is automatically preserved across login.
             </p>
           </div>
         )}
@@ -167,16 +176,61 @@ export function ContactForm() {
           </div>
         </div>
 
+        {/* Preferred Response Method Selection Cards */}
+        <div className="space-y-2">
+          <label className="block text-[11px] uppercase tracking-wider text-zinc-400 font-medium">
+            How would you prefer our curatorial desk to respond? <span className="text-red-400">*</span>
+          </label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setPreferredContactMethod("email")}
+              className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex items-start gap-3 ${
+                preferredContactMethod === "email"
+                  ? "bg-[#1f202b] border-[#d1a86e] text-white shadow-md shadow-[#d1a86e]/10"
+                  : "bg-[#161720] border-white/5 text-zinc-400 hover:border-white/10"
+              }`}
+            >
+              <div className={`p-2 rounded-lg shrink-0 ${preferredContactMethod === "email" ? "bg-[#d1a86e]/15 text-[#d1a86e]" : "bg-white/5 text-zinc-400"}`}>
+                <Mail className="w-4 h-4" />
+              </div>
+              <div className="min-w-0">
+                <div className="text-xs font-semibold text-white">Email Response</div>
+                <div className="text-[11px] text-zinc-400 font-light">Curator will send formal written appraisal via email</div>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setPreferredContactMethod("phone")}
+              className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex items-start gap-3 ${
+                preferredContactMethod === "phone"
+                  ? "bg-[#1f202b] border-[#d1a86e] text-white shadow-md shadow-[#d1a86e]/10"
+                  : "bg-[#161720] border-white/5 text-zinc-400 hover:border-white/10"
+              }`}
+            >
+              <div className={`p-2 rounded-lg shrink-0 ${preferredContactMethod === "phone" ? "bg-[#d1a86e]/15 text-[#d1a86e]" : "bg-white/5 text-zinc-400"}`}>
+                <PhoneCall className="w-4 h-4" />
+              </div>
+              <div className="min-w-0">
+                <div className="text-xs font-semibold text-white">Direct Phone Call</div>
+                <div className="text-[11px] text-zinc-400 font-light">Curator will call or WhatsApp your mobile number</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1.5">
             <label className="block text-[11px] uppercase tracking-wider text-zinc-400 font-medium">
-              Phone (Optional)
+              Mobile Number {preferredContactMethod === "phone" ? <span className="text-red-400">* (Required for Direct Call)</span> : <span className="text-zinc-500 font-normal">(Optional)</span>}
             </label>
             <Input
               type="tel"
+              required={preferredContactMethod === "phone"}
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              placeholder="+33 1 42 00 00 00"
+              placeholder="+33 6 12 34 56 78"
               className="h-11 bg-[#1a1c23] border-[#262833] text-sm"
             />
           </div>
@@ -235,3 +289,4 @@ export function ContactForm() {
     </Card>
   );
 }
+

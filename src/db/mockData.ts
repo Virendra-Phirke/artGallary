@@ -88,9 +88,11 @@ export interface MockInquiry {
   name: string;
   email: string;
   phone?: string;
+  preferredContactMethod?: "email" | "phone";
   subject: string;
   message: string;
   status: "new" | "read" | "replied" | "closed";
+  adminNotes?: string;
   createdAt: string;
 }
 
@@ -683,6 +685,7 @@ export const INITIAL_INQUIRIES: MockInquiry[] = [
     name: "Arthur Pendelton",
     email: "a.pendelton@arch-advisors.ch",
     phone: "+41 22 819 4000",
+    preferredContactMethod: "phone",
     subject: "Private Collection Acquisition Inquiry",
     message: "We are currently completing an architectural residence on Lake Geneva and would like to inquire whether 'Solitude in Ultramarine' is available for immediate acquisition, including museum-grade crating to Geneva.",
     status: "new" as const,
@@ -695,6 +698,7 @@ export const INITIAL_INQUIRIES: MockInquiry[] = [
     name: "Claire Delacroix",
     email: "c.delacroix@fondation-arts.fr",
     phone: "+33 6 12 34 56 78",
+    preferredContactMethod: "email",
     subject: "Exhibition Loan Proposal for Autumn 2026",
     message: "Greetings Madame Vance. On behalf of the contemporary curatorial board, we would like to formally request 'Aurora at the Meridian' for our upcoming retrospective in Lyon.",
     status: "read" as const,

@@ -8,6 +8,7 @@ import { EmailCampaign, EmailJob } from "@/db/schema/campaigns";
 import {
   Mail,
   Phone,
+  PhoneCall,
   Clock,
   CheckCircle2,
   AlertTriangle,
@@ -27,6 +28,8 @@ import {
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -81,6 +84,94 @@ export function InquiriesManagerClient({
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [previewEmail, setPreviewEmail] = useState<SentEmailRecord | null>(null);
   const [previewInquiry, setPreviewInquiry] = useState<MockInquiry | null>(null);
+
+  // In-Admin Email Sending Modal State
+  const [emailComposerInquiry, setEmailComposerInquiry] = useState<MockInquiry | null>(null);
+  const [emailSubject, setEmailSubject] = useState("");
+  const [emailBody, setEmailBody] = useState("");
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [emailSendStatus, setEmailSendStatus] = useState<"idle" | "success" | "error">("idle");
+  const [emailSendError, setEmailSendError] = useState<string | null>(null);
+  const [isLoggingPhone, setIsLoggingPhone] = useState(false);
+
+  const openEmailComposer = (inq: MockInquiry) => {
+    setEmailComposerInquiry(inq);
+    setEmailSubject(inq.subject ? `Re: ${inq.subject}` : "Re: Artwork Acquisition Inquiry");
+    setEmailSendStatus("idle");
+    setEmailSendError(null);
+    const firstName = inq.name.split(" ")[0] || "Collector";
+    const artwork = inq.artworkTitle || "the artwork";
+    setEmailBody(
+      `Dear ${firstName},\n\nThank you for contacting our curatorial office regarding "${artwork}".\n\nWe are pleased to inform you that this piece is available and currently preserved in pristine condition in our studio archive. We have placed a preliminary reserve on it for your consideration.\n\nPlease let us know if you have specific crating preferences (such as museum-grade climate-controlled crating) or if you would like to arrange a private atelier viewing.\n\nWarm regards,\nHelena Vance Curatorial Office`
+    );
+  };
+
+  const applyEmailTemplate = (templateKey: "availability" | "crating" | "viewing" | "phoneFollowup") => {
+    if (!emailComposerInquiry) return;
+    const firstName = emailComposerInquiry.name.split(" ")[0] || "Collector";
+    const artwork = emailComposerInquiry.artworkTitle || "the artwork";
+
+    switch (templateKey) {
+      case "availability":
+        setEmailBody(
+          `Dear ${firstName},\n\nThank you for contacting our curatorial office regarding "${artwork}".\n\nWe are pleased to inform you that this piece is available and currently preserved in pristine condition in our studio archive. We have placed a preliminary reserve on it for your consideration.\n\nPlease let us know if you have specific crating preferences (such as museum-grade climate-controlled crating) or if you would like to arrange a private atelier viewing.\n\nWarm regards,\nHelena Vance Curatorial Office`
+        );
+        break;
+      case "crating":
+        setEmailBody(
+          `Dear ${firstName},\n\nFollowing your inquiry for "${artwork}", our fine-art logistics team has reviewed transport protocols for your destination.\n\nWe provide museum-grade climate-controlled wooden crating with specialized shock-absorption, accompanied by full commercial transit insurance and customs clearance.\n\nPlease advise on your delivery timeline so we can finalize the freight schedule.\n\nWarm regards,\nHelena Vance Curatorial Office`
+        );
+        break;
+      case "viewing":
+        setEmailBody(
+          `Dear ${firstName},\n\nWe would be delighted to invite you for a private atelier viewing of "${artwork}" with the artist, or alternatively arrange a bespoke 1-on-1 virtual walkthrough.\n\nPlease let us know your preferred dates and whether you will be accompanied by an art advisor.\n\nWarm regards,\nHelena Vance Curatorial Office`
+        );
+        break;
+      case "phoneFollowup":
+        setEmailBody(
+          `Dear ${firstName},\n\nThank you for your telephone consultation today regarding "${artwork}".\n\nAs discussed during our call, we have logged your specifications in our curatorial registry. Please review the attached notes and let us know if any further details are required.\n\nWarm regards,\nHelena Vance Curatorial Office`
+        );
+        break;
+    }
+  };
+
+  const handleSendAdminEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!emailComposerInquiry || !emailBody.trim()) return;
+
+    setIsSendingEmail(true);
+    setEmailSendError(null);
+    try {
+      const res = await fetch("/api/admin/inquiries/reply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          inquiryId: emailComposerInquiry.id,
+          recipientEmail: emailComposerInquiry.email,
+          recipientName: emailComposerInquiry.name,
+          subject: emailSubject.trim() || "Re: Artwork Inquiry",
+          message: emailBody.trim(),
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to send email reply.");
+      }
+
+      setEmailSendStatus("success");
+      handleStatusChange(emailComposerInquiry.id, "replied");
+
+      setTimeout(() => {
+        setEmailComposerInquiry(null);
+        setEmailSendStatus("idle");
+      }, 1200);
+    } catch (err: any) {
+      setEmailSendError(err.message || "Failed to send email. Please try again.");
+    } finally {
+      setIsSendingEmail(false);
+    }
+  };
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -401,6 +492,27 @@ export function InquiriesManagerClient({
                         {inq.status === "read" && <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />}
                         {inq.status === "replied" && <CheckCircle2 className="w-3 h-3 text-emerald-300" />}
                         <span>{inq.status === "read" ? "In Review" : inq.status}</span>
+                      </span>
+
+                      {/* Response Preference Badge */}
+                      <span
+                        className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-mono ${
+                          inq.preferredContactMethod === "phone"
+                            ? "bg-emerald-950/70 text-emerald-400 border border-emerald-800/40"
+                            : "bg-blue-950/70 text-blue-400 border border-blue-800/40"
+                        }`}
+                      >
+                        {inq.preferredContactMethod === "phone" ? (
+                          <>
+                            <Phone className="w-2.5 h-2.5" />
+                            <span>Prefers Call</span>
+                          </>
+                        ) : (
+                          <>
+                            <Mail className="w-2.5 h-2.5" />
+                            <span>Prefers Email</span>
+                          </>
+                        )}
                       </span>
 
                       {inq.artworkTitle && (
@@ -867,6 +979,58 @@ export function InquiriesManagerClient({
             </div>
 
             <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4 bg-[#0d0e13]">
+              {/* Requested Response Method Banner */}
+              <div
+                className={`p-3 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 ${
+                  previewInquiry.preferredContactMethod === "phone"
+                    ? "bg-emerald-950/30 border-emerald-800/40 text-emerald-300"
+                    : "bg-blue-950/30 border-blue-800/40 text-blue-300"
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  {previewInquiry.preferredContactMethod === "phone" ? (
+                    <PhoneCall className="w-4 h-4 text-emerald-400 shrink-0" />
+                  ) : (
+                    <Mail className="w-4 h-4 text-blue-400 shrink-0" />
+                  )}
+                  <div>
+                    <span className="text-[10px] uppercase font-mono tracking-wider block font-semibold">
+                      Preferred Response Channel
+                    </span>
+                    <span className="text-xs font-medium text-white">
+                      {previewInquiry.preferredContactMethod === "phone"
+                        ? "Collector requested direct contact via Phone Call / Mobile"
+                        : "Collector requested formal Email correspondence"}
+                    </span>
+                  </div>
+                </div>
+
+                {previewInquiry.phone && (
+                  <div className="flex items-center gap-1.5 shrink-0 self-end sm:self-auto">
+                    <a
+                      href={`tel:${previewInquiry.phone}`}
+                      className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1 shadow transition-all"
+                      title="Call collector mobile"
+                    >
+                      <Phone className="w-3 h-3" />
+                      <span>Direct Call</span>
+                    </a>
+                    <a
+                      href={`https://wa.me/${previewInquiry.phone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
+                        `Hello ${previewInquiry.name}, this is the Curatorial Office regarding your inquiry about "${previewInquiry.artworkTitle || "artwork"}".`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-2.5 py-1 bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-lg text-xs font-semibold flex items-center gap-1 shadow transition-all"
+                      title="Open WhatsApp chat"
+                    >
+                      <MessageSquare className="w-3 h-3" />
+                      <span>WhatsApp</span>
+                    </a>
+                  </div>
+                )}
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 bg-[#14151f] rounded-2xl border border-white/5">
                 <div>
                   <span className="text-[10px] uppercase tracking-wider text-zinc-500 font-mono block">Email</span>
@@ -933,15 +1097,49 @@ export function InquiriesManagerClient({
                 >
                   Close
                 </Button>
+
+                {previewInquiry.phone && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={isLoggingPhone}
+                    onClick={async () => {
+                      setIsLoggingPhone(true);
+                      try {
+                        await fetch("/api/admin/inquiries/log-phone", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            inquiryId: previewInquiry.id,
+                            phone: previewInquiry.phone,
+                          }),
+                        });
+                        handleStatusChange(previewInquiry.id, "replied");
+                        setPreviewInquiry((prev) => (prev ? { ...prev, status: "replied" } : null));
+                      } catch (e) {
+                        console.error("Failed to log phone contact:", e);
+                      } finally {
+                        setIsLoggingPhone(false);
+                      }
+                    }}
+                    className="border-emerald-800/60 bg-emerald-950/40 hover:bg-emerald-900/60 text-emerald-300 text-xs gap-1.5 rounded-xl px-3 cursor-pointer"
+                  >
+                    <PhoneCall className="w-3 h-3" />
+                    <span>{isLoggingPhone ? "Logging..." : "Mark as Called"}</span>
+                  </Button>
+                )}
+
                 <Button
-                  asChild
                   size="sm"
+                  onClick={() => {
+                    const inq = previewInquiry;
+                    setPreviewInquiry(null);
+                    openEmailComposer(inq);
+                  }}
                   className="bg-[#d1a86e] hover:bg-[#c49a5f] text-black font-semibold text-xs gap-1.5 rounded-xl border-none px-4 cursor-pointer shadow-lg"
                 >
-                  <a href={`mailto:${previewInquiry.email}?subject=Re: ${encodeURIComponent(previewInquiry.subject || "Artwork Inquiry")}`}>
-                    <Mail className="w-3.5 h-3.5" />
-                    <span>Reply via Email</span>
-                  </a>
+                  <Mail className="w-3.5 h-3.5" />
+                  <span>Write Email</span>
                 </Button>
               </div>
             </div>
@@ -991,6 +1189,146 @@ export function InquiriesManagerClient({
           </div>
         </div>
       )}
+
+      {/* ==================================================================== */}
+      {/* IN-ADMIN EMAIL COMPOSER MODAL                                        */}
+      {/* ==================================================================== */}
+      {emailComposerInquiry && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-200">
+          <div className="bg-[#121319] rounded-2xl sm:rounded-3xl w-full max-w-2xl max-h-[92vh] flex flex-col overflow-hidden shadow-2xl border border-white/10">
+            {/* Modal Header */}
+            <div className="p-4 sm:p-5 bg-[#161720] flex items-center justify-between border-b border-white/5">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-[#d1a86e]/15 text-[#d1a86e] flex items-center justify-center border border-[#d1a86e]/30">
+                  <Mail className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-serif text-base text-white">Curatorial Email Dispatch</h3>
+                  <p className="text-[11px] text-zinc-400 font-mono">
+                    To: {emailComposerInquiry.name} ({emailComposerInquiry.email})
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setEmailComposerInquiry(null)}
+                className="p-1.5 text-zinc-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <form onSubmit={handleSendAdminEmail} className="p-4 sm:p-6 overflow-y-auto space-y-4 text-xs">
+              {emailSendError && (
+                <div className="p-3 bg-red-950/40 border border-red-800/60 rounded-xl text-red-300">
+                  {emailSendError}
+                </div>
+              )}
+
+              {emailSendStatus === "success" && (
+                <div className="p-3 bg-emerald-950/40 border border-emerald-800/60 rounded-xl text-emerald-300 flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <span>Email dispatched successfully to {emailComposerInquiry.email}! Updating status...</span>
+                </div>
+              )}
+
+              {/* Quick Curatorial Templates */}
+              <div className="space-y-1.5">
+                <span className="text-[10px] uppercase font-mono tracking-wider text-zinc-400 block">
+                  Quick Curatorial Templates
+                </span>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => applyEmailTemplate("availability")}
+                    className="px-2.5 py-1 rounded-full bg-[#181924] hover:bg-[#202232] border border-white/5 hover:border-[#d1a86e]/40 text-[10px] text-zinc-300 transition-colors cursor-pointer"
+                  >
+                    1. Availability &amp; Reserve Lock
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => applyEmailTemplate("crating")}
+                    className="px-2.5 py-1 rounded-full bg-[#181924] hover:bg-[#202232] border border-white/5 hover:border-[#d1a86e]/40 text-[10px] text-zinc-300 transition-colors cursor-pointer"
+                  >
+                    2. Crating &amp; Freight Quote
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => applyEmailTemplate("viewing")}
+                    className="px-2.5 py-1 rounded-full bg-[#181924] hover:bg-[#202232] border border-white/5 hover:border-[#d1a86e]/40 text-[10px] text-zinc-300 transition-colors cursor-pointer"
+                  >
+                    3. Private Atelier Viewing
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => applyEmailTemplate("phoneFollowup")}
+                    className="px-2.5 py-1 rounded-full bg-[#181924] hover:bg-[#202232] border border-white/5 hover:border-[#d1a86e]/40 text-[10px] text-zinc-300 transition-colors cursor-pointer"
+                  >
+                    4. Phone Consultation Follow-up
+                  </button>
+                </div>
+              </div>
+
+              {/* Subject Line */}
+              <div className="space-y-1">
+                <label className="block text-[10px] uppercase font-mono text-zinc-400">
+                  Subject Line
+                </label>
+                <Input
+                  type="text"
+                  required
+                  value={emailSubject}
+                  onChange={(e) => setEmailSubject(e.target.value)}
+                  className="h-9 bg-[#171822] border-white/10 text-xs text-white"
+                />
+              </div>
+
+              {/* Body Message */}
+              <div className="space-y-1">
+                <label className="block text-[10px] uppercase font-mono text-zinc-400">
+                  Curatorial Email Content
+                </label>
+                <Textarea
+                  rows={8}
+                  required
+                  value={emailBody}
+                  onChange={(e) => setEmailBody(e.target.value)}
+                  className="bg-[#171822] border-white/10 text-xs text-zinc-200 placeholder:text-zinc-600 focus-visible:ring-[#d1a86e] font-sans leading-relaxed"
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="pt-2 flex items-center justify-between gap-2 border-t border-white/5">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setEmailComposerInquiry(null)}
+                  className="h-8 px-3 rounded-full text-zinc-400 hover:text-white text-xs cursor-pointer"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isSendingEmail || emailSendStatus === "success"}
+                  size="sm"
+                  className="h-8 px-5 rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-xs font-semibold uppercase tracking-wider shadow cursor-pointer transition-all active:scale-[0.98] gap-1.5"
+                >
+                  {isSendingEmail ? (
+                    <span>Dispatching...</span>
+                  ) : (
+                    <>
+                      <span>Send Email to Collector</span>
+                      <Send className="w-3.5 h-3.5" />
+                    </>
+                  )}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
