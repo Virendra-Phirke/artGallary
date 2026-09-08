@@ -29,7 +29,7 @@ const ArStudioViewer = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-[450px] rounded-xl bg-[#0b0c10] border border-[#262833] flex flex-col items-center justify-center gap-3 text-zinc-500">
+      <div className="h-[450px] rounded-2xl bg-[#121319] shadow-xl shadow-black/40 flex flex-col items-center justify-center gap-3 text-zinc-500">
         <Loader2 className="w-8 h-8 animate-spin text-[#d1a86e]" />
         <span className="text-xs font-mono tracking-wider uppercase">Loading 3D AR Studio Engine...</span>
       </div>
@@ -357,12 +357,12 @@ export function ArtworkFormClient({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-10 w-full">
-      {/* Top Breadcrumb & Action Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#1c1d25] pb-6">
+      {/* Top Breadcrumb & Action Header - Solid Tier 1 Master Block */}
+      <div className="bg-[#121319] p-6 sm:p-8 rounded-3xl shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
           <Link
             href="/admin/artworks"
-            className="inline-flex items-center gap-1.5 text-xs uppercase tracking-widest text-zinc-500 hover:text-white transition-colors mb-2"
+            className="inline-flex items-center gap-1.5 text-xs uppercase tracking-widest text-zinc-400 hover:text-white transition-colors mb-2 bg-[#1a1b26] px-3 py-1 rounded-full"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Back to Artworks</span>
@@ -376,7 +376,7 @@ export function ArtworkFormClient({
           <button
             type="button"
             onClick={() => setIsTestArOpen(true)}
-            className="flex items-center gap-1.5 bg-[#18191e] hover:bg-[#22232a] border border-[#d1a86e]/40 text-[#d1a86e] px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors shadow-sm"
+            className="flex items-center gap-1.5 bg-[#1a1b26] hover:bg-[#222432] text-[#d1a86e] px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-colors shadow-sm cursor-pointer"
             title="Launch live 1:1 AR and 3D room calibration test"
           >
             <Sparkles className="w-3.5 h-3.5" />
@@ -387,7 +387,7 @@ export function ArtworkFormClient({
             <Link
               href={`/artwork/${slug}`}
               target="_blank"
-              className="flex items-center gap-1.5 bg-[#18191e] hover:bg-[#22232a] border border-[#262833] text-zinc-300 hover:text-white px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs font-medium uppercase tracking-wider transition-colors"
+              className="flex items-center gap-1.5 bg-[#1a1b26] hover:bg-[#222432] text-zinc-300 hover:text-white px-4 py-2.5 rounded-xl text-xs font-medium uppercase tracking-wider transition-colors shadow-sm"
             >
               <Eye className="w-3.5 h-3.5" />
               <span>Preview</span>
@@ -402,7 +402,7 @@ export function ArtworkFormClient({
               uploadStatus === "uploading" ||
               uploadStatus === "processing"
             }
-            className="flex items-center gap-2 bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] px-5 sm:px-6 py-2 sm:py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all shadow-lg shadow-[#d1a86e]/10 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] px-6 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all shadow-md shadow-[#d1a86e]/20 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             {isUploading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -423,17 +423,17 @@ export function ArtworkFormClient({
       </div>
 
       {error && (
-        <div className="p-4 bg-red-950/40 border border-red-800/60 rounded-xl text-xs text-red-300">
+        <div className="p-5 bg-[#2d1616] rounded-2xl text-xs text-red-300 shadow-md">
           {error}
         </div>
       )}
 
       {/* Two Column Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left Column: Metadata Fields (7 Cols) */}
         <div className="lg:col-span-7 space-y-6">
-          <div className="p-6 bg-[#14151a] border border-[#262833] rounded-2xl space-y-4">
-            <h2 className="font-serif text-lg text-white">General Information</h2>
+          <div className="p-6 sm:p-8 bg-[#121319] rounded-3xl shadow-xl shadow-black/40 space-y-5">
+            <h2 className="font-serif text-xl text-white">General Information</h2>
 
             <div>
               <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-1.5">
@@ -445,7 +445,7 @@ export function ArtworkFormClient({
                 value={title}
                 onChange={handleTitleChange}
                 placeholder="e.g. Solitude in Ultramarine"
-                className="w-full bg-[#1a1c23] border border-[#262833] rounded-lg px-3.5 py-2.5 text-sm text-white placeholder-zinc-600 focus:border-[#d1a86e] focus:outline-none"
+                className="w-full bg-[#1a1b26] rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-[#d1a86e]"
               />
             </div>
 
@@ -459,7 +459,7 @@ export function ArtworkFormClient({
                 value={slug}
                 onChange={(e) => setSlug(e.target.value)}
                 placeholder="e.g. solitude-in-ultramarine"
-                className="w-full bg-[#1a1c23] border border-[#262833] rounded-lg px-3.5 py-2.5 text-sm text-white font-mono placeholder-zinc-600 focus:border-[#d1a86e] focus:outline-none"
+                className="w-full bg-[#1a1b26] rounded-xl px-4 py-2.5 text-sm text-white font-mono placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-[#d1a86e]"
               />
             </div>
 
@@ -473,7 +473,7 @@ export function ArtworkFormClient({
                   required
                   value={year}
                   onChange={(e) => setYear(parseInt(e.target.value) || 2026)}
-                  className="w-full bg-[#1a1c23] border border-[#262833] rounded-lg px-3.5 py-2.5 text-sm text-white focus:border-[#d1a86e] focus:outline-none"
+                  className="w-full bg-[#1a1b26] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#d1a86e]"
                 />
               </div>
 
@@ -490,7 +490,7 @@ export function ArtworkFormClient({
                       setNotifySubscribers(true);
                     }
                   }}
-                  className="w-full bg-[#1a1c23] border border-[#262833] rounded-lg px-3.5 py-2.5 text-sm text-white focus:border-[#d1a86e] focus:outline-none cursor-pointer"
+                  className="w-full bg-[#1a1b26] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#d1a86e] cursor-pointer"
                 >
                   <option value="draft">Draft (Private)</option>
                   <option value="published">Published (Catalog Visible)</option>
@@ -501,10 +501,10 @@ export function ArtworkFormClient({
               </div>
 
               {status === "published" && (
-                <div className="sm:col-span-2 bg-[#121318] border border-[#2b2d3d] rounded-xl p-4 space-y-3">
+                <div className="sm:col-span-2 bg-[#161722] rounded-2xl p-5 space-y-3">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-amber-950/60 border border-amber-800/60 flex items-center justify-center text-[#d1a86e] shrink-0 mt-0.5">
+                      <div className="w-8 h-8 rounded-full bg-[#251e16] flex items-center justify-center text-[#d1a86e] shrink-0 mt-0.5">
                         <Mail className="w-4 h-4" />
                       </div>
                       <div className="space-y-1">
@@ -514,7 +514,7 @@ export function ArtworkFormClient({
                         >
                           <span>Email Announcement Broadcast</span>
                           {subscriberCount !== null && (
-                            <span className="text-[10px] lowercase bg-[#1c1e28] text-amber-300 px-2 py-0.5 rounded-full border border-amber-900/40">
+                            <span className="text-[10px] lowercase bg-[#251e16] text-[#d1a86e] px-2.5 py-0.5 rounded-full font-mono">
                               {subscriberCount} interested collector{subscriberCount === 1 ? "" : "s"}
                             </span>
                           )}
@@ -535,8 +535,8 @@ export function ArtworkFormClient({
                   </div>
 
                   {(initialArtwork as any)?.notifiedSubscribersAt && (
-                    <div className="text-[11px] text-zinc-500 bg-[#0d0e12] p-2.5 rounded border border-[#20222c] flex items-center justify-between gap-2">
-                      <span className="flex items-center gap-1.5 text-emerald-400/90">
+                    <div className="text-[11px] text-zinc-400 bg-[#121319] p-3 rounded-xl flex items-center justify-between gap-2 shadow-inner">
+                      <span className="flex items-center gap-1.5 text-emerald-400">
                         <CheckCircle2 className="w-3.5 h-3.5" />
                         <span>Collectors notified on {new Date((initialArtwork as any).notifiedSubscribersAt).toLocaleDateString()}</span>
                       </span>
@@ -545,7 +545,7 @@ export function ArtworkFormClient({
                   )}
 
                   {!isNew && initialArtwork?.id && (
-                    <div className="pt-1 flex items-center justify-between border-t border-[#1e202b]">
+                    <div className="pt-2 flex items-center justify-between">
                       <button
                         type="button"
                         onClick={handleSendCuratorPreview}
@@ -575,7 +575,7 @@ export function ArtworkFormClient({
                 value={medium}
                 onChange={(e) => setMedium(e.target.value)}
                 placeholder="e.g. Oil, crushed lapis lazuli and gold leaf on Belgian linen"
-                className="w-full bg-[#1a1c23] border border-[#262833] rounded-lg px-3.5 py-2.5 text-sm text-white placeholder-zinc-600 focus:border-[#d1a86e] focus:outline-none"
+                className="w-full bg-[#1a1b26] rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-[#d1a86e]"
               />
             </div>
 
@@ -586,7 +586,7 @@ export function ArtworkFormClient({
               <select
                 value={collectionSlug}
                 onChange={(e) => setCollectionSlug(e.target.value)}
-                className="w-full bg-[#1a1c23] border border-[#262833] rounded-lg px-3.5 py-2.5 text-sm text-white focus:border-[#d1a86e] focus:outline-none"
+                className="w-full bg-[#1a1b26] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#d1a86e] cursor-pointer"
               >
                 <option value="none">None (Independent Canvas)</option>
                 {collections.map((col) => (
@@ -607,7 +607,7 @@ export function ArtworkFormClient({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Brief evocative description for cards and search..."
-                className="w-full bg-[#1a1c23] border border-[#262833] rounded-lg px-3.5 py-2.5 text-sm text-white placeholder-zinc-600 focus:border-[#d1a86e] focus:outline-none"
+                className="w-full bg-[#1a1b26] rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-[#d1a86e]"
               />
             </div>
 
@@ -620,14 +620,14 @@ export function ArtworkFormClient({
                 value={longDescription}
                 onChange={(e) => setLongDescription(e.target.value)}
                 placeholder="Detailed curatorial essay, technique notes, and history..."
-                className="w-full bg-[#1a1c23] border border-[#262833] rounded-lg px-3.5 py-2.5 text-sm text-white placeholder-zinc-600 focus:border-[#d1a86e] focus:outline-none"
+                className="w-full bg-[#1a1b26] rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-[#d1a86e]"
               />
             </div>
           </div>
 
-          {/* Dimensions & Pricing */}
-          <div className="p-6 bg-[#14151a] border border-[#262833] rounded-2xl space-y-4">
-            <h2 className="font-serif text-lg text-white">Dimensions &amp; Valuation</h2>
+          {/* Dimensions & Pricing - Solid Tier 1 Block */}
+          <div className="p-6 sm:p-8 bg-[#121319] rounded-3xl shadow-xl shadow-black/40 space-y-5">
+            <h2 className="font-serif text-xl text-white">Dimensions &amp; Valuation</h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
               <div>
@@ -640,7 +640,7 @@ export function ArtworkFormClient({
                   required
                   value={widthCm}
                   onChange={(e) => setWidthCm(parseFloat(e.target.value) || 0)}
-                  className="w-full bg-[#1a1c23] border border-[#262833] rounded-lg px-3.5 py-2.5 text-sm text-white focus:border-[#d1a86e] focus:outline-none"
+                  className="w-full bg-[#1a1b26] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#d1a86e]"
                 />
               </div>
 
@@ -654,7 +654,7 @@ export function ArtworkFormClient({
                   required
                   value={heightCm}
                   onChange={(e) => setHeightCm(parseFloat(e.target.value) || 0)}
-                  className="w-full bg-[#1a1c23] border border-[#262833] rounded-lg px-3.5 py-2.5 text-sm text-white focus:border-[#d1a86e] focus:outline-none"
+                  className="w-full bg-[#1a1b26] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#d1a86e]"
                 />
               </div>
 
@@ -667,16 +667,16 @@ export function ArtworkFormClient({
                   step="0.5"
                   value={depthCm}
                   onChange={(e) => setDepthCm(parseFloat(e.target.value) || 0)}
-                  className="w-full bg-[#1a1c23] border border-[#262833] rounded-lg px-3.5 py-2.5 text-sm text-white focus:border-[#d1a86e] focus:outline-none"
+                  className="w-full bg-[#1a1b26] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#d1a86e]"
                 />
               </div>
             </div>
 
-            <p className="text-[11px] text-zinc-500">
+            <p className="text-[11px] text-zinc-500 font-mono">
               Formatted: {formatDimensions(widthCm, heightCm, depthCm)}
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
               <div>
                 <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-1.5">
                   Price (Optional)
@@ -688,7 +688,7 @@ export function ArtworkFormClient({
                     setPrice(e.target.value ? parseFloat(e.target.value) : undefined)
                   }
                   placeholder="e.g. 18500"
-                  className="w-full bg-[#1a1c23] border border-[#262833] rounded-lg px-3.5 py-2.5 text-sm text-white focus:border-[#d1a86e] focus:outline-none"
+                  className="w-full bg-[#1a1b26] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#d1a86e]"
                 />
               </div>
 
@@ -699,7 +699,7 @@ export function ArtworkFormClient({
                 <select
                   value={currency}
                   onChange={(e) => setCurrency(e.target.value)}
-                  className="w-full bg-[#1a1c23] border border-[#262833] rounded-lg px-3.5 py-2.5 text-sm text-white focus:border-[#d1a86e] focus:outline-none cursor-pointer"
+                  className="w-full bg-[#1a1b26] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#d1a86e] cursor-pointer"
                 >
                   <option value="USD">USD ($)</option>
                   <option value="EUR">EUR (€)</option>
@@ -713,17 +713,17 @@ export function ArtworkFormClient({
 
         {/* Right Column: Media, AR Configuration & Publication Checklist (5 Cols) */}
         <div className="lg:col-span-5 space-y-6">
-          {/* Publication Readiness Audit Plaque */}
-          <div className="p-6 bg-[#14151a] border border-[#262833] rounded-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-[#1f212b] pb-3">
+          {/* Publication Readiness Audit Plaque - Solid Tier 1 Block */}
+          <div className="p-6 sm:p-8 bg-[#121319] rounded-3xl shadow-xl shadow-black/40 space-y-5">
+            <div className="flex items-center justify-between pb-2">
               <span className="text-[10px] tracking-widest uppercase text-zinc-500 font-semibold">
                 Publication Audit
               </span>
               <span
-                className={`text-[10px] uppercase tracking-wider px-2.5 py-0.5 rounded font-bold ${
+                className={`text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-full font-bold ${
                   isReadyToPublish
-                    ? "bg-emerald-950 text-emerald-300 border border-emerald-800"
-                    : "bg-amber-950 text-amber-300 border border-amber-800"
+                    ? "bg-[#14231b] text-emerald-300"
+                    : "bg-[#2a1d14] text-amber-300"
                 }`}
               >
                 {isReadyToPublish ? "Ready to Publish" : "Needs Attention"}
@@ -739,7 +739,7 @@ export function ArtworkFormClient({
                 { label: "Physical dimensions (W × H)", ok: checks.dimensions },
                 { label: "AR Calibration verified", ok: checks.arConfig },
               ].map((item, i) => (
-                <div key={i} className="flex items-center justify-between py-1">
+                <div key={i} className="flex items-center justify-between py-2 px-3 rounded-xl bg-[#1a1b26]">
                   <span className="text-zinc-400">{item.label}</span>
                   {item.ok ? (
                     <CheckCircle2 className="w-4 h-4 text-emerald-400" />
@@ -751,19 +751,19 @@ export function ArtworkFormClient({
             </div>
           </div>
 
-          {/* Media Upload & Alt Text */}
-          <div className="p-6 bg-[#14151a] border border-[#262833] rounded-2xl space-y-4">
+          {/* Media Upload & Alt Text - Solid Tier 1 Block */}
+          <div className="p-6 sm:p-8 bg-[#121319] rounded-3xl shadow-xl shadow-black/40 space-y-5">
             <div className="flex items-center justify-between">
-              <h2 className="font-serif text-lg text-white">Artwork Imagery</h2>
+              <h2 className="font-serif text-xl text-white">Artwork Imagery</h2>
               {coverImageUrl && !localPreviewUrl && (
-                <span className="text-[10px] uppercase font-mono tracking-wider text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 px-2 py-0.5 rounded">
+                <span className="text-[10px] uppercase font-mono tracking-wider text-emerald-400 bg-[#14231b] px-2.5 py-1 rounded-full">
                   Cloud Asset Linked
                 </span>
               )}
             </div>
 
             {/* Display Image Box */}
-            <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-black/40 border border-[#262833] group">
+            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-black/40 group shadow-md">
               {localPreviewUrl || coverImageUrl ? (
                 <>
                   <Image
@@ -777,7 +777,7 @@ export function ArtworkFormClient({
                   {/* Overlay when uploading or processing */}
                   {(uploadStatus === "uploading" || uploadStatus === "processing") && (
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex flex-col items-center justify-center p-4">
-                      <div className="w-full max-w-xs bg-[#121317]/95 p-4 rounded-xl border border-[#262833] shadow-2xl space-y-2">
+                      <div className="w-full max-w-xs bg-[#121319] p-5 rounded-2xl shadow-2xl space-y-2">
                         <ProgressBar
                           label={
                             uploadStatus === "processing"
@@ -804,7 +804,7 @@ export function ArtworkFormClient({
 
             {/* Progress Bar (Visible under preview while actively uploading/processing) */}
             {(uploadStatus === "uploading" || uploadStatus === "processing") && (
-              <div className="p-3.5 bg-[#171821] border border-[#262833] rounded-xl">
+              <div className="p-4 bg-[#1a1b26] rounded-2xl">
                 <ProgressBar
                   label={
                     uploadStatus === "processing"
@@ -818,7 +818,7 @@ export function ArtworkFormClient({
             )}
 
             {uploadStatus === "complete" && (
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-950/30 border border-emerald-800/40 text-emerald-400 text-xs">
+              <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-[#14231b] text-emerald-400 text-xs shadow-sm">
                 <CheckCircle2 className="w-4 h-4 shrink-0" />
                 <span>Image uploaded &amp; processed successfully. Ready to save.</span>
               </div>
@@ -834,7 +834,7 @@ export function ArtworkFormClient({
                   <button
                     type="button"
                     onClick={() => setIsMediaLibraryOpen(true)}
-                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-[#262833] bg-[#1a1c23] hover:bg-[#262833] text-zinc-300 hover:text-white text-[11px] font-medium transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1a1b26] hover:bg-[#222432] text-zinc-300 hover:text-white text-[11px] font-medium transition-colors cursor-pointer shadow-sm"
                   >
                     <FolderOpen className="w-3 h-3 text-[#d1a86e]" />
                     <span>Media Library</span>
@@ -842,7 +842,7 @@ export function ArtworkFormClient({
                   <button
                     type="button"
                     onClick={() => setIsUnsplashOpen(true)}
-                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-[#d1a86e]/30 bg-[#d1a86e]/10 text-[#d1a86e] hover:bg-[#d1a86e]/20 text-[11px] font-medium transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#251e16] text-[#d1a86e] hover:bg-[#342419] text-[11px] font-medium transition-colors cursor-pointer shadow-sm"
                   >
                     <Sparkles className="w-3 h-3" />
                     <span>Unsplash Art</span>
@@ -855,7 +855,7 @@ export function ArtworkFormClient({
                   accept="image/jpeg,image/png,image/webp,image/avif"
                   onChange={handleFileUpload}
                   disabled={isUploading}
-                  className="w-full text-xs text-zinc-400 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-[#262833] file:text-white hover:file:bg-[#323544] file:cursor-pointer cursor-pointer disabled:opacity-50"
+                  className="w-full text-xs text-zinc-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#1a1b26] file:text-white hover:file:bg-[#222432] file:cursor-pointer cursor-pointer disabled:opacity-50"
                 />
               </div>
             </div>
@@ -870,19 +870,21 @@ export function ArtworkFormClient({
                 value={altText}
                 onChange={(e) => setAltText(e.target.value)}
                 placeholder="Visual description for visually impaired visitors..."
-                className="w-full bg-[#1a1c23] border border-[#262833] rounded-lg px-3.5 py-2 text-xs text-white placeholder-zinc-600 focus:border-[#d1a86e] focus:outline-none"
+                className="w-full bg-[#1a1b26] rounded-xl px-4 py-2.5 text-xs text-white placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-[#d1a86e]"
               />
             </div>
           </div>
 
-          {/* WebAR Calibration Studio Settings */}
-          <div className="p-6 bg-[#14151a] border border-[#262833] rounded-2xl space-y-4">
+          {/* WebAR Calibration Studio Settings - Solid Tier 1 Block */}
+          <div className="p-6 sm:p-8 bg-[#121319] rounded-3xl shadow-xl shadow-black/40 space-y-5">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-[#d1a86e]" />
-              <h2 className="font-serif text-lg text-white">Spatial AR Studio</h2>
+              <div className="w-7 h-7 rounded-full bg-[#251e16] flex items-center justify-center">
+                <Sparkles className="w-3.5 h-3.5 text-[#d1a86e]" />
+              </div>
+              <h2 className="font-serif text-xl text-white">Spatial AR Studio</h2>
             </div>
 
-            <div className="flex items-center justify-between py-1">
+            <div className="flex items-center justify-between py-1 px-3 rounded-xl bg-[#1a1b26]">
               <span className="text-xs text-zinc-300">Enable WebAR Wall Preview</span>
               <input
                 type="checkbox"
@@ -892,7 +894,7 @@ export function ArtworkFormClient({
               />
             </div>
 
-            <div className="flex items-center justify-between py-1">
+            <div className="flex items-center justify-between py-1 px-3 rounded-xl bg-[#1a1b26]">
               <span className="text-xs text-zinc-300">Default Frame Enabled</span>
               <input
                 type="checkbox"
@@ -910,7 +912,7 @@ export function ArtworkFormClient({
                 <select
                   value={frameType}
                   onChange={(e: any) => setFrameType(e.target.value)}
-                  className="w-full bg-[#1a1c23] border border-[#262833] rounded-lg px-3.5 py-2 text-xs text-white focus:border-[#d1a86e] focus:outline-none cursor-pointer"
+                  className="w-full bg-[#1a1b26] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#d1a86e] cursor-pointer"
                 >
                   <option value="minimal_black">Minimal Black (Sleek Modern)</option>
                   <option value="classic_gold">Antique Florentine Gold</option>
@@ -929,7 +931,7 @@ export function ArtworkFormClient({
               <select
                 value={placementMode}
                 onChange={(e: any) => setPlacementMode(e.target.value)}
-                className="w-full bg-[#1a1c23] border border-[#262833] rounded-lg px-3.5 py-2 text-xs text-white focus:border-[#d1a86e] focus:outline-none cursor-pointer"
+                className="w-full bg-[#1a1b26] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#d1a86e] cursor-pointer"
               >
                 <option value="wall">Wall Placement (Primary)</option>
                 <option value="floor">Floor / Easel Placement</option>
@@ -949,7 +951,7 @@ export function ArtworkFormClient({
                   max="1.0"
                   value={minScale}
                   onChange={(e) => setMinScale(parseFloat(e.target.value) || 0.5)}
-                  className="w-full bg-[#1a1c23] border border-[#262833] rounded-lg px-3 py-1.5 text-xs text-white focus:border-[#d1a86e] focus:outline-none"
+                  className="w-full bg-[#1a1b26] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#d1a86e]"
                 />
               </div>
 
@@ -964,7 +966,7 @@ export function ArtworkFormClient({
                   max="5.0"
                   value={maxScale}
                   onChange={(e) => setMaxScale(parseFloat(e.target.value) || 2.0)}
-                  className="w-full bg-[#1a1c23] border border-[#262833] rounded-lg px-3 py-1.5 text-xs text-white focus:border-[#d1a86e] focus:outline-none"
+                  className="w-full bg-[#1a1b26] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#d1a86e]"
                 />
               </div>
             </div>
@@ -973,7 +975,7 @@ export function ArtworkFormClient({
             <button
               type="button"
               onClick={() => setIsTestArOpen(true)}
-              className="w-full mt-2 flex items-center justify-center gap-2 bg-[#1a1c23] hover:bg-[#22242d] border border-[#262833] text-zinc-200 hover:text-white py-2.5 rounded-xl text-xs font-medium uppercase tracking-wider transition-colors"
+              className="w-full mt-2 flex items-center justify-center gap-2 bg-[#1a1b26] hover:bg-[#222432] text-zinc-200 hover:text-white py-3 rounded-xl text-xs font-medium uppercase tracking-wider transition-colors cursor-pointer shadow-sm"
             >
               <Sparkles className="w-3.5 h-3.5 text-[#d1a86e]" />
               <span>Launch Live AR Test</span>
@@ -989,7 +991,7 @@ export function ArtworkFormClient({
             <button
               type="button"
               onClick={() => setIsTestArOpen(false)}
-              className="bg-black/80 hover:bg-black text-white px-5 py-2 rounded-full border border-white/20 text-xs font-semibold uppercase tracking-wider shadow-2xl transition-all"
+              className="bg-black/90 hover:bg-black text-white px-5 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider shadow-2xl transition-all cursor-pointer"
             >
               Close Studio Preview
             </button>

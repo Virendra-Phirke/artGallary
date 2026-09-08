@@ -178,8 +178,8 @@ export function ArtworksManagerClient({
 
   return (
     <div className="space-y-6">
-      {/* Header Plaque */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#1c1d25] pb-6">
+      {/* Header Plaque - Solid Tier 1 Master Block */}
+      <div className="bg-[#121319] p-6 sm:p-8 rounded-3xl shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
             Catalog Management
@@ -190,25 +190,27 @@ export function ArtworksManagerClient({
           </p>
         </div>
 
-        <div className="flex items-center gap-3 self-start sm:self-auto">
-          <Button asChild variant="outline" size="sm" className="border-[#262833] text-xs text-zinc-300 hover:text-white gap-1.5">
-            <Link href="/admin/media">
-              <Layers className="w-3.5 h-3.5 text-[#d1a86e]" />
-              <span>Media Library</span>
-            </Link>
-          </Button>
+        <div className="flex items-center gap-3 self-start sm:self-auto flex-wrap">
+          <Link
+            href="/admin/media"
+            className="bg-[#1a1b26] hover:bg-[#222432] text-xs text-zinc-300 hover:text-white px-3.5 py-2 rounded-xl shadow-sm transition-colors flex items-center gap-1.5"
+          >
+            <Layers className="w-3.5 h-3.5 text-[#d1a86e]" />
+            <span>Media Library</span>
+          </Link>
 
-          <Button asChild className="gap-2 shadow-lg shadow-[#d1a86e]/10">
-            <Link href="/admin/artworks/new">
-              <Plus className="w-4 h-4" />
-              <span>New Artwork</span>
-            </Link>
-          </Button>
+          <Link
+            href="/admin/artworks/new"
+            className="bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-xs px-4 py-2 rounded-xl shadow-md shadow-[#d1a86e]/20 transition-colors flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            <span>New Artwork</span>
+          </Link>
         </div>
       </div>
 
-      {/* Filter and Search Bar with View Mode Toggle */}
-      <div className="bg-[#14151a] border border-[#262833] rounded-xl p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+      {/* Filter and Search Bar with View Mode Toggle - Solid Tier 2 Block */}
+      <div className="bg-[#121319] rounded-2xl p-4 sm:p-5 shadow-xl shadow-black/40 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
           <Input
@@ -216,7 +218,7 @@ export function ArtworksManagerClient({
             placeholder="Filter by title, slug, or medium..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 h-9"
+            className="pl-10 h-10 bg-[#1a1b26] rounded-xl border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
           />
         </div>
 
@@ -228,29 +230,28 @@ export function ArtworksManagerClient({
             </span>
             {["all", "published", "draft", "reserved", "sold", "archived"].map(
               (st) => (
-                <Button
+                <button
                   key={st}
-                  variant={statusFilter === st ? "secondary" : "ghost"}
-                  size="sm"
+                  type="button"
                   onClick={() => setStatusFilter(st)}
-                  className={`text-[11px] h-7 px-2.5 ${
+                  className={`text-[11px] h-7 px-3 rounded-full transition-colors ${
                     statusFilter === st
-                      ? "text-[#d1a86e] border-[#d1a86e]/40 font-semibold"
-                      : "text-zinc-400"
+                      ? "bg-[#251e16] text-[#d1a86e] font-semibold shadow-sm"
+                      : "bg-[#1a1b26] text-zinc-400 hover:text-white"
                   }`}
                 >
                   {st}
-                </Button>
+                </button>
               )
             )}
           </div>
 
           {/* Table vs Grid View Toggle */}
-          <div className="flex items-center p-1 bg-[#1a1c23] border border-[#262833] rounded-xl ml-auto md:ml-0">
+          <div className="flex items-center p-1 bg-[#1a1b26] rounded-xl ml-auto md:ml-0">
             <button
               type="button"
               onClick={() => setViewLayout("table")}
-              className={`p-1.5 px-2.5 rounded-lg text-xs transition-colors flex items-center gap-1.5 ${
+              className={`p-1.5 px-3 rounded-lg text-xs transition-colors flex items-center gap-1.5 ${
                 viewLayout === "table"
                   ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-sm"
                   : "text-zinc-400 hover:text-white"
@@ -263,7 +264,7 @@ export function ArtworksManagerClient({
             <button
               type="button"
               onClick={() => setViewLayout("grid")}
-              className={`p-1.5 px-2.5 rounded-lg text-xs transition-colors flex items-center gap-1.5 ${
+              className={`p-1.5 px-3 rounded-lg text-xs transition-colors flex items-center gap-1.5 ${
                 viewLayout === "grid"
                   ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-sm"
                   : "text-zinc-400 hover:text-white"
@@ -277,12 +278,12 @@ export function ArtworksManagerClient({
         </div>
       </div>
 
-      {/* 1. TABLE VIEW (Default Desktop/Tablet) */}
+      {/* 1. TABLE VIEW (Default Desktop/Tablet) - Solid Block */}
       {viewLayout === "table" && (
-        <div className="hidden md:block bg-[#14151a] border border-[#262833] rounded-2xl overflow-hidden shadow-2xl">
+        <div className="hidden md:block bg-[#121319] rounded-3xl overflow-hidden shadow-xl shadow-black/40">
           <Table>
-            <TableHeader>
-              <TableRow>
+            <TableHeader className="bg-[#161720]">
+              <TableRow className="border-none hover:bg-transparent">
                 <TableHead className="min-w-[260px]">Artwork</TableHead>
                 <TableHead className="min-w-[180px]">Medium &amp; Year</TableHead>
                 <TableHead className="min-w-[160px]">Dimensions</TableHead>
@@ -303,11 +304,11 @@ export function ArtworksManagerClient({
                 </TableRow>
               ) : (
                 paginatedArtworks.map((art) => (
-                  <TableRow key={art.id} className="group">
+                  <TableRow key={art.id} className="group hover:bg-[#1a1b26]/50 transition-colors border-none">
                     {/* Artwork Image & Title */}
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        <div className="relative w-12 h-10 rounded-lg overflow-hidden bg-black/40 border border-[#262833] shrink-0">
+                        <div className="relative w-12 h-10 rounded-xl overflow-hidden bg-black/40 shrink-0">
                           <ProgressiveImage
                             src={art.coverImageUrl}
                             alt={art.altText || art.title}
@@ -532,14 +533,14 @@ export function ArtworksManagerClient({
       {viewLayout === "grid" && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-5">
           {filtered.length === 0 ? (
-            <div className="col-span-full py-16 text-center text-zinc-500 bg-[#14151a] border border-[#262833] rounded-2xl">
+            <div className="col-span-full py-16 text-center text-zinc-500 bg-[#121319] rounded-3xl shadow-xl shadow-black/40">
               No artworks found matching your filter criteria.
             </div>
           ) : (
             paginatedArtworks.map((art) => (
               <div
                 key={art.id}
-                className="group rounded-2xl border border-[#262833] bg-[#14151a] overflow-hidden hover:border-[#d1a86e]/40 transition-all flex flex-col shadow-lg"
+                className="group rounded-3xl bg-[#1a1b26] overflow-hidden hover:bg-[#202230] transition-all flex flex-col shadow-md shadow-black/30"
               >
                 {/* Visual Image Preview */}
                 <div className="relative aspect-[4/3] w-full bg-black/50 overflow-hidden">
@@ -557,13 +558,18 @@ export function ArtworksManagerClient({
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <button type="button" className="focus:outline-none">
-                          <Badge
-                            variant={statusVariantMap[art.status] || "secondary"}
-                            className="text-[9px] font-mono font-bold shadow-md cursor-pointer"
+                          <span
+                            className={`text-[9px] font-mono font-bold px-2.5 py-1 rounded-full shadow-md cursor-pointer inline-flex items-center gap-1 ${
+                              art.status === "published"
+                                ? "bg-[#14231b] text-emerald-300"
+                                : art.status === "sold"
+                                ? "bg-[#251e16] text-[#d1a86e]"
+                                : "bg-[#222432] text-zinc-300"
+                            }`}
                           >
                             <span>{art.status}</span>
-                            <ChevronDown className="w-2.5 h-2.5 ml-1 opacity-70" />
-                          </Badge>
+                            <ChevronDown className="w-2.5 h-2.5 opacity-70" />
+                          </span>
                         </button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="start">
@@ -592,24 +598,24 @@ export function ArtworksManagerClient({
 
                   <div className="absolute top-2.5 right-2.5">
                     {art.arConfig?.arReadinessStatus === "ready" ? (
-                      <span className="text-[8px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-950/90 text-emerald-300 border border-emerald-800/80 font-mono shadow-md">
+                      <span className="text-[8px] uppercase tracking-wider px-2.5 py-1 rounded-full bg-[#14231b] text-emerald-300 font-mono shadow-md">
                         AR READY
                       </span>
                     ) : (
-                      <span className="text-[8px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-950/90 text-amber-300 border border-amber-800/80 font-mono shadow-md">
+                      <span className="text-[8px] uppercase tracking-wider px-2.5 py-1 rounded-full bg-[#2a1d14] text-amber-300 font-mono shadow-md">
                         AR ATTENTION
                       </span>
                     )}
                   </div>
 
                   {/* Price Tag Overlay */}
-                  <div className="absolute bottom-2.5 right-2.5 px-2.5 py-1 rounded-lg bg-black/80 backdrop-blur-md border border-white/10 text-xs font-semibold text-[#d1a86e] font-mono shadow-md">
+                  <div className="absolute bottom-2.5 right-2.5 px-3 py-1 rounded-xl bg-black/80 backdrop-blur-md text-xs font-semibold text-[#d1a86e] font-mono shadow-md">
                     {formatCurrency(art.price, art.currency)}
                   </div>
                 </div>
 
                 {/* Card Body */}
-                <div className="p-4 space-y-2 flex-1 flex flex-col justify-between">
+                <div className="p-5 space-y-2 flex-1 flex flex-col justify-between">
                   <div>
                     <div className="flex items-baseline justify-between gap-2">
                       <h3 className="font-serif text-base text-white font-medium truncate group-hover:text-[#d1a86e] transition-colors">
@@ -628,7 +634,7 @@ export function ArtworksManagerClient({
                   </div>
 
                   {/* Action Bar */}
-                  <div className="pt-3 border-t border-[#1f212b] flex items-center justify-between">
+                  <div className="pt-3 flex items-center justify-between">
                     <div className="flex items-center gap-1">
                       <Button
                         asChild
@@ -687,14 +693,14 @@ export function ArtworksManagerClient({
       {viewLayout === "table" && (
         <div className="md:hidden space-y-3">
           {filtered.length === 0 ? (
-            <Card className="p-8 text-center text-zinc-500 text-xs">
+            <div className="p-8 text-center text-zinc-500 text-xs bg-[#121319] rounded-2xl">
               No artworks found matching your filter criteria.
-            </Card>
+            </div>
           ) : (
             paginatedArtworks.map((art) => (
-              <Card key={art.id} className="p-4 bg-[#14151a] space-y-3">
+              <div key={art.id} className="p-5 bg-[#1a1b26] rounded-2xl space-y-3 shadow-md shadow-black/30">
                 <div className="flex items-start gap-3">
-                  <div className="relative w-16 h-14 rounded-lg overflow-hidden bg-black/40 border border-[#262833] shrink-0">
+                  <div className="relative w-16 h-14 rounded-xl overflow-hidden bg-black/40 shrink-0">
                     <ProgressiveImage
                       src={art.coverImageUrl}
                       alt={art.altText || art.title}
@@ -718,7 +724,7 @@ export function ArtworksManagerClient({
                   </div>
                 </div>
 
-                <div className="pt-2 border-t border-[#1f212b] flex items-center justify-between">
+                <div className="pt-2 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -726,13 +732,18 @@ export function ArtworksManagerClient({
                           type="button"
                           className="inline-flex items-center gap-1 focus:outline-none"
                         >
-                          <Badge
-                            variant={statusVariantMap[art.status] || "secondary"}
-                            className="cursor-pointer text-[10px] font-mono font-bold"
+                          <span
+                            className={`cursor-pointer text-[10px] font-mono font-bold px-2.5 py-1 rounded-full ${
+                              art.status === "published"
+                                ? "bg-[#14231b] text-emerald-300"
+                                : art.status === "sold"
+                                ? "bg-[#251e16] text-[#d1a86e]"
+                                : "bg-[#222432] text-zinc-300"
+                            }`}
                           >
                             <span>{art.status}</span>
                             <ChevronDown className="w-2.5 h-2.5 opacity-70" />
-                          </Badge>
+                          </span>
                         </button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="start">
@@ -759,13 +770,13 @@ export function ArtworksManagerClient({
                     </DropdownMenu>
 
                     {art.arConfig?.arReadinessStatus === "ready" ? (
-                      <Badge variant="success" className="text-[9px] py-0 px-1.5">
+                      <span className="text-[9px] py-0.5 px-2 rounded-full bg-[#14231b] text-emerald-300 font-mono">
                         AR READY
-                      </Badge>
+                      </span>
                     ) : (
-                      <Badge variant="warning" className="text-[9px] py-0 px-1.5">
+                      <span className="text-[9px] py-0.5 px-2 rounded-full bg-[#2a1d14] text-amber-300 font-mono">
                         ATTENTION
-                      </Badge>
+                      </span>
                     )}
                   </div>
 
@@ -798,15 +809,15 @@ export function ArtworksManagerClient({
                     </Button>
                   </div>
                 </div>
-              </Card>
+              </div>
             ))
           )}
         </div>
       )}
 
-      {/* Pagination and Per-Page Control Bar */}
+      {/* Pagination and Per-Page Control Bar - Solid Tier 2 Block */}
       {filtered.length > 0 && (
-        <div className="p-4 bg-[#14151a] border border-[#262833] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+        <div className="p-5 bg-[#121319] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl shadow-black/40">
           <div className="text-xs text-zinc-400 font-mono">
             Showing <span className="text-white font-semibold">{startItem}–{endItem}</span> of{" "}
             <span className="text-[#d1a86e] font-semibold">{filtered.length}</span> artworks
@@ -858,13 +869,13 @@ export function ArtworksManagerClient({
 
           <div className="flex items-center gap-2">
             <span className="text-zinc-500 font-mono text-[11px] uppercase tracking-wider">Per Page:</span>
-            <div className="flex items-center rounded-lg border border-[#262833] bg-[#1a1c23] p-0.5">
+            <div className="flex items-center rounded-xl bg-[#1a1b26] p-1">
               {PAGE_SIZE_OPTIONS.map((size) => (
                 <button
                   key={size}
                   type="button"
                   onClick={() => setPageSize(size)}
-                  className={`px-2.5 py-1 text-xs font-mono rounded transition-colors cursor-pointer ${
+                  className={`px-3 py-1 text-xs font-mono rounded-lg transition-colors cursor-pointer ${
                     pageSize === size
                       ? "bg-[#d1a86e] text-black font-semibold shadow-sm"
                       : "text-zinc-400 hover:text-white"
@@ -878,12 +889,12 @@ export function ArtworksManagerClient({
         </div>
       )}
 
-      {/* 4. PERMANENT DELETE CONFIRMATION MODAL */}
+      {/* 4. PERMANENT DELETE CONFIRMATION MODAL - Solid Block */}
       {artworkToDelete && (
         <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#121317] border border-[#262833] rounded-2xl w-full max-w-md p-6 space-y-5 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-[#121319] rounded-3xl w-full max-w-md p-6 sm:p-8 space-y-5 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-xl bg-red-950/60 border border-red-800/50 flex items-center justify-center text-red-400 shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-[#2d1616] flex items-center justify-center text-red-400 shrink-0">
                 <AlertTriangle className="w-5 h-5" />
               </div>
               <div className="space-y-1">
@@ -899,8 +910,8 @@ export function ArtworksManagerClient({
             </div>
 
             {/* Artwork Preview Card */}
-            <div className="p-3 rounded-xl bg-[#161820] border border-[#262833] flex items-center gap-3">
-              <div className="relative w-14 h-12 rounded-lg overflow-hidden bg-black/40 border border-[#262833] shrink-0">
+            <div className="p-3.5 rounded-2xl bg-[#1a1b26] flex items-center gap-3">
+              <div className="relative w-14 h-12 rounded-xl overflow-hidden bg-black/40 shrink-0">
                 <Image
                   src={artworkToDelete.coverImageUrl}
                   alt={artworkToDelete.title}

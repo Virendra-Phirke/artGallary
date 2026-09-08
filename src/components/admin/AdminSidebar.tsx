@@ -49,7 +49,7 @@ export function AdminSidebar({
     )?.[1] || "Curator Administration Workspace";
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[#0d0e12] text-[#f4f4f6]">
+    <div className="flex h-screen w-screen overflow-hidden bg-[#090a0f] text-[#f4f4f6]">
       {/* Magic UI Vertical Dock (Left side, reveals on hover or left-edge proximity) */}
       <AdminVerticalDock
         user={user}
@@ -58,10 +58,10 @@ export function AdminSidebar({
 
       {/* 100% Full Width Workspace Container */}
       <div className="flex flex-col flex-1 min-w-0 h-full overflow-hidden">
-        {/* Top Header Bar */}
+        {/* Top Header Bar - Solid Elevated Block */}
         <header
           className={cn(
-            "shrink-0 border-b border-[#1c1d25] flex items-center justify-between bg-[#0b0c0f]/80 backdrop-blur-md z-30 transition-all duration-200",
+            "shrink-0 flex items-center justify-between bg-[#121319] shadow-md shadow-black/40 z-30 transition-all duration-200",
             isStudio ? "h-12 px-4 md:px-6" : "h-14 px-6 md:px-10"
           )}
         >
@@ -75,33 +75,30 @@ export function AdminSidebar({
               <span className="font-serif text-sm font-bold tracking-[0.18em] text-white uppercase group-hover:text-[#d1a86e] transition-colors">
                 L&apos;Atelier
               </span>
-              <span className="text-[9px] tracking-[0.2em] text-[#d1a86e] uppercase font-semibold hidden sm:inline px-1.5 py-0.5 rounded bg-[#d1a86e]/10 border border-[#d1a86e]/20">
+              <span className="text-[9px] tracking-[0.2em] text-[#d1a86e] uppercase font-semibold hidden sm:inline px-2 py-0.5 rounded-full bg-[#251e16]">
                 Studio
               </span>
             </Link>
 
-            <span className="text-zinc-600">/</span>
+            <span className="text-zinc-600 font-light">/</span>
 
             <div className="flex items-center gap-2 text-xs text-zinc-300">
               <span className="font-medium truncate max-w-[200px] sm:max-w-none">
                 {currentTitle}
               </span>
               {isStudio && (
-                <Badge
-                  variant="outline"
-                  className="text-[10px] text-[#d1a86e] border-[#d1a86e]/30 font-mono py-0 h-4 hidden md:inline-flex items-center gap-1"
-                >
+                <span className="text-[10px] text-[#d1a86e] bg-[#1a1b26] font-mono px-2 py-0.5 rounded-full hidden md:inline-flex items-center gap-1">
                   <Sparkles className="w-2.5 h-2.5" />
                   100% Canvas Mode
-                </Badge>
+                </span>
               )}
             </div>
           </div>
 
           {/* Right: Quick actions */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {/* Quick left edge dock hover hint */}
-            <div className="hidden lg:flex items-center gap-1.5 text-[11px] text-zinc-500 font-mono">
+            <div className="hidden lg:flex items-center gap-1.5 text-[11px] text-zinc-500 font-mono bg-[#161720] px-2.5 py-1 rounded-full">
               <span className="w-1.5 h-1.5 rounded-full bg-[#d1a86e]/60 animate-pulse" />
               <span>Hover left edge for dock</span>
             </div>
@@ -109,7 +106,7 @@ export function AdminSidebar({
             <Link
               href="/gallery"
               target="_blank"
-              className="flex items-center gap-1.5 text-xs text-zinc-400 hover:text-[#d1a86e] transition-colors py-1 px-2.5 rounded-md hover:bg-[#16171e]"
+              className="flex items-center gap-1.5 text-xs text-zinc-300 hover:text-white bg-[#1a1b26] hover:bg-[#222432] transition-colors py-1.5 px-3 rounded-xl shadow-sm"
               title="Open public gallery in new tab"
             >
               <span className="hidden sm:inline">View Live Store</span>
@@ -118,13 +115,13 @@ export function AdminSidebar({
 
             <Link
               href="/admin/profile"
-              className="hidden sm:flex items-center gap-2 pl-2 border-l border-[#262833] hover:opacity-80 transition-opacity"
+              className="hidden sm:flex items-center gap-2 bg-[#1a1b26] hover:bg-[#222432] py-1 px-2.5 rounded-xl shadow-sm transition-colors"
               title="Manage Admin Profile & Credentials"
             >
-              <div className="w-6 h-6 rounded-full bg-[#181a22] border border-[#262833] flex items-center justify-center text-[10px] font-serif text-[#d1a86e] font-semibold">
+              <div className="w-6 h-6 rounded-full bg-[#251e16] flex items-center justify-center text-[10px] font-serif text-[#d1a86e] font-semibold">
                 {user.name?.[0] || "C"}
               </div>
-              <span className="text-xs text-zinc-400 truncate max-w-[100px]">
+              <span className="text-xs text-zinc-300 truncate max-w-[100px]">
                 {user.name}
               </span>
             </Link>

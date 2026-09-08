@@ -22,12 +22,10 @@ import {
 } from "lucide-react";
 import { MockExhibition, MockArtwork } from "@/db/mockData";
 import { slugify } from "@/lib/utils";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Separator } from "@/components/ui/separator";
 import {
   Dialog,
   DialogContent,
@@ -246,8 +244,8 @@ export function ExhibitionsManagerClient({
 
   return (
     <div className="space-y-8 w-full">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#1c1d25] pb-6">
+      {/* Header - Solid Tier 1 Master Block */}
+      <div className="bg-[#121319] p-6 sm:p-8 rounded-3xl shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
             Institutional Presence
@@ -258,41 +256,47 @@ export function ExhibitionsManagerClient({
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <Button asChild variant="outline" size="sm" className="border-[#d1a86e]/40 text-[#d1a86e] hover:bg-[#d1a86e]/10 text-xs gap-1.5">
-            <Link href="/admin/settings?tab=exhibitions">
-              <Calendar className="w-3.5 h-3.5" />
-              <span>Edit Page Header &amp; Intro</span>
-            </Link>
-          </Button>
-          <Button asChild variant="ghost" size="sm" className="text-zinc-400 hover:text-white text-xs gap-1.5">
-            <Link href="/exhibitions" target="_blank">
-              <ExternalLink className="w-3.5 h-3.5" />
-              <span>Preview Storefront</span>
-            </Link>
-          </Button>
-          <Button onClick={openNew} size="sm" className="gap-1.5">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <Link
+            href="/admin/settings?tab=exhibitions"
+            className="bg-[#1a1b26] hover:bg-[#222432] text-xs text-[#d1a86e] px-3.5 py-2 rounded-xl shadow-sm transition-colors flex items-center gap-1.5"
+          >
+            <Calendar className="w-3.5 h-3.5" />
+            <span>Edit Page Header &amp; Intro</span>
+          </Link>
+          <Link
+            href="/exhibitions"
+            target="_blank"
+            className="bg-[#1a1b26] hover:bg-[#222432] text-xs text-zinc-300 hover:text-white px-3.5 py-2 rounded-xl shadow-sm transition-colors flex items-center gap-1.5"
+          >
+            <ExternalLink className="w-3.5 h-3.5" />
+            <span>Preview Storefront</span>
+          </Link>
+          <button
+            onClick={openNew}
+            className="bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-xs px-4 py-2 rounded-xl shadow-md shadow-[#d1a86e]/20 transition-colors flex items-center gap-1.5 cursor-pointer"
+          >
             <Plus className="w-4 h-4" />
             <span>New Exhibition</span>
-          </Button>
+          </button>
         </div>
       </div>
 
-      {/* Search & Filter Bar */}
-      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+      {/* Search & Filter Bar - Solid Tier 2 Block */}
+      <div className="bg-[#121319] rounded-2xl p-4 sm:p-5 shadow-xl shadow-black/40 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
           <Input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search exhibitions by title, location, curator note..."
-            className="pl-10 bg-[#14151a] border-[#262833] text-xs text-white placeholder:text-zinc-500 rounded-xl"
+            className="pl-10 bg-[#1a1b26] text-xs text-white placeholder:text-zinc-500 rounded-xl border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
           />
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           {/* Status Filter */}
-          <div className="flex items-center gap-1 bg-[#14151a] p-1 rounded-xl border border-[#262833]">
+          <div className="flex items-center gap-1 bg-[#1a1b26] p-1 rounded-xl">
             {(
               [
                 { id: "all", label: "All Statuses" },
@@ -301,24 +305,22 @@ export function ExhibitionsManagerClient({
                 { id: "past", label: "Past" },
               ] as const
             ).map((filter) => (
-              <Button
+              <button
                 key={filter.id}
-                size="sm"
-                variant={statusFilter === filter.id ? "default" : "ghost"}
                 onClick={() => setStatusFilter(filter.id)}
-                className={`text-xs h-7 px-2.5 rounded-lg transition-colors cursor-pointer ${
+                className={`text-xs h-7 px-3 rounded-lg transition-colors cursor-pointer ${
                   statusFilter === filter.id
-                    ? "bg-[#d1a86e] text-[#0d0e12] font-semibold hover:bg-[#d1a86e]"
+                    ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-sm"
                     : "text-zinc-400 hover:text-white"
                 }`}
               >
                 {filter.label}
-              </Button>
+              </button>
             ))}
           </div>
 
           {/* Published/Draft Filter */}
-          <div className="flex items-center gap-1 bg-[#14151a] p-1 rounded-xl border border-[#262833]">
+          <div className="flex items-center gap-1 bg-[#1a1b26] p-1 rounded-xl">
             {(
               [
                 { id: "all", label: "All" },
@@ -326,19 +328,17 @@ export function ExhibitionsManagerClient({
                 { id: "draft", label: "Draft" },
               ] as const
             ).map((filter) => (
-              <Button
+              <button
                 key={filter.id}
-                size="sm"
-                variant={publishFilter === filter.id ? "default" : "ghost"}
                 onClick={() => setPublishFilter(filter.id)}
-                className={`text-xs h-7 px-2.5 rounded-lg transition-colors cursor-pointer ${
+                className={`text-xs h-7 px-3 rounded-lg transition-colors cursor-pointer ${
                   publishFilter === filter.id
                     ? "bg-zinc-700 text-white font-medium"
                     : "text-zinc-400 hover:text-white"
                 }`}
               >
                 {filter.label}
-              </Button>
+              </button>
             ))}
           </div>
         </div>
@@ -346,24 +346,30 @@ export function ExhibitionsManagerClient({
 
       {/* Exhibitions Grid */}
       {exhibitions.length === 0 ? (
-        <Card className="p-12 text-center space-y-3">
+        <div className="p-12 text-center space-y-3 bg-[#121319] rounded-3xl shadow-xl shadow-black/40">
           <Calendar className="w-10 h-10 text-zinc-600 mx-auto" />
           <p className="text-zinc-400 text-sm">No exhibitions yet</p>
-          <Button onClick={openNew} variant="secondary" className="gap-2 mx-auto">
+          <button
+            onClick={openNew}
+            className="gap-2 mx-auto inline-flex items-center bg-[#1a1b26] hover:bg-[#222432] text-xs text-[#d1a86e] px-4 py-2 rounded-xl shadow-sm transition-colors cursor-pointer"
+          >
             <Plus className="w-4 h-4" />
             <span>Create your first exhibition</span>
-          </Button>
-        </Card>
+          </button>
+        </div>
       ) : filteredExhibitions.length === 0 ? (
-        <Card className="p-12 text-center bg-[#14151a]/40 border-[#262833] rounded-2xl text-xs text-zinc-500">
+        <div className="p-12 text-center bg-[#121319] rounded-3xl shadow-xl shadow-black/40 text-xs text-zinc-500">
           No exhibitions found matching your search or filter criteria.
-        </Card>
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
           {paginatedExhibitions.map((exh) => (
-            <Card key={exh.id} className="overflow-hidden">
+            <div
+              key={exh.id}
+              className="rounded-3xl bg-[#1a1b26] overflow-hidden shadow-md shadow-black/30 flex flex-col justify-between hover:bg-[#1e202d] transition-all"
+            >
               {/* Cover Image */}
-              <div className="relative aspect-[16/9] bg-black/40 border-b border-[#1f212b]">
+              <div className="relative aspect-[16/9] bg-black/40">
                 {exh.coverImageUrl ? (
                   <Image
                     src={exh.coverImageUrl}
@@ -377,20 +383,34 @@ export function ExhibitionsManagerClient({
                     <Calendar className="w-8 h-8 text-zinc-700" />
                   </div>
                 )}
-                <div className="absolute top-3 left-3 flex items-center gap-2">
-                  <Badge variant={statusColor(exh.status) as any}>
-                    {exh.status}
-                  </Badge>
-                  <Badge variant={exh.isPublished ? "success" : "secondary"}>
+                <div className="absolute top-3 left-3 flex items-center gap-1.5">
+                  <span
+                    className={`text-[9px] uppercase font-mono font-bold px-2.5 py-1 rounded-full shadow-md ${
+                      exh.isPublished
+                        ? "bg-[#14231b] text-emerald-300"
+                        : "bg-[#222432] text-zinc-400"
+                    }`}
+                  >
                     {exh.isPublished ? "Published" : "Draft"}
-                  </Badge>
+                  </span>
+                  <span
+                    className={`text-[9px] uppercase font-mono font-bold px-2.5 py-1 rounded-full shadow-md ${
+                      exh.status === "current"
+                        ? "bg-[#251e16] text-[#d1a86e]"
+                        : exh.status === "upcoming"
+                        ? "bg-[#14231b] text-emerald-300"
+                        : "bg-[#222432] text-zinc-400"
+                    }`}
+                  >
+                    {exh.status}
+                  </span>
                 </div>
 
                 {/* Actions Overlay */}
                 <div className="absolute top-3 right-3">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="p-1.5 bg-black/60 hover:bg-black/80 rounded-lg backdrop-blur-sm transition-colors">
+                      <button className="p-1.5 bg-black/60 hover:bg-black/80 rounded-xl backdrop-blur-sm transition-colors cursor-pointer">
                         <MoreVertical className="w-4 h-4 text-white" />
                       </button>
                     </DropdownMenuTrigger>
@@ -433,9 +453,9 @@ export function ExhibitionsManagerClient({
                     href={`/exhibitions/${exh.slug}`}
                     target="_blank"
                     className="p-1 text-zinc-400 hover:text-white transition-colors"
-                    title="View exhibition page"
+                    title="View Public Page"
                   >
-                    <ExternalLink className="w-4 h-4" />
+                    <ExternalLink className="w-4 h-4 text-[#d1a86e]" />
                   </Link>
                 </div>
                 {exh.subtitle && (
@@ -459,21 +479,19 @@ export function ExhibitionsManagerClient({
                   <p className="text-xs text-zinc-400 line-clamp-2">{exh.description}</p>
                 )}
 
-                <Separator />
-
-                <div className="flex items-center justify-between text-xs text-zinc-500">
+                <div className="pt-2 flex items-center justify-between text-xs text-zinc-500">
                   <span>{exh.artworkSlugs.length} featured works</span>
                   <span className="font-mono text-[10px]">/{exh.slug}</span>
                 </div>
               </div>
-            </Card>
+            </div>
           ))}
         </div>
       )}
 
       {/* Pagination and Per-Page Control Bar */}
       {filteredExhibitions.length > 0 && (
-        <div className="p-4 bg-[#14151a] border border-[#262833] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+        <div className="p-5 bg-[#121319] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl shadow-black/40">
           <div className="text-xs text-zinc-400 font-mono">
             Showing <span className="text-white font-semibold">{startItem}–{endItem}</span> of{" "}
             <span className="text-[#d1a86e] font-semibold">{filteredExhibitions.length}</span> exhibitions
@@ -525,13 +543,13 @@ export function ExhibitionsManagerClient({
 
           <div className="flex items-center gap-2">
             <span className="text-zinc-500 font-mono text-[11px] uppercase tracking-wider">Per Page:</span>
-            <div className="flex items-center rounded-lg border border-[#262833] bg-[#1a1c23] p-0.5">
+            <div className="flex items-center rounded-xl bg-[#1a1b26] p-1">
               {PAGE_SIZE_OPTIONS.map((size) => (
                 <button
                   key={size}
                   type="button"
                   onClick={() => setPageSize(size)}
-                  className={`px-2.5 py-1 text-xs font-mono rounded transition-colors cursor-pointer ${
+                  className={`px-3 py-1 text-xs font-mono rounded-lg transition-colors cursor-pointer ${
                     pageSize === size
                       ? "bg-[#d1a86e] text-black font-semibold shadow-sm"
                       : "text-zinc-400 hover:text-white"
@@ -570,6 +588,7 @@ export function ExhibitionsManagerClient({
                     }));
                   }}
                   placeholder="Exhibition title"
+                  className="bg-[#1a1b26] text-white text-xs placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
                 />
               </div>
 
@@ -581,6 +600,7 @@ export function ExhibitionsManagerClient({
                   value={form.subtitle}
                   onChange={(e) => setForm((f) => ({ ...f, subtitle: e.target.value }))}
                   placeholder="e.g., A Retrospective"
+                  className="bg-[#1a1b26] text-white text-xs placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
                 />
               </div>
             </div>
@@ -593,7 +613,7 @@ export function ExhibitionsManagerClient({
                 value={form.slug}
                 onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
                 placeholder="auto-generated-from-title"
-                className="font-mono text-[11px]"
+                className="bg-[#1a1b26] text-white text-xs placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e] font-mono text-[11px]"
               />
             </div>
 
@@ -605,6 +625,7 @@ export function ExhibitionsManagerClient({
                 value={form.location}
                 onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))}
                 placeholder="e.g., Galerie Nationale, Paris"
+                className="bg-[#1a1b26] text-white text-xs placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
               />
             </div>
 
@@ -617,6 +638,7 @@ export function ExhibitionsManagerClient({
                   type="date"
                   value={form.startDate}
                   onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))}
+                  className="bg-[#1a1b26] text-white text-xs rounded-xl px-3.5 py-2.5 border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
                 />
               </div>
 
@@ -628,6 +650,7 @@ export function ExhibitionsManagerClient({
                   type="date"
                   value={form.endDate}
                   onChange={(e) => setForm((f) => ({ ...f, endDate: e.target.value }))}
+                  className="bg-[#1a1b26] text-white text-xs rounded-xl px-3.5 py-2.5 border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
                 />
               </div>
 
@@ -638,7 +661,7 @@ export function ExhibitionsManagerClient({
                 <select
                   value={form.status}
                   onChange={(e) => setForm((f) => ({ ...f, status: e.target.value as any }))}
-                  className="w-full bg-[#1a1c23] border border-[#262833] rounded-lg px-3 py-2 text-xs text-white focus:border-[#d1a86e] focus:outline-none"
+                  className="w-full bg-[#1a1b26] rounded-xl px-3.5 py-2.5 text-xs text-white border-none focus:ring-1 focus:ring-[#d1a86e] focus:outline-none"
                 >
                   <option value="upcoming">Upcoming</option>
                   <option value="current">Current</option>
@@ -656,7 +679,7 @@ export function ExhibitionsManagerClient({
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                 placeholder="About this exhibition..."
                 rows={3}
-                className="bg-[#1a1c23] border-[#262833] text-white text-xs placeholder:text-zinc-600 focus:border-[#d1a86e] focus:ring-0 resize-none"
+                className="bg-[#1a1b26] text-white text-xs placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus:ring-1 focus:ring-[#d1a86e] resize-none"
               />
             </div>
 
@@ -669,7 +692,7 @@ export function ExhibitionsManagerClient({
                 onChange={(e) => setForm((f) => ({ ...f, curatorNote: e.target.value }))}
                 placeholder="Curatorial perspective and exhibition thesis..."
                 rows={3}
-                className="bg-[#1a1c23] border-[#262833] text-white text-xs placeholder:text-zinc-600 focus:border-[#d1a86e] focus:ring-0 resize-none"
+                className="bg-[#1a1b26] text-white text-xs placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus:ring-1 focus:ring-[#d1a86e] resize-none"
               />
             </div>
 
@@ -681,9 +704,10 @@ export function ExhibitionsManagerClient({
                 value={form.coverImageUrl}
                 onChange={(e) => setForm((f) => ({ ...f, coverImageUrl: e.target.value }))}
                 placeholder="https://..."
+                className="bg-[#1a1b26] text-white text-xs placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
               />
               {form.coverImageUrl && (
-                <div className="relative aspect-video rounded-lg overflow-hidden border border-[#262833] mt-2">
+                <div className="relative aspect-video rounded-xl overflow-hidden mt-2 shadow-md">
                   <Image
                     src={form.coverImageUrl}
                     alt="Cover preview"
@@ -701,7 +725,7 @@ export function ExhibitionsManagerClient({
                 id="exh-published"
                 checked={form.isPublished}
                 onChange={(e) => setForm((f) => ({ ...f, isPublished: e.target.checked }))}
-                className="w-4 h-4 rounded border-[#262833] bg-[#1a1c23] text-[#d1a86e] focus:ring-[#d1a86e]"
+                className="w-4 h-4 rounded bg-[#1a1b26] accent-[#d1a86e] border-none"
               />
               <label htmlFor="exh-published" className="text-xs text-zinc-300">
                 Publish immediately
@@ -718,9 +742,9 @@ export function ExhibitionsManagerClient({
 
           <DialogFooter>
             <Button
-              variant="secondary"
+              variant="ghost"
               onClick={() => setDialogOpen(false)}
-              className="gap-1.5"
+              className="bg-[#1a1b26] hover:bg-[#222432] text-zinc-300 gap-1.5 rounded-xl border-none"
             >
               <X className="w-3.5 h-3.5" />
               Cancel
@@ -728,7 +752,7 @@ export function ExhibitionsManagerClient({
             <Button
               onClick={handleSave}
               disabled={saving || !form.title.trim() || !form.location.trim()}
-              className="gap-1.5"
+              className="bg-[#d1a86e] hover:bg-[#c49a5f] text-black font-medium gap-1.5 rounded-xl border-none"
             >
               {saving ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

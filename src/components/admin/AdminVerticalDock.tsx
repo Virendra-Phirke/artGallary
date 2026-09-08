@@ -220,7 +220,7 @@ export function AdminVerticalDock({
           iconSize={40}
           iconMagnification={45}
           iconDistance={65}
-          className="bg-[#0b0c0f]/95 border-[#262833] backdrop-blur-2xl shadow-2xl shadow-black/80 rounded-2xl py-2.5 px-2 gap-1"
+          className="bg-[#121319] backdrop-blur-2xl shadow-2xl shadow-black/80 rounded-2xl py-2.5 px-2 gap-1.5"
         >
           {/* Primary Desk & Curation Nav Items */}
           {mainNavItems.map((item) => {
@@ -233,10 +233,10 @@ export function AdminVerticalDock({
                   <Link href={item.href} className="focus:outline-none">
                     <DockIcon
                       className={cn(
-                        "relative border transition-all duration-200",
+                        "relative transition-all duration-200 rounded-xl",
                         active
-                          ? "bg-[#1f212a] border-[#d1a86e] text-white shadow-lg shadow-[#d1a86e]/10"
-                          : "bg-[#121318] border-transparent text-zinc-400 hover:text-white hover:bg-[#1a1c24] hover:border-[#2b2d38]"
+                          ? "bg-[#222432] text-white shadow-md shadow-black/40"
+                          : "bg-[#161720] text-zinc-400 hover:text-white hover:bg-[#1a1b26]"
                       )}
                     >
                       {/* Active indicator dot on left */}
@@ -253,7 +253,7 @@ export function AdminVerticalDock({
 
                       {/* Inquiry notification pill */}
                       {item.badge !== undefined && item.badge > 0 && (
-                        <span className="absolute -top-1 -right-1 flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-amber-500 text-[9px] font-bold text-black ring-2 ring-[#0b0c0f]">
+                        <span className="absolute -top-1 -right-1 flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-amber-500 text-[9px] font-bold text-black ring-2 ring-[#121319]">
                           {item.badge}
                         </span>
                       )}
@@ -274,8 +274,8 @@ export function AdminVerticalDock({
             );
           })}
 
-          {/* Subtle Divider */}
-          <div className="w-6 h-[1px] bg-[#22242e] my-1" />
+          {/* Subtle Solid Divider */}
+          <div className="w-5 h-0.5 rounded-full bg-[#1c1d27] my-1" />
 
           {/* Studio & Settings Items */}
           {studioNavItems.map((item) => {
@@ -288,10 +288,10 @@ export function AdminVerticalDock({
                   <Link href={item.href} className="focus:outline-none">
                     <DockIcon
                       className={cn(
-                        "relative border transition-all duration-200",
+                        "relative transition-all duration-200 rounded-xl",
                         active
-                          ? "bg-[#1f212a] border-[#d1a86e] text-white shadow-lg shadow-[#d1a86e]/10"
-                          : "bg-[#121318] border-transparent text-zinc-400 hover:text-white hover:bg-[#1a1c24] hover:border-[#2b2d38]"
+                          ? "bg-[#222432] text-white shadow-md shadow-black/40"
+                          : "bg-[#161720] text-zinc-400 hover:text-white hover:bg-[#1a1b26]"
                       )}
                     >
                       {active && (
@@ -314,8 +314,8 @@ export function AdminVerticalDock({
             );
           })}
 
-          {/* Subtle Divider */}
-          <div className="w-6 h-[1px] bg-[#22242e] my-1" />
+          {/* Subtle Solid Divider */}
+          <div className="w-5 h-0.5 rounded-full bg-[#1c1d27] my-1" />
 
           {/* Pin / Auto-Hide Lock Toggle */}
           <Tooltip>
@@ -327,10 +327,10 @@ export function AdminVerticalDock({
               >
                 <DockIcon
                   className={cn(
-                    "border transition-all duration-200",
+                    "transition-all duration-200 rounded-xl",
                     isPinned
-                      ? "bg-[#d1a86e]/15 border-[#d1a86e]/40 text-[#d1a86e]"
-                      : "bg-[#121318] border-transparent text-zinc-500 hover:text-zinc-300 hover:bg-[#1a1c24]"
+                      ? "bg-[#251e16] text-[#d1a86e]"
+                      : "bg-[#161720] text-zinc-500 hover:text-zinc-300 hover:bg-[#1a1b26]"
                   )}
                 >
                   {isPinned ? (

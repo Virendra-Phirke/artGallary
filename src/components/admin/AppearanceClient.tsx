@@ -3,9 +3,6 @@
 import React, { useState } from "react";
 import type { ThemeSettingsData } from "@/db/mockData";
 import { Paintbrush, Check, Sparkles, Loader2, ArrowRight, Layers } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 interface AppearanceClientProps {
   initialTheme: ThemeSettingsData;
@@ -46,7 +43,8 @@ export function AppearanceClient({ initialTheme }: AppearanceClientProps) {
 
   return (
     <div className="space-y-8 w-full">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#1c1d25] pb-6">
+      {/* Header Block */}
+      <div className="bg-[#121319] rounded-3xl p-6 sm:p-8 shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
             Design Tokens &amp; Styling
@@ -60,7 +58,7 @@ export function AppearanceClient({ initialTheme }: AppearanceClientProps) {
         <button
           onClick={handleSave}
           disabled={isSaving}
-          className="flex items-center gap-2 bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] px-6 py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors shadow-lg shadow-[#d1a86e]/10 self-start sm:self-auto disabled:opacity-50"
+          className="flex items-center gap-2 bg-[#d1a86e] hover:bg-[#c49a5f] text-black px-6 py-3 rounded-xl text-xs font-semibold uppercase tracking-wider transition-colors shadow-lg shadow-black/40 self-start sm:self-auto disabled:opacity-50 border-none"
         >
           {isSaving ? (
             <Loader2 className="w-4 h-4 animate-spin text-black" />
@@ -77,7 +75,7 @@ export function AppearanceClient({ initialTheme }: AppearanceClientProps) {
         {/* Left Form Column */}
         <div className="lg:col-span-7 space-y-6">
           {/* Accent Color Palette */}
-          <div className="p-6 bg-[#14151a] border border-[#262833] rounded-2xl space-y-4">
+          <div className="p-6 sm:p-8 bg-[#121319] border-none rounded-3xl shadow-xl shadow-black/40 space-y-4">
             <h2 className="font-serif text-lg text-white">Curated Accent Hues</h2>
             <p className="text-xs text-zinc-400">
               Select a verified museum accent token. Arbitrary CSS/JS injection is strictly prohibited for security.
@@ -89,14 +87,14 @@ export function AppearanceClient({ initialTheme }: AppearanceClientProps) {
                   key={c.id}
                   type="button"
                   onClick={() => setTheme((prev) => ({ ...prev, primaryColor: c.id }))}
-                  className={`p-3 rounded-xl border flex items-center gap-3 transition-all ${
+                  className={`p-3.5 rounded-2xl border-none flex items-center gap-3 transition-all ${
                     theme.primaryColor === c.id
-                      ? "bg-[#1a1c23] border-[#d1a86e] shadow-lg ring-1 ring-[#d1a86e]/30"
-                      : "bg-[#14151a] border-[#262833] hover:border-zinc-600"
+                      ? "bg-[#1a1b26] ring-2 ring-[#d1a86e] shadow-lg shadow-black/40"
+                      : "bg-[#1a1b26] hover:bg-[#222432] shadow-md shadow-black/20"
                   }`}
                 >
                   <div
-                    className="w-5 h-5 rounded-full border border-black/20 shrink-0"
+                    className="w-5 h-5 rounded-full shrink-0 shadow-sm"
                     style={{ backgroundColor: c.hex }}
                   />
                   <span className="text-xs text-white font-medium truncate">{c.name}</span>
@@ -106,18 +104,18 @@ export function AppearanceClient({ initialTheme }: AppearanceClientProps) {
           </div>
 
           {/* Typography Configuration */}
-          <div className="p-6 bg-[#14151a] border border-[#262833] rounded-2xl space-y-4">
+          <div className="p-6 sm:p-8 bg-[#121319] border-none rounded-3xl shadow-xl shadow-black/40 space-y-4">
             <h2 className="font-serif text-lg text-white">Typography Hierarchy</h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-1.5">
+                <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-2">
                   Editorial Heading Serif
                 </label>
                 <select
                   value={theme.headingFont}
                   onChange={(e) => setTheme((prev) => ({ ...prev, headingFont: e.target.value }))}
-                  className="w-full bg-[#1a1c23] border border-[#262833] rounded-lg px-3.5 py-2 text-xs text-white focus:border-[#d1a86e] focus:outline-none cursor-pointer"
+                  className="w-full bg-[#1a1b26] border-none rounded-xl px-4 py-3 text-xs text-white focus:ring-1 focus:ring-[#d1a86e] focus:outline-none cursor-pointer shadow-inner"
                 >
                   <option value="Playfair Display">Playfair Display (Default Luxury Serif)</option>
                   <option value="Cormorant Garamond">Cormorant Garamond (Classical Venetian)</option>
@@ -126,13 +124,13 @@ export function AppearanceClient({ initialTheme }: AppearanceClientProps) {
               </div>
 
               <div>
-                <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-1.5">
+                <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-2">
                   Body Sans-Serif
                 </label>
                 <select
                   value={theme.bodyFont}
                   onChange={(e) => setTheme((prev) => ({ ...prev, bodyFont: e.target.value }))}
-                  className="w-full bg-[#1a1c23] border border-[#262833] rounded-lg px-3.5 py-2 text-xs text-white focus:border-[#d1a86e] focus:outline-none cursor-pointer"
+                  className="w-full bg-[#1a1b26] border-none rounded-xl px-4 py-3 text-xs text-white focus:ring-1 focus:ring-[#d1a86e] focus:outline-none cursor-pointer shadow-inner"
                 >
                   <option value="Plus Jakarta Sans">Plus Jakarta Sans (Contemporary Clean)</option>
                   <option value="Inter">Inter (High-Legibility Neutral)</option>
@@ -142,12 +140,12 @@ export function AppearanceClient({ initialTheme }: AppearanceClientProps) {
           </div>
 
           {/* Radius & Container Tokens */}
-          <div className="p-6 bg-[#14151a] border border-[#262833] rounded-2xl space-y-4">
+          <div className="p-6 sm:p-8 bg-[#121319] border-none rounded-3xl shadow-xl shadow-black/40 space-y-4">
             <h2 className="font-serif text-lg text-white">Border Geometry &amp; Container Width</h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-1.5">
+                <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-2">
                   Corner Radius Preset
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -161,10 +159,10 @@ export function AppearanceClient({ initialTheme }: AppearanceClientProps) {
                       key={r.id}
                       type="button"
                       onClick={() => setTheme((prev) => ({ ...prev, borderRadius: r.id }))}
-                      className={`p-2.5 rounded-lg border text-xs text-center transition-all ${
+                      className={`p-3 rounded-xl border-none text-xs text-center transition-all ${
                         theme.borderRadius === r.id
-                          ? "bg-[#1a1c23] border-[#d1a86e] text-white font-semibold"
-                          : "bg-[#14151a] border-[#262833] text-zinc-400 hover:text-zinc-200"
+                          ? "bg-[#d1a86e] text-black font-semibold shadow-md shadow-black/30"
+                          : "bg-[#1a1b26] hover:bg-[#222432] text-zinc-400 hover:text-zinc-200 shadow-sm"
                       }`}
                     >
                       {r.label}
@@ -174,7 +172,7 @@ export function AppearanceClient({ initialTheme }: AppearanceClientProps) {
               </div>
 
               <div>
-                <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-1.5">
+                <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-2">
                   Container Layout Width
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -188,10 +186,10 @@ export function AppearanceClient({ initialTheme }: AppearanceClientProps) {
                       key={w.id}
                       type="button"
                       onClick={() => setTheme((prev) => ({ ...prev, containerWidth: w.id }))}
-                      className={`p-2.5 rounded-lg border text-xs text-center transition-all ${
+                      className={`p-3 rounded-xl border-none text-xs text-center transition-all ${
                         theme.containerWidth === w.id
-                          ? "bg-[#1a1c23] border-[#d1a86e] text-white font-semibold"
-                          : "bg-[#14151a] border-[#262833] text-zinc-400 hover:text-zinc-200"
+                          ? "bg-[#d1a86e] text-black font-semibold shadow-md shadow-black/30"
+                          : "bg-[#1a1b26] hover:bg-[#222432] text-zinc-400 hover:text-zinc-200 shadow-sm"
                       }`}
                     >
                       {w.label}
@@ -203,7 +201,7 @@ export function AppearanceClient({ initialTheme }: AppearanceClientProps) {
           </div>
 
           {/* Animation Level */}
-          <div className="p-6 bg-[#14151a] border border-[#262833] rounded-2xl space-y-4">
+          <div className="p-6 sm:p-8 bg-[#121319] border-none rounded-3xl shadow-xl shadow-black/40 space-y-4">
             <h2 className="font-serif text-lg text-white">Motion Choreography</h2>
             <p className="text-xs text-zinc-400">
               Control the cadence of page reveals, artwork zooms, and spatial transitions. Respects prefers-reduced-motion.
@@ -219,16 +217,16 @@ export function AppearanceClient({ initialTheme }: AppearanceClientProps) {
                   key={lvl.id}
                   type="button"
                   onClick={() => setTheme((prev) => ({ ...prev, animationLevel: lvl.id as any }))}
-                  className={`p-3.5 rounded-xl border text-left transition-all ${
+                  className={`p-4 rounded-2xl border-none text-left transition-all ${
                     theme.animationLevel === lvl.id
-                      ? "bg-[#1a1c23] border-[#d1a86e]"
-                      : "bg-[#14151a] border-[#262833] hover:border-zinc-600"
+                      ? "bg-[#1a1b26] ring-2 ring-[#d1a86e] shadow-lg shadow-black/40"
+                      : "bg-[#1a1b26] hover:bg-[#222432] shadow-sm"
                   }`}
                 >
-                  <span className="text-xs font-medium text-white block">
+                  <span className="text-xs font-semibold text-white block">
                     {lvl.label}
                   </span>
-                  <span className="text-[10px] text-zinc-500 block mt-0.5">
+                  <span className="text-[10px] text-zinc-400 block mt-1">
                     {lvl.desc}
                   </span>
                 </button>
@@ -239,17 +237,17 @@ export function AppearanceClient({ initialTheme }: AppearanceClientProps) {
 
         {/* Right Live Token Preview Column */}
         <div className="lg:col-span-5 space-y-4 sticky top-6">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between px-1">
             <span className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold">
               Live Token Sandbox
             </span>
-            <Badge variant="outline" className="text-[10px] border-[#262833] text-zinc-400">
+            <span className="text-[10px] bg-[#1a1b26] text-[#d1a86e] px-3 py-1 rounded-xl font-mono">
               Dynamic Render
-            </Badge>
+            </span>
           </div>
 
-          <Card
-            className="p-6 bg-[#14151a] border-[#262833] space-y-5 shadow-2xl transition-all"
+          <div
+            className="p-6 sm:p-8 bg-[#121319] border-none space-y-5 shadow-2xl shadow-black/50 transition-all"
             style={{ borderRadius: theme.borderRadius }}
           >
             <div className="flex items-center justify-between">
@@ -260,7 +258,7 @@ export function AppearanceClient({ initialTheme }: AppearanceClientProps) {
                 Collection Preview
               </span>
               <div
-                className="w-3 h-3 rounded-full"
+                className="w-3 h-3 rounded-full shadow-sm"
                 style={{ backgroundColor: theme.primaryColor }}
               />
             </div>
@@ -273,7 +271,7 @@ export function AppearanceClient({ initialTheme }: AppearanceClientProps) {
                 Lapis Lazuli Stratum IV
               </h3>
               <p
-                className="text-xs text-zinc-400 mt-1.5 leading-relaxed"
+                className="text-xs text-zinc-400 mt-2 leading-relaxed"
                 style={{ fontFamily: theme.bodyFont === "Inter" ? "Inter, sans-serif" : "Plus Jakarta Sans, sans-serif" }}
               >
                 The selected typography pairings and corner radiuses will apply dynamically across all public storefront catalogue cards and headers.
@@ -283,7 +281,7 @@ export function AppearanceClient({ initialTheme }: AppearanceClientProps) {
             <div className="pt-2 flex items-center gap-3">
               <button
                 type="button"
-                className="px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#0d0e12] transition-colors shadow-lg"
+                className="px-5 py-3 text-xs font-semibold uppercase tracking-wider text-black transition-colors shadow-lg shadow-black/40 border-none"
                 style={{
                   backgroundColor: theme.primaryColor,
                   borderRadius: theme.borderRadius,
@@ -293,13 +291,13 @@ export function AppearanceClient({ initialTheme }: AppearanceClientProps) {
               </button>
               <button
                 type="button"
-                className="px-4 py-2.5 text-xs text-zinc-300 border border-[#262833] hover:text-white transition-colors"
+                className="px-5 py-3 text-xs text-zinc-300 bg-[#1a1b26] hover:bg-[#222432] hover:text-white transition-colors border-none shadow-md"
                 style={{ borderRadius: theme.borderRadius }}
               >
                 WebAR Preview
               </button>
             </div>
-          </Card>
+          </div>
         </div>
       </div>
     </div>

@@ -140,18 +140,18 @@ export function ProfileClient({ initialUser }: ProfileClientProps) {
   return (
     <div className="w-full space-y-8 pb-16">
       {/* Editorial Header */}
-      <div className="border-b border-[#262833] pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-6 sm:p-8 bg-[#121319] rounded-3xl shadow-xl shadow-black/40 flex flex-col md:flex-row md:items-center justify-between gap-4 border-none">
         <div>
           <div className="flex items-center gap-2">
             <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
-              Personal Credentials & Access
+              Personal Credentials &amp; Access
             </span>
-            <Badge variant="warning" className="text-[9px] font-mono font-bold">
+            <Badge variant="warning" className="text-[9px] font-mono font-bold border-none">
               {initialUser.role}
             </Badge>
           </div>
           <h1 className="font-serif text-3xl sm:text-4xl text-white font-normal tracking-wide mt-1">
-            Admin Profile & Security
+            Admin Profile &amp; Security
           </h1>
           <p className="text-xs text-zinc-400 mt-1 max-w-2xl">
             Manage your personal login credentials, identity identifier, and authentication master password.
@@ -160,10 +160,10 @@ export function ProfileClient({ initialUser }: ProfileClientProps) {
 
         <div className="flex items-center gap-3">
           <Button
-            variant="outline"
+            variant="ghost"
             onClick={handleSignOut}
             disabled={signingOut}
-            className="border-red-950/80 bg-red-950/20 hover:bg-red-950/50 text-red-300 hover:text-red-200 text-xs gap-2"
+            className="bg-[#2d1616] hover:bg-red-950 text-red-300 hover:text-red-200 text-xs gap-2 rounded-xl border-none h-9 px-4"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>{signingOut ? "Signing Out..." : "Sign Out"}</span>
@@ -172,7 +172,7 @@ export function ProfileClient({ initialUser }: ProfileClientProps) {
       </div>
 
       {/* Scope Clarification Notice */}
-      <div className="p-4 rounded-xl border border-[#262833] bg-[#121319]/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+      <div className="p-5 rounded-2xl bg-[#121319] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs border-none shadow-md">
         <div className="flex items-start sm:items-center gap-2.5 text-zinc-300">
           <Shield className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5 sm:mt-0" />
           <span>
@@ -191,26 +191,26 @@ export function ProfileClient({ initialUser }: ProfileClientProps) {
       {/* 2-Column Credentials Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Column 1: Admin Identity */}
-        <Card className="p-6 bg-[#13141b] border-[#22242e] rounded-2xl space-y-6">
-          <div className="flex items-center gap-3 border-b border-[#20222b] pb-4">
-            <div className="w-9 h-9 rounded-xl bg-[#1b1d26] border border-[#2d303d] flex items-center justify-center text-[#d1a86e]">
+        <Card className="p-6 sm:p-8 bg-[#121319] rounded-3xl space-y-6 shadow-xl shadow-black/40 border-none">
+          <div className="flex items-center gap-3 pb-2">
+            <div className="w-9 h-9 rounded-xl bg-[#1a1b26] flex items-center justify-center text-[#d1a86e] border-none shadow-sm">
               <User className="w-4.5 h-4.5" />
             </div>
             <div>
               <h2 className="font-serif text-lg text-white font-medium">Administrator Identity</h2>
-              <p className="text-[11px] text-zinc-400">Display name & login account identifier</p>
+              <p className="text-[11px] text-zinc-400">Display name &amp; login account identifier</p>
             </div>
           </div>
 
           {profileSuccess && (
-            <div className="p-3 rounded-lg bg-emerald-950/40 border border-emerald-800/60 text-emerald-300 text-xs flex items-center gap-2">
+            <div className="p-3 rounded-xl bg-emerald-950/80 text-emerald-300 text-xs flex items-center gap-2 border-none shadow-sm">
               <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
               <span>{profileSuccess}</span>
             </div>
           )}
 
           {profileError && (
-            <div className="p-3 rounded-lg bg-red-950/40 border border-red-800/60 text-red-300 text-xs flex items-center gap-2">
+            <div className="p-3 rounded-xl bg-red-950/80 text-red-300 text-xs flex items-center gap-2 border-none shadow-sm">
               <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
               <span>{profileError}</span>
             </div>
@@ -224,7 +224,7 @@ export function ProfileClient({ initialUser }: ProfileClientProps) {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Admin Name"
-                className="bg-[#0b0c10] border-[#262833] text-white focus:border-[#d1a86e]"
+                className="bg-[#1a1b26] text-white text-xs placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
                 required
               />
             </div>
@@ -236,7 +236,7 @@ export function ProfileClient({ initialUser }: ProfileClientProps) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="vishal or admin@gallery.art"
-                className="bg-[#0b0c10] border-[#262833] text-white focus:border-[#d1a86e]"
+                className="bg-[#1a1b26] text-white text-xs placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
                 required
               />
               <span className="text-[10px] text-zinc-500">
@@ -244,7 +244,7 @@ export function ProfileClient({ initialUser }: ProfileClientProps) {
               </span>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-[#0b0c10] border border-[#20222b] space-y-1.5">
+            <div className="p-4 rounded-xl bg-[#1a1b26] space-y-1.5 border-none">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-zinc-400">System Role</span>
                 <span className="font-mono text-xs text-[#d1a86e] font-semibold">ROOT ADMIN</span>
@@ -257,7 +257,7 @@ export function ProfileClient({ initialUser }: ProfileClientProps) {
             <Button
               type="submit"
               disabled={profileSaving}
-              className="w-full bg-[#d1a86e] hover:bg-[#b8915b] text-[#0d0e12] font-semibold text-xs tracking-wide py-2 rounded-xl transition-all"
+              className="w-full bg-[#d1a86e] hover:bg-[#c49a5f] text-black font-semibold text-xs tracking-wide py-3 rounded-xl border-none shadow-md shadow-black/40"
             >
               {profileSaving ? "Saving..." : "Save Identity Changes"}
             </Button>
@@ -265,9 +265,9 @@ export function ProfileClient({ initialUser }: ProfileClientProps) {
         </Card>
 
         {/* Column 2: Password & Authentication */}
-        <Card className="p-6 bg-[#13141b] border-[#22242e] rounded-2xl space-y-6">
-          <div className="flex items-center gap-3 border-b border-[#20222b] pb-4">
-            <div className="w-9 h-9 rounded-xl bg-[#1b1d26] border border-[#2d303d] flex items-center justify-center text-[#d1a86e]">
+        <Card className="p-6 sm:p-8 bg-[#121319] rounded-3xl space-y-6 shadow-xl shadow-black/40 border-none">
+          <div className="flex items-center gap-3 pb-2">
+            <div className="w-9 h-9 rounded-xl bg-[#1a1b26] flex items-center justify-center text-[#d1a86e] border-none shadow-sm">
               <KeyRound className="w-4.5 h-4.5" />
             </div>
             <div>
@@ -277,14 +277,14 @@ export function ProfileClient({ initialUser }: ProfileClientProps) {
           </div>
 
           {passwordSuccess && (
-            <div className="p-3 rounded-lg bg-emerald-950/40 border border-emerald-800/60 text-emerald-300 text-xs flex items-center gap-2">
+            <div className="p-3 rounded-xl bg-emerald-950/80 text-emerald-300 text-xs flex items-center gap-2 border-none shadow-sm">
               <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
               <span>{passwordSuccess}</span>
             </div>
           )}
 
           {passwordError && (
-            <div className="p-3 rounded-lg bg-red-950/40 border border-red-800/60 text-red-300 text-xs flex items-center gap-2">
+            <div className="p-3 rounded-xl bg-red-950/80 text-red-300 text-xs flex items-center gap-2 border-none shadow-sm">
               <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
               <span>{passwordError}</span>
             </div>
@@ -299,13 +299,13 @@ export function ProfileClient({ initialUser }: ProfileClientProps) {
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   placeholder="Enter current password"
-                  className="bg-[#0b0c10] border-[#262833] text-white pr-10 focus:border-[#d1a86e]"
+                  className="bg-[#1a1b26] text-white text-xs placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 pr-10 border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowCurrentPassword((prev) => !prev)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 border-none"
                 >
                   {showCurrentPassword ? (
                     <EyeOff className="w-3.5 h-3.5" />
@@ -324,13 +324,13 @@ export function ProfileClient({ initialUser }: ProfileClientProps) {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Enter new password (min 4 characters)"
-                  className="bg-[#0b0c10] border-[#262833] text-white pr-10 focus:border-[#d1a86e]"
+                  className="bg-[#1a1b26] text-white text-xs placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 pr-10 border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowNewPassword((prev) => !prev)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 border-none"
                 >
                   {showNewPassword ? (
                     <EyeOff className="w-3.5 h-3.5" />
@@ -348,7 +348,7 @@ export function ProfileClient({ initialUser }: ProfileClientProps) {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Re-type new password"
-                className="bg-[#0b0c10] border-[#262833] text-white focus:border-[#d1a86e]"
+                className="bg-[#1a1b26] text-white text-xs placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
                 required
               />
             </div>
@@ -356,8 +356,8 @@ export function ProfileClient({ initialUser }: ProfileClientProps) {
             <Button
               type="submit"
               disabled={passwordSaving}
-              variant="outline"
-              className="w-full border-[#d1a86e]/40 hover:bg-[#d1a86e]/10 text-[#d1a86e] font-semibold text-xs tracking-wide py-2 rounded-xl transition-all"
+              variant="ghost"
+              className="w-full bg-[#1a1b26] hover:bg-[#222432] text-[#d1a86e] font-semibold text-xs tracking-wide py-3 rounded-xl transition-all border-none"
             >
               {passwordSaving ? "Updating Password..." : "Update Master Password"}
             </Button>
@@ -366,15 +366,15 @@ export function ProfileClient({ initialUser }: ProfileClientProps) {
       </div>
 
       {/* Session Integrity Footer */}
-      <Card className="p-5 bg-[#101116] border-[#20222a] rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <Card className="p-5 sm:p-6 bg-[#121319] rounded-3xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-none shadow-xl shadow-black/40">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-[#181922] border border-[#282a36] flex items-center justify-center text-[#d1a86e]">
+          <div className="w-9 h-9 rounded-xl bg-[#1a1b26] flex items-center justify-center text-[#d1a86e] border-none shadow-sm">
             <Sparkles className="w-4 h-4" />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-medium text-white">Active Session Security</span>
-              <Badge variant="success" className="text-[9px] py-0 h-4">VERIFIED</Badge>
+              <Badge variant="success" className="text-[9px] py-0 h-4 border-none">VERIFIED</Badge>
             </div>
             <p className="text-[11px] text-zinc-500">
               Authenticated via secure HTTP-only cookies with HMAC-SHA256 signature verification.

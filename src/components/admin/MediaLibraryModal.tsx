@@ -67,11 +67,11 @@ export function MediaLibraryModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="bg-[#121317] border border-[#262833] rounded-2xl w-full max-w-4xl max-h-[85vh] flex flex-col overflow-hidden shadow-2xl">
+      <div className="bg-[#121319] rounded-3xl w-full max-w-4xl max-h-[85vh] flex flex-col overflow-hidden shadow-2xl shadow-black/80 border-none">
         {/* Modal Header */}
-        <div className="p-6 border-b border-[#1f212b] flex items-center justify-between">
+        <div className="p-6 bg-[#161720] flex items-center justify-between border-none">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[#d1a86e]/10 border border-[#d1a86e]/30 flex items-center justify-center text-[#d1a86e]">
+            <div className="w-9 h-9 rounded-xl bg-[#222432] flex items-center justify-center text-[#d1a86e] border-none shadow-sm">
               <ImageIcon className="w-5 h-5" />
             </div>
             <div>
@@ -85,14 +85,14 @@ export function MediaLibraryModal({
           </div>
           <button
             onClick={onClose}
-            className="text-zinc-400 hover:text-white p-2 rounded-lg hover:bg-neutral-800 transition-colors"
+            className="text-zinc-400 hover:text-white p-2 rounded-xl hover:bg-[#222432] transition-colors border-none"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Search Bar */}
-        <div className="p-4 border-b border-[#1f212b] bg-[#17181f]">
+        <div className="p-4 bg-[#121319]">
           <div className="relative">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
             <input
@@ -100,7 +100,7 @@ export function MediaLibraryModal({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search uploaded files by name..."
-              className="w-full bg-[#0e0f13] border border-[#262833] rounded-xl pl-10 pr-4 py-2 text-xs text-white placeholder-zinc-500 focus:border-[#d1a86e] focus:outline-none"
+              className="w-full bg-[#1a1b26] rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-zinc-500 border-none focus:ring-1 focus:ring-[#d1a86e] focus:outline-none"
             />
           </div>
         </div>
@@ -126,10 +126,10 @@ export function MediaLibraryModal({
                     key={item.id}
                     type="button"
                     onClick={() => handleSelect(item)}
-                    className={`group relative flex flex-col text-left rounded-xl overflow-hidden border transition-all duration-200 ${
+                    className={`group relative flex flex-col text-left rounded-2xl overflow-hidden transition-all duration-200 border-none ${
                       isSelected
-                        ? "border-[#d1a86e] ring-2 ring-[#d1a86e]/30 scale-[0.98]"
-                        : "border-[#262833] hover:border-zinc-500 bg-[#17181f]"
+                        ? "bg-[#222432] ring-2 ring-[#d1a86e] scale-[0.98]"
+                        : "bg-[#1a1b26] hover:bg-[#20222d]"
                     }`}
                   >
                     <div className="relative aspect-[4/3] w-full bg-black/50 overflow-hidden">
@@ -148,7 +148,7 @@ export function MediaLibraryModal({
                         </div>
                       )}
                     </div>
-                    <div className="p-2.5 space-y-1">
+                    <div className="p-3 space-y-1">
                       <p className="text-xs font-medium text-white truncate group-hover:text-[#d1a86e] transition-colors">
                         {item.fileName}
                       </p>
@@ -165,11 +165,11 @@ export function MediaLibraryModal({
         </div>
 
         {/* Modal Footer */}
-        <div className="p-4 border-t border-[#1f212b] bg-[#14151a] flex justify-between items-center text-xs text-zinc-500">
+        <div className="p-4 bg-[#161720] flex justify-between items-center text-xs text-zinc-500 border-none">
           <span>Total {filteredMedia.length} assets</span>
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-lg bg-neutral-800 text-white hover:bg-neutral-700 transition-colors text-xs font-medium"
+            className="px-4 py-2 rounded-xl bg-[#1a1b26] text-white hover:bg-[#222432] transition-colors text-xs font-medium border-none"
           >
             Cancel
           </button>

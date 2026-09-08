@@ -73,12 +73,12 @@ export function UnsplashPickerModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="bg-[#14151a] border border-[#262833] w-full max-w-4xl rounded-2xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden">
+      <div className="bg-[#121319] w-full max-w-4xl rounded-3xl shadow-2xl shadow-black/80 flex flex-col max-h-[85vh] overflow-hidden border-none">
         {/* Header */}
-        <div className="p-5 border-b border-[#262833] flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#d1a86e]/10 border border-[#d1a86e]/20 flex items-center justify-center text-[#d1a86e]">
-              <Sparkles className="w-4 h-4" />
+        <div className="p-6 bg-[#161720] flex items-center justify-between border-none">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-[#222432] flex items-center justify-center text-[#d1a86e] border-none shadow-sm">
+              <Sparkles className="w-5 h-5" />
             </div>
             <div>
               <h2 className="font-serif text-lg text-white font-medium">
@@ -91,14 +91,14 @@ export function UnsplashPickerModal({
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
+            className="p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-[#222432] transition-colors border-none"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Search & Categories Bar */}
-        <div className="p-4 border-b border-[#262833] bg-[#0e0f13] space-y-3">
+        <div className="p-4 bg-[#121319] space-y-3">
           <form onSubmit={handleSearchSubmit} className="flex gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
@@ -107,13 +107,13 @@ export function UnsplashPickerModal({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search contemporary art, oil paintings, abstract..."
-                className="w-full bg-[#1a1c23] border border-[#262833] rounded-lg pl-10 pr-4 py-2 text-xs text-white placeholder-zinc-500 focus:border-[#d1a86e] focus:outline-none"
+                className="w-full bg-[#1a1b26] rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-zinc-500 border-none focus:ring-1 focus:ring-[#d1a86e] focus:outline-none"
               />
             </div>
             <button
               type="submit"
               disabled={isLoading}
-              className="px-4 py-2 bg-[#262833] hover:bg-[#323544] text-xs text-white font-medium rounded-lg transition-colors flex items-center gap-1.5"
+              className="px-5 py-2.5 bg-[#d1a86e] hover:bg-[#c49a5f] text-xs text-black font-semibold rounded-xl transition-colors flex items-center gap-1.5 border-none cursor-pointer"
             >
               {isLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : "Search"}
             </button>
@@ -126,10 +126,10 @@ export function UnsplashPickerModal({
                 key={cat}
                 type="button"
                 onClick={() => handleCategoryClick(cat)}
-                className={`px-2.5 py-1 rounded-full text-[11px] whitespace-nowrap transition-colors ${
+                className={`px-3 py-1.5 rounded-xl text-[11px] whitespace-nowrap transition-colors cursor-pointer border-none ${
                   searchQuery === cat
-                    ? "bg-[#d1a86e] text-black font-semibold"
-                    : "bg-[#1a1c23] text-zinc-400 hover:text-white border border-[#262833]"
+                    ? "bg-[#d1a86e] text-black font-semibold shadow-sm"
+                    : "bg-[#1a1b26] text-zinc-400 hover:text-white"
                 }`}
               >
                 {cat}
@@ -139,7 +139,7 @@ export function UnsplashPickerModal({
         </div>
 
         {/* Image Grid */}
-        <div className="p-5 overflow-y-auto flex-1">
+        <div className="p-6 overflow-y-auto flex-1">
           {isLoading ? (
             <div className="h-64 flex flex-col items-center justify-center gap-3 text-zinc-500 text-xs">
               <RefreshCw className="w-6 h-6 animate-spin text-[#d1a86e]" />
@@ -157,10 +157,10 @@ export function UnsplashPickerModal({
                   <div
                     key={img.id}
                     onClick={() => handleSelectImage(img)}
-                    className={`group relative rounded-xl overflow-hidden bg-black/40 border cursor-pointer transition-all hover:scale-[1.02] ${
+                    className={`group relative rounded-2xl overflow-hidden bg-[#1a1b26] cursor-pointer transition-all hover:scale-[1.02] border-none ${
                       isSelected
-                        ? "border-[#d1a86e] ring-2 ring-[#d1a86e]/30"
-                        : "border-[#262833] hover:border-zinc-500"
+                        ? "ring-2 ring-[#d1a86e]"
+                        : ""
                     }`}
                   >
                     <div className="relative aspect-[4/3] w-full">
@@ -194,11 +194,11 @@ export function UnsplashPickerModal({
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-[#262833] bg-[#0e0f13] flex items-center justify-between text-xs text-zinc-500">
+        <div className="p-4 bg-[#161720] flex items-center justify-between text-xs text-zinc-500 border-none">
           <span>Photos provided via Unsplash API with verified dimensions and artist attribution.</span>
           <button
             onClick={onClose}
-            className="px-4 py-1.5 rounded-lg border border-[#262833] hover:bg-white/5 text-zinc-300"
+            className="px-4 py-2 rounded-xl bg-[#1a1b26] hover:bg-[#222432] text-zinc-300 border-none transition-colors"
           >
             Cancel
           </button>

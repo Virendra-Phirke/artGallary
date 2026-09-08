@@ -162,19 +162,19 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
   return (
     <div className="space-y-8 pb-10 w-full">
       {/* Executive Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#262833] pb-6">
+      <div className="p-6 sm:p-8 bg-[#121319] rounded-3xl shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-none">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <Badge variant="outline" className="text-[#d1a86e] border-[#d1a86e]/30 font-mono text-xs">
-              STORE PROFILE & BRAND
-            </Badge>
+            <span className="text-[#d1a86e] bg-[#222432] font-mono text-xs px-2.5 py-1 rounded-xl border-none">
+              STORE PROFILE &amp; BRAND
+            </span>
             <span className="text-zinc-500 text-xs flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
               Direct Neon Database Sync
             </span>
           </div>
           <h1 className="font-serif text-2xl sm:text-3xl text-white font-medium">
-            Gallery & Store Settings
+            Gallery &amp; Store Settings
           </h1>
           <p className="text-sm text-zinc-400 mt-1">
             Manage your fine art gallery name, owner credentials, and physical store liaison coordinates.
@@ -182,14 +182,14 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
         </div>
 
         <div className="flex items-center gap-3 shrink-0 flex-wrap">
-          <Button asChild variant="outline" size="sm" className="gap-2 text-xs border-[#262833] text-zinc-300">
+          <Button asChild variant="ghost" size="sm" className="gap-2 text-xs bg-[#1a1b26] hover:bg-[#222432] text-zinc-300 rounded-xl border-none h-9 px-4">
             <Link href="/" target="_blank" title="View live customer storefront">
               <span>Live Storefront</span>
               <ExternalLink className="w-3.5 h-3.5 text-zinc-400" />
             </Link>
           </Button>
 
-          <Button asChild variant="outline" size="sm" className="gap-2 text-xs border-[#262833] text-zinc-300">
+          <Button asChild variant="ghost" size="sm" className="gap-2 text-xs bg-[#1a1b26] hover:bg-[#222432] text-zinc-300 rounded-xl border-none h-9 px-4">
             <Link href="/admin/homepage" title="Manage visual page builder and layouts">
               <Sliders className="w-3.5 h-3.5 text-[#d1a86e]" />
               <span>Storefront Studio</span>
@@ -201,7 +201,7 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
             onClick={() => handleSave()}
             disabled={saving}
             size="sm"
-            className="bg-[#d1a86e] hover:bg-[#c59b63] text-[#0d0e12] font-semibold gap-2 shadow-lg shadow-[#d1a86e]/10 cursor-pointer"
+            className="bg-[#d1a86e] hover:bg-[#c49a5f] text-black font-semibold gap-2 shadow-lg shadow-black/40 cursor-pointer rounded-xl border-none h-9 px-5"
           >
             {saving ? (
               <>
@@ -225,12 +225,12 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
 
       {/* Save Status Alert */}
       {saveStatus === "success" && (
-        <div className="p-4 rounded-xl bg-emerald-950/50 border border-emerald-800 text-emerald-300 text-sm flex items-center justify-between gap-3 shadow-lg">
+        <div className="p-4 rounded-2xl bg-emerald-950/80 text-emerald-300 text-sm flex items-center justify-between gap-3 shadow-md border-none">
           <div className="flex items-center gap-3">
             <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
             <span>{statusMessage}</span>
           </div>
-          <Button asChild variant="ghost" size="sm" className="text-emerald-300 hover:text-emerald-100 hover:bg-emerald-900/50 text-xs">
+          <Button asChild variant="ghost" size="sm" className="text-emerald-300 hover:text-emerald-100 hover:bg-emerald-900/50 text-xs rounded-xl border-none">
             <Link href="/" target="_blank">
               View on Storefront <ExternalLink className="w-3 h-3 ml-1" />
             </Link>
@@ -239,7 +239,7 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
       )}
 
       {saveStatus === "error" && (
-        <div className="p-4 rounded-xl bg-red-950/50 border border-red-800 text-red-300 text-sm flex items-center gap-3 shadow-lg">
+        <div className="p-4 rounded-2xl bg-red-950/80 text-red-300 text-sm flex items-center gap-3 shadow-md border-none">
           <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
           <span>{statusMessage}</span>
         </div>
@@ -252,13 +252,13 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
           {/* COLUMN 1 (LEFT): Gallery & Artist Identity + Public Channels */}
           <div className="space-y-6">
             {/* 1. Gallery & Artist Identity */}
-            <Card className="p-6 bg-[#14151a] border-[#262833] space-y-6 shadow-md">
-              <div className="flex items-center gap-3 border-b border-[#262833] pb-4">
-                <div className="w-9 h-9 rounded-lg bg-[#d1a86e]/10 border border-[#d1a86e]/30 flex items-center justify-center shrink-0">
+            <Card className="p-6 sm:p-8 bg-[#121319] rounded-3xl space-y-6 shadow-xl shadow-black/40 border-none">
+              <div className="flex items-center gap-3 pb-2">
+                <div className="w-9 h-9 rounded-xl bg-[#1a1b26] flex items-center justify-center shrink-0 border-none shadow-sm">
                   <Building2 className="w-4 h-4 text-[#d1a86e]" />
                 </div>
                 <div>
-                  <h2 className="font-serif text-lg text-white font-medium">Gallery & Artist Identity</h2>
+                  <h2 className="font-serif text-lg text-white font-medium">Gallery &amp; Artist Identity</h2>
                   <p className="text-xs text-zinc-400">
                     Primary name and branding shown in customer headers, footers, and SEO tags.
                   </p>
@@ -279,8 +279,8 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
                       if (errors.siteTitle) setErrors({ ...errors, siteTitle: "" });
                     }}
                     placeholder="e.g. L'Atelier Lumineux"
-                    className={`bg-[#0d0e12] border-[#262833] text-white text-sm ${
-                      errors.siteTitle ? "border-red-500" : ""
+                    className={`bg-[#1a1b26] text-white text-xs placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e] ${
+                      errors.siteTitle ? "ring-1 ring-red-500" : ""
                     }`}
                   />
                   {errors.siteTitle && (
@@ -304,8 +304,8 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
                       if (errors.artistName) setErrors({ ...errors, artistName: "" });
                     }}
                     placeholder="e.g. Elena Vance"
-                    className={`bg-[#0d0e12] border-[#262833] text-white text-sm ${
-                      errors.artistName ? "border-red-500" : ""
+                    className={`bg-[#1a1b26] text-white text-xs placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e] ${
+                      errors.artistName ? "ring-1 ring-red-500" : ""
                     }`}
                   />
                   {errors.artistName && (
@@ -326,7 +326,7 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
                     value={settings.shortBrandName}
                     onChange={(e) => setSettings({ ...settings, shortBrandName: e.target.value })}
                     placeholder="e.g. L'Atelier"
-                    className="bg-[#0d0e12] border-[#262833] text-white text-sm"
+                    className="bg-[#1a1b26] text-white text-xs placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
                   />
                   <p className="text-[11px] text-zinc-500">
                     Used in compact mobile headers and copyright notices.
@@ -336,14 +336,14 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
                 {/* Tagline */}
                 <div className="space-y-2">
                   <label className="text-xs font-semibold text-zinc-300 block">
-                    Studio Tagline & Philosophy
+                    Studio Tagline &amp; Philosophy
                   </label>
                   <Input
                     type="text"
                     value={settings.tagline}
                     onChange={(e) => setSettings({ ...settings, tagline: e.target.value })}
                     placeholder="e.g. Fine Contemporary Oil & Spatial AR Gallery"
-                    className="bg-[#0d0e12] border-[#262833] text-white text-sm"
+                    className="bg-[#1a1b26] text-white text-xs placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
                   />
                   <p className="text-[11px] text-zinc-500">
                     Shown below the gallery name on hero banners and meta descriptions.
@@ -361,7 +361,7 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
                   value={settings.bioSummary}
                   onChange={(e) => setSettings({ ...settings, bioSummary: e.target.value })}
                   placeholder="Brief 2-3 sentence overview of the studio practice and curatorial focus."
-                  className="bg-[#0d0e12] border-[#262833] text-white text-sm"
+                  className="bg-[#1a1b26] text-white text-xs placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus:ring-1 focus:ring-[#d1a86e] resize-none"
                 />
               </div>
 
@@ -375,19 +375,19 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
                   value={settings.statement}
                   onChange={(e) => setSettings({ ...settings, statement: e.target.value })}
                   placeholder="The signature philosophical statement featured on the homepage."
-                  className="bg-[#0d0e12] border-[#262833] text-white text-sm"
+                  className="bg-[#1a1b26] text-white text-xs placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus:ring-1 focus:ring-[#d1a86e] resize-none"
                 />
               </div>
             </Card>
 
             {/* 2. Public Channels & Social Links */}
-            <Card className="p-6 bg-[#14151a] border-[#262833] space-y-6 shadow-md">
-              <div className="flex items-center gap-3 border-b border-[#262833] pb-4">
-                <div className="w-9 h-9 rounded-lg bg-[#d1a86e]/10 border border-[#d1a86e]/30 flex items-center justify-center shrink-0">
+            <Card className="p-6 sm:p-8 bg-[#121319] rounded-3xl space-y-6 shadow-xl shadow-black/40 border-none">
+              <div className="flex items-center gap-3 pb-2">
+                <div className="w-9 h-9 rounded-xl bg-[#1a1b26] flex items-center justify-center shrink-0 border-none shadow-sm">
                   <Share2 className="w-4 h-4 text-[#d1a86e]" />
                 </div>
                 <div>
-                  <h2 className="font-serif text-lg text-white font-medium">Public Channels & Social Links</h2>
+                  <h2 className="font-serif text-lg text-white font-medium">Public Channels &amp; Social Links</h2>
                   <p className="text-xs text-zinc-400">
                     Profiles linked in your customer footer and artist bio plaque.
                   </p>
@@ -407,7 +407,7 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
                       })
                     }
                     placeholder="https://instagram.com/..."
-                    className="bg-[#0d0e12] border-[#262833] text-white text-xs font-mono"
+                    className="bg-[#1a1b26] text-white text-xs font-mono placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
                   />
                 </div>
 
@@ -423,7 +423,7 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
                       })
                     }
                     placeholder="https://artsy.net/artist/..."
-                    className="bg-[#0d0e12] border-[#262833] text-white text-xs font-mono"
+                    className="bg-[#1a1b26] text-white text-xs font-mono placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
                   />
                 </div>
 
@@ -439,7 +439,7 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
                       })
                     }
                     placeholder="https://x.com/..."
-                    className="bg-[#0d0e12] border-[#262833] text-white text-xs font-mono"
+                    className="bg-[#1a1b26] text-white text-xs font-mono placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
                   />
                 </div>
 
@@ -455,7 +455,7 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
                       })
                     }
                     placeholder="https://linkedin.com/..."
-                    className="bg-[#0d0e12] border-[#262833] text-white text-xs font-mono"
+                    className="bg-[#1a1b26] text-white text-xs font-mono placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
                   />
                 </div>
               </div>
@@ -465,13 +465,13 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
           {/* COLUMN 2 (RIGHT): Store & Liaison Details + Live Preview Plaque */}
           <div className="space-y-6">
             {/* 3. Store & Liaison Details */}
-            <Card className="p-6 bg-[#14151a] border-[#262833] space-y-6 shadow-md">
-              <div className="flex items-center gap-3 border-b border-[#262833] pb-4">
-                <div className="w-9 h-9 rounded-lg bg-[#d1a86e]/10 border border-[#d1a86e]/30 flex items-center justify-center shrink-0">
+            <Card className="p-6 sm:p-8 bg-[#121319] rounded-3xl space-y-6 shadow-xl shadow-black/40 border-none">
+              <div className="flex items-center gap-3 pb-2">
+                <div className="w-9 h-9 rounded-xl bg-[#1a1b26] flex items-center justify-center shrink-0 border-none shadow-sm">
                   <Mail className="w-4 h-4 text-[#d1a86e]" />
                 </div>
                 <div>
-                  <h2 className="font-serif text-lg text-white font-medium">Store & Liaison Details</h2>
+                  <h2 className="font-serif text-lg text-white font-medium">Store &amp; Liaison Details</h2>
                   <p className="text-xs text-zinc-400">
                     Direct contact channels for acquisitions, private viewings, and correspondence.
                   </p>
@@ -484,7 +484,7 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
                   Primary Collector Email <span className="text-red-400">*</span>
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
                   <Input
                     type="email"
                     value={settings.contactEmail}
@@ -493,8 +493,8 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
                       if (errors.contactEmail) setErrors({ ...errors, contactEmail: "" });
                     }}
                     placeholder="curator@latelier-lumineux.art"
-                    className={`pl-9 bg-[#0d0e12] border-[#262833] text-white text-sm ${
-                      errors.contactEmail ? "border-red-500" : ""
+                    className={`pl-10 bg-[#1a1b26] text-white text-xs placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e] ${
+                      errors.contactEmail ? "ring-1 ring-red-500" : ""
                     }`}
                   />
                 </div>
@@ -510,13 +510,13 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
                     Studio Telephone
                   </label>
                   <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                    <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
                     <Input
                       type="text"
                       value={settings.phone || ""}
                       onChange={(e) => setSettings({ ...settings, phone: e.target.value })}
                       placeholder="+33 1 42 68 55 00"
-                      className="pl-9 bg-[#0d0e12] border-[#262833] text-white text-sm font-mono"
+                      className="pl-10 bg-[#1a1b26] text-white text-xs font-mono placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
                     />
                   </div>
                 </div>
@@ -526,13 +526,13 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
                     WhatsApp Liaison Desk
                   </label>
                   <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                    <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
                     <Input
                       type="text"
                       value={settings.whatsapp || ""}
                       onChange={(e) => setSettings({ ...settings, whatsapp: e.target.value })}
                       placeholder="+33 6 12 34 56 78"
-                      className="pl-9 bg-[#0d0e12] border-[#262833] text-white text-sm font-mono"
+                      className="pl-10 bg-[#1a1b26] text-white text-xs font-mono placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
                     />
                   </div>
                 </div>
@@ -545,27 +545,27 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
                     Physical Gallery Address
                   </label>
                   <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                    <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
                     <Input
                       type="text"
                       value={settings.address || ""}
                       onChange={(e) => setSettings({ ...settings, address: e.target.value })}
                       placeholder="14 Rue de Beaune, 7th Arr."
-                      className="pl-9 bg-[#0d0e12] border-[#262833] text-white text-sm"
+                      className="pl-10 bg-[#1a1b26] text-white text-xs placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-xs font-semibold text-zinc-300 block">
-                    City, Region & Country
+                    City, Region &amp; Country
                   </label>
                   <Input
                     type="text"
                     value={settings.location || ""}
                     onChange={(e) => setSettings({ ...settings, location: e.target.value })}
                     placeholder="Paris & Brittany, France"
-                    className="bg-[#0d0e12] border-[#262833] text-white text-sm"
+                    className="bg-[#1a1b26] text-white text-xs placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
                   />
                 </div>
               </div>
@@ -574,16 +574,16 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-xs font-semibold text-zinc-300 block">
-                    Visiting & Studio Hours
+                    Visiting &amp; Studio Hours
                   </label>
                   <div className="relative">
-                    <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                    <Clock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
                     <Input
                       type="text"
                       value={settings.businessHours || ""}
                       onChange={(e) => setSettings({ ...settings, businessHours: e.target.value })}
                       placeholder="Mon – Sat: 10:00 – 19:00"
-                      className="pl-9 bg-[#0d0e12] border-[#262833] text-white text-sm"
+                      className="pl-10 bg-[#1a1b26] text-white text-xs placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
                     />
                   </div>
                 </div>
@@ -597,17 +597,15 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
                     value={settings.contactInstructions || ""}
                     onChange={(e) => setSettings({ ...settings, contactInstructions: e.target.value })}
                     placeholder="Correspond via liaison desk."
-                    className="bg-[#0d0e12] border-[#262833] text-white text-sm"
+                    className="bg-[#1a1b26] text-white text-xs placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
                   />
                 </div>
               </div>
             </Card>
 
             {/* 4. Live Customer Storefront Plaque Simulation */}
-            <Card className="p-6 bg-[#14151a] border-[#262833] space-y-4 shadow-xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-[#d1a86e]/10 via-transparent to-transparent pointer-events-none" />
-
-              <div className="flex items-center justify-between border-b border-[#262833] pb-3">
+            <Card className="p-6 sm:p-8 bg-[#121319] rounded-3xl space-y-4 shadow-xl shadow-black/40 relative overflow-hidden border-none">
+              <div className="flex items-center justify-between pb-3">
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                   <span className="text-[11px] font-mono uppercase tracking-widest text-[#d1a86e] font-semibold">
@@ -618,9 +616,9 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
               </div>
 
               {/* Simulated Museum Plaque */}
-              <div className="bg-[#0b0c10] border border-[#d1a86e]/30 rounded-xl p-5 space-y-3 shadow-inner relative">
+              <div className="bg-[#1a1b26] rounded-2xl p-5 space-y-3 shadow-inner relative border-none">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#d1a86e]/20 to-[#d1a86e]/5 border border-[#d1a86e]/50 flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-[#222432] flex items-center justify-center shrink-0 border-none shadow-sm">
                     <Building2 className="w-5 h-5 text-[#d1a86e]" />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -633,7 +631,7 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
                   </div>
                 </div>
 
-                <div className="border-t border-[#1f212a] pt-3 space-y-2 text-xs">
+                <div className="pt-2 space-y-2 text-xs">
                   <div className="text-zinc-300">
                     <span className="text-zinc-500">Lead Artist: </span>
                     <span className="text-[#d1a86e] font-serif font-medium">
@@ -643,7 +641,7 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
 
                   {settings.tagline && (
                     <p className="text-[11px] text-zinc-400 italic line-clamp-2">
-                      "{settings.tagline}"
+                      &quot;{settings.tagline}&quot;
                     </p>
                   )}
 
@@ -669,7 +667,7 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
                   <Database className="w-3.5 h-3.5 text-[#d1a86e]" />
                   <span>Direct Neon DB Sync</span>
                 </div>
-                <Button asChild variant="outline" size="sm" className="text-xs border-[#262833] text-zinc-300 gap-1.5 hover:text-white">
+                <Button asChild variant="ghost" size="sm" className="text-xs bg-[#1a1b26] hover:bg-[#222432] text-zinc-300 gap-1.5 hover:text-white rounded-xl border-none h-8 px-3">
                   <Link href="/" target="_blank">
                     <span>Open Storefront</span>
                     <ExternalLink className="w-3 h-3 text-zinc-400" />
@@ -679,8 +677,8 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
             </Card>
 
             {/* 5. Redis Performance & Edge Cache Engine */}
-            <Card className="p-6 bg-[#14151a] border-[#262833] space-y-4 shadow-xl relative overflow-hidden">
-              <div className="flex items-center justify-between border-b border-[#262833] pb-3">
+            <Card className="p-6 sm:p-8 bg-[#121319] rounded-3xl space-y-4 shadow-xl shadow-black/40 relative overflow-hidden border-none">
+              <div className="flex items-center justify-between pb-3">
                 <div className="flex items-center gap-2">
                   <Zap className="w-4 h-4 text-[#d1a86e]" />
                   <span className="text-[11px] font-mono uppercase tracking-widest text-white font-semibold">
@@ -693,23 +691,23 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
                     onClick={fetchRedisStatus}
                     disabled={loadingRedis}
                     title="Refresh cache status"
-                    className="text-zinc-400 hover:text-white p-1 rounded transition-colors disabled:opacity-50 cursor-pointer"
+                    className="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-[#1a1b26] transition-colors disabled:opacity-50 cursor-pointer border-none"
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${loadingRedis ? "animate-spin" : ""}`} />
                   </button>
                   {redisStatus?.connected ? (
-                    <Badge className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] font-mono font-normal">
+                    <span className="bg-emerald-500/10 text-emerald-400 px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-medium border-none">
                       ONLINE
-                    </Badge>
+                    </span>
                   ) : (
-                    <Badge variant="outline" className="text-zinc-400 border-zinc-700 text-[10px] font-mono font-normal">
+                    <span className="bg-[#1a1b26] text-zinc-400 px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-medium border-none">
                       STANDBY
-                    </Badge>
+                    </span>
                   )}
                 </div>
               </div>
 
-              <div className="bg-[#0b0c10] border border-[#1f212a] rounded-xl p-4 space-y-2.5 text-xs">
+              <div className="bg-[#1a1b26] rounded-2xl p-5 space-y-2.5 text-xs border-none">
                 <div className="flex items-center justify-between">
                   <span className="text-zinc-400">Provider</span>
                   <span className="text-zinc-200 font-mono text-[11px]">Upstash Global KV</span>
@@ -734,7 +732,7 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
               </div>
 
               {cacheMessage && (
-                <div className="p-2.5 rounded-lg text-xs bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 flex items-center gap-2">
+                <div className="p-3 rounded-xl text-xs bg-emerald-950/80 text-emerald-300 flex items-center gap-2 border-none shadow-sm">
                   <Check className="w-3.5 h-3.5 shrink-0" />
                   <span>{cacheMessage}</span>
                 </div>
@@ -744,11 +742,11 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
                 <span className="text-[11px] text-zinc-500">Purge stale cache keys</span>
                 <Button
                   type="button"
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={handlePurgeRedis}
                   disabled={purgingRedis}
-                  className="text-xs border-red-900/40 hover:bg-red-950/30 text-red-300 gap-1.5 h-8 cursor-pointer"
+                  className="text-xs bg-[#2d1616] hover:bg-red-950 text-red-300 gap-1.5 h-9 px-4 cursor-pointer rounded-xl border-none"
                 >
                   {purgingRedis ? (
                     <>
@@ -769,7 +767,7 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
             <Button
               type="submit"
               disabled={saving}
-              className="w-full bg-[#d1a86e] hover:bg-[#c59b63] text-[#0d0e12] font-semibold gap-2 py-5 shadow-lg shadow-[#d1a86e]/10 cursor-pointer text-sm"
+              className="w-full bg-[#d1a86e] hover:bg-[#c49a5f] text-black font-semibold gap-2 py-4 shadow-lg shadow-black/40 cursor-pointer text-sm rounded-2xl border-none"
             >
               {saving ? (
                 <>
@@ -779,7 +777,7 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
               ) : saveStatus === "success" ? (
                 <>
                   <Check className="w-4 h-4" />
-                  <span>Saved & Live!</span>
+                  <span>Saved &amp; Live!</span>
                 </>
               ) : (
                 <>

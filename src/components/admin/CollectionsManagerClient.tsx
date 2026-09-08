@@ -213,8 +213,8 @@ export function CollectionsManagerClient({
 
   return (
     <div className="space-y-8 w-full">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#1c1d25] pb-6">
+      {/* Header - Solid Tier 1 Master Block */}
+      <div className="bg-[#121319] p-6 sm:p-8 rounded-3xl shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
             Thematic Series
@@ -225,39 +225,45 @@ export function CollectionsManagerClient({
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <Button asChild variant="outline" size="sm" className="border-[#d1a86e]/40 text-[#d1a86e] hover:bg-[#d1a86e]/10 text-xs gap-1.5">
-            <Link href="/admin/settings?tab=collections">
-              <FolderKanban className="w-3.5 h-3.5" />
-              <span>Edit Page Header &amp; Intro</span>
-            </Link>
-          </Button>
-          <Button asChild variant="ghost" size="sm" className="text-zinc-400 hover:text-white text-xs gap-1.5">
-            <Link href="/collections" target="_blank">
-              <ExternalLink className="w-3.5 h-3.5" />
-              <span>Preview Storefront</span>
-            </Link>
-          </Button>
-          <Button onClick={openNew} size="sm" className="gap-1.5">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <Link
+            href="/admin/settings?tab=collections"
+            className="bg-[#1a1b26] hover:bg-[#222432] text-xs text-[#d1a86e] px-3.5 py-2 rounded-xl shadow-sm transition-colors flex items-center gap-1.5"
+          >
+            <FolderKanban className="w-3.5 h-3.5" />
+            <span>Edit Page Header &amp; Intro</span>
+          </Link>
+          <Link
+            href="/collections"
+            target="_blank"
+            className="bg-[#1a1b26] hover:bg-[#222432] text-xs text-zinc-300 hover:text-white px-3.5 py-2 rounded-xl shadow-sm transition-colors flex items-center gap-1.5"
+          >
+            <ExternalLink className="w-3.5 h-3.5" />
+            <span>Preview Storefront</span>
+          </Link>
+          <button
+            onClick={openNew}
+            className="bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-xs px-4 py-2 rounded-xl shadow-md shadow-[#d1a86e]/20 transition-colors flex items-center gap-1.5 cursor-pointer"
+          >
             <Plus className="w-4 h-4" />
             <span>New Collection</span>
-          </Button>
+          </button>
         </div>
       </div>
 
-      {/* Search & Filter Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+      {/* Search & Filter Bar - Solid Tier 2 Block */}
+      <div className="bg-[#121319] rounded-2xl p-4 sm:p-5 shadow-xl shadow-black/40 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
           <Input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search series by title, slug, or theme..."
-            className="pl-10 bg-[#14151a] border-[#262833] text-xs text-white placeholder:text-zinc-500 rounded-xl"
+            className="pl-10 bg-[#1a1b26] text-xs text-white placeholder:text-zinc-500 rounded-xl border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
           />
         </div>
 
-        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none">
+        <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
           {(
             [
               { id: "all", label: "All Series" },
@@ -265,43 +271,47 @@ export function CollectionsManagerClient({
               { id: "draft", label: "Drafts" },
             ] as const
           ).map((filter) => (
-            <Button
+            <button
               key={filter.id}
-              size="sm"
-              variant={statusFilter === filter.id ? "default" : "secondary"}
               onClick={() => setStatusFilter(filter.id)}
-              className={`text-xs h-8 px-3 rounded-lg transition-colors cursor-pointer ${
+              className={`text-xs h-8 px-3.5 rounded-xl transition-colors cursor-pointer ${
                 statusFilter === filter.id
-                  ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
-                  : "bg-[#14151a] text-zinc-400 hover:text-white border border-[#262833]"
+                  ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-sm"
+                  : "bg-[#1a1b26] text-zinc-400 hover:text-white"
               }`}
             >
               {filter.label}
-            </Button>
+            </button>
           ))}
         </div>
       </div>
 
       {/* Collections Grid */}
       {collections.length === 0 ? (
-        <Card className="p-12 text-center space-y-3">
+        <div className="p-12 text-center space-y-3 bg-[#121319] rounded-3xl shadow-xl shadow-black/40">
           <FolderKanban className="w-10 h-10 text-zinc-600 mx-auto" />
           <p className="text-zinc-400 text-sm">No collections yet</p>
-          <Button onClick={openNew} variant="secondary" className="gap-2 mx-auto">
+          <button
+            onClick={openNew}
+            className="gap-2 mx-auto inline-flex items-center bg-[#1a1b26] hover:bg-[#222432] text-xs text-[#d1a86e] px-4 py-2 rounded-xl shadow-sm transition-colors cursor-pointer"
+          >
             <Plus className="w-4 h-4" />
             <span>Create your first collection</span>
-          </Button>
-        </Card>
+          </button>
+        </div>
       ) : filteredCollections.length === 0 ? (
-        <Card className="p-12 text-center bg-[#14151a]/40 border-[#262833] rounded-2xl text-xs text-zinc-500">
+        <div className="p-12 text-center bg-[#121319] rounded-3xl shadow-xl shadow-black/40 text-xs text-zinc-500">
           No collections found matching your search or filter criteria.
-        </Card>
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
           {paginatedCollections.map((col) => (
-            <Card key={col.id} className="overflow-hidden">
+            <div
+              key={col.id}
+              className="rounded-3xl bg-[#1a1b26] overflow-hidden shadow-md shadow-black/30 flex flex-col justify-between hover:bg-[#1e202d] transition-all"
+            >
               {/* Cover Image */}
-              <div className="relative aspect-[16/9] bg-black/40 border-b border-[#1f212b]">
+              <div className="relative aspect-[16/9] bg-black/40">
                 {col.coverImageUrl ? (
                   <Image
                     src={col.coverImageUrl}
@@ -316,16 +326,22 @@ export function CollectionsManagerClient({
                   </div>
                 )}
                 <div className="absolute top-3 left-3">
-                  <Badge variant={col.isPublished ? "success" : "secondary"}>
+                  <span
+                    className={`text-[9px] uppercase font-mono font-bold px-2.5 py-1 rounded-full shadow-md ${
+                      col.isPublished
+                        ? "bg-[#14231b] text-emerald-300"
+                        : "bg-[#222432] text-zinc-400"
+                    }`}
+                  >
                     {col.isPublished ? "Published" : "Draft"}
-                  </Badge>
+                  </span>
                 </div>
 
                 {/* Actions Overlay */}
                 <div className="absolute top-3 right-3">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="p-1.5 bg-black/60 hover:bg-black/80 rounded-lg backdrop-blur-sm transition-colors">
+                      <button className="p-1.5 bg-black/60 hover:bg-black/80 rounded-xl backdrop-blur-sm transition-colors cursor-pointer">
                         <MoreVertical className="w-4 h-4 text-white" />
                       </button>
                     </DropdownMenuTrigger>
@@ -368,35 +384,33 @@ export function CollectionsManagerClient({
                     href={`/collections/${col.slug}`}
                     target="_blank"
                     className="p-1 text-zinc-400 hover:text-white transition-colors"
-                    title="View collection page"
+                    title="View Public Page"
                   >
-                    <ExternalLink className="w-4 h-4" />
+                    <ExternalLink className="w-4 h-4 text-[#d1a86e]" />
                   </Link>
                 </div>
                 {col.description && (
-                  <p className="text-xs text-zinc-400 line-clamp-2">{col.description}</p>
-                )}
-                {col.curatorialStatement && (
-                  <p className="text-xs text-zinc-500 italic line-clamp-2">
-                    &ldquo;{col.curatorialStatement}&rdquo;
+                  <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
+                    {col.description}
                   </p>
                 )}
-
-                <Separator />
-
-                <div className="flex items-center justify-between text-xs text-zinc-500">
-                  <span>{col.artworkSlugs.length} associated works</span>
-                  <span className="font-mono text-[10px]">/{col.slug}</span>
+                <div className="pt-2 flex items-center justify-between text-xs text-zinc-500">
+                  <span className="font-mono text-[11px] bg-[#121319] px-2.5 py-0.5 rounded-full">
+                    {col.artworkSlugs.length} artworks
+                  </span>
+                  <span className="text-[11px] font-mono text-zinc-500">
+                    /{col.slug}
+                  </span>
                 </div>
               </div>
-            </Card>
+            </div>
           ))}
         </div>
       )}
 
-      {/* Pagination and Per-Page Control Bar */}
+      {/* Pagination and Per-Page Control Bar - Solid Tier 2 Block */}
       {filteredCollections.length > 0 && (
-        <div className="p-4 bg-[#14151a] border border-[#262833] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+        <div className="p-5 bg-[#121319] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl shadow-black/40">
           <div className="text-xs text-zinc-400 font-mono">
             Showing <span className="text-white font-semibold">{startItem}–{endItem}</span> of{" "}
             <span className="text-[#d1a86e] font-semibold">{filteredCollections.length}</span> collections
@@ -448,13 +462,13 @@ export function CollectionsManagerClient({
 
           <div className="flex items-center gap-2">
             <span className="text-zinc-500 font-mono text-[11px] uppercase tracking-wider">Per Page:</span>
-            <div className="flex items-center rounded-lg border border-[#262833] bg-[#1a1c23] p-0.5">
+            <div className="flex items-center rounded-xl bg-[#1a1b26] p-1">
               {PAGE_SIZE_OPTIONS.map((size) => (
                 <button
                   key={size}
                   type="button"
                   onClick={() => setPageSize(size)}
-                  className={`px-2.5 py-1 text-xs font-mono rounded transition-colors cursor-pointer ${
+                  className={`px-3 py-1 text-xs font-mono rounded-lg transition-colors cursor-pointer ${
                     pageSize === size
                       ? "bg-[#d1a86e] text-black font-semibold shadow-sm"
                       : "text-zinc-400 hover:text-white"
@@ -516,7 +530,7 @@ export function CollectionsManagerClient({
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                 placeholder="Brief description of this collection..."
                 rows={3}
-                className="bg-[#1a1c23] border-[#262833] text-white text-xs placeholder:text-zinc-600 focus:border-[#d1a86e] focus:ring-0 resize-none"
+                className="bg-[#1a1c23] text-white text-xs placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus:ring-1 focus:ring-[#d1a86e] resize-none"
               />
             </div>
 
@@ -529,7 +543,7 @@ export function CollectionsManagerClient({
                 onChange={(e) => setForm((f) => ({ ...f, curatorialStatement: e.target.value }))}
                 placeholder="Art-historical context and curatorial intention..."
                 rows={4}
-                className="bg-[#1a1c23] border-[#262833] text-white text-xs placeholder:text-zinc-600 focus:border-[#d1a86e] focus:ring-0 resize-none"
+                className="bg-[#1a1c23] text-white text-xs placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus:ring-1 focus:ring-[#d1a86e] resize-none"
               />
             </div>
 
@@ -541,9 +555,10 @@ export function CollectionsManagerClient({
                 value={form.coverImageUrl}
                 onChange={(e) => setForm((f) => ({ ...f, coverImageUrl: e.target.value }))}
                 placeholder="https://..."
+                className="bg-[#1a1c23] text-white text-xs placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
               />
               {form.coverImageUrl && (
-                <div className="relative aspect-video rounded-lg overflow-hidden border border-[#262833] mt-2">
+                <div className="relative aspect-video rounded-xl overflow-hidden mt-2 shadow-md">
                   <Image
                     src={form.coverImageUrl}
                     alt="Cover preview"
@@ -560,11 +575,11 @@ export function CollectionsManagerClient({
                 <label className="text-xs uppercase tracking-wider text-zinc-400 font-medium">
                   Associated Artworks ({form.artworkIds.length} selected)
                 </label>
-                <div className="max-h-36 overflow-y-auto space-y-1.5 p-2 bg-[#1a1c23] border border-[#262833] rounded-lg">
+                <div className="max-h-36 overflow-y-auto space-y-1.5 p-2.5 bg-[#1a1c23] rounded-xl">
                   {allArtworks.map((art) => (
                     <label
                       key={art.id}
-                      className="flex items-center gap-2.5 text-xs text-zinc-300 hover:text-white cursor-pointer select-none p-1 rounded hover:bg-[#22242d]"
+                      className="flex items-center gap-2.5 text-xs text-zinc-300 hover:text-white cursor-pointer select-none p-1.5 rounded-lg hover:bg-[#22242d]"
                     >
                       <input
                         type="checkbox"
@@ -578,7 +593,7 @@ export function CollectionsManagerClient({
                               : f.artworkIds.filter((id) => id !== art.id),
                           }));
                         }}
-                        className="w-3.5 h-3.5 rounded border-[#262833] bg-[#14151a] text-[#d1a86e] focus:ring-[#d1a86e]"
+                        className="w-3.5 h-3.5 rounded bg-[#14151a] accent-[#d1a86e]"
                       />
                       <span className="truncate">{art.title}</span>
                       <span className="text-[10px] text-zinc-500 ml-auto font-mono">
@@ -596,7 +611,7 @@ export function CollectionsManagerClient({
                 id="col-published"
                 checked={form.isPublished}
                 onChange={(e) => setForm((f) => ({ ...f, isPublished: e.target.checked }))}
-                className="w-4 h-4 rounded border-[#262833] bg-[#1a1c23] text-[#d1a86e] focus:ring-[#d1a86e]"
+                className="w-4 h-4 rounded bg-[#1a1c23] accent-[#d1a86e]"
               />
               <label htmlFor="col-published" className="text-xs text-zinc-300">
                 Publish immediately

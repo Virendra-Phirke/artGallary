@@ -353,8 +353,8 @@ export function InquiriesManagerClient({
 
   return (
     <div className="space-y-8 w-full">
-      {/* Header */}
-      <div className="border-b border-[#1c1d25] pb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Header Plaque */}
+      <div className="p-6 sm:p-8 bg-[#121319] rounded-3xl shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
             Collector Relations &amp; Ledger
@@ -370,10 +370,10 @@ export function InquiriesManagerClient({
         <div className="flex flex-wrap items-center gap-3">
           <Button
             size="sm"
-            variant="outline"
+            variant="ghost"
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="border-[#262833] bg-[#14151a] hover:bg-[#1a1c23] text-zinc-300 hover:text-white text-xs gap-1.5 h-8 cursor-pointer"
+            className="bg-[#1a1b26] hover:bg-[#222432] text-zinc-300 hover:text-white text-xs gap-1.5 h-9 px-4 rounded-xl border-none cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 text-[#d1a86e] ${isRefreshing ? "animate-spin" : ""}`} />
             <span>{isRefreshing ? "Refreshing..." : "Refresh Ledger"}</span>
@@ -381,7 +381,7 @@ export function InquiriesManagerClient({
 
           <Link
             href="/admin/analytics"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#262833] bg-[#14151a] hover:bg-[#1a1c23] hover:border-[#d1a86e]/40 text-zinc-300 hover:text-white text-xs transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#1a1b26] hover:bg-[#222432] text-zinc-300 hover:text-white text-xs transition-colors border-none"
           >
             <BarChart3 className="w-3.5 h-3.5 text-[#d1a86e]" />
             <span>Acquisition Telemetry</span>
@@ -391,33 +391,33 @@ export function InquiriesManagerClient({
       </div>
 
       {/* Primary Section Switcher Tabs */}
-      <div className="flex items-center gap-2 border-b border-[#262833] pb-3">
+      <div className="p-1.5 bg-[#121319] rounded-2xl flex items-center gap-2 shadow-md w-fit">
         <button
           onClick={() => setActiveTab("inquiries")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer ${
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer border-none ${
             activeTab === "inquiries"
-              ? "bg-[#d1a86e] text-[#0d0e12] shadow-lg shadow-[#d1a86e]/10"
-              : "text-zinc-400 hover:text-white hover:bg-[#181920]"
+              ? "bg-[#d1a86e] text-[#0d0e12] shadow-lg shadow-black/30"
+              : "text-zinc-400 hover:text-white hover:bg-[#1a1b26]"
           }`}
         >
           <MessageSquare className="w-4 h-4" />
           <span>Collector Inquiries</span>
-          <span className={`text-[10px] px-2 py-0.5 rounded-full ${activeTab === "inquiries" ? "bg-black/20 text-black font-bold" : "bg-[#262833] text-zinc-300"}`}>
+          <span className={`text-[10px] px-2 py-0.5 rounded-full ${activeTab === "inquiries" ? "bg-black/20 text-black font-bold" : "bg-[#1a1b26] text-zinc-300"}`}>
             {inquiries.length}
           </span>
         </button>
 
         <button
           onClick={() => setActiveTab("sent_emails")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer ${
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer border-none ${
             activeTab === "sent_emails"
-              ? "bg-[#d1a86e] text-[#0d0e12] shadow-lg shadow-[#d1a86e]/10"
-              : "text-zinc-400 hover:text-white hover:bg-[#181920]"
+              ? "bg-[#d1a86e] text-[#0d0e12] shadow-lg shadow-black/30"
+              : "text-zinc-400 hover:text-white hover:bg-[#1a1b26]"
           }`}
         >
           <Send className="w-4 h-4" />
           <span>Sent Dispatches &amp; Email History</span>
-          <span className={`text-[10px] px-2 py-0.5 rounded-full ${activeTab === "sent_emails" ? "bg-black/20 text-black font-bold" : "bg-[#262833] text-zinc-300"}`}>
+          <span className={`text-[10px] px-2 py-0.5 rounded-full ${activeTab === "sent_emails" ? "bg-black/20 text-black font-bold" : "bg-[#1a1b26] text-zinc-300"}`}>
             {sentEmails.length}
           </span>
           {unnotifiedArtwork && (
@@ -436,22 +436,22 @@ export function InquiriesManagerClient({
         <div className="space-y-6">
           {/* Telemetry Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
-            <Card className="p-4 bg-[#14151a] border-[#262833] space-y-1">
+            <Card className="p-5 sm:p-6 bg-[#121319] rounded-3xl shadow-xl shadow-black/40 space-y-1 border-none">
               <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">Total Inquiries</span>
               <div className="font-serif text-2xl text-white">{inquiries.length}</div>
               <span className="text-[11px] text-zinc-400">All registered correspondence</span>
             </Card>
-            <Card className="p-4 bg-[#14151a] border-[#262833] space-y-1">
+            <Card className="p-5 sm:p-6 bg-[#121319] rounded-3xl shadow-xl shadow-black/40 space-y-1 border-none">
               <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">Unreplied / New</span>
               <div className="font-serif text-2xl text-amber-400">{countNew}</div>
               <span className="text-[11px] text-amber-400/80 font-medium">Action required</span>
             </Card>
-            <Card className="p-4 bg-[#14151a] border-[#262833] space-y-1">
+            <Card className="p-5 sm:p-6 bg-[#121319] rounded-3xl shadow-xl shadow-black/40 space-y-1 border-none">
               <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">In Review (Read)</span>
               <div className="font-serif text-2xl text-blue-400">{countRead}</div>
               <span className="text-[11px] text-zinc-400">Dossier inspected</span>
             </Card>
-            <Card className="p-4 bg-[#14151a] border-[#262833] space-y-1">
+            <Card className="p-5 sm:p-6 bg-[#121319] rounded-3xl shadow-xl shadow-black/40 space-y-1 border-none">
               <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">Replied / Closed</span>
               <div className="font-serif text-2xl text-emerald-400">{countReplied + countClosed}</div>
               <span className="text-[11px] text-emerald-400/80 font-medium">Acquisitions processed</span>
@@ -466,25 +466,23 @@ export function InquiriesManagerClient({
                 value={inquirySearchQuery}
                 onChange={(e) => setInquirySearchQuery(e.target.value)}
                 placeholder="Search inquiries by collector, email, canvas, message..."
-                className="pl-10 bg-[#14151a] border-[#262833] text-xs text-white placeholder:text-zinc-500 rounded-xl"
+                className="pl-10 bg-[#121319] text-xs text-white placeholder:text-zinc-500 rounded-2xl border-none shadow-md focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
               />
             </div>
 
-            <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pb-1 sm:pb-0">
+            <div className="p-1.5 bg-[#121319] rounded-2xl shadow-md flex items-center gap-1.5 overflow-x-auto scrollbar-none">
               {["all", "new", "read", "replied", "closed"].map((st) => (
-                <Button
+                <button
                   key={st}
-                  size="sm"
-                  variant={selectedStatus === st ? "default" : "secondary"}
                   onClick={() => setSelectedStatus(st)}
-                  className={`text-[11px] uppercase tracking-wider h-8 px-3 rounded-md transition-colors cursor-pointer ${
+                  className={`text-[11px] uppercase tracking-wider h-8 px-3.5 rounded-xl transition-colors cursor-pointer border-none ${
                     selectedStatus === st
-                      ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
-                      : "bg-[#181920] text-zinc-400 hover:text-zinc-200 border border-[#262833]"
+                      ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-sm"
+                      : "text-zinc-400 hover:text-white hover:bg-[#1a1b26]"
                   }`}
                 >
                   {st}
-                </Button>
+                </button>
               ))}
             </div>
           </div>
@@ -492,28 +490,28 @@ export function InquiriesManagerClient({
           {/* Inquiries Cards */}
           <div className="space-y-4">
             {filteredInquiries.length === 0 ? (
-              <Card className="p-12 text-center bg-[#14151a]/40 border-[#262833] rounded-2xl text-xs text-zinc-500">
+              <div className="p-12 text-center bg-[#121319] rounded-3xl text-xs text-zinc-500 shadow-md">
                 No inquiries matching criteria.
-              </Card>
+              </div>
             ) : (
               paginatedInquiries.map((inq) => (
                 <Card
                   key={inq.id}
-                  className="p-5 sm:p-6 bg-[#14151a] border-[#262833] rounded-2xl space-y-4 shadow-xl"
+                  className="p-6 bg-[#1a1b26] rounded-3xl space-y-4 shadow-xl shadow-black/30 border-none"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
                       <select
                         value={inq.status}
                         onChange={(e) => handleStatusChange(inq.id, e.target.value)}
-                        className={`text-[10px] uppercase tracking-widest px-2.5 py-1 rounded-full font-bold border cursor-pointer focus:outline-none ${
+                        className={`text-[10px] uppercase tracking-widest px-3 py-1.5 rounded-xl font-bold cursor-pointer border-none focus:outline-none focus:ring-1 focus:ring-[#d1a86e] ${
                           inq.status === "new"
-                            ? "bg-amber-950/80 text-amber-300 border-amber-800"
+                            ? "bg-amber-950/80 text-amber-300"
                             : inq.status === "read"
-                            ? "bg-blue-950/80 text-blue-300 border-blue-800"
+                            ? "bg-blue-950/80 text-blue-300"
                             : inq.status === "replied"
-                            ? "bg-emerald-950/80 text-emerald-300 border-emerald-800"
-                            : "bg-zinc-800 text-zinc-400 border-zinc-700"
+                            ? "bg-emerald-950/80 text-emerald-300"
+                            : "bg-zinc-800 text-zinc-400"
                         }`}
                       >
                         <option value="new">New</option>
@@ -551,12 +549,12 @@ export function InquiriesManagerClient({
                     </div>
                   )}
 
-                  <div className="p-4 bg-[#1a1c23] border border-[#262833] rounded-xl text-xs text-zinc-300 leading-relaxed">
+                  <div className="p-5 bg-[#121319] rounded-2xl text-xs text-zinc-300 leading-relaxed shadow-inner border-none">
                     {inq.message}
                   </div>
 
                   <div className="pt-2 flex justify-end">
-                    <Button asChild size="sm" variant="outline" className="border-[#262833] bg-[#22242e] hover:bg-[#2c2f3d] text-white text-xs font-medium uppercase tracking-wider">
+                    <Button asChild size="sm" variant="ghost" className="bg-[#121319] hover:bg-[#222432] text-white text-xs font-medium uppercase tracking-wider rounded-xl px-4 py-2 border-none shadow-sm">
                       <a
                         href={`mailto:${inq.email}?subject=Re: ${encodeURIComponent(inq.subject)}`}
                         className="inline-flex items-center gap-2"
@@ -573,7 +571,7 @@ export function InquiriesManagerClient({
 
           {/* Inquiries Pagination and Per-Page Control Bar */}
           {filteredInquiries.length > 0 && (
-            <div className="p-4 bg-[#14151a] border border-[#262833] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+            <div className="p-5 bg-[#121319] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl shadow-black/40 border-none">
               <div className="text-xs text-zinc-400 font-mono">
                 Showing <span className="text-white font-semibold">{inquiryStartItem}–{inquiryEndItem}</span> of{" "}
                 <span className="text-[#d1a86e] font-semibold">{filteredInquiries.length}</span> inquiries
@@ -625,13 +623,13 @@ export function InquiriesManagerClient({
 
               <div className="flex items-center gap-2">
                 <span className="text-zinc-500 font-mono text-[11px] uppercase tracking-wider">Per Page:</span>
-                <div className="flex items-center rounded-lg border border-[#262833] bg-[#1a1c23] p-0.5">
+                <div className="flex items-center rounded-xl bg-[#1a1b26] p-1 border-none">
                   {PAGE_SIZE_OPTIONS.map((size) => (
                     <button
                       key={size}
                       type="button"
                       onClick={() => setInquiryPageSize(size)}
-                      className={`px-2.5 py-1 text-xs font-mono rounded transition-colors cursor-pointer ${
+                      className={`px-3 py-1 text-xs font-mono rounded-lg transition-colors cursor-pointer border-none ${
                         inquiryPageSize === size
                           ? "bg-[#d1a86e] text-black font-semibold shadow-sm"
                           : "text-zinc-400 hover:text-white"
@@ -655,14 +653,11 @@ export function InquiriesManagerClient({
           {/* ============================================================== */}
           {/* BROADCAST RELEASE STUDIO (SUGGESTION & RECIPIENT SELECTION)     */}
           {/* ============================================================== */}
-          <Card className="bg-[#121318] border-[#2b2d3d] rounded-2xl p-5 sm:p-6 space-y-6 shadow-2xl relative overflow-hidden">
-            {/* Top decorative amber subtle gradient */}
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#d1a86e] to-transparent opacity-60" />
-
+          <Card className="bg-[#121319] rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl shadow-black/40 relative overflow-hidden border-none">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] tracking-[0.2em] uppercase font-semibold text-[#d1a86e] bg-[#d1a86e]/10 px-2 py-0.5 rounded border border-[#d1a86e]/20 flex items-center gap-1.5">
+                  <span className="text-[10px] tracking-[0.2em] uppercase font-semibold text-[#d1a86e] bg-[#d1a86e]/10 px-2.5 py-1 rounded-xl flex items-center gap-1.5 border-none">
                     <Sparkles className="w-3 h-3" />
                     <span>Broadcast Release Studio</span>
                   </span>
@@ -682,12 +677,12 @@ export function InquiriesManagerClient({
 
               {/* Verified Sender & QStash Queue Pill */}
               <div className="flex flex-wrap items-center gap-2">
-                <div className="text-[11px] bg-[#1a1c23] border border-emerald-900/60 rounded-xl px-3 py-1.5 flex items-center gap-2 text-zinc-300">
+                <div className="text-[11px] bg-[#1a1b26] rounded-xl px-3.5 py-2 flex items-center gap-2 text-zinc-300 border-none shadow-sm">
                   <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                   <span className="font-mono text-zinc-200 text-xs">quizmas@quizmastor.tech</span>
                 </div>
 
-                <div className="text-[11px] bg-[#1a1c23] border border-[#2b2d3d] rounded-xl px-3 py-1.5 flex items-center gap-1.5 text-zinc-300">
+                <div className="text-[11px] bg-[#1a1b26] rounded-xl px-3.5 py-2 flex items-center gap-1.5 text-zinc-300 border-none shadow-sm">
                   <Layers className="w-3.5 h-3.5 text-[#d1a86e]" />
                   <span>QStash Queue Active</span>
                 </div>
@@ -697,10 +692,10 @@ export function InquiriesManagerClient({
             {/* Broadcast Status Feedback Message */}
             {broadcastStatus && (
               <div
-                className={`p-4 rounded-xl text-xs flex items-center justify-between gap-3 border ${
+                className={`p-4 rounded-2xl text-xs flex items-center justify-between gap-3 border-none shadow-md ${
                   broadcastStatus.type === "success"
-                    ? "bg-emerald-950/60 border-emerald-800 text-emerald-200"
-                    : "bg-red-950/60 border-red-800 text-red-200"
+                    ? "bg-emerald-950/80 text-emerald-200"
+                    : "bg-red-950/80 text-red-200"
                 }`}
               >
                 <div className="flex items-center gap-2">
@@ -713,7 +708,7 @@ export function InquiriesManagerClient({
                 </div>
                 <button
                   onClick={() => setBroadcastStatus(null)}
-                  className="text-zinc-400 hover:text-white text-xs cursor-pointer"
+                  className="text-zinc-400 hover:text-white text-xs cursor-pointer border-none"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -728,14 +723,14 @@ export function InquiriesManagerClient({
                     1. Select Published Canvas to Broadcast
                   </label>
                   {artworks.length === 0 ? (
-                    <div className="p-4 bg-[#181920] border border-[#262833] rounded-xl text-xs text-zinc-400">
+                    <div className="p-4 bg-[#1a1b26] rounded-2xl text-xs text-zinc-400 border-none">
                       No published artworks found. Please publish an artwork first.
                     </div>
                   ) : (
                     <select
                       value={selectedArtworkId}
                       onChange={(e) => setSelectedArtworkId(e.target.value)}
-                      className="w-full bg-[#181920] border border-[#2b2d3d] rounded-xl px-3.5 py-2.5 text-xs text-white focus:border-[#d1a86e] focus:outline-none cursor-pointer"
+                      className="w-full bg-[#1a1b26] rounded-xl px-3.5 py-2.5 text-xs text-white border-none focus:ring-1 focus:ring-[#d1a86e] focus:outline-none cursor-pointer"
                     >
                       {artworks.map((art) => (
                         <option key={art.id} value={art.id}>
@@ -749,9 +744,9 @@ export function InquiriesManagerClient({
 
                 {/* Selected Artwork Card Preview */}
                 {selectedArtwork && (
-                  <div className="p-3.5 bg-[#181920] border border-[#262833] rounded-xl flex gap-3.5 items-center">
+                  <div className="p-4 bg-[#1a1b26] rounded-2xl flex gap-4 items-center shadow-md border-none">
                     {selectedArtwork.coverImageUrl ? (
-                      <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0 border border-[#333544]">
+                      <div className="relative w-16 h-16 rounded-xl overflow-hidden shrink-0 shadow-sm">
                         <Image
                           src={selectedArtwork.coverImageUrl}
                           alt={selectedArtwork.title}
@@ -760,7 +755,7 @@ export function InquiriesManagerClient({
                         />
                       </div>
                     ) : (
-                      <div className="w-16 h-16 rounded-lg bg-[#22242f] flex items-center justify-center text-zinc-500 text-xs shrink-0">
+                      <div className="w-16 h-16 rounded-xl bg-[#121319] flex items-center justify-center text-zinc-500 text-xs shrink-0">
                         No image
                       </div>
                     )}
@@ -771,11 +766,11 @@ export function InquiriesManagerClient({
                           {selectedArtwork.title}
                         </h4>
                         {selectedArtwork.notifiedSubscribersAt ? (
-                          <span className="text-[9px] uppercase tracking-wider text-emerald-400 bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-800">
+                          <span className="text-[9px] uppercase tracking-wider text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded-lg border-none">
                             Sent {new Date(selectedArtwork.notifiedSubscribersAt).toLocaleDateString()}
                           </span>
                         ) : (
-                          <span className="text-[9px] uppercase tracking-wider text-amber-300 bg-amber-950/60 px-1.5 py-0.5 rounded border border-amber-800 animate-pulse">
+                          <span className="text-[9px] uppercase tracking-wider text-amber-300 bg-amber-950/80 px-2 py-0.5 rounded-lg border-none animate-pulse">
                             New / Unnotified
                           </span>
                         )}
@@ -796,7 +791,7 @@ export function InquiriesManagerClient({
                 )}
 
                 {/* Scheduling Controls */}
-                <div className="p-3.5 bg-[#181920] border border-[#262833] rounded-xl space-y-3">
+                <div className="p-4 bg-[#1a1b26] rounded-2xl space-y-3 shadow-md border-none">
                   <span className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold block">
                     Schedule &amp; Timing
                   </span>
@@ -826,14 +821,14 @@ export function InquiriesManagerClient({
                   </div>
 
                   {sendTiming === "schedule" && (
-                    <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#22242f]">
+                    <div className="grid grid-cols-2 gap-2 pt-2">
                       <div>
                         <label className="block text-[9px] uppercase text-zinc-500 mb-1">Date</label>
                         <input
                           type="date"
                           value={scheduledDate}
                           onChange={(e) => setScheduledDate(e.target.value)}
-                          className="w-full bg-[#121318] border border-[#2b2d3d] rounded-lg px-2 py-1.5 text-xs text-white"
+                          className="w-full bg-[#121319] rounded-xl px-3 py-2 text-xs text-white border-none focus:ring-1 focus:ring-[#d1a86e] focus:outline-none"
                         />
                       </div>
                       <div>
@@ -842,7 +837,7 @@ export function InquiriesManagerClient({
                           type="time"
                           value={scheduledTime}
                           onChange={(e) => setScheduledTime(e.target.value)}
-                          className="w-full bg-[#121318] border border-[#2b2d3d] rounded-lg px-2 py-1.5 text-xs text-white"
+                          className="w-full bg-[#121319] rounded-xl px-3 py-2 text-xs text-white border-none focus:ring-1 focus:ring-[#d1a86e] focus:outline-none"
                         />
                       </div>
                       <div className="col-span-2 pt-1 text-[10px] text-zinc-400 flex items-center gap-1">
@@ -859,7 +854,7 @@ export function InquiriesManagerClient({
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <label className="text-[11px] uppercase tracking-wider text-zinc-400 font-semibold flex items-center gap-2">
                     <span>2. Select Interested Collectors</span>
-                    <span className="text-[10px] text-[#d1a86e] bg-[#d1a86e]/10 px-2 py-0.5 rounded font-mono font-bold">
+                    <span className="text-[10px] text-[#d1a86e] bg-[#d1a86e]/10 px-2.5 py-1 rounded-lg font-mono font-bold border-none">
                       {selectedSubscriberEmails.length} of {subscribers.length} Selected
                     </span>
                   </label>
@@ -873,7 +868,7 @@ export function InquiriesManagerClient({
                         placeholder="Search collectors..."
                         value={subscriberSearchQuery}
                         onChange={(e) => setSubscriberSearchQuery(e.target.value)}
-                        className="bg-[#181920] border border-[#2b2d3d] rounded-lg pl-7 pr-3 py-1 text-[11px] text-white placeholder-zinc-500 focus:border-[#d1a86e] focus:outline-none w-36 sm:w-44"
+                        className="bg-[#1a1b26] rounded-xl pl-8 pr-3 py-1.5 text-[11px] text-white placeholder-zinc-500 border-none focus:ring-1 focus:ring-[#d1a86e] focus:outline-none w-36 sm:w-44"
                       />
                     </div>
 
@@ -881,9 +876,9 @@ export function InquiriesManagerClient({
                     <Button
                       type="button"
                       size="sm"
-                      variant="outline"
+                      variant="ghost"
                       onClick={handleSelectAllToggle}
-                      className="border-[#2b2d3d] bg-[#181920] hover:bg-[#22242e] text-zinc-200 text-[11px] h-7 px-2.5 gap-1.5 cursor-pointer"
+                      className="bg-[#1a1b26] hover:bg-[#222432] text-zinc-200 text-[11px] h-8 px-3 gap-1.5 cursor-pointer rounded-xl border-none"
                     >
                       {isAllSelected ? (
                         <>
@@ -901,7 +896,7 @@ export function InquiriesManagerClient({
                 </div>
 
                 {/* Subscribers List Scroll Area */}
-                <div className="border border-[#262833] rounded-xl bg-[#181920] divide-y divide-[#22242f] max-h-56 overflow-y-auto scrollbar-thin">
+                <div className="rounded-2xl bg-[#1a1b26] p-2 max-h-60 overflow-y-auto space-y-1 shadow-inner border-none">
                   {filteredSubscribers.length === 0 ? (
                     <div className="p-6 text-center text-xs text-zinc-500">
                       No matching collectors found in registry.
@@ -913,8 +908,8 @@ export function InquiriesManagerClient({
                         <div
                           key={sub.email}
                           onClick={() => handleToggleSubscriber(sub.email)}
-                          className={`p-2.5 sm:px-3 flex items-center justify-between gap-3 cursor-pointer transition-colors ${
-                            isSelected ? "bg-[#20222c]/80 hover:bg-[#252836]" : "hover:bg-[#1c1d25]"
+                          className={`p-3 rounded-xl flex items-center justify-between gap-3 cursor-pointer transition-colors border-none ${
+                            isSelected ? "bg-[#222432]" : "hover:bg-[#161720]"
                           }`}
                         >
                           <div className="flex items-center gap-3 min-w-0">
@@ -923,11 +918,11 @@ export function InquiriesManagerClient({
                               type="checkbox"
                               checked={isSelected}
                               onChange={() => {}} // Handled by container onClick
-                              className="w-4 h-4 accent-[#d1a86e] cursor-pointer rounded shrink-0"
+                              className="w-4 h-4 accent-[#d1a86e] cursor-pointer rounded shrink-0 border-none"
                             />
 
                             {/* Avatar Monogram */}
-                            <div className="w-6 h-6 rounded-full bg-[#2a2d3b] text-[#d1a86e] flex items-center justify-center text-[10px] font-bold shrink-0">
+                            <div className="w-7 h-7 rounded-full bg-[#121319] text-[#d1a86e] flex items-center justify-center text-[10px] font-bold shrink-0 shadow-sm">
                               {(sub.name || sub.email)[0].toUpperCase()}
                             </div>
 
@@ -941,16 +936,15 @@ export function InquiriesManagerClient({
                             </div>
                           </div>
 
-                          <Badge
-                            variant="outline"
-                            className={`text-[9px] uppercase tracking-wider py-0 h-4 shrink-0 ${
+                          <span
+                            className={`text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-lg border-none ${
                               isSelected
-                                ? "text-emerald-300 border-emerald-800 bg-emerald-950/40"
-                                : "text-zinc-500 border-zinc-700"
+                                ? "text-emerald-300 bg-emerald-950/80 font-semibold"
+                                : "text-zinc-500 bg-[#121319]"
                             }`}
                           >
                             {isSelected ? "Selected" : "Excluded"}
-                          </Badge>
+                          </span>
                         </div>
                       );
                     })
@@ -966,7 +960,7 @@ export function InquiriesManagerClient({
                   <Button
                     onClick={handleSendBroadcast}
                     disabled={isBroadcasting || selectedSubscriberEmails.length === 0 || !selectedArtworkId}
-                    className="bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-xs gap-2 h-9 px-4 cursor-pointer shadow-lg shadow-[#d1a86e]/10 disabled:opacity-50"
+                    className="bg-[#d1a86e] hover:bg-[#c49a5f] text-black font-semibold text-xs gap-2 h-10 px-5 rounded-xl cursor-pointer shadow-lg shadow-black/40 disabled:opacity-50 border-none"
                   >
                     {isBroadcasting ? (
                       <>
@@ -989,22 +983,22 @@ export function InquiriesManagerClient({
 
           {/* Email Telemetry Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
-            <Card className="p-4 bg-[#14151a] border-[#262833] space-y-1">
+            <Card className="p-5 sm:p-6 bg-[#121319] rounded-3xl shadow-xl shadow-black/40 space-y-1 border-none">
               <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">Total Attempts</span>
               <div className="font-serif text-2xl text-white">{sentEmails.length}</div>
               <span className="text-[11px] text-zinc-400">All marketing &amp; transactional dispatches</span>
             </Card>
-            <Card className="p-4 bg-[#14151a] border-[#262833] space-y-1">
+            <Card className="p-5 sm:p-6 bg-[#121319] rounded-3xl shadow-xl shadow-black/40 space-y-1 border-none">
               <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">Delivered to Inbox</span>
               <div className="font-serif text-2xl text-emerald-400">{countDelivered}</div>
               <span className="text-[11px] text-emerald-400/80 font-medium">Successfully accepted by Resend</span>
             </Card>
-            <Card className="p-4 bg-[#14151a] border-[#262833] space-y-1">
+            <Card className="p-5 sm:p-6 bg-[#121319] rounded-3xl shadow-xl shadow-black/40 space-y-1 border-none">
               <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">Active Campaigns</span>
               <div className="font-serif text-2xl text-amber-400">{campaigns.length}</div>
               <span className="text-[11px] text-amber-400/80 font-medium">Tracked in Neon database</span>
             </Card>
-            <Card className="p-4 bg-[#14151a] border-[#262833] space-y-1">
+            <Card className="p-5 sm:p-6 bg-[#121319] rounded-3xl shadow-xl shadow-black/40 space-y-1 border-none">
               <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">Failed</span>
               <div className="font-serif text-2xl text-red-400">{countFailed}</div>
               <span className="text-[11px] text-red-400/80 font-medium">Permanent delivery errors</span>
@@ -1012,7 +1006,7 @@ export function InquiriesManagerClient({
           </div>
 
           {/* Search & Filter Controls */}
-          <div className="space-y-3 bg-[#14151a] p-4 border border-[#262833] rounded-xl">
+          <div className="space-y-4 bg-[#121319] p-6 rounded-3xl shadow-xl shadow-black/40 border-none">
             <div className="flex flex-col sm:flex-row gap-3">
               {/* Search input */}
               <div className="relative flex-1">
@@ -1022,12 +1016,12 @@ export function InquiriesManagerClient({
                   placeholder="Filter email history by recipient, subject, or message ID..."
                   value={emailSearchQuery}
                   onChange={(e) => setEmailSearchQuery(e.target.value)}
-                  className="w-full bg-[#1a1c23] border border-[#262833] rounded-lg pl-9 pr-4 py-2 text-xs text-white placeholder-zinc-500 focus:border-[#d1a86e] focus:outline-none"
+                  className="w-full bg-[#1a1b26] rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-zinc-500 border-none focus:ring-1 focus:ring-[#d1a86e] focus:outline-none"
                 />
                 {emailSearchQuery && (
                   <button
                     onClick={() => setEmailSearchQuery("")}
-                    className="absolute right-3 top-2.5 text-zinc-500 hover:text-white"
+                    className="absolute right-3 top-2.5 text-zinc-500 hover:text-white border-none"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
@@ -1035,26 +1029,24 @@ export function InquiriesManagerClient({
               </div>
 
               {/* Status Filter Buttons */}
-              <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none">
+              <div className="p-1 bg-[#1a1b26] rounded-xl flex items-center gap-1 overflow-x-auto scrollbar-none border-none">
                 {[
                   { id: "all", label: "All Statuses" },
                   { id: "delivered", label: "Delivered" },
                   { id: "sandbox_restricted", label: "Sandbox Held" },
                   { id: "failed", label: "Failed" },
                 ].map((s) => (
-                  <Button
+                  <button
                     key={s.id}
-                    size="sm"
-                    variant={selectedDeliveryStatus === s.id ? "default" : "secondary"}
                     onClick={() => setSelectedDeliveryStatus(s.id)}
-                    className={`text-[10px] uppercase tracking-wider h-8 px-2.5 rounded-md cursor-pointer ${
+                    className={`text-[10px] uppercase tracking-wider h-8 px-3 rounded-lg cursor-pointer border-none transition-colors ${
                       selectedDeliveryStatus === s.id
-                        ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
-                        : "bg-[#181920] text-zinc-400 hover:text-zinc-200 border border-[#262833]"
+                        ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-sm"
+                        : "text-zinc-400 hover:text-white"
                     }`}
                   >
                     {s.label}
-                  </Button>
+                  </button>
                 ))}
               </div>
             </div>
@@ -1068,19 +1060,17 @@ export function InquiriesManagerClient({
                 { id: "inquiry_confirmation", label: "Inquiry Receipts" },
                 { id: "curator_alert", label: "Curator Alerts" },
               ].map((f) => (
-                <Button
+                <button
                   key={f.id}
-                  size="sm"
-                  variant={selectedEmailType === f.id ? "default" : "secondary"}
                   onClick={() => setSelectedEmailType(f.id)}
-                  className={`text-[10px] uppercase tracking-wider h-7 px-2.5 rounded-md transition-colors cursor-pointer ${
+                  className={`text-[10px] uppercase tracking-wider h-7 px-3 rounded-lg transition-colors cursor-pointer border-none ${
                     selectedEmailType === f.id
-                      ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
-                      : "bg-[#181920] text-zinc-400 hover:text-zinc-200 border border-[#262833]"
+                      ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-sm"
+                      : "bg-[#1a1b26] text-zinc-400 hover:text-white"
                   }`}
                 >
                   {f.label}
-                </Button>
+                </button>
               ))}
             </div>
           </div>
@@ -1088,43 +1078,43 @@ export function InquiriesManagerClient({
           {/* Sent Emails List */}
           <div className="space-y-3">
             {filteredEmails.length === 0 ? (
-              <Card className="p-12 text-center bg-[#14151a]/40 border-[#262833] rounded-2xl text-xs text-zinc-500">
+              <div className="p-12 text-center bg-[#121319] rounded-3xl text-xs text-zinc-500 shadow-md">
                 No email dispatch records matching your criteria.
-              </Card>
+              </div>
             ) : (
               paginatedEmails.map((email) => (
                 <Card
                   key={email.id}
-                  className="p-4 sm:p-5 bg-[#14151a] border-[#262833] rounded-xl space-y-3 shadow-lg"
+                  className="p-5 sm:p-6 bg-[#1a1b26] rounded-2xl space-y-3 shadow-md border-none"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div className="flex flex-wrap items-center gap-2">
                       {/* Status Badge */}
                       {email.status === "delivered" && (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-950/80 text-emerald-300 border border-emerald-800">
+                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-950/80 text-emerald-300 border-none">
                           <CheckCircle2 className="w-3 h-3" />
                           <span>Delivered to Inbox</span>
                         </span>
                       )}
                       {email.status === "sandbox_restricted" && (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-950/80 text-amber-300 border border-amber-800">
+                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-950/80 text-amber-300 border-none">
                           <AlertTriangle className="w-3 h-3" />
                           <span>Sandbox Held</span>
                         </span>
                       )}
                       {email.status === "failed" && (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-red-950/80 text-red-300 border border-red-800">
+                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-red-950/80 text-red-300 border-none">
                           <AlertCircle className="w-3 h-3" />
                           <span>Failed</span>
                         </span>
                       )}
                       {email.status === "simulated" && (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-950/80 text-blue-300 border border-blue-800">
+                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-950/80 text-blue-300 border-none">
                           <span>Simulated</span>
                         </span>
                       )}
 
-                      <span className="text-[11px] text-zinc-400 uppercase tracking-wider bg-[#1d1f2a] px-2 py-0.5 rounded border border-[#2b2d3d]">
+                      <span className="text-[11px] text-zinc-400 uppercase tracking-wider bg-[#121319] px-2.5 py-1 rounded-lg border-none">
                         {email.emailType.replace(/_/g, " ")}
                       </span>
                     </div>
@@ -1141,7 +1131,7 @@ export function InquiriesManagerClient({
                       </div>
                       <div className="text-xs text-zinc-400 flex flex-wrap items-center gap-2">
                         <span>Recipient:</span>
-                        <strong className="text-zinc-200 font-mono bg-[#1a1c23] px-1.5 py-0.5 rounded border border-[#2b2d3d]">
+                        <strong className="text-zinc-200 font-mono bg-[#121319] px-2 py-0.5 rounded-lg border-none">
                           {email.recipientEmail}
                         </strong>
                         {email.recipientName && (
@@ -1153,9 +1143,9 @@ export function InquiriesManagerClient({
                     {email.htmlContent && (
                       <Button
                         size="sm"
-                        variant="outline"
+                        variant="ghost"
                         onClick={() => setPreviewEmail(email)}
-                        className="border-[#2b2d3d] bg-[#181920] hover:bg-[#22242e] text-zinc-200 text-xs gap-1.5 shrink-0 cursor-pointer"
+                        className="bg-[#121319] hover:bg-[#222432] text-zinc-200 text-xs gap-1.5 shrink-0 cursor-pointer rounded-xl border-none"
                       >
                         <Eye className="w-3.5 h-3.5 text-[#d1a86e]" />
                         <span>Preview HTML</span>
@@ -1165,15 +1155,15 @@ export function InquiriesManagerClient({
 
                   {/* Diagnostic details if held or failed */}
                   {email.errorMessage && (
-                    <div className="p-3 bg-amber-950/20 border border-amber-900/40 rounded-lg text-xs text-amber-300/90 leading-relaxed font-mono">
+                    <div className="p-3.5 bg-amber-950/30 rounded-xl text-xs text-amber-300/90 leading-relaxed font-mono border-none">
                       {email.errorMessage}
                     </div>
                   )}
 
                   {email.resendId && (
-                    <div className="text-[10px] text-zinc-500 font-mono flex items-center gap-1 pt-1">
+                    <div className="text-[10px] text-zinc-500 font-mono flex items-center gap-1.5 pt-1">
                       <span>Resend API Message ID:</span>
-                      <span className="text-zinc-400 bg-[#121318] px-1.5 py-0.5 rounded border border-[#22242f]">
+                      <span className="text-zinc-400 bg-[#121319] px-2 py-0.5 rounded-lg border-none">
                         {email.resendId}
                       </span>
                     </div>
@@ -1185,7 +1175,7 @@ export function InquiriesManagerClient({
 
           {/* Sent Emails Pagination and Per-Page Control Bar */}
           {filteredEmails.length > 0 && (
-            <div className="p-4 bg-[#14151a] border border-[#262833] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+            <div className="p-5 bg-[#121319] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl shadow-black/40 border-none">
               <div className="text-xs text-zinc-400 font-mono">
                 Showing <span className="text-white font-semibold">{emailStartItem}–{emailEndItem}</span> of{" "}
                 <span className="text-[#d1a86e] font-semibold">{filteredEmails.length}</span> dispatches
@@ -1237,13 +1227,13 @@ export function InquiriesManagerClient({
 
               <div className="flex items-center gap-2">
                 <span className="text-zinc-500 font-mono text-[11px] uppercase tracking-wider">Per Page:</span>
-                <div className="flex items-center rounded-lg border border-[#262833] bg-[#1a1c23] p-0.5">
+                <div className="flex items-center rounded-xl bg-[#1a1b26] p-1 border-none">
                   {PAGE_SIZE_OPTIONS.map((size) => (
                     <button
                       key={size}
                       type="button"
                       onClick={() => setEmailPageSize(size)}
-                      className={`px-2.5 py-1 text-xs font-mono rounded transition-colors cursor-pointer ${
+                      className={`px-3 py-1 text-xs font-mono rounded-lg transition-colors cursor-pointer border-none ${
                         emailPageSize === size
                           ? "bg-[#d1a86e] text-black font-semibold shadow-sm"
                           : "text-zinc-400 hover:text-white"
@@ -1264,8 +1254,8 @@ export function InquiriesManagerClient({
       {/* ==================================================================== */}
       {previewEmail && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#121318] border border-[#2b2d3d] rounded-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl">
-            <div className="p-4 sm:p-5 border-b border-[#262833] flex items-center justify-between gap-4">
+          <div className="bg-[#121319] rounded-3xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl shadow-black/80 border-none">
+            <div className="p-5 sm:p-6 bg-[#161720] flex items-center justify-between gap-4 border-none">
               <div>
                 <h3 className="font-serif text-lg text-white">Email Dispatch Preview</h3>
                 <p className="text-xs text-zinc-400">{previewEmail.subject}</p>
@@ -1275,25 +1265,25 @@ export function InquiriesManagerClient({
               </div>
               <button
                 onClick={() => setPreviewEmail(null)}
-                className="p-2 text-zinc-400 hover:text-white rounded-lg hover:bg-[#1a1c23] transition-colors cursor-pointer"
+                className="p-2 text-zinc-400 hover:text-white rounded-xl hover:bg-[#1a1b26] transition-colors cursor-pointer border-none"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-[#08090b]">
+            <div className="flex-1 overflow-y-auto p-5 sm:p-7 bg-[#0d0e13]">
               <div
                 className="prose prose-invert max-w-none"
                 dangerouslySetInnerHTML={{ __html: previewEmail.htmlContent || "<p>No content</p>" }}
               />
             </div>
 
-            <div className="p-4 border-t border-[#262833] bg-[#14151a] flex justify-end">
+            <div className="p-4 sm:p-5 bg-[#161720] flex justify-end border-none">
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
                 onClick={() => setPreviewEmail(null)}
-                className="border-[#2b2d3d] text-xs cursor-pointer"
+                className="bg-[#1a1b26] hover:bg-[#222432] text-zinc-300 text-xs cursor-pointer rounded-xl border-none px-4"
               >
                 Close Preview
               </Button>

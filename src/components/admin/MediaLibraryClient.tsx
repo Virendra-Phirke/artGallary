@@ -309,13 +309,13 @@ export function MediaLibraryClient() {
   return (
     <div className="space-y-8 w-full">
       {/* Header & Storage Status */}
-      <div className="border-b border-[#1c1d25] pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-6 sm:p-8 bg-[#121319] rounded-3xl shadow-xl shadow-black/40 flex flex-col md:flex-row md:items-center justify-between gap-4 border-none">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
             <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
               Media Infrastructure Layer
             </span>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium bg-emerald-500/10 text-emerald-400 border-none">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               Real Neon DB Synced
             </span>
@@ -327,11 +327,11 @@ export function MediaLibraryClient() {
         </div>
 
         {/* Upload Action Group */}
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={fetchMedia}
             title="Refresh from Database"
-            className="p-2.5 rounded-lg border border-[#262833] bg-[#14151a] hover:bg-[#1f212b] text-zinc-400 hover:text-white transition-colors"
+            className="p-2.5 rounded-xl bg-[#1a1b26] hover:bg-[#222432] text-zinc-400 hover:text-white transition-colors border-none"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? "animate-spin text-[#d1a86e]" : ""}`} />
           </button>
@@ -345,22 +345,22 @@ export function MediaLibraryClient() {
                 setBatchDeleteConfirm(false);
               }
             }}
-            className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-lg border text-xs font-semibold transition-colors ${
+            className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-colors border-none ${
               isBatchMode
-                ? "bg-rose-900/30 border-rose-500/40 text-rose-300 hover:bg-rose-900/50"
-                : "border-[#262833] bg-[#14151a] hover:bg-[#1f212b] text-zinc-300 hover:text-white"
+                ? "bg-rose-950/80 text-rose-300 hover:bg-rose-900/90"
+                : "bg-[#1a1b26] hover:bg-[#222432] text-zinc-300 hover:text-white"
             }`}
           >
             <CheckSquare className="w-3.5 h-3.5" />
             <span>{isBatchMode ? "Exit Batch" : "Batch Select"}</span>
           </button>
 
-          <div className="flex items-center bg-[#14151a] border border-[#262833] rounded-lg p-1 text-xs">
+          <div className="flex items-center bg-[#1a1b26] rounded-xl p-1 text-xs border-none">
             <span className="text-[11px] text-zinc-500 px-2">Target:</span>
             <select
               value={targetUploadProvider}
               onChange={(e) => setTargetUploadProvider(e.target.value as any)}
-              className="bg-transparent text-xs text-zinc-300 font-mono focus:outline-none pr-1"
+              className="bg-transparent text-xs text-zinc-300 font-mono focus:outline-none pr-1 border-none"
             >
               <option value="active" className="bg-[#14151a]">Auto ({activeProviderName.toUpperCase()})</option>
               <option value="imagekit" className="bg-[#14151a]">Force ImageKit</option>
@@ -371,13 +371,13 @@ export function MediaLibraryClient() {
           <button
             type="button"
             onClick={() => setIsUnsplashOpen(true)}
-            className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-lg border border-[#262833] bg-[#14151a] hover:bg-[#1f212b] text-zinc-300 hover:text-white text-xs font-semibold transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-[#1a1b26] hover:bg-[#222432] text-zinc-300 hover:text-white text-xs font-semibold transition-colors cursor-pointer border-none"
           >
             <Sparkles className="w-3.5 h-3.5 text-[#d1a86e]" />
             <span>Import Temp Art</span>
           </button>
 
-          <label className="flex items-center gap-2 bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] px-5 py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors shadow-lg shadow-[#d1a86e]/10 cursor-pointer">
+          <label className="flex items-center gap-2 bg-[#d1a86e] hover:bg-[#c49a5f] text-black px-5 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-colors shadow-lg shadow-black/40 cursor-pointer border-none">
             <Upload className="w-4 h-4" />
             <span>{isUploading ? "Uploading..." : "Upload Asset"}</span>
             <input
@@ -394,12 +394,12 @@ export function MediaLibraryClient() {
       {/* Delete Result Toast */}
       {deleteResult && (
         <div
-          className={`flex items-center gap-3 px-5 py-3 rounded-xl border text-xs font-medium animate-in slide-in-from-top-2 ${
+          className={`flex items-center gap-3 px-5 py-3 rounded-2xl border-none shadow-md text-xs font-medium animate-in slide-in-from-top-2 ${
             deleteResult.sourceDeleted && !deleteResult.sourceError
-              ? "bg-emerald-950/60 border-emerald-800/50 text-emerald-300"
+              ? "bg-emerald-950/80 text-emerald-300"
               : deleteResult.sourceError
-              ? "bg-amber-950/60 border-amber-800/50 text-amber-300"
-              : "bg-zinc-800/60 border-zinc-700/50 text-zinc-300"
+              ? "bg-amber-950/80 text-amber-300"
+              : "bg-zinc-800/80 text-zinc-300"
           }`}
         >
           {deleteResult.sourceDeleted && !deleteResult.sourceError ? (
@@ -417,7 +417,7 @@ export function MediaLibraryClient() {
               <span> — database record removed.</span>
             )}
           </div>
-          <button onClick={() => setDeleteResult(null)} className="p-1 hover:text-white">
+          <button onClick={() => setDeleteResult(null)} className="p-1 hover:text-white border-none">
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -425,15 +425,15 @@ export function MediaLibraryClient() {
 
       {/* Batch Action Bar */}
       {isBatchMode && (
-        <div className="flex items-center justify-between px-5 py-3 bg-rose-950/30 border border-rose-500/30 rounded-xl">
+        <div className="flex items-center justify-between px-6 py-4 bg-rose-950/40 rounded-2xl border-none shadow-lg">
           <div className="flex items-center gap-4 text-xs">
             <span className="text-rose-300 font-medium">
               {selectedIds.size} of {filteredItems.length} selected
             </span>
-            <button onClick={selectAll} className="text-zinc-400 hover:text-white underline">
+            <button onClick={selectAll} className="text-zinc-400 hover:text-white underline border-none">
               Select All
             </button>
-            <button onClick={deselectAll} className="text-zinc-400 hover:text-white underline">
+            <button onClick={deselectAll} className="text-zinc-400 hover:text-white underline border-none">
               Deselect All
             </button>
           </div>
@@ -441,7 +441,7 @@ export function MediaLibraryClient() {
             <button
               onClick={() => setBatchDeleteConfirm(true)}
               disabled={isBatchDeleting}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold transition-colors disabled:opacity-50"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold transition-colors disabled:opacity-50 border-none shadow-md shadow-black/40"
             >
               {isBatchDeleting ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -456,8 +456,8 @@ export function MediaLibraryClient() {
 
       {/* Storage Architecture Overview Bar */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="p-4 bg-[#14151a] border border-[#262833] rounded-xl flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+        <div className="p-5 bg-[#121319] rounded-2xl shadow-xl shadow-black/40 flex items-center gap-4 border-none">
+          <div className="w-12 h-12 rounded-xl bg-[#1a1b26] flex items-center justify-center text-cyan-400 border-none shadow-sm">
             <Sparkles className="w-5 h-5" />
           </div>
           <div>
@@ -465,14 +465,14 @@ export function MediaLibraryClient() {
             <div className="text-sm font-medium text-white flex items-center gap-1.5">
               <span>Dynamic Transformations</span>
               {activeProviderName === "imagekit" && (
-                <span className="px-1.5 py-0.2 bg-cyan-500/20 text-cyan-300 text-[9px] rounded uppercase font-bold">Default</span>
+                <span className="px-2 py-0.5 bg-cyan-500/20 text-cyan-300 text-[9px] rounded-lg uppercase font-bold border-none">Default</span>
               )}
             </div>
           </div>
         </div>
 
-        <div className="p-4 bg-[#14151a] border border-[#262833] rounded-xl flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+        <div className="p-5 bg-[#121319] rounded-2xl shadow-xl shadow-black/40 flex items-center gap-4 border-none">
+          <div className="w-12 h-12 rounded-xl bg-[#1a1b26] flex items-center justify-center text-amber-400 border-none shadow-sm">
             <Cloud className="w-5 h-5" />
           </div>
           <div>
@@ -480,14 +480,14 @@ export function MediaLibraryClient() {
             <div className="text-sm font-medium text-white flex items-center gap-1.5">
               <span>Object Storage &amp; WebP</span>
               {activeProviderName === "cloudflare" && (
-                <span className="px-1.5 py-0.2 bg-amber-500/20 text-amber-300 text-[9px] rounded uppercase font-bold">Default</span>
+                <span className="px-2 py-0.5 bg-amber-500/20 text-amber-300 text-[9px] rounded-lg uppercase font-bold border-none">Default</span>
               )}
             </div>
           </div>
         </div>
 
-        <div className="p-4 bg-[#14151a] border border-[#262833] rounded-xl flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+        <div className="p-5 bg-[#121319] rounded-2xl shadow-xl shadow-black/40 flex items-center gap-4 border-none">
+          <div className="w-12 h-12 rounded-xl bg-[#1a1b26] flex items-center justify-center text-emerald-400 border-none shadow-sm">
             <CheckCircle2 className="w-5 h-5" />
           </div>
           <div>
@@ -500,25 +500,25 @@ export function MediaLibraryClient() {
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex items-center justify-between gap-4 border-b border-[#1c1d25] pb-3">
+      <div className="p-1.5 bg-[#121319] rounded-2xl flex items-center justify-between gap-4 shadow-md border-none">
         <div className="flex items-center gap-2">
-          <Filter className="w-3.5 h-3.5 text-zinc-500" />
+          <Filter className="w-3.5 h-3.5 text-zinc-500 ml-2" />
           <span className="text-xs text-zinc-500 font-medium">Filter Provider:</span>
           {(["all", "imagekit", "cloudflare"] as const).map((prov) => (
             <button
               key={prov}
               onClick={() => setFilterProvider(prov)}
-              className={`px-3 py-1 rounded-md text-xs transition-colors capitalize ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs transition-colors capitalize border-none cursor-pointer ${
                 filterProvider === prov
-                  ? "bg-zinc-800 text-white font-medium border border-zinc-700"
-                  : "text-zinc-400 hover:text-white"
+                  ? "bg-[#d1a86e] text-black font-semibold shadow-sm"
+                  : "text-zinc-400 hover:text-white hover:bg-[#1a1b26]"
               }`}
             >
               {prov === "all" ? `All Assets (${items.length})` : prov === "imagekit" ? "ImageKit" : "Cloudflare R2"}
             </button>
           ))}
         </div>
-        <span className="text-xs text-zinc-500 font-mono">Showing {filteredItems.length} assets</span>
+        <span className="text-xs text-zinc-500 font-mono pr-3">Showing {filteredItems.length} assets</span>
       </div>
 
       {/* Grid of Media Assets */}
@@ -528,11 +528,11 @@ export function MediaLibraryClient() {
           <span className="text-xs tracking-wider uppercase font-medium">Loading Media from Database...</span>
         </div>
       ) : filteredItems.length === 0 ? (
-        <div className="p-16 text-center bg-[#14151a]/40 border border-[#262833] rounded-2xl space-y-3">
+        <div className="p-16 text-center bg-[#121319] rounded-3xl space-y-4 shadow-xl border-none">
           <p className="text-sm text-zinc-400">No media assets found in database.</p>
           <button
             onClick={() => setIsUnsplashOpen(true)}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#d1a86e] text-[#0d0e12] text-xs font-semibold"
+            className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-[#d1a86e] hover:bg-[#c49a5f] text-black text-xs font-semibold border-none cursor-pointer"
           >
             <Sparkles className="w-3.5 h-3.5" />
             <span>Import First Artwork</span>
@@ -546,15 +546,15 @@ export function MediaLibraryClient() {
               <div
                 key={item.id}
                 onClick={isBatchMode ? () => toggleSelect(item.id) : undefined}
-                className={`group p-4 bg-[#14151a] border rounded-2xl space-y-3 shadow-xl transition-all ${
+                className={`group p-4 bg-[#1a1b26] rounded-2xl space-y-3 shadow-md transition-all border-none ${
                   isBatchMode
                     ? isSelected
-                      ? "border-rose-500/60 ring-1 ring-rose-500/30 cursor-pointer"
-                      : "border-[#262833] hover:border-zinc-600 cursor-pointer"
-                    : "border-[#262833] hover:border-zinc-700"
+                      ? "ring-2 ring-rose-500 cursor-pointer"
+                      : "hover:bg-[#20222d] cursor-pointer"
+                    : "hover:bg-[#20222d]"
                 }`}
               >
-                <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-black/40 border border-[#262833]">
+                <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-[#121319] border-none shadow-sm">
                   <Image
                     src={item.fileUrl}
                     alt={item.fileName}
@@ -577,12 +577,12 @@ export function MediaLibraryClient() {
                   {/* Provider Badge overlay */}
                   <div className="absolute top-2 left-2">
                     {item.provider === "imagekit" ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono font-medium bg-cyan-950/80 text-cyan-300 border border-cyan-500/30 backdrop-blur-md">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-mono font-medium bg-cyan-950/90 text-cyan-300 border-none backdrop-blur-md">
                         <Sparkles className="w-2.5 h-2.5" />
                         ImageKit
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono font-medium bg-amber-950/80 text-amber-300 border border-amber-500/30 backdrop-blur-md">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-mono font-medium bg-amber-950/90 text-amber-300 border-none backdrop-blur-md">
                         <Cloud className="w-2.5 h-2.5" />
                         R2
                       </span>
@@ -597,7 +597,7 @@ export function MediaLibraryClient() {
                         setDeleteTarget(item);
                       }}
                       title="Permanently delete media"
-                      className="absolute top-2 right-2 p-1.5 rounded-md bg-black/70 hover:bg-rose-900/80 text-zinc-400 hover:text-rose-200 opacity-0 group-hover:opacity-100 transition-opacity border border-white/10"
+                      className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/70 hover:bg-rose-900/80 text-zinc-400 hover:text-rose-200 opacity-0 group-hover:opacity-100 transition-opacity border-none cursor-pointer"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -615,13 +615,13 @@ export function MediaLibraryClient() {
                 </div>
 
                 {!isBatchMode && (
-                  <div className="pt-2 border-t border-[#1f212b] flex items-center justify-between text-xs">
+                  <div className="pt-2 flex items-center justify-between text-xs">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         handleCopy(item.fileUrl);
                       }}
-                      className="text-[11px] text-[#d1a86e] hover:underline flex items-center gap-1"
+                      className="text-[11px] text-[#d1a86e] hover:underline flex items-center gap-1 border-none cursor-pointer"
                     >
                       {copiedUrl === item.fileUrl ? (
                         <>
@@ -655,7 +655,7 @@ export function MediaLibraryClient() {
 
       {/* Pagination and Per-Page Control Bar */}
       {filteredItems.length > 0 && (
-        <div className="p-4 bg-[#14151a] border border-[#262833] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+        <div className="p-5 bg-[#121319] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl shadow-black/40 border-none">
           <div className="text-xs text-zinc-400 font-mono">
             Showing <span className="text-white font-semibold">{startItem}–{endItem}</span> of{" "}
             <span className="text-[#d1a86e] font-semibold">{filteredItems.length}</span> media assets
@@ -707,13 +707,13 @@ export function MediaLibraryClient() {
 
           <div className="flex items-center gap-2">
             <span className="text-zinc-500 font-mono text-[11px] uppercase tracking-wider">Per Page:</span>
-            <div className="flex items-center rounded-lg border border-[#262833] bg-[#1a1c23] p-0.5">
+            <div className="flex items-center rounded-xl bg-[#1a1b26] p-1 border-none">
               {PAGE_SIZE_OPTIONS.map((size) => (
                 <button
                   key={size}
                   type="button"
                   onClick={() => setPageSize(size)}
-                  className={`px-2.5 py-1 text-xs font-mono rounded transition-colors cursor-pointer ${
+                  className={`px-3 py-1 text-xs font-mono rounded-lg transition-colors cursor-pointer border-none ${
                     pageSize === size
                       ? "bg-[#d1a86e] text-black font-semibold shadow-sm"
                       : "text-zinc-400 hover:text-white"
@@ -729,13 +729,13 @@ export function MediaLibraryClient() {
 
       {/* ─── Permanent Delete Confirmation Modal (Single) ─── */}
       {deleteTarget && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-md mx-4 bg-[#14151a] border border-[#262833] rounded-2xl shadow-2xl p-6 space-y-5 animate-in zoom-in-95">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in">
+          <div className="w-full max-w-md mx-4 bg-[#121319] rounded-3xl shadow-2xl shadow-black/80 p-6 space-y-5 border-none animate-in zoom-in-95">
             <div className="flex items-center justify-between">
               <h3 className="font-serif text-lg text-white">Permanent Deletion</h3>
               <button
                 onClick={() => setDeleteTarget(null)}
-                className="p-1 rounded-lg hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors"
+                className="p-2 rounded-xl hover:bg-[#1a1b26] text-zinc-400 hover:text-white transition-colors border-none"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -743,7 +743,7 @@ export function MediaLibraryClient() {
 
             {/* Preview */}
             <div className="flex items-start gap-4">
-              <div className="w-20 h-20 rounded-xl overflow-hidden bg-black/40 border border-[#262833] shrink-0 relative">
+              <div className="w-20 h-20 rounded-2xl overflow-hidden bg-[#1a1b26] shrink-0 relative border-none shadow-sm">
                 <Image
                   src={deleteTarget.fileUrl}
                   alt={deleteTarget.fileName}
@@ -758,12 +758,12 @@ export function MediaLibraryClient() {
                 <p className="text-[11px] text-zinc-400 font-mono">{deleteTarget.byteSize}</p>
                 <div className="mt-1.5">
                   {deleteTarget.provider === "imagekit" ? (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono font-medium bg-cyan-950/80 text-cyan-300 border border-cyan-500/30">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-medium bg-cyan-950/80 text-cyan-300 border-none">
                       <Sparkles className="w-2.5 h-2.5" />
                       ImageKit Source
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono font-medium bg-amber-950/80 text-amber-300 border border-amber-500/30">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-medium bg-amber-950/80 text-amber-300 border-none">
                       <Cloud className="w-2.5 h-2.5" />
                       Cloudflare R2 Source
                     </span>
@@ -773,7 +773,7 @@ export function MediaLibraryClient() {
             </div>
 
             {/* Warning */}
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-rose-950/40 border border-rose-500/30">
+            <div className="flex items-start gap-3 p-4 rounded-2xl bg-rose-950/40 border-none">
               <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm text-rose-300 font-medium">
@@ -790,14 +790,14 @@ export function MediaLibraryClient() {
               <button
                 onClick={() => setDeleteTarget(null)}
                 disabled={isDeleting}
-                className="px-4 py-2 rounded-lg text-xs font-medium text-zinc-300 hover:text-white border border-[#262833] hover:bg-zinc-800 transition-colors"
+                className="px-4 py-2 rounded-xl text-xs font-medium text-zinc-300 hover:text-white bg-[#1a1b26] hover:bg-[#222432] transition-colors border-none"
               >
                 Cancel
               </button>
               <button
                 onClick={() => executePermanentDelete(deleteTarget)}
                 disabled={isDeleting}
-                className="flex items-center gap-2 px-5 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold transition-colors disabled:opacity-50 shadow-lg shadow-rose-600/20"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold transition-colors disabled:opacity-50 shadow-lg shadow-black/40 border-none"
               >
                 {isDeleting ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -813,19 +813,19 @@ export function MediaLibraryClient() {
 
       {/* ─── Batch Delete Confirmation Modal ─── */}
       {batchDeleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-md mx-4 bg-[#14151a] border border-[#262833] rounded-2xl shadow-2xl p-6 space-y-5 animate-in zoom-in-95">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in">
+          <div className="w-full max-w-md mx-4 bg-[#121319] rounded-3xl shadow-2xl shadow-black/80 p-6 space-y-5 border-none animate-in zoom-in-95">
             <div className="flex items-center justify-between">
               <h3 className="font-serif text-lg text-white">Batch Permanent Deletion</h3>
               <button
                 onClick={() => setBatchDeleteConfirm(false)}
-                className="p-1 rounded-lg hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors"
+                className="p-2 rounded-xl hover:bg-[#1a1b26] text-zinc-400 hover:text-white transition-colors border-none"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-rose-950/40 border border-rose-500/30">
+            <div className="flex items-start gap-3 p-4 rounded-2xl bg-rose-950/40 border-none">
               <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm text-rose-300 font-medium">
@@ -841,14 +841,14 @@ export function MediaLibraryClient() {
               <button
                 onClick={() => setBatchDeleteConfirm(false)}
                 disabled={isBatchDeleting}
-                className="px-4 py-2 rounded-lg text-xs font-medium text-zinc-300 hover:text-white border border-[#262833] hover:bg-zinc-800 transition-colors"
+                className="px-4 py-2 rounded-xl text-xs font-medium text-zinc-300 hover:text-white bg-[#1a1b26] hover:bg-[#222432] transition-colors border-none"
               >
                 Cancel
               </button>
               <button
                 onClick={executeBatchDelete}
                 disabled={isBatchDeleting}
-                className="flex items-center gap-2 px-5 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold transition-colors disabled:opacity-50 shadow-lg shadow-rose-600/20"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold transition-colors disabled:opacity-50 shadow-lg shadow-black/40 border-none"
               >
                 {isBatchDeleting ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
