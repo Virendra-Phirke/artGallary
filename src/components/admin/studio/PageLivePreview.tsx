@@ -439,7 +439,7 @@ export function PageLivePreview({
                         </div>
 
                         {/* Right Hero: Dynamic Masterpiece Plaque & Showcase */}
-                        <div className="lg:col-span-6 relative flex flex-col items-center z-10 w-full min-w-0">
+                        <div className="lg:col-span-6 relative flex flex-col items-center lg:items-end z-10 w-full min-w-0">
                           <div className="relative group w-full max-w-xl xl:max-w-2xl min-w-0">
                             {/* Frame & Canvas Presentation */}
                             <div

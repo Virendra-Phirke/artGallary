@@ -857,14 +857,8 @@ function HomepageBuilderContent({
         )}
 
         {/* COLUMN 2: CENTER CANVAS STAGE (ARTBOARD VIEWPORT) */}
-        <div className="flex-1 h-full overflow-y-auto bg-[#08090d] p-3 sm:p-5 lg:p-7 flex justify-center items-start scrollbar-thin scrollbar-thumb-[#1f212b] relative">
-          <div
-            className={`w-full flex justify-center transition-all duration-300 ${
-              isInspectorOpen && selectedElement
-                ? "max-w-6xl xl:max-w-7xl"
-                : "max-w-7xl xl:max-w-[1540px]"
-            }`}
-          >
+        <div className="flex-1 h-full overflow-y-auto bg-[#08090d] p-2 sm:p-3 lg:p-4 flex justify-center items-start scrollbar-thin scrollbar-thumb-[#1f212b] relative">
+          <div className="w-full flex justify-center transition-all duration-300">
             <PageLivePreview
               key={canvasRefreshKey}
               activePage={activePage}
