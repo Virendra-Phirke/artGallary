@@ -10,6 +10,7 @@ import {
   PaginationNext,
   PaginationPrevious,
   PaginationPageSizeSelect,
+  PAGE_SIZE_OPTIONS,
   getPaginationRange,
 } from "@/components/ui/pagination";
 
@@ -35,7 +36,7 @@ export function CollectorPaginationBar({
   endItem,
   itemName,
   pageSize,
-  pageSizeOptions = [6, 12, 18, 24],
+  pageSizeOptions = PAGE_SIZE_OPTIONS,
   onPageChange,
   onPageSizeChange,
   className = "",

@@ -7,15 +7,14 @@ import { Button } from "@/components/ui/button";
 import { ProgressiveImage } from "@/components/ui/progressive-image";
 import { CollectorPaginationBar } from "@/components/account/shared/CollectorPaginationBar";
 import { useCollector } from "@/components/account/context/CollectorContext";
-
-const COLLECTIONS_PAGE_SIZE_OPTIONS = [3, 6, 9, 12];
+import { PAGE_SIZE_OPTIONS } from "@/components/ui/pagination";
 
 export function SeriesTab() {
   const { collections } = useCollector();
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(6);
+  const [pageSize, setPageSize] = useState(10);
 
   const totalPages = Math.max(1, Math.ceil(collections.length / pageSize));
   const paginatedCollections = useMemo(() => {
@@ -105,7 +104,7 @@ export function SeriesTab() {
         endItem={endItem}
         itemName="series"
         pageSize={pageSize}
-        pageSizeOptions={COLLECTIONS_PAGE_SIZE_OPTIONS}
+        pageSizeOptions={PAGE_SIZE_OPTIONS}
         onPageChange={setCurrentPage}
         onPageSizeChange={setPageSize}
       />

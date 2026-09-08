@@ -7,15 +7,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CollectorPaginationBar } from "@/components/account/shared/CollectorPaginationBar";
 import { useCollector } from "@/components/account/context/CollectorContext";
-
-const INQUIRIES_PAGE_SIZE_OPTIONS = [5, 10, 20, 50];
+import { PAGE_SIZE_OPTIONS } from "@/components/ui/pagination";
 
 export function InquiriesTab() {
   const { user, userInquiries } = useCollector();
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(10);
 
   const totalPages = Math.max(1, Math.ceil(userInquiries.length / pageSize));
   const paginatedInquiries = useMemo(() => {
@@ -190,7 +189,7 @@ export function InquiriesTab() {
             endItem={endItem}
             itemName="inquiries"
             pageSize={pageSize}
-            pageSizeOptions={INQUIRIES_PAGE_SIZE_OPTIONS}
+            pageSizeOptions={PAGE_SIZE_OPTIONS}
             onPageChange={setCurrentPage}
             onPageSizeChange={setPageSize}
           />

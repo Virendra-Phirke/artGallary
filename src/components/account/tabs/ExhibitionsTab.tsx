@@ -8,15 +8,14 @@ import { Button } from "@/components/ui/button";
 import { ProgressiveImage } from "@/components/ui/progressive-image";
 import { CollectorPaginationBar } from "@/components/account/shared/CollectorPaginationBar";
 import { useCollector } from "@/components/account/context/CollectorContext";
-
-const EXHIBITIONS_PAGE_SIZE_OPTIONS = [2, 3, 6, 9];
+import { PAGE_SIZE_OPTIONS } from "@/components/ui/pagination";
 
 export function ExhibitionsTab() {
   const { exhibitions } = useCollector();
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(3);
+  const [pageSize, setPageSize] = useState(10);
 
   const totalPages = Math.max(1, Math.ceil(exhibitions.length / pageSize));
   const paginatedExhibitions = useMemo(() => {
@@ -139,7 +138,7 @@ export function ExhibitionsTab() {
         endItem={endItem}
         itemName="exhibitions"
         pageSize={pageSize}
-        pageSizeOptions={EXHIBITIONS_PAGE_SIZE_OPTIONS}
+        pageSizeOptions={PAGE_SIZE_OPTIONS}
         onPageChange={setCurrentPage}
         onPageSizeChange={setPageSize}
       />

@@ -14,8 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-
-const GALLERY_PAGE_SIZE_OPTIONS = [6, 12, 18, 24];
+import { PAGE_SIZE_OPTIONS } from "@/components/ui/pagination";
 
 export function CatalogueTab() {
   const {
@@ -31,7 +30,7 @@ export function CatalogueTab() {
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(6);
+  const [pageSize, setPageSize] = useState(10);
 
   // Category counts
   const counts = useMemo(() => {
@@ -368,7 +367,7 @@ export function CatalogueTab() {
         endItem={endItem}
         itemName="artworks"
         pageSize={pageSize}
-        pageSizeOptions={GALLERY_PAGE_SIZE_OPTIONS}
+        pageSizeOptions={PAGE_SIZE_OPTIONS}
         onPageChange={setCurrentPage}
         onPageSizeChange={setPageSize}
       />
