@@ -87,8 +87,19 @@ export function CollectorNav({ user, inquiriesCount = 0 }: CollectorNavProps) {
   return (
     <header className="sticky top-0 z-40 bg-[#0d0e12]/90 backdrop-blur-2xl border-b border-[#1f212c] px-4 sm:px-6 md:px-10 lg:px-12 xl:px-16 py-3.5 shadow-xl shadow-black/50">
       <div className="w-full max-w-[1850px] mx-auto flex items-center justify-between gap-4">
-        {/* Left: Brand Identity & Portal Pill */}
-        <div className="flex items-center gap-3.5">
+        {/* Left: Home Return Button & Brand Identity */}
+        <div className="flex items-center gap-3 sm:gap-4">
+          <Link
+            href="/"
+            aria-label="Return to Public Homepage"
+            title="Return to Public Homepage"
+            className="w-8 h-8 rounded-full bg-[#14151c] border border-[#262833] hover:border-[#d1a86e]/60 hover:bg-[#1b1d26] flex items-center justify-center text-[#d1a86e] hover:text-white transition-all shadow-sm group focus-visible:outline-none"
+          >
+            <Home className="w-4 h-4 transition-transform group-hover:scale-110" />
+          </Link>
+
+          <span className="h-5 w-[1px] bg-[#222430] hidden sm:block" />
+
           <Link
             href="/account"
             className="flex items-center gap-2.5 group focus-visible:outline-none"
@@ -106,26 +117,6 @@ export function CollectorNav({ user, inquiriesCount = 0 }: CollectorNavProps) {
                 Collector Portal
               </span>
             </div>
-          </Link>
-
-          {/* Verification Badge */}
-          <div className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#161720] border border-[#2b2e3c] text-[10px] uppercase tracking-wider text-zinc-300">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Private Salon</span>
-          </div>
-        </div>
-
-        {/* Center / Return Home Link */}
-        <div className="flex items-center gap-3">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#14151c] border border-[#262833] hover:border-[#d1a86e]/60 hover:bg-[#1b1d26] text-xs text-zinc-300 hover:text-white transition-all shadow-sm group"
-            title="Return to Public Homepage"
-          >
-            <Home className="w-3.5 h-3.5 text-[#d1a86e] transition-transform group-hover:scale-110" />
-            <span className="text-[11px] uppercase tracking-wider font-medium">
-              Home
-            </span>
           </Link>
         </div>
 

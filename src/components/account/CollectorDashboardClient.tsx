@@ -52,7 +52,7 @@ interface CollectorDashboardClientProps {
 
 const TAB_METADATA: Record<CollectorTab, { title: string; subtitle: string; tag: string }> = {
   overview: {
-    tag: "Private Salon",
+    tag: "Collector Suite",
     title: "Collector Overview",
     subtitle: "Acquisition portfolio, curatorial invitations, and active requests.",
   },
