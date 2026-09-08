@@ -223,17 +223,17 @@ export function FeaturedArtworksClient({
         </div>
 
         {/* View Complete Collection Footer CTA */}
-        <div className="mt-14 text-center">
+        <div className="mt-8 sm:mt-14 text-center px-2">
           <Button
             asChild
             variant="outline"
-            size="lg"
-            className="rounded-full border-[#383a48] bg-gradient-to-b from-[#181920] to-[#121318] hover:border-[#d1a86e] hover:bg-[#1a1c24] text-white px-9 py-4 text-xs uppercase tracking-[0.22em] shadow-2xl shadow-black/80 hover:shadow-[#d1a86e]/10 transition-all hover:scale-[1.02]"
+            className="rounded-full border-[#383a48] bg-gradient-to-b from-[#181920] to-[#121318] hover:border-[#d1a86e] hover:bg-[#1a1c24] text-white px-4 sm:px-9 py-2.5 sm:py-4 text-[10px] sm:text-xs uppercase tracking-wider sm:tracking-[0.22em] shadow-2xl shadow-black/80 hover:shadow-[#d1a86e]/10 transition-all active:scale-[0.98] max-w-full inline-flex"
           >
-            <Link href="/account?tab=gallery" className="inline-flex items-center gap-2.5">
-              <Sparkles className="w-4 h-4 text-[#d1a86e]" />
-              <span>Enter Collector Salon for Complete Catalogue</span>
-              <ArrowRight className="w-4 h-4 text-[#d1a86e]" />
+            <Link href="/account?tab=gallery" className="inline-flex items-center gap-1.5 sm:gap-2.5">
+              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#d1a86e] shrink-0" />
+              <span className="hidden sm:inline">Enter Collector Salon for Complete Catalogue</span>
+              <span className="inline sm:hidden">Complete Catalogue in Salon</span>
+              <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#d1a86e] shrink-0" />
             </Link>
           </Button>
         </div>

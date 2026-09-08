@@ -30,12 +30,12 @@ export default async function AccountLayout({
     : null;
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0a0b0e] text-[#f4f4f6]">
+    <div className="min-h-screen flex flex-col bg-[#0a0b0e] text-[#f4f4f6] w-full max-w-full overflow-x-hidden">
       <CollectorNav
         user={currentUser}
         inquiriesCount={userInquiries.length}
       />
-      <main className="flex-1 w-full px-4 sm:px-6 md:px-12 lg:px-16 xl:px-20 max-w-[1850px] mx-auto pt-6 pb-16 md:pb-20">
+      <main className="flex-1 w-full max-w-[1850px] mx-auto px-3 sm:px-6 md:px-12 lg:px-16 xl:px-20 pt-4 sm:pt-6 pb-16 md:pb-20 overflow-x-hidden">
         {children}
       </main>
     </div>

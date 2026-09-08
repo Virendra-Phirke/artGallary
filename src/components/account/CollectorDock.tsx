@@ -384,22 +384,22 @@ export function CollectorDock({
       </motion.nav>
 
       {/* 4. Floating Mobile Trigger Button (< 768px) */}
-      <div className="md:hidden fixed bottom-5 right-5 z-40">
+      <div className="md:hidden fixed bottom-4 right-4 z-40">
         <button
           onClick={() => setIsMobileOpen((prev) => !prev)}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#161720] hover:bg-[#1f212c] active:scale-95 shadow-2xl shadow-black/90 text-white font-medium text-xs tracking-wider uppercase transition-all cursor-pointer group"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-[#151620]/95 backdrop-blur-md border border-white/15 active:scale-95 shadow-2xl shadow-black/90 text-white font-medium text-[11px] tracking-wider uppercase transition-all cursor-pointer group"
           aria-label={isMobileOpen ? "Close Salon Navigation" : "Open Salon Navigation"}
         >
           {isMobileOpen ? (
-            <X className="w-4 h-4 text-[#d1a86e] transition-transform group-hover:rotate-90" />
+            <X className="w-3.5 h-3.5 text-[#d1a86e] transition-transform group-hover:rotate-90" />
           ) : (
-            <Menu className="w-4 h-4 text-[#d1a86e]" />
+            <Menu className="w-3.5 h-3.5 text-[#d1a86e]" />
           )}
-          <span className="text-xs font-semibold text-zinc-200 group-hover:text-white">
-            {isMobileOpen ? "Close" : "Salon Menu"}
+          <span className="text-[11px] font-semibold text-zinc-200 group-hover:text-white">
+            {isMobileOpen ? "Close" : "Menu"}
           </span>
           {inquiriesCount > 0 && (
-            <span className="flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-[#d1a86e] text-[9px] font-bold text-[#0d0e12]">
+            <span className="flex h-3.5 min-w-3.5 px-1 items-center justify-center rounded-full bg-[#d1a86e] text-[8px] font-bold text-[#0d0e12]">
               {inquiriesCount}
             </span>
           )}
@@ -427,21 +427,21 @@ export function CollectorDock({
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 320 }}
-              className="md:hidden fixed inset-y-0 left-0 w-[84%] max-w-[320px] bg-[#0e0f15] z-50 p-6 flex flex-col justify-between shadow-2xl shadow-black overflow-y-auto"
+              className="md:hidden fixed inset-y-0 left-0 w-[82%] max-w-[290px] bg-[#0d0e14] border-r border-white/10 z-50 p-4 sm:p-5 flex flex-col justify-between shadow-2xl shadow-black overflow-y-auto"
               aria-label="Mobile Navigation Sidebar"
             >
               {/* Top Cluster & Navigation */}
-              <div className="space-y-6">
-                <div className="flex items-center justify-between pb-2">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-xl bg-[#181923] flex items-center justify-center text-[#d1a86e] shadow-inner">
-                      <Sparkles className="w-4 h-4 text-[#d1a86e]" />
+              <div className="space-y-5">
+                <div className="flex items-center justify-between pb-1">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-[#181923] flex items-center justify-center text-[#d1a86e] shadow-inner">
+                      <Sparkles className="w-3.5 h-3.5 text-[#d1a86e]" />
                     </div>
                     <div className="flex flex-col">
-                      <span className="font-serif text-sm tracking-[0.15em] font-medium text-white uppercase">
+                      <span className="font-serif text-xs tracking-[0.12em] font-medium text-white uppercase">
                         L&apos;Atelier
                       </span>
-                      <span className="text-[9px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
+                      <span className="text-[8px] tracking-[0.2em] text-[#d1a86e] uppercase font-semibold">
                         Collector Suite
                       </span>
                     </div>
@@ -449,10 +449,10 @@ export function CollectorDock({
 
                   <button
                     onClick={() => setIsMobileOpen(false)}
-                    className="w-8 h-8 rounded-xl bg-[#181923] hover:bg-[#222430] flex items-center justify-center text-zinc-400 hover:text-white transition-all cursor-pointer"
+                    className="w-7 h-7 rounded-lg bg-[#181923] hover:bg-[#222430] flex items-center justify-center text-zinc-400 hover:text-white transition-all cursor-pointer"
                     aria-label="Close Navigation"
                   >
-                    <X className="w-4 h-4" />
+                    <X className="w-3.5 h-3.5" />
                   </button>
                 </div>
 

@@ -80,7 +80,7 @@ export function CollectorServicesSection() {
           <div className="w-full sm:w-auto grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3">
             <Button
               asChild
-              className="rounded-full bg-[#161720] hover:bg-[#202230] text-zinc-300 hover:text-white text-[11px] sm:text-xs uppercase tracking-wider h-10 px-3 sm:px-5 active:scale-[0.98]"
+              className="rounded-full bg-[#161720] hover:bg-[#202230] text-zinc-300 hover:text-white text-[10px] sm:text-xs uppercase tracking-wider h-8 sm:h-9 px-3 sm:px-5 active:scale-[0.98]"
             >
               <Link href="/contact" className="flex items-center justify-center gap-1.5">
                 <span className="truncate">Inquiries</span>
@@ -89,7 +89,7 @@ export function CollectorServicesSection() {
             </Button>
             <Button
               asChild
-              className="rounded-full bg-[#d1a86e] text-[#0d0e12] hover:bg-[#b38947] text-[11px] sm:text-xs font-semibold uppercase tracking-wider h-10 px-3 sm:px-5 shadow-md shadow-[#d1a86e]/15 active:scale-[0.98]"
+              className="rounded-full bg-[#d1a86e] text-[#0d0e12] hover:bg-[#b38947] text-[10px] sm:text-xs font-semibold uppercase tracking-wider h-8 sm:h-9 px-3 sm:px-5 shadow-md shadow-[#d1a86e]/15 active:scale-[0.98]"
             >
               <Link href="/account" className="flex items-center justify-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 shrink-0" />

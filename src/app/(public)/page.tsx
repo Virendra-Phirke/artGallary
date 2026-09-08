@@ -127,7 +127,7 @@ export default async function HomePage() {
                     <div className="pt-2 sm:pt-4 grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-4">
                       <Button
                         asChild
-                        className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-[11px] sm:text-xs tracking-wider uppercase h-10 sm:h-11 px-4 sm:px-7 shadow-lg shadow-[#d1a86e]/15 active:scale-[0.98]"
+                        className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-[10px] sm:text-xs tracking-wider uppercase h-8 sm:h-10 px-3 sm:px-6 shadow-lg shadow-[#d1a86e]/15 active:scale-[0.98]"
                       >
                         <Link
                           href={`/collections/${featuredCollection.slug}`}
@@ -140,7 +140,7 @@ export default async function HomePage() {
 
                       <Button
                         asChild
-                        className="rounded-full bg-[#161720] hover:bg-[#1f212c] text-zinc-300 hover:text-white text-[11px] sm:text-xs uppercase tracking-wider h-10 sm:h-11 px-3 sm:px-5 active:scale-[0.98]"
+                        className="rounded-full bg-[#161720] hover:bg-[#1f212c] text-zinc-300 hover:text-white text-[10px] sm:text-xs uppercase tracking-wider h-8 sm:h-10 px-3 sm:px-5 active:scale-[0.98]"
                       >
                         <Link
                           href="/account?tab=collections"
@@ -314,7 +314,7 @@ export default async function HomePage() {
                     <div className="pt-2 grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3">
                       <Button
                         asChild
-                        className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-[11px] sm:text-xs uppercase tracking-wider h-10 sm:h-11 px-3 sm:px-5 shadow-md shadow-[#d1a86e]/15 active:scale-[0.98]"
+                        className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-[10px] sm:text-xs uppercase tracking-wider h-8 sm:h-10 px-3 sm:px-5 shadow-md shadow-[#d1a86e]/15 active:scale-[0.98]"
                       >
                         <Link
                           href="/account?tab=exhibitions"
@@ -326,7 +326,7 @@ export default async function HomePage() {
                       </Button>
                       <Button
                         asChild
-                        className="rounded-full bg-[#161720] hover:bg-[#1f212c] text-white text-[11px] sm:text-xs uppercase tracking-wider h-10 sm:h-11 px-3 sm:px-5 active:scale-[0.98]"
+                        className="rounded-full bg-[#161720] hover:bg-[#1f212c] text-white text-[10px] sm:text-xs uppercase tracking-wider h-8 sm:h-10 px-3 sm:px-5 active:scale-[0.98]"
                       >
                         <Link
                           href={`/exhibitions/${currentExhibition.slug}`}
@@ -372,7 +372,7 @@ export default async function HomePage() {
                   <Button
                     asChild
                     size="lg"
-                    className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] h-10 sm:h-12 px-4 sm:px-8 text-[11px] sm:text-xs font-semibold uppercase tracking-wider sm:tracking-[0.2em] shadow-xl shadow-[#d1a86e]/15 active:scale-[0.98]"
+                    className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] h-8.5 sm:h-11 px-3.5 sm:px-8 text-[10px] sm:text-xs font-semibold uppercase tracking-wider sm:tracking-[0.2em] shadow-xl shadow-[#d1a86e]/15 active:scale-[0.98]"
                   >
                     <Link
                       href={sec.contentJson?.ctaUrl || "/contact"}
@@ -388,7 +388,7 @@ export default async function HomePage() {
                   <Button
                     asChild
                     size="lg"
-                    className="rounded-full bg-[#1a1b24] hover:bg-[#232432] text-zinc-300 hover:text-white h-10 sm:h-12 px-4 sm:px-7 text-[11px] sm:text-xs uppercase tracking-wider active:scale-[0.98]"
+                    className="rounded-full bg-[#1a1b24] hover:bg-[#232432] text-zinc-300 hover:text-white h-8.5 sm:h-11 px-3 sm:px-7 text-[10px] sm:text-xs uppercase tracking-wider active:scale-[0.98]"
                   >
                     <Link href="/about" className="truncate">About Artist</Link>
                   </Button>

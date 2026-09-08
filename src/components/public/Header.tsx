@@ -101,26 +101,26 @@ export function Header({ settings }: HeaderProps) {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 w-full max-w-full overflow-hidden ${
         scrolled
-          ? "bg-[#0d0e12]/95 backdrop-blur-md py-3 sm:py-3.5 shadow-xl shadow-black/40"
-          : "bg-gradient-to-b from-[#0d0e12]/90 to-transparent py-4 sm:py-5 md:py-6"
+          ? "bg-[#0d0e12]/95 backdrop-blur-md py-2.5 sm:py-3.5 shadow-xl shadow-black/40"
+          : "bg-gradient-to-b from-[#0d0e12]/90 to-transparent py-3 sm:py-5 md:py-6"
       }`}
     >
-      <div className="max-w-[1800px] mx-auto px-3.5 sm:px-8 md:px-12 lg:px-16 flex items-center justify-between">
+      <div className="max-w-[1800px] mx-auto px-3 sm:px-8 md:px-12 lg:px-16 flex items-center justify-between gap-2">
         {/* Gallery Brand Title */}
         <Link
           href="/"
-          className="group flex flex-col items-start focus-visible:outline-none"
+          className="group flex flex-col items-start focus-visible:outline-none min-w-0"
         >
           {settings?.headerConfig?.logoType === "image" && settings.logoUrl ? (
-            <img src={settings.logoUrl} alt={brandTitle} className="h-8 w-auto object-contain" />
+            <img src={settings.logoUrl} alt={brandTitle} className="h-7 sm:h-8 w-auto object-contain" />
           ) : (
             <>
-              <span className="font-serif text-lg sm:text-xl md:text-2xl tracking-[0.2em] font-medium text-white group-hover:text-[#d1a86e] transition-colors uppercase">
+              <span className="font-serif text-sm xs:text-base sm:text-xl md:text-2xl tracking-[0.1em] sm:tracking-[0.2em] font-medium text-white group-hover:text-[#d1a86e] transition-colors uppercase truncate max-w-[170px] xs:max-w-[220px] sm:max-w-none">
                 {brandTitle}
               </span>
-              <span className="text-[9px] sm:text-[10px] tracking-[0.3em] text-[#8e92a4] uppercase font-light -mt-0.5">
+              <span className="text-[8px] sm:text-[10px] tracking-[0.2em] sm:tracking-[0.3em] text-[#8e92a4] uppercase font-light -mt-0.5">
                 {brandSubtitle}
               </span>
             </>
