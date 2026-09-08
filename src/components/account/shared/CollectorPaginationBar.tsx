@@ -46,15 +46,15 @@ export function CollectorPaginationBar({
 
   return (
     <div
-      className={`p-4 bg-transparent rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 ${className}`}
+      className={`pt-3 pb-1 px-1 flex items-center justify-between gap-2 sm:gap-4 w-full flex-wrap sm:flex-nowrap ${className}`}
     >
-      <div className="text-xs text-zinc-400 font-mono">
-        Showing <span className="text-white font-semibold">{startItem}–{endItem}</span> of{" "}
-        <span className="text-[#d1a86e] font-semibold">{totalItems}</span> {itemName}
+      <div className="text-xs text-zinc-400 font-mono shrink-0">
+        <span className="text-white font-semibold">{startItem}–{endItem}</span> of{" "}
+        <span className="text-[#d1a86e] font-semibold">{totalItems}</span>
       </div>
 
-      <div>
-        <Pagination>
+      <div className="flex items-center justify-center order-last sm:order-none w-full sm:w-auto">
+        <Pagination className="w-auto mx-0">
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious
@@ -102,11 +102,13 @@ export function CollectorPaginationBar({
       </div>
 
       {onPageSizeChange && (
-        <PaginationPageSizeSelect
-          pageSize={pageSize}
-          onPageSizeChange={onPageSizeChange}
-          options={pageSizeOptions}
-        />
+        <div className="shrink-0">
+          <PaginationPageSizeSelect
+            pageSize={pageSize}
+            onPageSizeChange={onPageSizeChange}
+            options={pageSizeOptions}
+          />
+        </div>
       )}
     </div>
   );

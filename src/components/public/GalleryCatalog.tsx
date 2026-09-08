@@ -280,9 +280,9 @@ export function GalleryCatalog({
 
       {/* Top Results Summary Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-zinc-400 border-b border-[#1c1e28] pb-3">
-        <div className="font-mono">
-          Showing <span className="text-white font-semibold">{startItem}–{endItem}</span> of{" "}
-          <span className="text-[#d1a86e] font-semibold">{pagination.totalCount}</span> masterworks
+        <div className="font-mono text-xs text-zinc-400 shrink-0">
+          <span className="text-white font-semibold">{startItem}–{endItem}</span> of{" "}
+          <span className="text-[#d1a86e] font-semibold">{pagination.totalCount}</span>
           {hasActiveFilters && (
             <span className="text-zinc-500 ml-2">
               (Filtered results •{" "}
@@ -421,14 +421,14 @@ export function GalleryCatalog({
 
       {/* Bottom Pagination & Page Size Toolbar */}
       {pagination.totalPages > 1 && (
-        <div className="pt-6 border-t border-[#1f212b] flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="text-xs text-zinc-500 font-mono order-2 md:order-1">
-            Page <span className="text-white font-semibold">{pagination.page}</span> of{" "}
-            <span className="text-white font-semibold">{pagination.totalPages}</span> ({pagination.totalCount} total)
+        <div className="pt-4 border-t border-[#1f212b] flex items-center justify-between gap-2 sm:gap-4 w-full flex-wrap sm:flex-nowrap">
+          <div className="text-xs text-zinc-400 font-mono shrink-0">
+            <span className="text-white font-semibold">{startItem}–{endItem}</span> of{" "}
+            <span className="text-[#d1a86e] font-semibold">{pagination.totalCount}</span>
           </div>
 
-          <div className="order-1 md:order-2">
-            <Pagination>
+          <div className="flex items-center justify-center order-last sm:order-none w-full sm:w-auto">
+            <Pagination className="w-auto mx-0">
               <PaginationContent>
                 <PaginationItem>
                   <PaginationPrevious
@@ -471,12 +471,13 @@ export function GalleryCatalog({
             </Pagination>
           </div>
 
-          <PaginationPageSizeSelect
-            pageSize={pagination.limit}
-            onPageSizeChange={handlePageSizeChange}
-            options={PAGE_SIZE_OPTIONS}
-            className="order-3"
-          />
+          <div className="shrink-0">
+            <PaginationPageSizeSelect
+              pageSize={pagination.limit}
+              onPageSizeChange={handlePageSizeChange}
+              options={PAGE_SIZE_OPTIONS}
+            />
+          </div>
         </div>
       )}
     </div>

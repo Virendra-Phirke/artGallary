@@ -440,16 +440,16 @@ export function InquiriesManagerClient({
             )}
           </div>
 
-          {/* Inquiries Pagination and Per-Page Control Bar - Transparent */}
+          {/* Inquiries Pagination and Per-Page Control Bar */}
           {filteredInquiries.length > 0 && (
-            <div className="p-3 sm:p-4 bg-transparent rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3">
-              <div className="text-xs text-zinc-400 font-mono">
-                Showing <span className="text-white font-semibold">{inquiryStartItem}–{inquiryEndItem}</span> of{" "}
-                <span className="text-[#d1a86e] font-semibold">{filteredInquiries.length}</span> inquiries
+            <div className="pt-3 pb-1 px-1 flex items-center justify-between gap-2 sm:gap-4 w-full flex-wrap sm:flex-nowrap">
+              <div className="text-xs text-zinc-400 font-mono shrink-0">
+                <span className="text-white font-semibold">{inquiryStartItem}–{inquiryEndItem}</span> of{" "}
+                <span className="text-[#d1a86e] font-semibold">{filteredInquiries.length}</span>
               </div>
 
-              <div>
-                <Pagination>
+              <div className="flex items-center justify-center order-last sm:order-none w-full sm:w-auto">
+                <Pagination className="w-auto mx-0">
                   <PaginationContent>
                     <PaginationItem>
                       <PaginationPrevious
@@ -492,10 +492,12 @@ export function InquiriesManagerClient({
                 </Pagination>
               </div>
 
-              <PaginationPageSizeSelect
-                pageSize={inquiryPageSize}
-                onPageSizeChange={setInquiryPageSize}
-              />
+              <div className="shrink-0">
+                <PaginationPageSizeSelect
+                  pageSize={inquiryPageSize}
+                  onPageSizeChange={setInquiryPageSize}
+                />
+              </div>
             </div>
           )}
         </div>
@@ -767,16 +769,16 @@ export function InquiriesManagerClient({
             )}
           </div>
 
-          {/* Sent Emails Pagination and Per-Page Control Bar - Transparent */}
+          {/* Sent Emails Pagination and Per-Page Control Bar */}
           {filteredEmails.length > 0 && (
-            <div className="p-3 sm:p-4 bg-transparent rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3">
-              <div className="text-xs text-zinc-400 font-mono">
-                Showing <span className="text-white font-semibold">{emailStartItem}–{emailEndItem}</span> of{" "}
-                <span className="text-[#d1a86e] font-semibold">{filteredEmails.length}</span> dispatches
+            <div className="pt-3 pb-1 px-1 flex items-center justify-between gap-2 sm:gap-4 w-full flex-wrap sm:flex-nowrap">
+              <div className="text-xs text-zinc-400 font-mono shrink-0">
+                <span className="text-white font-semibold">{emailStartItem}–{emailEndItem}</span> of{" "}
+                <span className="text-[#d1a86e] font-semibold">{filteredEmails.length}</span>
               </div>
 
-              <div>
-                <Pagination>
+              <div className="flex items-center justify-center order-last sm:order-none w-full sm:w-auto">
+                <Pagination className="w-auto mx-0">
                   <PaginationContent>
                     <PaginationItem>
                       <PaginationPrevious
@@ -819,10 +821,12 @@ export function InquiriesManagerClient({
                 </Pagination>
               </div>
 
-              <PaginationPageSizeSelect
-                pageSize={emailPageSize}
-                onPageSizeChange={setEmailPageSize}
-              />
+              <div className="shrink-0">
+                <PaginationPageSizeSelect
+                  pageSize={emailPageSize}
+                  onPageSizeChange={setEmailPageSize}
+                />
+              </div>
             </div>
           )}
         </div>

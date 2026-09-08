@@ -436,14 +436,14 @@ export function CollectionsManagerClient({
 
       {/* Pagination and Per-Page Control Bar - Solid Tier 2 Block */}
       {filteredCollections.length > 0 && (
-        <div className="p-5 bg-transparent rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="text-xs text-zinc-400 font-mono">
-            Showing <span className="text-white font-semibold">{startItem}–{endItem}</span> of{" "}
-            <span className="text-[#d1a86e] font-semibold">{filteredCollections.length}</span> collections
+        <div className="pt-3 pb-1 px-1 flex items-center justify-between gap-2 sm:gap-4 w-full flex-wrap sm:flex-nowrap">
+          <div className="text-xs text-zinc-400 font-mono shrink-0">
+            <span className="text-white font-semibold">{startItem}–{endItem}</span> of{" "}
+            <span className="text-[#d1a86e] font-semibold">{filteredCollections.length}</span>
           </div>
 
-          <div>
-            <Pagination>
+          <div className="flex items-center justify-center order-last sm:order-none w-full sm:w-auto">
+            <Pagination className="w-auto mx-0">
               <PaginationContent>
                 <PaginationItem>
                   <PaginationPrevious
@@ -486,10 +486,12 @@ export function CollectionsManagerClient({
             </Pagination>
           </div>
 
-          <PaginationPageSizeSelect
-            pageSize={pageSize}
-            onPageSizeChange={setPageSize}
-          />
+          <div className="shrink-0">
+            <PaginationPageSizeSelect
+              pageSize={pageSize}
+              onPageSizeChange={setPageSize}
+            />
+          </div>
         </div>
       )}
 
