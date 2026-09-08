@@ -42,6 +42,21 @@ import { MarketingPreferenceToggle } from "@/components/account/MarketingPrefere
 import { ArtworkQuickViewModal } from "@/components/public/ArtworkQuickViewModal";
 import { InteractiveRoomPreviewer } from "@/components/public/InteractiveRoomPreviewer";
 import { AcquisitionCartModal } from "@/components/account/AcquisitionCartModal";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  getPaginationRange,
+} from "@/components/ui/pagination";
+
+const GALLERY_PAGE_SIZE_OPTIONS = [6, 12, 18, 24];
+const COLLECTIONS_PAGE_SIZE_OPTIONS = [3, 6, 9, 12];
+const EXHIBITIONS_PAGE_SIZE_OPTIONS = [2, 3, 6, 9];
+const INQUIRIES_PAGE_SIZE_OPTIONS = [5, 10, 15, 20];
 
 interface CollectorDashboardClientProps {
   user: {
@@ -234,6 +249,82 @@ export function CollectorDashboardClient({
       return true;
     });
   }, [artworks, gallerySearch, galleryCategory, savedArtworkIds]);
+
+  // 1. Gallery Tab Pagination
+  const [galleryPage, setGalleryPage] = useState(1);
+  const [galleryPageSize, setGalleryPageSize] = useState(6);
+
+  useEffect(() => {
+    setGalleryPage(1);
+  }, [gallerySearch, galleryCategory, galleryPageSize]);
+
+  const galleryTotalPages = Math.max(1, Math.ceil(filteredArtworks.length / galleryPageSize));
+  const paginatedArtworks = useMemo(() => {
+    return filteredArtworks.slice(
+      (galleryPage - 1) * galleryPageSize,
+      galleryPage * galleryPageSize
+    );
+  }, [filteredArtworks, galleryPage, galleryPageSize]);
+  const galleryStartItem = filteredArtworks.length === 0 ? 0 : (galleryPage - 1) * galleryPageSize + 1;
+  const galleryEndItem = Math.min(galleryPage * galleryPageSize, filteredArtworks.length);
+  const galleryPaginationRange = getPaginationRange(galleryPage, galleryTotalPages);
+
+  // 2. Collections Tab Pagination
+  const [collectionsPage, setCollectionsPage] = useState(1);
+  const [collectionsPageSize, setCollectionsPageSize] = useState(6);
+
+  useEffect(() => {
+    setCollectionsPage(1);
+  }, [collectionsPageSize]);
+
+  const collectionsTotalPages = Math.max(1, Math.ceil(collections.length / collectionsPageSize));
+  const paginatedCollections = useMemo(() => {
+    return collections.slice(
+      (collectionsPage - 1) * collectionsPageSize,
+      collectionsPage * collectionsPageSize
+    );
+  }, [collections, collectionsPage, collectionsPageSize]);
+  const collectionsStartItem = collections.length === 0 ? 0 : (collectionsPage - 1) * collectionsPageSize + 1;
+  const collectionsEndItem = Math.min(collectionsPage * collectionsPageSize, collections.length);
+  const collectionsPaginationRange = getPaginationRange(collectionsPage, collectionsTotalPages);
+
+  // 3. Exhibitions Tab Pagination
+  const [exhibitionsPage, setExhibitionsPage] = useState(1);
+  const [exhibitionsPageSize, setExhibitionsPageSize] = useState(3);
+
+  useEffect(() => {
+    setExhibitionsPage(1);
+  }, [exhibitionsPageSize]);
+
+  const exhibitionsTotalPages = Math.max(1, Math.ceil(exhibitions.length / exhibitionsPageSize));
+  const paginatedExhibitions = useMemo(() => {
+    return exhibitions.slice(
+      (exhibitionsPage - 1) * exhibitionsPageSize,
+      exhibitionsPage * exhibitionsPageSize
+    );
+  }, [exhibitions, exhibitionsPage, exhibitionsPageSize]);
+  const exhibitionsStartItem = exhibitions.length === 0 ? 0 : (exhibitionsPage - 1) * exhibitionsPageSize + 1;
+  const exhibitionsEndItem = Math.min(exhibitionsPage * exhibitionsPageSize, exhibitions.length);
+  const exhibitionsPaginationRange = getPaginationRange(exhibitionsPage, exhibitionsTotalPages);
+
+  // 4. Inquiries Tab Pagination
+  const [inquiriesPage, setInquiriesPage] = useState(1);
+  const [inquiriesPageSize, setInquiriesPageSize] = useState(5);
+
+  useEffect(() => {
+    setInquiriesPage(1);
+  }, [inquiriesPageSize]);
+
+  const inquiriesTotalPages = Math.max(1, Math.ceil(userInquiries.length / inquiriesPageSize));
+  const paginatedInquiries = useMemo(() => {
+    return userInquiries.slice(
+      (inquiriesPage - 1) * inquiriesPageSize,
+      inquiriesPage * inquiriesPageSize
+    );
+  }, [userInquiries, inquiriesPage, inquiriesPageSize]);
+  const inquiriesStartItem = userInquiries.length === 0 ? 0 : (inquiriesPage - 1) * inquiriesPageSize + 1;
+  const inquiriesEndItem = Math.min(inquiriesPage * inquiriesPageSize, userInquiries.length);
+  const inquiriesPaginationRange = getPaginationRange(inquiriesPage, inquiriesTotalPages);
 
   const spotlightArtwork = artworks[0];
 
@@ -765,7 +856,7 @@ export function CollectorDashboardClient({
             </Card>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
-              {filteredArtworks.map((art) => {
+              {paginatedArtworks.map((art) => {
                 const isSaved = savedArtworkIds.includes(art.id);
 
                 return (
@@ -887,6 +978,80 @@ export function CollectorDashboardClient({
               })}
             </div>
           )}
+
+          {/* Gallery Pagination and Per-Page Control Bar */}
+          {filteredArtworks.length > 0 && (
+            <div className="p-4 bg-[#14151a] border border-[#262833] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+              <div className="text-xs text-zinc-400 font-mono">
+                Showing <span className="text-white font-semibold">{galleryStartItem}–{galleryEndItem}</span> of{" "}
+                <span className="text-[#d1a86e] font-semibold">{filteredArtworks.length}</span> artworks
+              </div>
+
+              <div>
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        onClick={() => setGalleryPage((p) => Math.max(1, p - 1))}
+                        className={
+                          galleryPage <= 1
+                            ? "pointer-events-none opacity-40"
+                            : "cursor-pointer"
+                        }
+                      />
+                    </PaginationItem>
+
+                    {galleryPaginationRange.map((item, idx) => (
+                      <PaginationItem key={idx}>
+                        {item === "..." ? (
+                          <PaginationEllipsis />
+                        ) : (
+                          <PaginationLink
+                            isActive={item === galleryPage}
+                            onClick={() => setGalleryPage(Number(item))}
+                            className="cursor-pointer"
+                          >
+                            {item}
+                          </PaginationLink>
+                        )}
+                      </PaginationItem>
+                    ))}
+
+                    <PaginationItem>
+                      <PaginationNext
+                        onClick={() => setGalleryPage((p) => Math.min(galleryTotalPages, p + 1))}
+                        className={
+                          galleryPage >= galleryTotalPages
+                            ? "pointer-events-none opacity-40"
+                            : "cursor-pointer"
+                        }
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-zinc-500 font-mono text-[11px] uppercase tracking-wider">Per Page:</span>
+                <div className="flex items-center rounded-lg border border-[#262833] bg-[#1a1c23] p-0.5">
+                  {GALLERY_PAGE_SIZE_OPTIONS.map((size) => (
+                    <button
+                      key={size}
+                      type="button"
+                      onClick={() => setGalleryPageSize(size)}
+                      className={`px-2.5 py-1 text-xs font-mono rounded transition-colors cursor-pointer ${
+                        galleryPageSize === size
+                          ? "bg-[#d1a86e] text-black font-semibold shadow-sm"
+                          : "text-zinc-400 hover:text-white"
+                      }`}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -908,7 +1073,7 @@ export function CollectorDashboardClient({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-            {collections.map((col) => (
+            {paginatedCollections.map((col) => (
               <div
                 key={col.id}
                 className="bg-[#14151a] border border-[#262833] rounded-3xl overflow-hidden shadow-2xl flex flex-col justify-between"
@@ -962,6 +1127,80 @@ export function CollectorDashboardClient({
               </div>
             ))}
           </div>
+
+          {/* Collections Pagination and Per-Page Control Bar */}
+          {collections.length > 0 && (
+            <div className="p-4 bg-[#14151a] border border-[#262833] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+              <div className="text-xs text-zinc-400 font-mono">
+                Showing <span className="text-white font-semibold">{collectionsStartItem}–{collectionsEndItem}</span> of{" "}
+                <span className="text-[#d1a86e] font-semibold">{collections.length}</span> series
+              </div>
+
+              <div>
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        onClick={() => setCollectionsPage((p) => Math.max(1, p - 1))}
+                        className={
+                          collectionsPage <= 1
+                            ? "pointer-events-none opacity-40"
+                            : "cursor-pointer"
+                        }
+                      />
+                    </PaginationItem>
+
+                    {collectionsPaginationRange.map((item, idx) => (
+                      <PaginationItem key={idx}>
+                        {item === "..." ? (
+                          <PaginationEllipsis />
+                        ) : (
+                          <PaginationLink
+                            isActive={item === collectionsPage}
+                            onClick={() => setCollectionsPage(Number(item))}
+                            className="cursor-pointer"
+                          >
+                            {item}
+                          </PaginationLink>
+                        )}
+                      </PaginationItem>
+                    ))}
+
+                    <PaginationItem>
+                      <PaginationNext
+                        onClick={() => setCollectionsPage((p) => Math.min(collectionsTotalPages, p + 1))}
+                        className={
+                          collectionsPage >= collectionsTotalPages
+                            ? "pointer-events-none opacity-40"
+                            : "cursor-pointer"
+                        }
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-zinc-500 font-mono text-[11px] uppercase tracking-wider">Per Page:</span>
+                <div className="flex items-center rounded-lg border border-[#262833] bg-[#1a1c23] p-0.5">
+                  {COLLECTIONS_PAGE_SIZE_OPTIONS.map((size) => (
+                    <button
+                      key={size}
+                      type="button"
+                      onClick={() => setCollectionsPageSize(size)}
+                      className={`px-2.5 py-1 text-xs font-mono rounded transition-colors cursor-pointer ${
+                        collectionsPageSize === size
+                          ? "bg-[#d1a86e] text-black font-semibold shadow-sm"
+                          : "text-zinc-400 hover:text-white"
+                      }`}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -983,7 +1222,7 @@ export function CollectorDashboardClient({
           </div>
 
           <div className="space-y-6">
-            {exhibitions.map((exh) => (
+            {paginatedExhibitions.map((exh) => (
               <div
                 key={exh.id}
                 className="bg-[#14151a] border border-[#262833] rounded-3xl p-6 sm:p-8 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center shadow-xl"
@@ -1067,6 +1306,80 @@ export function CollectorDashboardClient({
               </div>
             ))}
           </div>
+
+          {/* Exhibitions Pagination and Per-Page Control Bar */}
+          {exhibitions.length > 0 && (
+            <div className="p-4 bg-[#14151a] border border-[#262833] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+              <div className="text-xs text-zinc-400 font-mono">
+                Showing <span className="text-white font-semibold">{exhibitionsStartItem}–{exhibitionsEndItem}</span> of{" "}
+                <span className="text-[#d1a86e] font-semibold">{exhibitions.length}</span> exhibitions
+              </div>
+
+              <div>
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        onClick={() => setExhibitionsPage((p) => Math.max(1, p - 1))}
+                        className={
+                          exhibitionsPage <= 1
+                            ? "pointer-events-none opacity-40"
+                            : "cursor-pointer"
+                        }
+                      />
+                    </PaginationItem>
+
+                    {exhibitionsPaginationRange.map((item, idx) => (
+                      <PaginationItem key={idx}>
+                        {item === "..." ? (
+                          <PaginationEllipsis />
+                        ) : (
+                          <PaginationLink
+                            isActive={item === exhibitionsPage}
+                            onClick={() => setExhibitionsPage(Number(item))}
+                            className="cursor-pointer"
+                          >
+                            {item}
+                          </PaginationLink>
+                        )}
+                      </PaginationItem>
+                    ))}
+
+                    <PaginationItem>
+                      <PaginationNext
+                        onClick={() => setExhibitionsPage((p) => Math.min(exhibitionsTotalPages, p + 1))}
+                        className={
+                          exhibitionsPage >= exhibitionsTotalPages
+                            ? "pointer-events-none opacity-40"
+                            : "cursor-pointer"
+                        }
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-zinc-500 font-mono text-[11px] uppercase tracking-wider">Per Page:</span>
+                <div className="flex items-center rounded-lg border border-[#262833] bg-[#1a1c23] p-0.5">
+                  {EXHIBITIONS_PAGE_SIZE_OPTIONS.map((size) => (
+                    <button
+                      key={size}
+                      type="button"
+                      onClick={() => setExhibitionsPageSize(size)}
+                      className={`px-2.5 py-1 text-xs font-mono rounded transition-colors cursor-pointer ${
+                        exhibitionsPageSize === size
+                          ? "bg-[#d1a86e] text-black font-semibold shadow-sm"
+                          : "text-zinc-400 hover:text-white"
+                      }`}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -1133,64 +1446,140 @@ export function CollectorDashboardClient({
               </Button>
             </Card>
           ) : (
-            <div className="space-y-4">
-              {userInquiries.map((inq) => (
-                <Card
-                  key={inq.id}
-                  className="p-6 sm:p-8 bg-[#14151a] border-[#262833] rounded-3xl space-y-4 shadow-xl"
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#1c1d25] pb-4">
-                    <div className="flex items-center gap-3">
-                      <Badge
-                        variant={
-                          inq.status === "replied"
-                            ? "success"
-                            : inq.status === "read"
-                            ? "gold"
-                            : "warning"
-                        }
-                      >
-                        Status: {inq.status}
-                      </Badge>
-                      <h4 className="font-serif text-lg text-white font-medium">
-                        {inq.subject}
-                      </h4>
+            <div className="space-y-6">
+              <div className="space-y-4">
+                {paginatedInquiries.map((inq) => (
+                  <Card
+                    key={inq.id}
+                    className="p-6 sm:p-8 bg-[#14151a] border-[#262833] rounded-3xl space-y-4 shadow-xl"
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#1c1d25] pb-4">
+                      <div className="flex items-center gap-3">
+                        <Badge
+                          variant={
+                            inq.status === "replied"
+                              ? "success"
+                              : inq.status === "read"
+                              ? "gold"
+                              : "warning"
+                          }
+                        >
+                          Status: {inq.status}
+                        </Badge>
+                        <h4 className="font-serif text-lg text-white font-medium">
+                          {inq.subject}
+                        </h4>
+                      </div>
+
+                      <div className="flex items-center gap-2 text-xs text-zinc-500 font-mono">
+                        <Clock className="w-3.5 h-3.5 text-[#d1a86e]" />
+                        <span>
+                          {new Date(inq.createdAt).toLocaleDateString("en-US", {
+                            month: "long",
+                            day: "numeric",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                      </div>
                     </div>
 
-                    <div className="flex items-center gap-2 text-xs text-zinc-500 font-mono">
-                      <Clock className="w-3.5 h-3.5 text-[#d1a86e]" />
-                      <span>
-                        {new Date(inq.createdAt).toLocaleDateString("en-US", {
-                          month: "long",
-                          day: "numeric",
-                          year: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                    <div className="bg-[#101116] p-4 sm:p-5 rounded-2xl border border-[#22242f] space-y-2">
+                      <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-mono">
+                        Collector Message
                       </span>
+                      <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed whitespace-pre-wrap">
+                        {inq.message}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center justify-between text-xs text-zinc-400 pt-1">
+                      <span>Studio ID: <span className="font-mono text-zinc-500">{inq.id}</span></span>
+                      <Link
+                        href={`/contact?subject=Follow-up%20re:%20${encodeURIComponent(inq.subject)}`}
+                        className="text-[#d1a86e] hover:underline"
+                      >
+                        Send Follow-up Message &rarr;
+                      </Link>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Inquiries Pagination and Per-Page Control Bar */}
+              {userInquiries.length > 0 && (
+                <div className="p-4 bg-[#14151a] border border-[#262833] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+                  <div className="text-xs text-zinc-400 font-mono">
+                    Showing <span className="text-white font-semibold">{inquiriesStartItem}–{inquiriesEndItem}</span> of{" "}
+                    <span className="text-[#d1a86e] font-semibold">{userInquiries.length}</span> inquiries
+                  </div>
+
+                  <div>
+                    <Pagination>
+                      <PaginationContent>
+                        <PaginationItem>
+                          <PaginationPrevious
+                            onClick={() => setInquiriesPage((p) => Math.max(1, p - 1))}
+                            className={
+                              inquiriesPage <= 1
+                                ? "pointer-events-none opacity-40"
+                                : "cursor-pointer"
+                            }
+                          />
+                        </PaginationItem>
+
+                        {inquiriesPaginationRange.map((item, idx) => (
+                          <PaginationItem key={idx}>
+                            {item === "..." ? (
+                              <PaginationEllipsis />
+                            ) : (
+                              <PaginationLink
+                                isActive={item === inquiriesPage}
+                                onClick={() => setInquiriesPage(Number(item))}
+                                className="cursor-pointer"
+                              >
+                                {item}
+                              </PaginationLink>
+                            )}
+                          </PaginationItem>
+                        ))}
+
+                        <PaginationItem>
+                          <PaginationNext
+                            onClick={() => setInquiriesPage((p) => Math.min(inquiriesTotalPages, p + 1))}
+                            className={
+                              inquiriesPage >= inquiriesTotalPages
+                                ? "pointer-events-none opacity-40"
+                                : "cursor-pointer"
+                            }
+                          />
+                        </PaginationItem>
+                      </PaginationContent>
+                    </Pagination>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <span className="text-zinc-500 font-mono text-[11px] uppercase tracking-wider">Per Page:</span>
+                    <div className="flex items-center rounded-lg border border-[#262833] bg-[#1a1c23] p-0.5">
+                      {INQUIRIES_PAGE_SIZE_OPTIONS.map((size) => (
+                        <button
+                          key={size}
+                          type="button"
+                          onClick={() => setInquiriesPageSize(size)}
+                          className={`px-2.5 py-1 text-xs font-mono rounded transition-colors cursor-pointer ${
+                            inquiriesPageSize === size
+                              ? "bg-[#d1a86e] text-black font-semibold shadow-sm"
+                              : "text-zinc-400 hover:text-white"
+                          }`}
+                        >
+                          {size}
+                        </button>
+                      ))}
                     </div>
                   </div>
-
-                  <div className="bg-[#101116] p-4 sm:p-5 rounded-2xl border border-[#22242f] space-y-2">
-                    <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-mono">
-                      Collector Message
-                    </span>
-                    <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed whitespace-pre-wrap">
-                      {inq.message}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center justify-between text-xs text-zinc-400 pt-1">
-                    <span>Studio ID: <span className="font-mono text-zinc-500">{inq.id}</span></span>
-                    <Link
-                      href={`/contact?subject=Follow-up%20re:%20${encodeURIComponent(inq.subject)}`}
-                      className="text-[#d1a86e] hover:underline"
-                    >
-                      Send Follow-up Message &rarr;
-                    </Link>
-                  </div>
-                </Card>
-              ))}
+                </div>
+              )}
             </div>
           )}
         </div>

@@ -21,6 +21,18 @@ import {
 } from "lucide-react";
 import { UnsplashPickerModal } from "./UnsplashPickerModal";
 import type { UnsplashArtImage } from "@/lib/unsplash";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  getPaginationRange,
+} from "@/components/ui/pagination";
+
+const PAGE_SIZE_OPTIONS = [12, 24, 48, 96];
 
 interface MediaItem {
   id: string;
@@ -275,6 +287,23 @@ export function MediaLibraryClient() {
     ? items
     : items.filter((i) => i.provider === filterProvider);
 
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(12);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterProvider, pageSize]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredItems.length / pageSize));
+  const paginatedItems = filteredItems.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+  const startItem = filteredItems.length === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+  const endItem = Math.min(currentPage * pageSize, filteredItems.length);
+  const paginationRange = getPaginationRange(currentPage, totalPages);
+
   const activeProviderName = health?.activeProvider || "cloudflare";
 
   return (
@@ -511,7 +540,7 @@ export function MediaLibraryClient() {
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 2xl:grid-cols-6 gap-5">
-          {filteredItems.map((item) => {
+          {paginatedItems.map((item) => {
             const isSelected = selectedIds.has(item.id);
             return (
               <div
@@ -621,6 +650,80 @@ export function MediaLibraryClient() {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Pagination and Per-Page Control Bar */}
+      {filteredItems.length > 0 && (
+        <div className="p-4 bg-[#14151a] border border-[#262833] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+          <div className="text-xs text-zinc-400 font-mono">
+            Showing <span className="text-white font-semibold">{startItem}–{endItem}</span> of{" "}
+            <span className="text-[#d1a86e] font-semibold">{filteredItems.length}</span> media assets
+          </div>
+
+          <div>
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    className={
+                      currentPage <= 1
+                        ? "pointer-events-none opacity-40"
+                        : "cursor-pointer"
+                    }
+                  />
+                </PaginationItem>
+
+                {paginationRange.map((item, idx) => (
+                  <PaginationItem key={idx}>
+                    {item === "..." ? (
+                      <PaginationEllipsis />
+                    ) : (
+                      <PaginationLink
+                        isActive={item === currentPage}
+                        onClick={() => setCurrentPage(Number(item))}
+                        className="cursor-pointer"
+                      >
+                        {item}
+                      </PaginationLink>
+                    )}
+                  </PaginationItem>
+                ))}
+
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    className={
+                      currentPage >= totalPages
+                        ? "pointer-events-none opacity-40"
+                        : "cursor-pointer"
+                    }
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-zinc-500 font-mono text-[11px] uppercase tracking-wider">Per Page:</span>
+            <div className="flex items-center rounded-lg border border-[#262833] bg-[#1a1c23] p-0.5">
+              {PAGE_SIZE_OPTIONS.map((size) => (
+                <button
+                  key={size}
+                  type="button"
+                  onClick={() => setPageSize(size)}
+                  className={`px-2.5 py-1 text-xs font-mono rounded transition-colors cursor-pointer ${
+                    pageSize === size
+                      ? "bg-[#d1a86e] text-black font-semibold shadow-sm"
+                      : "text-zinc-400 hover:text-white"
+                  }`}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       )}
 
