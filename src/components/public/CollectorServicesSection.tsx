@@ -7,22 +7,22 @@ import { Button } from "@/components/ui/button";
 
 export function CollectorServicesSection() {
   return (
-    <section className="max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16">
-      <div className="rounded-3xl bg-[#101116] p-5 sm:p-10 md:p-14 space-y-8 sm:space-y-12 shadow-2xl">
-        <div className="max-w-2xl space-y-2 sm:space-y-3">
+    <section className="max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 w-full max-w-full overflow-hidden">
+      <div className="rounded-3xl bg-[#101116] p-5 sm:p-10 md:p-14 space-y-8 sm:space-y-12 shadow-2xl w-full min-w-0">
+        <div className="max-w-2xl space-y-2 sm:space-y-3 w-full min-w-0">
           <span className="text-[10px] sm:text-xs tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
             Private Acquisition Standards
           </span>
-          <h2 className="font-serif text-2xl sm:text-4xl text-white font-medium">
+          <h2 className="font-serif text-2xl sm:text-4xl text-white font-medium break-words">
             Museum-Grade Handling for Distinguished Collectors
           </h2>
-          <p className="text-xs sm:text-sm text-[#a6aabf] leading-relaxed font-light">
+          <p className="text-xs sm:text-sm text-[#a6aabf] leading-relaxed font-light break-words">
             Every acquired canvas is prepared directly in the Paris studio under museum archival standards to ensure permanent preservation and flawless international transit.
           </p>
         </div>
 
         {/* 4 Feature Columns - 2 COLUMNS ON MOBILE */}
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6 w-full min-w-0">
           <div className="space-y-2 sm:space-y-3 p-3.5 sm:p-5 rounded-2xl bg-[#14151a] shadow-sm">
             <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-[#1c1d25] flex items-center justify-center text-[#d1a86e]">
               <Award className="w-4 h-4 sm:w-5 sm:h-5" />

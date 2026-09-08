@@ -25,14 +25,14 @@ export function ArtistAtelierSection({
     "https://ik.imagekit.io/bpnsp30ni/artworks/gallery/1788717079935-kazuha__EB1yso0A.jpeg?updatedAt=1788717081490";
 
   return (
-    <section className="max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16">
-      <div className="pt-10 sm:pt-20">
+    <section className="max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 w-full max-w-full overflow-hidden">
+      <div className="pt-10 sm:pt-20 w-full min-w-0">
         {/* Curatorial Quote Banner */}
-        <div className="max-w-4xl mx-auto text-center space-y-4 sm:space-y-6 mb-10 sm:mb-16">
+        <div className="max-w-4xl mx-auto text-center space-y-4 sm:space-y-6 mb-10 sm:mb-16 w-full min-w-0">
           <span className="text-[10px] sm:text-xs tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
             {subtitle}
           </span>
-          <blockquote className="font-serif text-xl sm:text-3xl md:text-4xl text-white font-light italic leading-snug sm:leading-tight">
+          <blockquote className="font-serif text-xl sm:text-3xl md:text-4xl text-white font-light italic leading-snug sm:leading-tight break-words">
             &ldquo;{quote}&rdquo;
           </blockquote>
           <div className="flex items-center justify-center gap-2.5 text-[10px] sm:text-xs tracking-widest text-zinc-400 uppercase font-mono">
@@ -43,7 +43,7 @@ export function ArtistAtelierSection({
         </div>
 
         {/* 2-Column Editorial Spread */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center w-full min-w-0">
           {/* Atelier Imagery with Framing */}
           <div className="lg:col-span-6 relative">
             <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-[#14151a] shadow-2xl">

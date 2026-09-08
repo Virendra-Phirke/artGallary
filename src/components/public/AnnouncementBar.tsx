@@ -34,21 +34,21 @@ export function AnnouncementBar({ announcement }: AnnouncementBarProps) {
 
   return (
     <div
-      className="relative z-[60] text-xs py-2 px-4 transition-all duration-300 border-b border-[#262833]/60 flex items-center justify-center"
+      className="relative z-[60] text-xs py-2 px-3 sm:px-4 transition-all duration-300 border-b border-[#262833]/60 flex items-center justify-center w-full max-w-full overflow-hidden"
       style={{
         backgroundColor: announcement.bg || "#18191e",
         color: announcement.textColor || "#d1a86e",
       }}
     >
-      <div className="max-w-[1800px] mx-auto flex items-center justify-center gap-3 text-center px-6">
-        <span className="font-medium tracking-wide">
+      <div className="max-w-[1800px] mx-auto flex flex-wrap items-center justify-center gap-1.5 sm:gap-3 text-center px-2 sm:px-6 w-full max-w-full">
+        <span className="font-medium tracking-wide text-[10px] sm:text-xs">
           {announcement.message}
         </span>
 
         {announcement.link && announcement.linkLabel && (
           <Link
             href={announcement.link}
-            className="inline-flex items-center gap-1 font-semibold underline underline-offset-2 hover:opacity-80 transition-opacity text-white shrink-0 ml-1"
+            className="inline-flex items-center gap-1 font-semibold underline underline-offset-2 hover:opacity-80 transition-opacity text-white shrink-0 ml-1 text-[10px] sm:text-xs"
           >
             <span>{announcement.linkLabel}</span>
             <ArrowRight className="w-3 h-3" />

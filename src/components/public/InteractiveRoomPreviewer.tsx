@@ -113,10 +113,10 @@ export function InteractiveRoomPreviewer({
 
   return (
     <>
-      <section className="max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16">
-        <div className="rounded-3xl bg-[#14151a] p-4 sm:p-8 md:p-12 shadow-2xl space-y-6 sm:space-y-10">
+      <section className="max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 w-full max-w-full overflow-hidden">
+        <div className="rounded-3xl bg-[#14151a] p-4 sm:p-8 md:p-12 shadow-2xl space-y-6 sm:space-y-10 w-full min-w-0">
           {/* Header Row */}
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 sm:gap-6 pb-2 sm:pb-4">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 sm:gap-6 pb-2 sm:pb-4 w-full min-w-0">
             <div className="max-w-2xl space-y-2 sm:space-y-3">
               <div className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs tracking-widest text-[#d1a86e] uppercase font-semibold">
                 <Sparkles className="w-3.5 h-3.5" />
@@ -131,10 +131,10 @@ export function InteractiveRoomPreviewer({
             </div>
 
             {/* Quick AR Actions - 2 COLUMNS ON MOBILE */}
-            <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3 shrink-0">
+            <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3 shrink-0 w-full sm:w-auto min-w-0">
               <Button
                 onClick={() => setShowQrModal(true)}
-                className="rounded-full bg-[#1c1d28] hover:bg-[#252736] text-zinc-300 hover:text-white text-[11px] sm:text-xs uppercase tracking-wider h-10 px-3 sm:px-5 active:scale-[0.98]"
+                className="rounded-full bg-[#1c1d28] hover:bg-[#252736] text-zinc-300 hover:text-white text-[10px] sm:text-xs uppercase tracking-wider h-8 sm:h-9 px-3 sm:px-5 active:scale-[0.98]"
               >
                 <QrCode className="w-3.5 h-3.5 text-[#d1a86e] shrink-0 mr-1.5" />
                 <span className="truncate">Scan QR</span>
@@ -142,7 +142,7 @@ export function InteractiveRoomPreviewer({
 
               <Button
                 asChild
-                className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-[11px] sm:text-xs uppercase tracking-wider h-10 px-4 sm:px-6 shadow-lg shadow-[#d1a86e]/15 active:scale-[0.98]"
+                className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-[10px] sm:text-xs uppercase tracking-wider h-8 sm:h-9 px-3 sm:px-6 shadow-lg shadow-[#d1a86e]/15 active:scale-[0.98]"
               >
                 <Link
                   href={ctaUrl || `/ar/${selectedArtwork.slug}`}
@@ -162,7 +162,7 @@ export function InteractiveRoomPreviewer({
           >
             {/* Ambient Wall Light Spotlight */}
             <div
-              className={`absolute top-0 left-1/2 -translate-x-1/2 w-[450px] h-[300px] rounded-full blur-[100px] pointer-events-none transition-opacity duration-700 ${
+              className={`absolute top-0 left-1/2 -translate-x-1/2 w-[260px] sm:w-[450px] h-[200px] sm:h-[300px] rounded-full blur-[90px] sm:blur-[100px] pointer-events-none transition-opacity duration-700 ${
                 wallStyle === "nordic"
                   ? "bg-amber-100/30"
                   : "bg-[#d1a86e]/15"
@@ -231,14 +231,14 @@ export function InteractiveRoomPreviewer({
           </div>
 
           {/* Interactive Studio Controls Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 pt-1">
-            {/* 1. Artwork Selector - 6 COLUMNS ON MOBILE, 3 COLUMNS ON DESKTOP */}
-            <div className="space-y-2 sm:space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 pt-1 w-full min-w-0">
+            {/* 1. Artwork Selector - 3 to 6 COLUMNS RESPONSIVE */}
+            <div className="space-y-2 sm:space-y-3 w-full min-w-0">
               <label className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-[#d1a86e] font-semibold flex items-center gap-1.5 sm:gap-2">
                 <Layers className="w-3.5 h-3.5" />
                 <span>Selected Artwork</span>
               </label>
-              <div className="grid grid-cols-6 sm:grid-cols-3 gap-1.5 sm:gap-2">
+              <div className="grid grid-cols-3 xs:grid-cols-6 sm:grid-cols-3 gap-1.5 sm:gap-2 w-full min-w-0">
                 {selectableArtworks.map((art) => (
                   <button
                     key={art.id}

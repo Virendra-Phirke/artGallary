@@ -107,20 +107,20 @@ export function Header({ settings }: HeaderProps) {
           : "bg-gradient-to-b from-[#0d0e12]/90 to-transparent py-3 sm:py-5 md:py-6"
       }`}
     >
-      <div className="max-w-[1800px] mx-auto px-3 sm:px-8 md:px-12 lg:px-16 flex items-center justify-between gap-2">
+      <div className="max-w-[1800px] mx-auto px-2.5 xs:px-3 sm:px-8 md:px-12 lg:px-16 flex items-center justify-between gap-2 w-full min-w-0">
         {/* Gallery Brand Title */}
         <Link
           href="/"
-          className="group flex flex-col items-start focus-visible:outline-none min-w-0"
+          className="group flex flex-col items-start focus-visible:outline-none min-w-0 shrink"
         >
           {settings?.headerConfig?.logoType === "image" && settings.logoUrl ? (
             <img src={settings.logoUrl} alt={brandTitle} className="h-7 sm:h-8 w-auto object-contain" />
           ) : (
             <>
-              <span className="font-serif text-sm xs:text-base sm:text-xl md:text-2xl tracking-[0.1em] sm:tracking-[0.2em] font-medium text-white group-hover:text-[#d1a86e] transition-colors uppercase truncate max-w-[170px] xs:max-w-[220px] sm:max-w-none">
+              <span className="font-serif text-sm xs:text-base sm:text-xl md:text-2xl tracking-[0.1em] sm:tracking-[0.2em] font-medium text-white group-hover:text-[#d1a86e] transition-colors uppercase truncate max-w-[150px] xs:max-w-[220px] sm:max-w-none">
                 {brandTitle}
               </span>
-              <span className="text-[8px] sm:text-[10px] tracking-[0.2em] sm:tracking-[0.3em] text-[#8e92a4] uppercase font-light -mt-0.5">
+              <span className="text-[8px] sm:text-[10px] tracking-[0.2em] sm:tracking-[0.3em] text-[#8e92a4] uppercase font-light -mt-0.5 truncate max-w-[150px] xs:max-w-[220px] sm:max-w-none">
                 {brandSubtitle}
               </span>
             </>

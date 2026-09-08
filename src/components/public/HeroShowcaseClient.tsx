@@ -62,34 +62,34 @@ export function HeroShowcaseClient({
 
   return (
     <>
-      <section className="relative min-h-[92vh] flex items-center justify-center pt-20 sm:pt-28 pb-12 sm:pb-16 px-3.5 sm:px-10 md:px-14 lg:px-16 overflow-hidden">
+      <section className="relative min-h-[92vh] flex items-center justify-center pt-20 sm:pt-28 pb-12 sm:pb-16 px-3.5 sm:px-10 md:px-14 lg:px-16 overflow-hidden w-full max-w-full">
         {/* Subtle Ambient Light Glow */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#d1a86e]/8 rounded-full blur-[160px] pointer-events-none" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] sm:w-[700px] h-[280px] sm:h-[700px] bg-[#d1a86e]/8 rounded-full blur-[120px] sm:blur-[160px] pointer-events-none" />
 
-        <div className="max-w-[1800px] mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-center">
+        <div className="max-w-[1800px] mx-auto w-full min-w-0 grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-center">
           {/* Left Hero Narrative */}
-          <div className="lg:col-span-6 space-y-4 sm:space-y-6 md:space-y-8 z-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-[#18191e] text-[10px] sm:text-[11px] tracking-[0.25em] text-[#d1a86e] uppercase">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#d1a86e] animate-pulse" />
-              <span>{heroBadge}</span>
+          <div className="lg:col-span-6 space-y-4 sm:space-y-6 md:space-y-8 z-10 w-full min-w-0">
+            <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-[#18191e] text-[9px] xs:text-[10px] sm:text-[11px] tracking-[0.18em] sm:tracking-[0.25em] text-[#d1a86e] uppercase max-w-full">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#d1a86e] animate-pulse shrink-0" />
+              <span className="truncate">{heroBadge}</span>
             </div>
 
-            <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.1] sm:leading-[1.08] text-white tracking-tight font-medium">
+            <h1 className="font-serif text-2xl xs:text-3xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.15] sm:leading-[1.08] text-white tracking-tight font-medium break-words">
               {heroTitle}
             </h1>
 
-            <p className="text-xs sm:text-sm md:text-base text-[#a6aabf] max-w-lg leading-relaxed font-light">
+            <p className="text-xs sm:text-sm md:text-base text-[#a6aabf] max-w-lg leading-relaxed font-light break-words">
               {heroDescription}
             </p>
 
-            <div className="pt-1 sm:pt-2 grid grid-cols-2 sm:flex sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
+            <div className="pt-1 sm:pt-2 grid grid-cols-2 gap-2 sm:flex sm:flex-row items-stretch sm:items-center sm:gap-4 w-full min-w-0">
               <Button
                 asChild
-                className="rounded-full bg-gradient-to-r from-[#d1a86e] via-[#e2c18d] to-[#b98e54] text-[#0d0e12] px-3 sm:px-8 py-2 sm:py-3.5 text-[10px] sm:text-xs font-semibold uppercase tracking-wider sm:tracking-[0.2em] shadow-xl shadow-[#d1a86e]/25 hover:shadow-[#d1a86e]/40 transition-all h-8.5 sm:h-11 active:scale-[0.98]"
+                className="rounded-full bg-gradient-to-r from-[#d1a86e] via-[#e2c18d] to-[#b98e54] text-[#0d0e12] px-3 sm:px-8 py-2 sm:py-3.5 text-[10px] sm:text-xs font-semibold uppercase tracking-wider sm:tracking-[0.2em] shadow-xl shadow-[#d1a86e]/25 hover:shadow-[#d1a86e]/40 transition-all h-8.5 sm:h-11 active:scale-[0.98] min-w-0"
               >
                 <Link
                   href="/account"
-                  className="flex items-center justify-center gap-1 sm:gap-2.5"
+                  className="flex items-center justify-center gap-1 sm:gap-2.5 min-w-0"
                 >
                   <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-[#0d0e12] shrink-0" />
                   <span className="truncate">Collector Salon</span>
@@ -101,11 +101,11 @@ export function HeroShowcaseClient({
                 <Button
                   asChild
                   variant="secondary"
-                  className="rounded-full bg-[#14151a]/90 hover:bg-[#1f212a] text-white px-3 sm:px-6 py-2 sm:py-3.5 text-[10px] sm:text-xs font-medium uppercase tracking-wider sm:tracking-[0.2em] backdrop-blur-md transition-all shadow-lg h-8.5 sm:h-11 active:scale-[0.98]"
+                  className="rounded-full bg-[#14151a]/90 hover:bg-[#1f212a] text-white px-3 sm:px-6 py-2 sm:py-3.5 text-[10px] sm:text-xs font-medium uppercase tracking-wider sm:tracking-[0.2em] backdrop-blur-md transition-all shadow-lg h-8.5 sm:h-11 active:scale-[0.98] min-w-0"
                 >
                   <Link
                     href={`/ar/${activeArtwork.slug}`}
-                    className="flex items-center justify-center gap-1 sm:gap-2"
+                    className="flex items-center justify-center gap-1 sm:gap-2 min-w-0"
                   >
                     <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-[#d1a86e] shrink-0" />
                     <span className="truncate">View in AR</span>
@@ -115,22 +115,22 @@ export function HeroShowcaseClient({
             </div>
 
             {/* Curatorial Highlights Metrics - 3 columns */}
-            <div className="pt-4 sm:pt-8 grid grid-cols-3 gap-2 sm:gap-6 text-left">
-              <div>
-                <span className="block font-serif text-lg sm:text-2xl text-white">20+</span>
-                <span className="text-[8px] sm:text-[10px] tracking-wider sm:tracking-widest uppercase text-zinc-500">
+            <div className="pt-4 sm:pt-8 grid grid-cols-3 gap-1.5 sm:gap-6 text-left w-full min-w-0">
+              <div className="min-w-0">
+                <span className="block font-serif text-base sm:text-2xl text-white truncate">20+</span>
+                <span className="text-[7.5px] xs:text-[8px] sm:text-[10px] tracking-wider sm:tracking-widest uppercase text-zinc-500 block truncate">
                   Oil Glaze Layers
                 </span>
               </div>
-              <div>
-                <span className="block font-serif text-lg sm:text-2xl text-white">1:1</span>
-                <span className="text-[8px] sm:text-[10px] tracking-wider sm:tracking-widest uppercase text-zinc-500">
+              <div className="min-w-0">
+                <span className="block font-serif text-base sm:text-2xl text-white truncate">1:1</span>
+                <span className="text-[7.5px] xs:text-[8px] sm:text-[10px] tracking-wider sm:tracking-widest uppercase text-zinc-500 block truncate">
                   Spatial Scale AR
                 </span>
               </div>
-              <div>
-                <span className="block font-serif text-lg sm:text-2xl text-white">Paris</span>
-                <span className="text-[8px] sm:text-[10px] tracking-wider sm:tracking-widest uppercase text-zinc-500">
+              <div className="min-w-0">
+                <span className="block font-serif text-base sm:text-2xl text-white truncate">Paris</span>
+                <span className="text-[7.5px] xs:text-[8px] sm:text-[10px] tracking-wider sm:tracking-widest uppercase text-zinc-500 block truncate">
                   Atelier &amp; Studio
                 </span>
               </div>
@@ -138,8 +138,8 @@ export function HeroShowcaseClient({
           </div>
 
           {/* Right Hero: Dynamic Masterpiece Plaque & Carousel */}
-          <div className="lg:col-span-6 relative flex flex-col items-center z-10 w-full">
-            <div className="relative group w-full max-w-lg">
+          <div className="lg:col-span-6 relative flex flex-col items-center z-10 w-full min-w-0">
+            <div className="relative group w-full max-w-lg min-w-0">
               {/* Frame & Canvas Presentation */}
               <div className="relative aspect-[4/3] rounded-xl sm:rounded-2xl overflow-hidden bg-[#14151a] shadow-2xl shadow-black/90 group">
                 <ProgressiveImage
@@ -199,7 +199,7 @@ export function HeroShowcaseClient({
 
               {/* Masterpiece Specification Plaque */}
               {activeArtwork && (
-                <div className="mt-3 sm:mt-4 p-3 sm:p-4 rounded-xl bg-[#14151a]/95 backdrop-blur-md flex items-center justify-between shadow-xl">
+                <div className="mt-3 sm:mt-4 p-3 sm:p-4 rounded-xl bg-[#14151a]/95 backdrop-blur-md flex items-center justify-between shadow-xl w-full min-w-0">
                   <div className="space-y-0.5 min-w-0 pr-2">
                     <div className="flex items-center gap-2">
                       <h2 className="font-serif text-sm sm:text-lg text-white font-medium truncate">

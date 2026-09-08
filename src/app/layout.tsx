@@ -97,7 +97,7 @@ export default function RootLayout({
       <head>
         <script src="/dev-guard.js" />
       </head>
-      <body className="min-h-full flex flex-col bg-[#0d0e12] text-[#f4f4f6]">
+      <body className="min-h-full flex flex-col bg-[#0d0e12] text-[#f4f4f6] w-full max-w-full overflow-x-hidden">
         <DevErrorGuard />
         {children}
       </body>

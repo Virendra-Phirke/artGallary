@@ -59,7 +59,7 @@ export default async function PublicLayout({
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0d0e12] text-[#f4f4f6]">
+    <div className="min-h-screen flex flex-col bg-[#0d0e12] text-[#f4f4f6] w-full max-w-full overflow-x-hidden relative">
       {/* Dynamic Theme Custom Properties */}
       <style
         dangerouslySetInnerHTML={{
@@ -84,7 +84,7 @@ export default async function PublicLayout({
       />
       <AnnouncementBar announcement={settings.announcementBar} />
       <Header settings={settings} />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 w-full max-w-full overflow-x-hidden">{children}</main>
       <Footer settings={settings} />
     </div>
   );

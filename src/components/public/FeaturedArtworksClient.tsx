@@ -61,9 +61,9 @@ export function FeaturedArtworksClient({
 
   return (
     <>
-      <section className="max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16">
+      <section className="max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 w-full max-w-full overflow-hidden">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 sm:mb-8 pb-4 sm:pb-6 gap-4 sm:gap-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 sm:mb-8 pb-4 sm:pb-6 gap-4 sm:gap-6 w-full min-w-0">
           <div>
             <span className="text-[10px] sm:text-xs tracking-[0.25em] text-[#d1a86e] uppercase font-medium">
               {sectionSubtitle}
@@ -74,7 +74,7 @@ export function FeaturedArtworksClient({
           </div>
 
           {/* Quick Categories Filter */}
-          <div className="flex items-center space-x-1.5 sm:space-x-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
+          <div className="flex items-center space-x-1.5 sm:space-x-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none w-full max-w-full min-w-0">
             <button
               onClick={() => setActiveCategory("all")}
               className={`px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[11px] sm:text-xs tracking-wider uppercase transition-colors cursor-pointer shrink-0 ${
@@ -119,7 +119,7 @@ export function FeaturedArtworksClient({
         </div>
 
         {/* Artwork Grid - 2 columns on mobile */}
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2.5 sm:gap-6 md:gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2.5 sm:gap-6 md:gap-8 w-full min-w-0">
           {(filteredArtworks.length > 0 ? filteredArtworks.slice(0, 6) : artworks.slice(0, 6)).map(
             (art, idx) => (
               <div

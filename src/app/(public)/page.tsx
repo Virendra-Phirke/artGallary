@@ -55,7 +55,7 @@ export default async function HomePage() {
     .sort((a, b) => a.displayOrder - b.displayOrder);
 
   return (
-    <div className="space-y-16 sm:space-y-28 md:space-y-36 pb-20">
+    <div className="space-y-12 sm:space-y-28 md:space-y-36 pb-20 w-full max-w-full overflow-x-hidden">
       {sortedSections.map((sec) => {
         // 1. HERO SHOWCASE
         if (sec.sectionKey === "hero") {
@@ -104,9 +104,9 @@ export default async function HomePage() {
           return (
             <section
               key={sec.id}
-              className="bg-[#0e0f14] py-14 sm:py-24"
+              className="bg-[#0e0f14] py-14 sm:py-24 w-full max-w-full overflow-hidden"
             >
-              <div className="max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
+              <div className="max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center w-full min-w-0">
                 <div className="lg:col-span-5 space-y-4 sm:space-y-6">
                   <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#181924] text-[9px] sm:text-[10px] tracking-[0.22em] text-[#d1a86e] uppercase">
                     <Layers className="w-3 h-3" />
@@ -235,8 +235,8 @@ export default async function HomePage() {
           const exhImageUrl =
             sec.contentJson?.imageUrl || currentExhibition?.coverImageUrl;
           return (
-            <section key={sec.id} className="max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16">
-              <div className="pt-8 sm:pt-20 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
+            <section key={sec.id} className="max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 w-full max-w-full overflow-hidden">
+              <div className="pt-8 sm:pt-20 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center w-full min-w-0">
                 {exhImageUrl && (
                   <div className="lg:col-span-7">
                     <div className="relative aspect-[16/9] rounded-2xl overflow-hidden shadow-2xl bg-[#14151a]">
@@ -349,10 +349,10 @@ export default async function HomePage() {
           return (
             <section
               key={sec.id}
-              className="max-w-5xl mx-auto px-3.5 sm:px-10 md:px-12 text-center"
+              className="max-w-5xl mx-auto px-3.5 sm:px-10 md:px-12 text-center w-full max-w-full overflow-hidden"
             >
-              <div className="rounded-3xl bg-gradient-to-b from-[#14151a] to-[#101116] p-6 sm:p-12 md:p-16 space-y-5 sm:space-y-6 shadow-2xl relative overflow-hidden">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-[#d1a86e]/8 rounded-full blur-[140px] pointer-events-none" />
+              <div className="rounded-3xl bg-gradient-to-b from-[#14151a] to-[#101116] p-6 sm:p-12 md:p-16 space-y-5 sm:space-y-6 shadow-2xl relative overflow-hidden w-full min-w-0">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[280px] sm:w-[500px] h-[200px] sm:h-[300px] bg-[#d1a86e]/8 rounded-full blur-[100px] sm:blur-[140px] pointer-events-none" />
 
                 <div className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs tracking-widest text-[#d1a86e] uppercase font-semibold">
                   <Mail className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
