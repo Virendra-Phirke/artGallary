@@ -10,8 +10,15 @@ import { ArErrorBanner } from "./ui/ArErrorBanner";
 import { createArtworkMesh, FrameStyle } from "./engine/artworkMesh";
 import { GestureController, GestureTransform } from "./engine/gestureController";
 import { detectARCapabilities, ARCapabilities } from "./engine/arCapability";
-import { startARSession, stopARSession, ARSessionContext } from "./engine/arSession";
+import { startARSession, stopARSession, createXRAnchor, ARSessionContext } from "./engine/arSession";
 import { ARError, classifyARError } from "./engine/arErrors";
+import {
+  analyzeHitForWall,
+  createHeuristicWallPlacement,
+  WallPlacement,
+  WallConfidence,
+} from "./engine/wallDetector";
+import { LightingEstimator } from "./engine/lightingEstimator";
 
 export interface ArStudioViewerProps {
   artwork: {
@@ -45,6 +52,91 @@ export interface ArStudioViewerProps {
 export type ViewerMode = "permission-screen" | "webxr-ar" | "camera-ar" | "3d-room";
 export type ARState = "idle" | "checking" | "starting" | "active" | "error";
 
+/**
+ * Creates a museum-grade wall-bracket reticle with corner guides matching
+ * the artwork's exact aspect ratio and elevation center crosshair.
+ */
+function createWallBracketReticle(widthM: number, heightM: number) {
+  const group = new THREE.Group();
+  group.name = "wall_bracket_reticle";
+  group.visible = false;
+
+  // 1. Transparent aspect ratio plane
+  const planeGeo = new THREE.PlaneGeometry(widthM, heightM);
+  const planeMat = new THREE.MeshBasicMaterial({
+    color: 0xd1a86e,
+    transparent: true,
+    opacity: 0.12,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+  });
+  const planeMesh = new THREE.Mesh(planeGeo, planeMat);
+  group.add(planeMesh);
+
+  // 2. Corner bracket guides
+  const bracketSize = Math.min(widthM, heightM) * 0.2;
+  const bracketMat = new THREE.LineBasicMaterial({
+    color: 0xd1a86e,
+    linewidth: 2,
+  });
+
+  const halfW = widthM / 2;
+  const halfH = heightM / 2;
+
+  const createBracket = (x: number, y: number, dirX: number, dirY: number) => {
+    const points = [
+      new THREE.Vector3(x + dirX * bracketSize, y, 0.003),
+      new THREE.Vector3(x, y, 0.003),
+      new THREE.Vector3(x, y + dirY * bracketSize, 0.003),
+    ];
+    const geo = new THREE.BufferGeometry().setFromPoints(points);
+    return new THREE.Line(geo, bracketMat);
+  };
+
+  const tl = createBracket(-halfW, halfH, 1, -1);
+  const tr = createBracket(halfW, halfH, -1, -1);
+  const bl = createBracket(-halfW, -halfH, 1, 1);
+  const br = createBracket(halfW, -halfH, -1, 1);
+  group.add(tl, tr, bl, br);
+
+  // 3. Center crosshair (gallery standard 145cm elevation datum)
+  const crossSize = 0.035;
+  const crossPoints = [
+    new THREE.Vector3(-crossSize, 0, 0.003),
+    new THREE.Vector3(crossSize, 0, 0.003),
+    new THREE.Vector3(0, -crossSize, 0.003),
+    new THREE.Vector3(0, crossSize, 0.003),
+  ];
+  const crossGeo = new THREE.BufferGeometry().setFromPoints(crossPoints);
+  const crossLines = new THREE.LineSegments(crossGeo, bracketMat);
+  group.add(crossLines);
+
+  const setWallLocked = (isLocked: boolean) => {
+    if (isLocked) {
+      bracketMat.color.setHex(0x34d399); // Emerald green when true wall is locked
+      planeMat.color.setHex(0x34d399);
+      planeMat.opacity = 0.18;
+    } else {
+      bracketMat.color.setHex(0xf59e0b); // Amber during searching or floor hit
+      planeMat.color.setHex(0xf59e0b);
+      planeMat.opacity = 0.08;
+    }
+  };
+
+  const dispose = () => {
+    planeGeo.dispose();
+    planeMat.dispose();
+    bracketMat.dispose();
+    tl.geometry.dispose();
+    tr.geometry.dispose();
+    bl.geometry.dispose();
+    br.geometry.dispose();
+    crossGeo.dispose();
+  };
+
+  return { group, setWallLocked, dispose };
+}
+
 export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
   // 1. Core State Machine
   const [viewerMode, setViewerMode] = useState<ViewerMode>("permission-screen");
@@ -57,6 +149,12 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
   const [isPlaced, setIsPlaced] = useState<boolean>(false);
   const [isScanning, setIsScanning] = useState<boolean>(true);
   const [surfaceDetected, setSurfaceDetected] = useState<boolean>(false);
+  const [wallDetected, setWallDetected] = useState<boolean>(false);
+  const [wallConfidence, setWallConfidence] = useState<WallConfidence | null>(null);
+  const [anchorLocked, setAnchorLocked] = useState<boolean>(false);
+  const [elevationOffsetM, setElevationOffsetM] = useState<number>(0);
+  const [elevationLocked, setElevationLocked] = useState<boolean>(false);
+
   const [frameEnabled, setFrameEnabled] = useState<boolean>(artwork.arConfig?.frameEnabled ?? true);
   const [frameStyle, setFrameStyle] = useState<FrameStyle>(
     (artwork.arConfig?.frameType as FrameStyle) ?? "minimal_black"
@@ -71,12 +169,19 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
   const activeSessionRef = useRef<any>(null);
   const hitTestSourceRef = useRef<any>(null);
   const activeReferenceSpaceTypeRef = useRef<string>("local");
+  const activeAnchorRef = useRef<any>(null);
+  const lastWallPlacementRef = useRef<WallPlacement | null>(null);
+  const lastHitResultRef = useRef<any>(null);
+  const lastFrameRef = useRef<any>(null);
+
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const pendingStreamRef = useRef<MediaStream | null>(null);
   const cameraArInitializedRef = useRef<boolean>(false);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const animIdRef = useRef<number | null>(null);
   const artworkPkgRef = useRef<any>(null);
+  const reticlePkgRef = useRef<ReturnType<typeof createWallBracketReticle> | null>(null);
+  const lightingEstimatorRef = useRef<LightingEstimator | null>(null);
   const gestureControllerRef = useRef<GestureController | null>(null);
 
   const minScale = artwork.arConfig?.minScale ?? 0.5;
@@ -106,6 +211,22 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
       animIdRef.current = null;
     }
 
+    // Release active XRAnchor
+    if (activeAnchorRef.current) {
+      try {
+        if (typeof activeAnchorRef.current.delete === "function") {
+          activeAnchorRef.current.delete();
+        }
+      } catch {}
+      activeAnchorRef.current = null;
+    }
+
+    // Dispose lighting estimator
+    if (lightingEstimatorRef.current) {
+      lightingEstimatorRef.current.dispose();
+      lightingEstimatorRef.current = null;
+    }
+
     // Stop WebXR session and hit-test source
     if (activeSessionRef.current) {
       await stopARSession(activeSessionRef.current, hitTestSourceRef.current);
@@ -128,6 +249,12 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
       gestureControllerRef.current = null;
     }
 
+    // Dispose reticle
+    if (reticlePkgRef.current) {
+      reticlePkgRef.current.dispose();
+      reticlePkgRef.current = null;
+    }
+
     // Dispose Three.js renderer and scene resources
     if (rendererRef.current) {
       rendererRef.current.setAnimationLoop(null);
@@ -140,9 +267,18 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
       artworkPkgRef.current = null;
     }
 
+    lastWallPlacementRef.current = null;
+    lastHitResultRef.current = null;
+    lastFrameRef.current = null;
+
     setIsPlaced(false);
     setIsScanning(true);
     setSurfaceDetected(false);
+    setWallDetected(false);
+    setWallConfidence(null);
+    setAnchorLocked(false);
+    setElevationOffsetM(0);
+    setElevationLocked(false);
     setArState("idle");
   }, []);
 
@@ -164,7 +300,6 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
       const stream = pendingStreamRef.current;
       pendingStreamRef.current = null;
 
-      // Small delay to ensure DOM elements are fully painted
       const timer = setTimeout(() => {
         initCameraArEngine(stream);
       }, 100);
@@ -172,9 +307,8 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
     }
   }, [viewerMode]);
 
-  // 4. Launch AR Experience with Multi-Stage Graceful Fallback
+  // 4. Launch AR Experience with Capability Cascade
   const handleStartAr = async () => {
-    // Prevent rapid duplicate clicks
     if (arState === "starting" || arState === "active") {
       console.log("[AR] Launch already in progress, ignoring duplicate trigger.");
       return;
@@ -183,7 +317,7 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
     setArState("starting");
     setArError(null);
 
-    // Stage 1: Attempt WebXR Immersive AR (if supported)
+    // Stage 1: Attempt WebXR Immersive AR (Android Chrome / ARCore)
     if (capabilities?.hasWebXr) {
       try {
         console.log("[AR] Stage 1: Starting WebXR AR session...");
@@ -201,17 +335,16 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
         return;
       } catch (err: any) {
         console.warn("[AR] WebXR launch failed:", err);
-        // If it was an explicit permission denial, don't silently attempt camera; handle directly
         if (err?.code === "AR_PERMISSION_DENIED") {
           setArError(err);
           setArState("error");
           return;
         }
-        console.log("[AR] Falling back to Level 2 Camera Stream AR...");
+        console.log("[AR] Falling back to Camera Stream AR...");
       }
     }
 
-    // Stage 2: Level 2 Camera Stream AR Fallback (Mobile Safari, non-WebXR browsers)
+    // Stage 2: Camera Stream AR Fallback (Safari / iOS / desktop test)
     if (capabilities?.hasCamera && navigator.mediaDevices?.getUserMedia) {
       try {
         console.log("[AR] Stage 2: Requesting rear device camera stream...");
@@ -225,12 +358,10 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
         });
 
         mediaStreamRef.current = stream;
-        // Store stream in ref — useEffect will pick it up after DOM renders
         pendingStreamRef.current = stream;
         cameraArInitializedRef.current = false;
         setViewerMode("camera-ar");
         setArState("active");
-        // DO NOT call initCameraArEngine here — video element doesn't exist yet
         return;
       } catch (err: any) {
         console.warn("[AR] Camera stream error:", err);
@@ -241,18 +372,18 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
       }
     }
 
-    // Stage 3: If neither WebXR nor Camera is available, transition cleanly to 3D Room Studio
-    console.log("[AR] Neither WebXR nor camera available. Defaulting to Interactive 3D Room Studio.");
+    // Stage 3: 3D Studio Fallback
+    console.log("[AR] Transitioning to Interactive 3D Room Studio.");
     setArState("idle");
     setViewerMode("3d-room");
   };
 
-  // 5. Level 1: WebXR Immersive AR Engine
+  // 5. Level 1: WebXR Spatial AR Engine with Real Wall Alignment & Lighting Estimation
   const initWebXrEngine = async (context: ARSessionContext) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const { session, referenceSpace, hitTestSource } = context;
+    const { session, referenceSpace, hitTestSource, hasLightingEstimation } = context;
 
     // WebXR Transparent Renderer
     const renderer = new THREE.WebGLRenderer({
@@ -266,20 +397,11 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(window.innerWidth, window.innerHeight);
 
-    // CRITICAL: Guarantee transparent framebuffer so camera passthrough is visible
     renderer.setClearColor(0x000000, 0);
     renderer.setClearAlpha(0);
     renderer.autoClear = true;
     renderer.xr.enabled = true;
 
-    // Log diagnostic states
-    console.log("[AR] WebXR session environmentBlendMode:", session.environmentBlendMode);
-    console.log("[AR] WebXR session visibilityState:", session.visibilityState);
-    if (session.renderState) {
-      console.log("[AR] WebXR session renderState:", session.renderState);
-    }
-
-    // Bind session to Three.js WebXR Manager
     try {
       await renderer.xr.setSession(session);
       if (referenceSpace) {
@@ -290,32 +412,32 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
       console.warn("[AR] Error binding Three.js XR session:", bindErr);
     }
 
-    // CRITICAL: Three.js scene background MUST remain null for AR passthrough
     const scene = new THREE.Scene();
     scene.background = null;
     scene.environment = null;
 
     const camera = new THREE.PerspectiveCamera();
 
-    // Natural gallery lighting for AR overlay
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+    // Scene Lighting Setup with WebXR Adaptive Lighting Estimation
+    const ambientLight = new THREE.AmbientLight(0xfffaee, 1.3);
     scene.add(ambientLight);
-    const directionalLight = new THREE.DirectionalLight(0xfffaed, 1.5);
-    directionalLight.position.set(0.5, 2, 1);
+    const directionalLight = new THREE.DirectionalLight(0xfff7e8, 1.5);
+    directionalLight.position.set(0.4, 2.2, 1.2);
     scene.add(directionalLight);
 
-    // Reticle for surface placement
-    const reticleGeo = new THREE.RingGeometry(0.12, 0.15, 32).rotateX(-Math.PI / 2);
-    const reticleMat = new THREE.MeshBasicMaterial({
-      color: 0xd1a86e,
-      side: THREE.DoubleSide,
+    const lightingEstimator = new LightingEstimator({
+      ambientLight,
+      directionalLight,
     });
-    const reticle = new THREE.Mesh(reticleGeo, reticleMat);
-    reticle.matrixAutoUpdate = false;
-    reticle.visible = false;
-    scene.add(reticle);
+    lightingEstimatorRef.current = lightingEstimator;
 
-    // Create 1:1 metric scaled artwork object
+    if (hasLightingEstimation) {
+      lightingEstimator.initSessionLightProbe(session).catch((e) => {
+        console.log("[AR Light] Light probe initialization error:", e);
+      });
+    }
+
+    // 1:1 Metric Artwork Object
     const artworkPkg = createArtworkMesh({
       dimensions: {
         widthCm: artwork.widthCm,
@@ -329,45 +451,66 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
     artworkPkg.group.visible = false;
     scene.add(artworkPkg.group);
 
-    // Load artwork texture
+    // Wall-Bracket Aspect Ratio Reticle
+    const reticlePkg = createWallBracketReticle(artworkPkg.widthM, artworkPkg.heightM);
+    reticlePkgRef.current = reticlePkg;
+    scene.add(reticlePkg.group);
+
+    // Load high-resolution artwork texture
     const textureLoader = new THREE.TextureLoader();
     textureLoader.setCrossOrigin("anonymous");
     textureLoader.load(artwork.coverImageUrl, (tex) => {
       artworkPkg.updateTexture(tex);
     });
 
-    // Gesture Controller
+    // Gesture Controller with Wall Plane and Elevation Control
     if (containerRef.current) {
       const gesture = new GestureController({
         domElement: containerRef.current,
         minScale,
         maxScale,
         defaultScale: artwork.arConfig?.defaultScale ?? 1.0,
+        elevationLock: elevationLocked,
         onTransformChange: (t: GestureTransform) => {
-          if (artworkPkg.group) {
+          if (artworkPkg.group && artworkPkg.group.visible) {
             artworkPkg.group.scale.set(t.scale, t.scale, t.scale);
             artworkPkg.group.rotation.z = t.rotationZ;
             setCurrentScale(t.scale);
+            setElevationOffsetM(t.offsetY);
           }
         },
       });
       gestureControllerRef.current = gesture;
     }
 
-    // Tap to place on surface or in front of camera
+    // Tap to place on detected wall surface
     const handleSelect = () => {
       if (!artworkPkg?.group) return;
 
-      if (reticle.visible) {
-        artworkPkg.group.position.setFromMatrixPosition(reticle.matrix);
-        artworkPkg.group.quaternion.setFromRotationMatrix(reticle.matrix);
+      if (lastWallPlacementRef.current && reticlePkg.group.visible) {
+        artworkPkg.alignToPlacement(lastWallPlacementRef.current);
         artworkPkg.group.visible = true;
         setIsPlaced(true);
         setIsScanning(false);
-        reticle.visible = false;
+        reticlePkg.group.visible = false;
+
+        console.log("[AR] Artwork mounted flush to wall at:", lastWallPlacementRef.current.position);
+
+        // Establish spatial XRAnchor if supported
+        if (context.hasAnchors && lastHitResultRef.current) {
+          createXRAnchor(lastFrameRef.current, lastHitResultRef.current, referenceSpace)
+            .then((anchor) => {
+              if (anchor) {
+                activeAnchorRef.current = anchor;
+                setAnchorLocked(true);
+                console.log("[AR Anchor] Spatial anchor established successfully.");
+              }
+            })
+            .catch(() => {});
+        }
       } else if (!artworkPkg.group.visible) {
-        // Fallback placement: position 1.5m in front of camera
-        artworkPkg.group.position.set(0, 0, -1.5);
+        // Fallback: place in front of camera at gallery eye-level (1.45m)
+        artworkPkg.group.position.set(0, 0, -1.8);
         artworkPkg.group.visible = true;
         setIsPlaced(true);
         setIsScanning(false);
@@ -375,15 +518,22 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
     };
     session.addEventListener("select", handleSelect);
 
-    // Clean session end handler
     session.addEventListener("end", () => {
-      console.log("[AR] WebXR session ended by user or system.");
+      console.log("[AR] WebXR session ended.");
       teardownArSession();
       setViewerMode("3d-room");
     });
 
-    // WebXR Continuous Render Loop
+    // Continuous WebXR Render Loop
     renderer.setAnimationLoop((timestamp, frame) => {
+      lastFrameRef.current = frame;
+
+      // Update real-world environmental lighting
+      if (lightingEstimatorRef.current && frame) {
+        lightingEstimatorRef.current.updateFromFrame(frame);
+      }
+
+      // Update hit-test & wall detection while scanning
       if (frame && hitTestSource && referenceSpace && !artworkPkg.group.visible) {
         try {
           const hitTestResults = frame.getHitTestResults(hitTestSource);
@@ -391,17 +541,54 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
             const hit = hitTestResults[0];
             const pose = hit.getPose(referenceSpace);
             if (pose) {
-              reticle.visible = true;
-              reticle.matrix.fromArray(pose.transform.matrix);
               setSurfaceDetected(true);
+              lastHitResultRef.current = hit;
+
+              // Camera position for outward normal orientation
+              const viewerPose = frame.getViewerPose(referenceSpace);
+              const camPos = viewerPose
+                ? new THREE.Vector3(
+                    viewerPose.transform.position.x,
+                    viewerPose.transform.position.y,
+                    viewerPose.transform.position.z
+                  )
+                : undefined;
+
+              // Real wall vertical surface analysis
+              const placement = analyzeHitForWall(
+                pose.transform.matrix,
+                { galleryStandardElevationM: 1.45 },
+                activeReferenceSpaceTypeRef.current,
+                camPos
+              );
+
+              if (placement) {
+                lastWallPlacementRef.current = placement;
+                reticlePkg.group.visible = true;
+                reticlePkg.group.position.copy(placement.position);
+                reticlePkg.group.quaternion.copy(placement.quaternion);
+                reticlePkg.setWallLocked(true);
+                setWallDetected(true);
+                setWallConfidence(placement.confidence);
+              } else {
+                // Non-vertical surface (e.g. floor or ceiling)
+                reticlePkg.group.visible = true;
+                const hitMat = new THREE.Matrix4().fromArray(pose.transform.matrix);
+                reticlePkg.group.position.setFromMatrixPosition(hitMat);
+                reticlePkg.group.quaternion.setFromRotationMatrix(hitMat);
+                reticlePkg.setWallLocked(false);
+                setWallDetected(false);
+                setWallConfidence(null);
+              }
             }
           } else {
-            // Normal scanning: no surface in view currently
-            reticle.visible = false;
+            reticlePkg.group.visible = false;
             setSurfaceDetected(false);
+            setWallDetected(false);
+            setWallConfidence(null);
           }
         } catch {
-          // Graceful ignore for frame transient hiccups
+          // Graceful handling of transient XR frame drops
         }
       }
 
@@ -409,29 +596,23 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
     });
   };
 
-  // 6. Level 2: Camera Stream AR Engine (Fallback for Safari / Standard Mobile)
+  // 6. Level 2: Camera Stream AR Engine (Heuristic Wall Placement + Museum Lighting)
   const initCameraArEngine = (stream: MediaStream) => {
-    console.log("[AR] initCameraArEngine called. videoRef:", !!videoRef.current, "canvasRef:", !!canvasRef.current);
+    console.log("[AR] Initializing Camera AR Engine with wall heuristic...");
 
-    // Connect the camera stream to the video element
     if (videoRef.current) {
       videoRef.current.srcObject = stream;
       videoRef.current.onloadedmetadata = () => {
         videoRef.current?.play().catch((e) => {
           console.warn("[AR] Video play failed:", e);
         });
-        console.log("[AR] Camera video stream playing.");
       };
     } else {
-      console.error("[AR] videoRef is still null — camera feed cannot attach.");
       return;
     }
 
     const canvas = canvasRef.current;
-    if (!canvas) {
-      console.error("[AR] canvasRef is null — Three.js cannot initialize.");
-      return;
-    }
+    if (!canvas) return;
 
     const width = window.innerWidth;
     const height = window.innerHeight;
@@ -456,13 +637,14 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
     renderer.setClearAlpha(0);
     renderer.autoClear = true;
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.4);
+    // Museum Gallery Lighting Setup
+    const ambientLight = new THREE.AmbientLight(0xfffaee, 1.4);
     scene.add(ambientLight);
-    const pointLight = new THREE.PointLight(0xffffff, 1.2, 10);
-    pointLight.position.set(0.5, 1.5, 2);
+    const pointLight = new THREE.PointLight(0xfff5e6, 1.3, 10);
+    pointLight.position.set(0.4, 1.8, 1.8);
     scene.add(pointLight);
 
-    // Create 1:1 artwork — initially hidden until user taps to place
+    // 1:1 Metric Artwork Object
     const artworkPkg = createArtworkMesh({
       dimensions: {
         widthCm: artwork.widthCm,
@@ -473,7 +655,7 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
       frameEnabled,
     });
     artworkPkgRef.current = artworkPkg;
-    artworkPkg.group.visible = false; // Hidden until user taps to place
+    artworkPkg.group.visible = false;
     scene.add(artworkPkg.group);
 
     const textureLoader = new THREE.TextureLoader();
@@ -482,13 +664,14 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
       artworkPkg.updateTexture(tex);
     });
 
-    // Gesture Controller for pinch/drag/rotate after placement
+    // Gesture Controller
     if (containerRef.current) {
       const gesture = new GestureController({
         domElement: containerRef.current,
         minScale,
         maxScale,
         defaultScale: artwork.arConfig?.defaultScale ?? 1.0,
+        elevationLock: elevationLocked,
         onTransformChange: (t: GestureTransform) => {
           if (artworkPkg.group && artworkPkg.group.visible) {
             artworkPkg.group.scale.set(t.scale, t.scale, t.scale);
@@ -496,27 +679,34 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
             artworkPkg.group.position.x = t.offsetX;
             artworkPkg.group.position.y = t.offsetY;
             setCurrentScale(t.scale);
+            setElevationOffsetM(t.offsetY);
           }
         },
       });
       gestureControllerRef.current = gesture;
     }
 
-    // Start scanning — user taps to place the artwork
     setIsPlaced(false);
     setIsScanning(true);
-    setSurfaceDetected(true); // Camera is a valid surface
+    setSurfaceDetected(true);
+    setWallDetected(true); // Heuristic wall available immediately
+    setWallConfidence("medium");
 
-    // Tap-to-place handler for camera-ar mode
+    // Tap-to-place handler with heuristic wall alignment
     const handleTapPlace = (e: MouseEvent | TouchEvent) => {
-      if (artworkPkg.group.visible) return; // Already placed
+      if (artworkPkg.group.visible) return;
       e.preventDefault();
+
+      const heuristic = createHeuristicWallPlacement(camera, 1.8, 1.45);
+      artworkPkg.alignToPlacement(heuristic);
+      artworkPkg.group.position.set(0, 0, 0); // Normalized centered space
       artworkPkg.group.visible = true;
-      artworkPkg.group.position.set(0, 0, 0);
+
       setIsPlaced(true);
       setIsScanning(false);
-      console.log("[AR] Artwork placed via tap in camera-ar mode.");
+      console.log("[AR] Artwork placed via camera heuristic at 145cm eye-level.");
     };
+
     canvas.addEventListener("click", handleTapPlace);
     canvas.addEventListener("touchend", handleTapPlace, { passive: false });
 
@@ -538,7 +728,24 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
     if (gestureControllerRef.current) {
       gestureControllerRef.current.reset();
       setCurrentScale(1.0);
+      setElevationOffsetM(0);
     }
+  };
+
+  const handleAdjustElevation = (deltaM: number) => {
+    if (gestureControllerRef.current) {
+      gestureControllerRef.current.adjustElevation(deltaM);
+    }
+  };
+
+  const handleToggleElevationLock = () => {
+    setElevationLocked((prev) => {
+      const next = !prev;
+      if (gestureControllerRef.current) {
+        gestureControllerRef.current.setElevationLock(next);
+      }
+      return next;
+    });
   };
 
   const handleFrameChange = (style: FrameStyle, enabled: boolean) => {
@@ -551,7 +758,6 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
 
   // 7. RENDER DISPATCHER
 
-  // If an AR error occurred, present luxury error banner (No browser alerts!)
   if (arError) {
     return (
       <ArErrorBanner
@@ -574,7 +780,6 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
     );
   }
 
-  // Pre-permission onboarding screen
   if (viewerMode === "permission-screen") {
     return (
       <ArPermissionScreen
@@ -587,7 +792,6 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
     );
   }
 
-  // Level 3 Interactive 3D Room Studio
   if (viewerMode === "3d-room") {
     return (
       <RoomFallbackViewer
@@ -604,7 +808,7 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
       ref={containerRef}
       className="fixed inset-0 z-50 overflow-hidden select-none bg-black"
     >
-      {/* Background Camera Video — always rendered so ref is available */}
+      {/* Background Camera Feed */}
       <video
         ref={videoRef}
         autoPlay
@@ -616,10 +820,9 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
         )}
       />
 
-      {/* Scanning overlay — shown before user places artwork */}
+      {/* Wall scanning bracket overlay (camera-ar before placement) */}
       {viewerMode === "camera-ar" && !isPlaced && (
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none">
-          {/* Scanning reticle */}
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none px-4">
           <div className="w-48 h-48 rounded-3xl border-2 border-[#d1a86e]/60 flex items-center justify-center animate-pulse">
             <div className="w-36 h-36 rounded-2xl border border-[#d1a86e]/30 flex items-center justify-center">
               <div className="text-center space-y-2">
@@ -629,11 +832,11 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
               </div>
             </div>
           </div>
-          <p className="mt-6 text-sm text-white font-medium text-center px-6 drop-shadow-lg">
-            Point your camera at a wall and tap to place the artwork
+          <p className="mt-6 text-xs sm:text-sm text-white font-medium text-center px-6 drop-shadow-lg">
+            Point camera toward a wall and tap to mount painting
           </p>
-          <p className="mt-1 text-[11px] text-white/60 font-mono text-center">
-            {artwork.widthCm} × {artwork.heightCm} cm • 1:1 Scale
+          <p className="mt-1 text-[10px] sm:text-[11px] text-[#d1a86e] font-mono text-center">
+            {artwork.widthCm} × {artwork.heightCm} cm • 145 cm Eye-Level Standard
           </p>
         </div>
       )}
@@ -645,7 +848,7 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
         style={{ backgroundColor: "transparent" }}
       />
 
-      {/* Minimal HUD Controls Overlay */}
+      {/* Modern HUD Controls Overlay */}
       <ArControlsOverlay
         artworkTitle={artwork.title}
         widthCm={artwork.widthCm}
@@ -654,6 +857,11 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
         isPlaced={isPlaced}
         isScanning={isScanning}
         surfaceDetected={surfaceDetected}
+        wallDetected={wallDetected}
+        wallConfidence={wallConfidence}
+        anchorLocked={anchorLocked}
+        elevationOffsetM={elevationOffsetM}
+        elevationLocked={elevationLocked}
         frameStyle={frameStyle}
         frameEnabled={frameEnabled}
         diagnostics={{
@@ -661,12 +869,17 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
           blendMode: activeSessionRef.current?.environmentBlendMode || "alpha-blend",
           referenceSpaceType: activeReferenceSpaceTypeRef.current || "local",
           hitTestReady: Boolean(hitTestSourceRef.current),
+          hasPlaneDetection: Boolean(activeSessionRef.current?.detectedPlanes),
+          hasLightingEstimation: Boolean(lightingEstimatorRef.current),
+          hasAnchors: anchorLocked,
         }}
         onExit={() => {
           teardownArSession();
           setViewerMode("permission-screen");
         }}
         onReset={handleReset}
+        onAdjustElevation={handleAdjustElevation}
+        onToggleElevationLock={handleToggleElevationLock}
         onFrameChange={handleFrameChange}
         onSwitchTo3DRoom={() => {
           teardownArSession();

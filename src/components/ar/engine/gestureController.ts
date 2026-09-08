@@ -12,6 +12,7 @@ export interface GestureControllerOptions {
   minScale?: number;
   maxScale?: number;
   defaultScale?: number;
+  elevationLock?: boolean;
   onTransformChange: (transform: GestureTransform) => void;
 }
 
@@ -21,6 +22,7 @@ export class GestureController {
   private maxScale: number;
   private transform: GestureTransform;
   private onTransformChange: (transform: GestureTransform) => void;
+  private isElevationLocked = false;
 
   // Touch tracking state
   private isPointerDown = false;
@@ -35,6 +37,7 @@ export class GestureController {
     this.domElement = options.domElement;
     this.minScale = options.minScale ?? 0.5;
     this.maxScale = options.maxScale ?? 2.0;
+    this.isElevationLocked = options.elevationLock ?? false;
     this.transform = {
       scale: options.defaultScale ?? 1.0,
       rotationZ: 0.0,
@@ -98,16 +101,18 @@ export class GestureController {
     if (!this.isPointerDown) return;
 
     if (e.touches.length === 1) {
-      // 1 Finger Drag
+      // 1 Finger Drag along wall
       const touch = e.touches[0]!;
       const deltaX = (touch.clientX - this.lastPointerX) * 0.002;
-      const deltaY = -(touch.clientY - this.lastPointerY) * 0.002; // Invert Y for 3D coordinate space
+      const deltaY = -(touch.clientY - this.lastPointerY) * 0.002; // Invert Y for 3D space
 
       this.lastPointerX = touch.clientX;
       this.lastPointerY = touch.clientY;
 
       this.transform.offsetX += deltaX;
-      this.transform.offsetY += deltaY;
+      if (!this.isElevationLocked) {
+        this.transform.offsetY += deltaY;
+      }
 
       this.onTransformChange(this.transform);
     } else if (e.touches.length === 2) {
@@ -161,7 +166,9 @@ export class GestureController {
     this.lastPointerY = e.clientY;
 
     this.transform.offsetX += deltaX;
-    this.transform.offsetY += deltaY;
+    if (!this.isElevationLocked) {
+      this.transform.offsetY += deltaY;
+    }
 
     this.onTransformChange(this.transform);
   };
@@ -177,6 +184,27 @@ export class GestureController {
     this.transform.scale = Math.max(this.minScale, Math.min(this.maxScale, newScale));
     this.onTransformChange(this.transform);
   };
+
+  public setElevationLock(locked: boolean) {
+    this.isElevationLocked = locked;
+  }
+
+  public getElevationLock(): boolean {
+    return this.isElevationLocked;
+  }
+
+  /**
+   * Finely shifts the artwork elevation up/down in meters (e.g. +0.05 for +5cm)
+   */
+  public adjustElevation(deltaM: number) {
+    this.transform.offsetY += deltaM;
+    this.onTransformChange(this.transform);
+  }
+
+  public resetElevation() {
+    this.transform.offsetY = 0;
+    this.onTransformChange(this.transform);
+  }
 
   public reset() {
     this.transform = {

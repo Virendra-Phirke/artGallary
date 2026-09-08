@@ -12,6 +12,9 @@ export interface ARSessionContext {
   referenceSpace: any; // XRReferenceSpace
   referenceSpaceType: string;
   hitTestSource: any | null; // XRHitTestSource
+  hasPlaneDetection: boolean;
+  hasLightingEstimation: boolean;
+  hasAnchors: boolean;
 }
 
 /**
@@ -47,22 +50,39 @@ export async function startARSession(config?: ARSessionConfig): Promise<ARSessio
 
   const sessionOptionsCandidates: any[] = [];
 
-  // Candidate A: hit-test with DOM overlay and local-floor
+  // Candidate A: Full features with DOM overlay
   if (domOverlayOption) {
     sessionOptionsCandidates.push({
       requiredFeatures: ["hit-test"],
-      optionalFeatures: ["local-floor", "anchors", "dom-overlay"],
+      optionalFeatures: [
+        "local-floor",
+        "anchors",
+        "plane-detection",
+        "light-estimation",
+        "dom-overlay",
+      ],
       domOverlay: domOverlayOption,
     });
   }
 
-  // Candidate B: hit-test with local-floor (no DOM overlay)
+  // Candidate B: Full features without DOM overlay
+  sessionOptionsCandidates.push({
+    requiredFeatures: ["hit-test"],
+    optionalFeatures: [
+      "local-floor",
+      "anchors",
+      "plane-detection",
+      "light-estimation",
+    ],
+  });
+
+  // Candidate C: Minimal optional features
   sessionOptionsCandidates.push({
     requiredFeatures: ["hit-test"],
     optionalFeatures: ["local-floor", "anchors"],
   });
 
-  // Candidate C: Absolute bare minimum (hit-test only)
+  // Candidate D: Absolute bare minimum (hit-test only)
   sessionOptionsCandidates.push({
     requiredFeatures: ["hit-test"],
   });
@@ -86,6 +106,22 @@ export async function startARSession(config?: ARSessionConfig): Promise<ARSessio
     console.error("[AR] All WebXR session configurations rejected by device:", lastError);
     throw classifyARError(lastError);
   }
+
+  // Check supported optional features on active session
+  const enabledFeatures: string[] = session.enabledFeatures || [];
+  const hasPlaneDetection =
+    enabledFeatures.includes("plane-detection") || Boolean(session.detectedPlanes);
+  const hasLightingEstimation =
+    enabledFeatures.includes("light-estimation") || typeof session.requestLightProbe === "function";
+  const hasAnchors =
+    enabledFeatures.includes("anchors") || typeof session.createAnchor === "function";
+
+  console.log("[AR] Session features active:", {
+    hasPlaneDetection,
+    hasLightingEstimation,
+    hasAnchors,
+    blendMode: session.environmentBlendMode,
+  });
 
   // Phase 3: Reference Space Resolution with Fallback Chain
   // Chain: local-floor -> local -> viewer
@@ -125,7 +161,6 @@ export async function startARSession(config?: ARSessionConfig): Promise<ARSessio
     console.log("[AR] WebXR Hit-test source created successfully.");
   } catch (err: any) {
     console.warn("[AR] Hit-test source initialization failed:", err.message);
-    // Non-fatal if we allow manual tap placement, but log clearly
   }
 
   return {
@@ -133,7 +168,45 @@ export async function startARSession(config?: ARSessionConfig): Promise<ARSessio
     referenceSpace,
     referenceSpaceType,
     hitTestSource,
+    hasPlaneDetection,
+    hasLightingEstimation,
+    hasAnchors,
   };
+}
+
+/**
+ * Creates an XRAnchor at a given pose if supported by WebXR Anchors API.
+ */
+export async function createXRAnchor(
+  frame: any,
+  hitResultOrPose: any,
+  referenceSpace: any
+): Promise<any | null> {
+  if (!frame) return null;
+
+  // Method 1: hitResult.createAnchor() (most standard WebXR Hit-test Anchoring)
+  if (hitResultOrPose && typeof hitResultOrPose.createAnchor === "function") {
+    try {
+      const anchor = await hitResultOrPose.createAnchor();
+      console.log("[AR Anchor] Created anchor via hitResult.createAnchor()");
+      return anchor;
+    } catch (err: any) {
+      console.log("[AR Anchor] hitResult.createAnchor failed:", err.message);
+    }
+  }
+
+  // Method 2: frame.createAnchor(pose, referenceSpace)
+  if (typeof frame.createAnchor === "function" && hitResultOrPose?.transform) {
+    try {
+      const anchor = await frame.createAnchor(hitResultOrPose.transform, referenceSpace);
+      console.log("[AR Anchor] Created anchor via frame.createAnchor()");
+      return anchor;
+    } catch (err: any) {
+      console.log("[AR Anchor] frame.createAnchor failed:", err.message);
+    }
+  }
+
+  return null;
 }
 
 /**

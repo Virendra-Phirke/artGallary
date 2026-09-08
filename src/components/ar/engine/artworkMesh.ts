@@ -1,6 +1,7 @@
 "use client";
 
 import * as THREE from "three";
+import type { WallPlacement } from "./wallDetector";
 
 export type FrameStyle =
   | "none"
@@ -27,6 +28,9 @@ export interface ArtworkMeshPackage {
   artMesh: THREE.Mesh;
   frameGroup: THREE.Group;
   shadowMesh: THREE.Mesh;
+  widthM: number;
+  heightM: number;
+  alignToPlacement: (placement: WallPlacement) => void;
   updateFrame: (newStyle: FrameStyle, isEnabled: boolean) => void;
   updateTexture: (newTexture: THREE.Texture) => void;
   dispose: () => void;
@@ -50,8 +54,8 @@ export function createArtworkMesh(options: ArtworkMeshOptions): ArtworkMeshPacka
   const artGeo = new THREE.PlaneGeometry(widthM, heightM);
   const artMat = new THREE.MeshStandardMaterial({
     color: 0xffffff,
-    roughness: 0.35,
-    metalness: 0.0,
+    roughness: 0.42,
+    metalness: 0.02,
     map: texture || null,
   });
 
@@ -64,39 +68,44 @@ export function createArtworkMesh(options: ArtworkMeshOptions): ArtworkMeshPacka
   const artMesh = new THREE.Mesh(artGeo, artMat);
   artMesh.castShadow = true;
   artMesh.receiveShadow = false;
-  artMesh.position.set(0, 0, 0.005); // Slight offset above shadow
+  artMesh.position.set(0, 0, 0.005); // Slight offset above shadow plane
   mainGroup.add(artMesh);
 
-  // 2. Realistic Contact Shadow Plane (subtle soft ambient occlusion onto wall)
-  const shadowPadding = 0.04;
+  // 2. Realistic Rectangular Wall Contact Shadow
+  // Simulates ambient occlusion and subtle downward drop shadow from ceiling gallery track light
+  const shadowPadding = 0.055; // 5.5cm soft penumbra spread
   const shadowGeo = new THREE.PlaneGeometry(
     widthM + shadowPadding * 2,
     heightM + shadowPadding * 2
   );
 
-  // Procedural canvas shadow gradient for soft wall contact
   const shadowCanvas = document.createElement("canvas");
-  shadowCanvas.width = 128;
-  shadowCanvas.height = 128;
+  shadowCanvas.width = 256;
+  shadowCanvas.height = 256;
   const ctx = shadowCanvas.getContext("2d");
   if (ctx) {
-    const gradient = ctx.createRadialGradient(64, 64, 20, 64, 64, 64);
-    gradient.addColorStop(0, "rgba(0,0,0,0.55)");
-    gradient.addColorStop(0.7, "rgba(0,0,0,0.25)");
-    gradient.addColorStop(1, "rgba(0,0,0,0.0)");
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, 128, 128);
+    ctx.clearRect(0, 0, 256, 256);
+    // Wall ambient occlusion shadow with slight downward bias
+    ctx.shadowColor = "rgba(0, 0, 0, 0.72)";
+    ctx.shadowBlur = 32;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 14;
+    ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
+
+    const inset = 38;
+    ctx.fillRect(inset, inset, 256 - inset * 2, 256 - inset * 2);
   }
   const shadowTex = new THREE.CanvasTexture(shadowCanvas);
 
   const shadowMat = new THREE.MeshBasicMaterial({
     map: shadowTex,
     transparent: true,
-    opacity: 0.65,
+    opacity: 0.68,
     depthWrite: false,
   });
   const shadowMesh = new THREE.Mesh(shadowGeo, shadowMat);
-  shadowMesh.position.set(0, -0.015, -0.002); // Cast down slightly due to overhead gallery light
+  // Positioned directly against wall surface with downward offset
+  shadowMesh.position.set(0, -0.018, -0.003);
   mainGroup.add(shadowMesh);
 
   // 3. Virtual Frame Bars
@@ -217,11 +226,19 @@ export function createArtworkMesh(options: ArtworkMeshOptions): ArtworkMeshPacka
     }
   };
 
+  const alignToPlacement = (placement: WallPlacement) => {
+    mainGroup.position.copy(placement.position);
+    mainGroup.quaternion.copy(placement.quaternion);
+  };
+
   return {
     group: mainGroup,
     artMesh,
     frameGroup,
     shadowMesh,
+    widthM,
+    heightM,
+    alignToPlacement,
     updateFrame,
     updateTexture,
     dispose,
