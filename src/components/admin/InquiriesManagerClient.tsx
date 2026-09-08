@@ -22,6 +22,7 @@ import {
   Check,
   Filter,
   ChevronDown,
+  ChevronRight,
   Palette,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -740,7 +741,8 @@ export function InquiriesManagerClient({
               paginatedEmails.map((email) => (
                 <div
                   key={email.id}
-                  className="p-3 sm:p-3.5 hover:bg-white/[0.02] transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-2.5"
+                  onClick={() => setPreviewEmail(email)}
+                  className="p-3 sm:p-3.5 hover:bg-white/[0.04] transition-all flex items-center justify-between gap-3 cursor-pointer group"
                 >
                   <div className="space-y-1 min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
@@ -783,7 +785,7 @@ export function InquiriesManagerClient({
                       </span>
                     </div>
 
-                    <h4 className="font-serif text-xs sm:text-sm text-white font-medium truncate">
+                    <h4 className="font-serif text-xs sm:text-sm text-white group-hover:text-[#d1a86e] transition-colors font-medium truncate">
                       {email.subject}
                     </h4>
 
@@ -802,17 +804,10 @@ export function InquiriesManagerClient({
                     )}
                   </div>
 
-                  {email.htmlContent && (
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => setPreviewEmail(email)}
-                      className="self-end sm:self-center shrink-0 inline-flex items-center gap-1.5 h-7 px-2.5 rounded-lg bg-[#1a1b26] hover:bg-[#222432] text-zinc-300 hover:text-white text-[11px] font-medium transition-colors cursor-pointer border-none"
-                    >
-                      <Eye className="w-3 h-3 text-[#d1a86e]" />
-                      <span>Preview HTML</span>
-                    </Button>
-                  )}
+                  <div className="shrink-0 flex items-center gap-1.5 text-zinc-500 group-hover:text-[#d1a86e] transition-colors pl-2">
+                    <Eye className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity hidden sm:block" />
+                    <ChevronRight className="w-4 h-4" />
+                  </div>
                 </div>
               ))
             )}
