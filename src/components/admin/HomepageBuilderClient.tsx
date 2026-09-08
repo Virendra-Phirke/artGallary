@@ -845,6 +845,72 @@ export function HomepageBuilderClient({
                             />
                           </div>
 
+                          {/* Specific Quote field for Artist Story */}
+                          {sec.sectionKey === "artist_story" && (
+                            <div className="space-y-1.5">
+                              <label className="text-[11px] font-medium text-zinc-300 block">
+                                Artist Statement / Curatorial Quote
+                              </label>
+                              <textarea
+                                rows={2}
+                                value={sec.contentJson?.quote || ""}
+                                onChange={(e) =>
+                                  updateSectionContent(sec.id, "quote", e.target.value)
+                                }
+                                placeholder="A painting is not merely an image hanging upon a partition..."
+                                className="w-full bg-[#0d0e12] border border-[#262834] rounded-xl px-3.5 py-2 text-xs text-white focus:border-[#d1a86e]/70 focus:ring-1 focus:ring-[#d1a86e]/30 focus:outline-none transition-all placeholder:text-zinc-600 resize-none italic"
+                              />
+                            </div>
+                          )}
+
+                          {/* Call to Action Controls for Hero, AR, and Contact CTA */}
+                          {(sec.sectionKey === "hero" ||
+                            sec.sectionKey === "contact_cta" ||
+                            sec.sectionKey === "ar_experience") && (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              <div className="space-y-1.5">
+                                <label className="text-[11px] font-medium text-zinc-300 block">
+                                  Button (CTA) Label
+                                </label>
+                                <input
+                                  type="text"
+                                  value={sec.contentJson?.ctaText || ""}
+                                  onChange={(e) =>
+                                    updateSectionContent(sec.id, "ctaText", e.target.value)
+                                  }
+                                  placeholder={
+                                    sec.sectionKey === "hero"
+                                      ? "Explore Catalog"
+                                      : sec.sectionKey === "ar_experience"
+                                      ? "Launch Spatial Studio"
+                                      : "Inquire with Studio"
+                                  }
+                                  className="w-full bg-[#0d0e12] border border-[#262834] rounded-xl px-3.5 py-2 text-xs text-white focus:border-[#d1a86e]/70 focus:ring-1 focus:ring-[#d1a86e]/30 focus:outline-none transition-all placeholder:text-zinc-600"
+                                />
+                              </div>
+                              <div className="space-y-1.5">
+                                <label className="text-[11px] font-medium text-zinc-300 block">
+                                  Button (CTA) Link URL
+                                </label>
+                                <input
+                                  type="text"
+                                  value={sec.contentJson?.ctaUrl || ""}
+                                  onChange={(e) =>
+                                    updateSectionContent(sec.id, "ctaUrl", e.target.value)
+                                  }
+                                  placeholder={
+                                    sec.sectionKey === "hero"
+                                      ? "/gallery"
+                                      : sec.sectionKey === "ar_experience"
+                                      ? "/ar"
+                                      : "/contact"
+                                  }
+                                  className="w-full bg-[#0d0e12] border border-[#262834] rounded-xl px-3.5 py-2 text-xs text-white focus:border-[#d1a86e]/70 focus:ring-1 focus:ring-[#d1a86e]/30 focus:outline-none transition-all placeholder:text-zinc-600"
+                                />
+                              </div>
+                            </div>
+                          )}
+
                           {/* Image controls */}
                           <div className="pt-2 border-t border-[#1f212b] space-y-2">
                             <div className="flex items-center justify-between">

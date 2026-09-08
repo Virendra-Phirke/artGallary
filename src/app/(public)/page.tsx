@@ -1,13 +1,13 @@
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import {
   ArrowRight,
   Sparkles,
-  Eye,
-  ShieldCheck,
   MapPin,
   Mail,
+  Calendar,
+  Layers,
+  Compass,
 } from "lucide-react";
 import {
   getArtworks,
@@ -16,293 +16,133 @@ import {
   getHomepageSections,
   getSiteSettings,
 } from "@/db/repository";
-import { formatCurrency, formatDimensions } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
+import { INITIAL_ARTWORKS, INITIAL_HOMEPAGE_SECTIONS } from "@/db/mockData";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { ProgressiveImage } from "@/components/ui/progressive-image";
+import { HeroShowcaseClient } from "@/components/public/HeroShowcaseClient";
+import { FeaturedArtworksClient } from "@/components/public/FeaturedArtworksClient";
+import { InteractiveRoomPreviewer } from "@/components/public/InteractiveRoomPreviewer";
+import { ArtistAtelierSection } from "@/components/public/ArtistAtelierSection";
+import { CollectorServicesSection } from "@/components/public/CollectorServicesSection";
 
 export const revalidate = 3600; // ISR revalidation every 1 hour with instant write-invalidation
 
 export default async function HomePage() {
-  const [artworks, collections, exhibitions, sections, settings] =
+  const [featuredArtworks, allArtworks, collections, exhibitions, sections, settings] =
     await Promise.all([
       getArtworks({ featuredOnly: true }),
+      getArtworks(),
       getCollections(),
       getExhibitions(),
       getHomepageSections(),
       getSiteSettings(),
     ]);
 
-  const heroArtwork = artworks[0];
+  // Ensure rich data fallback if no artworks exist in DB
+  let masterworks = featuredArtworks.length > 0 ? featuredArtworks : allArtworks;
+  if (masterworks.length === 0) {
+    masterworks = INITIAL_ARTWORKS;
+  }
+
   const featuredCollection = collections[0];
   const currentExhibition = exhibitions[0];
 
-  // Active sections sorted by displayOrder
-  const sortedSections = [...sections]
+  // Active sections sorted by displayOrder (fallback to INITIAL_HOMEPAGE_SECTIONS if empty)
+  const activeSections = sections.length > 0 ? sections : INITIAL_HOMEPAGE_SECTIONS;
+  const sortedSections = [...activeSections]
     .filter((s) => s.isEnabled)
     .sort((a, b) => a.displayOrder - b.displayOrder);
 
   return (
-    <div className="space-y-28 md:space-y-36 pb-20">
+    <div className="space-y-24 sm:space-y-32 md:space-y-40 pb-24">
       {sortedSections.map((sec) => {
-        // 1. HERO SECTION
+        // 1. HERO SHOWCASE
         if (sec.sectionKey === "hero") {
-          const heroImageUrl =
-            sec.contentJson?.imageUrl || heroArtwork?.coverImageUrl;
-          const badgeText =
-            sec.contentJson?.badge || sec.subtitle || "Spring 2026 Retrospective";
-          const title =
-            sec.title || "The Architecture of Luminous Stillness";
-          const description =
-            sec.contentJson?.description ||
-            "Original fine artworks by Elena Vance. Exploring the threshold where lapis lazuli glazes, crushed mineral earth, and oceanic silence alter the atmospheric presence of space.";
-          const ctaText = sec.contentJson?.ctaText || "Explore Catalog";
-          const ctaUrl = sec.contentJson?.ctaUrl || "/gallery";
-
           return (
-            <section
+            <HeroShowcaseClient
               key={sec.id}
-              className="relative min-h-[92vh] flex items-center justify-center pt-28 pb-16 px-6 md:px-12 overflow-hidden"
-            >
-              {/* Subtle Ambient Light Glow */}
-              <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#d1a86e]/5 rounded-full blur-[140px] pointer-events-none" />
-
-              <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-                {/* Left Hero Narrative */}
-                <div className="lg:col-span-6 space-y-6 md:space-y-8 z-10">
-                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#18191e] border border-[#262833] text-[11px] tracking-[0.25em] text-[#d1a86e] uppercase">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#d1a86e] animate-pulse" />
-                    <span>{badgeText}</span>
-                  </div>
-
-                  <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.08] text-white tracking-tight font-medium">
-                    {title}
-                  </h1>
-
-                  <p className="text-sm md:text-base text-[#a6aabf] max-w-lg leading-relaxed">
-                    {description}
-                  </p>
-
-                  <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-                    <Button asChild size="lg" className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] shadow-xl shadow-[#d1a86e]/15">
-                      <Link href={ctaUrl} className="flex items-center justify-center gap-2.5">
-                        <span>{ctaText}</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </Link>
-                    </Button>
-
-                    {heroArtwork && (
-                      <Button asChild variant="secondary" size="lg" className="rounded-full border-[#262833] bg-[#18191e] hover:bg-[#22232a] text-white px-6 py-3.5 text-xs font-medium uppercase tracking-[0.2em]">
-                        <Link href={`/ar/${heroArtwork.slug}`} className="flex items-center justify-center gap-2">
-                          <Sparkles className="w-4 h-4 text-[#d1a86e]" />
-                          <span>View in Your Space (AR)</span>
-                        </Link>
-                      </Button>
-                    )}
-                  </div>
-
-                  {/* Quick Metrics */}
-                  <div className="pt-8 border-t border-[#1c1d25] grid grid-cols-3 gap-3 sm:gap-6 text-left">
-                    <div>
-                      <span className="block font-serif text-xl sm:text-2xl text-white">20+</span>
-                      <span className="text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest uppercase text-zinc-500">
-                        Oil Glaze Layers
-                      </span>
-                    </div>
-                    <div>
-                      <span className="block font-serif text-xl sm:text-2xl text-white">1:1</span>
-                      <span className="text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest uppercase text-zinc-500">
-                        Spatial Scale AR
-                      </span>
-                    </div>
-                    <div>
-                      <span className="block font-serif text-xl sm:text-2xl text-white">Paris</span>
-                      <span className="text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest uppercase text-zinc-500">
-                        Permanent Studio
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right Hero Featured Artwork Plaque */}
-                {heroImageUrl && (
-                  <div className="lg:col-span-6 relative flex justify-center z-10">
-                    <div className="relative group w-full max-w-lg">
-                      <div className="relative aspect-[4/3] rounded-lg overflow-hidden border border-[#262833] bg-[#14151a] shadow-2xl shadow-black/80">
-                        <ProgressiveImage
-                          src={heroImageUrl}
-                          alt={heroArtwork?.altText || title}
-                          fill
-                          priority
-                          optimizeWidth={1200}
-                          optimizeQuality={85}
-                          sizes="(max-width: 768px) 100vw, 50vw"
-                          className="object-cover transition-transform duration-700 group-hover:scale-105"
-                        />
-                        {heroArtwork && (
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
-                            <Link
-                              href={`/artwork/${heroArtwork.slug}`}
-                              className="text-xs uppercase tracking-widest text-[#d1a86e] flex items-center gap-2 hover:underline"
-                            >
-                              <span>Examine Provenance</span>
-                              <ArrowRight className="w-3.5 h-3.5" />
-                            </Link>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Floating Artwork Provenance Card */}
-                      {heroArtwork && (
-                        <div className="mt-4 p-4 rounded-lg bg-[#14151a]/90 backdrop-blur-md border border-[#262833] flex items-center justify-between">
-                          <div>
-                            <h2 className="font-serif text-base text-white">
-                              {heroArtwork.title}
-                            </h2>
-                            <p className="text-xs text-[#8e92a4]">
-                              {heroArtwork.year} • {formatDimensions(heroArtwork.widthCm, heroArtwork.heightCm)}
-                            </p>
-                          </div>
-                          <Link
-                            href={`/ar/${heroArtwork.slug}`}
-                            className="flex items-center gap-1.5 text-xs tracking-wider uppercase text-[#d1a86e] hover:text-white transition-colors bg-[#1a1c23] px-3.5 py-1.5 rounded-full border border-[#262833]"
-                          >
-                            <Sparkles className="w-3 h-3" />
-                            <span>Try AR</span>
-                          </Link>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </section>
+              artworks={masterworks}
+              heroBadge={
+                sec.subtitle ||
+                sec.contentJson?.badge ||
+                "Spring 2026 Collection"
+              }
+              heroTitle={
+                sec.title || "The Architecture of Luminous Stillness"
+              }
+              heroDescription={
+                sec.contentJson?.description ||
+                "Original fine artworks by Elena Vance. Exploring the threshold where lapis lazuli glazes, crushed mineral earth, and oceanic silence alter the atmospheric presence of space."
+              }
+              primaryCtaText={sec.contentJson?.ctaText || "Explore Curated Catalog"}
+              primaryCtaUrl={sec.contentJson?.ctaUrl || "/gallery"}
+              customHeroImage={sec.contentJson?.imageUrl}
+            />
           );
         }
 
-        {/* 2. CURATED MASTERWORKS (FEATURED ARTWORKS) */}
+        // 2. CURATED MASTERWORKS (FEATURED ARTWORKS)
         if (sec.sectionKey === "featured_artworks") {
           return (
-            <section key={sec.id} className="max-w-7xl mx-auto px-6 md:px-12">
-              <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 border-b border-[#1c1d25] pb-6 gap-4">
-                <div>
-                  <span className="text-xs tracking-[0.25em] text-[#d1a86e] uppercase font-medium">
-                    {sec.subtitle || "Curated Catalogue"}
-                  </span>
-                  <h2 className="font-serif text-3xl md:text-4xl text-white mt-1">
-                    {sec.title || "Selected Works"}
-                  </h2>
-                </div>
-                <Link
-                  href="/gallery"
-                  className="text-xs uppercase tracking-[0.2em] text-[#a6aabf] hover:text-[#d1a86e] flex items-center gap-2 transition-colors"
-                >
-                  <span>View Complete Collection</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                {artworks.slice(0, 6).map((art, idx) => (
-                  <div key={art.id} className="group flex flex-col space-y-4">
-                    <div className="relative aspect-[4/3] rounded-lg overflow-hidden bg-[#14151a] border border-[#262833]">
-                      <ProgressiveImage
-                        src={art.coverImageUrl}
-                        alt={art.altText}
-                        fill
-                        priority={idx < 3}
-                        optimizeWidth={700}
-                        optimizeQuality={80}
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-
-                      {/* Status Badge */}
-                      <div className="absolute top-3 left-3">
-                        <Badge
-                          variant={
-                            art.status === "published"
-                              ? "success"
-                              : art.status === "reserved"
-                              ? "warning"
-                              : "secondary"
-                          }
-                        >
-                          {art.status}
-                        </Badge>
-                      </div>
-
-                      {/* Quick AR Action Hover */}
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 p-4">
-                        <Link
-                          href={`/artwork/${art.slug}`}
-                          className="p-3 bg-white text-black rounded-full hover:bg-zinc-200 transition-colors shadow-lg"
-                          title="Examine Details"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </Link>
-                        <Link
-                          href={`/ar/${art.slug}`}
-                          className="p-3 bg-[#d1a86e] text-black rounded-full hover:bg-[#e2c18d] transition-colors shadow-lg"
-                          title="View in Your Space (AR)"
-                        >
-                          <Sparkles className="w-4 h-4" />
-                        </Link>
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="flex items-baseline justify-between">
-                        <Link
-                          href={`/artwork/${art.slug}`}
-                          className="font-serif text-xl text-white hover:text-[#d1a86e] transition-colors"
-                        >
-                          {art.title}
-                        </Link>
-                        <span className="text-xs text-[#d1a86e] font-medium">
-                          {formatCurrency(art.price, art.currency)}
-                        </span>
-                      </div>
-                      <p className="text-xs text-[#8e92a4] mt-1 line-clamp-1">
-                        {art.medium}
-                      </p>
-                      <div className="flex items-center justify-between text-[11px] text-zinc-500 mt-2">
-                        <span>{formatDimensions(art.widthCm, art.heightCm)}</span>
-                        <span>{art.year}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
+            <FeaturedArtworksClient
+              key={sec.id}
+              artworks={masterworks}
+              sectionTitle={sec.title || "Selected Works"}
+              sectionSubtitle={sec.subtitle || "Curated Catalogue"}
+            />
           );
         }
 
-        {/* 3. LATEST COLLECTION SPOTLIGHT */}
-        if (sec.sectionKey === "latest_collection" && (featuredCollection || sec.contentJson?.imageUrl)) {
+        // 3. LATEST COLLECTION SPOTLIGHT
+        if (
+          sec.sectionKey === "latest_collection" &&
+          (featuredCollection || sec.contentJson?.imageUrl)
+        ) {
           const colImage =
             sec.contentJson?.imageUrl || featuredCollection?.coverImageUrl;
           return (
-            <section key={sec.id} className="bg-[#101116] border-y border-[#1c1d25] py-16 sm:py-24">
-              <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            <section
+              key={sec.id}
+              className="bg-[#101116] border-y border-[#1c1d25] py-20 sm:py-28"
+            >
+              <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
                 <div className="lg:col-span-5 space-y-6">
-                  <span className="text-xs tracking-[0.25em] text-[#d1a86e] uppercase font-medium">
-                    {sec.subtitle || "Featured Series"}
-                  </span>
-                  <h2 className="font-serif text-3xl md:text-5xl text-white">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#18191e] border border-[#262833] text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase">
+                    <Layers className="w-3 h-3" />
+                    <span>{sec.subtitle || "Featured Series Spotlight"}</span>
+                  </div>
+
+                  <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-white font-medium">
                     {sec.title || featuredCollection?.title}
                   </h2>
-                  <p className="text-sm text-[#a6aabf] leading-relaxed">
-                    {sec.contentJson?.description || featuredCollection?.curatorialStatement}
+
+                  <p className="text-sm md:text-base text-[#a6aabf] leading-relaxed font-light">
+                    {sec.contentJson?.description ||
+                      featuredCollection?.curatorialStatement ||
+                      featuredCollection?.description}
                   </p>
+
                   {featuredCollection && (
-                    <div className="pt-2">
-                      <Link
-                        href={`/collections/${featuredCollection.slug}`}
-                        className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[#d1a86e] hover:text-[#e2c18d] font-semibold transition-colors"
+                    <div className="pt-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                      <Button
+                        asChild
+                        className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-xs tracking-[0.18em] uppercase px-7 py-3 shadow-lg shadow-[#d1a86e]/15"
                       >
-                        <span>Explore All Works in Series</span>
-                        <ArrowRight className="w-4 h-4" />
+                        <Link
+                          href={`/collections/${featuredCollection.slug}`}
+                          className="flex items-center gap-2"
+                        >
+                          <span>Explore Full Series</span>
+                          <ArrowRight className="w-4 h-4" />
+                        </Link>
+                      </Button>
+
+                      <Link
+                        href="/collections"
+                        className="text-xs uppercase tracking-[0.18em] text-zinc-400 hover:text-white transition-colors"
+                      >
+                        All Curated Series &rarr;
                       </Link>
                     </div>
                   )}
@@ -310,16 +150,25 @@ export default async function HomePage() {
 
                 {colImage && (
                   <div className="lg:col-span-7 relative">
-                    <div className="relative aspect-[16/10] rounded-lg overflow-hidden border border-[#262833] shadow-2xl">
+                    <div className="relative aspect-[16/10] rounded-2xl overflow-hidden border border-[#262833] shadow-2xl bg-[#14151a]">
                       <ProgressiveImage
                         src={colImage}
-                        alt={sec.title || featuredCollection?.title || "Featured Collection"}
+                        alt={
+                          sec.title ||
+                          featuredCollection?.title ||
+                          "Featured Collection"
+                        }
                         fill
                         optimizeWidth={1200}
-                        optimizeQuality={80}
+                        optimizeQuality={85}
                         sizes="(max-width: 1024px) 100vw, 60vw"
                         className="object-cover"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-6">
+                        <span className="text-xs font-mono uppercase tracking-widest text-[#d1a86e]">
+                          {featuredCollection?.title} Series
+                        </span>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -328,135 +177,95 @@ export default async function HomePage() {
           );
         }
 
-        {/* 4. WEBAR SPATIAL PREVIEW CALLOUT */}
+        // 4. WEBAR SPATIAL STUDIO / INTERACTIVE ROOM PREVIEWER
         if (sec.sectionKey === "ar_experience") {
-          const arCustomImage = sec.contentJson?.imageUrl;
-          const ctaLink =
-            sec.contentJson?.ctaUrl ||
-            (heroArtwork ? `/ar/${heroArtwork.slug}` : "/gallery");
-
           return (
-            <section key={sec.id} className="max-w-7xl mx-auto px-6 md:px-12">
-              <div className="relative rounded-2xl bg-gradient-to-br from-[#14151a] to-[#181920] border border-[#262833] p-6 sm:p-10 md:p-14 overflow-hidden shadow-2xl">
-                <div className="max-w-2xl space-y-6 relative z-10">
-                  <div className="inline-flex items-center gap-2 text-xs tracking-widest text-[#d1a86e] uppercase font-semibold">
-                    <Sparkles className="w-4 h-4" />
-                    <span>{sec.subtitle || "Spatial WebAR Technology"}</span>
-                  </div>
-                  <h2 className="font-serif text-3xl md:text-5xl text-white">
-                    {sec.title || "View Original Works in Your Interior Space"}
-                  </h2>
-                  <p className="text-sm md:text-base text-[#a6aabf] leading-relaxed">
-                    {sec.contentJson?.description ||
-                      "Experience any painting calibrated to its exact physical centimeter dimensions on your living room, office, or private gallery wall. No external app installation required."}
-                  </p>
-
-                  <div className="flex flex-wrap items-center gap-4 pt-2">
-                    <Button asChild size="lg" className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] shadow-lg shadow-[#d1a86e]/10">
-                      <Link href={ctaLink} className="flex items-center gap-2">
-                        <span>{sec.contentJson?.ctaText || "Launch Spatial Studio"}</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </Link>
-                    </Button>
-                  </div>
-
-                  <div className="flex items-center gap-2 text-[11px] text-zinc-400 pt-3">
-                    <ShieldCheck className="w-4 h-4 text-[#d1a86e]" />
-                    <span>Privacy Guarantee: Camera computations stay 100% strictly on your local browser.</span>
-                  </div>
-                </div>
-
-                {arCustomImage && (
-                  <div className="mt-8 relative aspect-[21/9] rounded-xl overflow-hidden border border-[#262833] shadow-2xl">
-                    <ProgressiveImage
-                      src={arCustomImage}
-                      alt="AR spatial preview"
-                      fill
-                      optimizeWidth={1200}
-                      optimizeQuality={80}
-                      sizes="(max-width: 1024px) 100vw, 1000px"
-                      className="object-cover"
-                    />
-                  </div>
-                )}
-              </div>
-            </section>
+            <InteractiveRoomPreviewer
+              key={sec.id}
+              artworks={masterworks}
+              sectionTitle={
+                sec.title || "View Original Works in Your Interior Space"
+              }
+              sectionSubtitle={sec.subtitle || "Spatial WebAR & Room Studio"}
+              sectionDescription={
+                sec.contentJson?.description ||
+                "Calibrate any painting to its physical centimeter scale against curated architectural walls and custom frames, or launch camera WebAR directly on your phone."
+              }
+              ctaText={sec.contentJson?.ctaText}
+              ctaUrl={sec.contentJson?.ctaUrl}
+            />
           );
         }
 
-        {/* 5. ARTIST ESSAY / STATEMENT */}
+        // 5. ARTIST ATELIER & STATEMENT
         if (sec.sectionKey === "artist_story") {
-          const storyImageUrl = sec.contentJson?.imageUrl;
           return (
-            <section key={sec.id} className="max-w-5xl mx-auto px-6 md:px-12 text-center space-y-8">
-              <span className="text-xs tracking-[0.25em] text-[#d1a86e] uppercase font-medium">
-                {sec.subtitle || "Studio Monologue"}
-              </span>
-              <blockquote className="font-serif text-2xl sm:text-3xl md:text-4xl text-white font-light italic leading-snug">
-                &ldquo;
-                {sec.contentJson?.quote ||
-                  "A painting is not merely an image hanging upon a partition; it is an alteration of the atmospheric silence within a room."}
-                &rdquo;
-              </blockquote>
+            <React.Fragment key={sec.id}>
+              <ArtistAtelierSection
+                title={sec.title || "The Alchemy of Natural Earth & Luminous Glazes"}
+                quote={
+                  sec.contentJson?.quote ||
+                  "A painting is not merely an image hanging upon a partition; it is an alteration of the atmospheric silence within a room."
+                }
+                description={
+                  sec.contentJson?.description ||
+                  "Elena Vance (b. 1986) divides her studio practice between Paris and the wind-sculpted granite coast of Brittany. Her monumental canvases investigate the physical threshold where lapis lazuli glazes, crushed mineral earth, and oceanic silence transform architectural interiors."
+                }
+                imageUrl={sec.contentJson?.imageUrl}
+                subtitle={sec.subtitle || "Studio Monologue & Philosophy"}
+              />
 
-              {storyImageUrl && (
-                <div className="relative aspect-[16/9] max-w-xl mx-auto rounded-xl overflow-hidden border border-[#262833] shadow-2xl">
-                  <ProgressiveImage
-                    src={storyImageUrl}
-                    alt="Artist Atelier"
-                    fill
-                    optimizeWidth={800}
-                    optimizeQuality={80}
-                    sizes="(max-width: 768px) 100vw, 600px"
-                    className="object-cover"
-                  />
-                </div>
-              )}
-
-              <p className="text-sm text-[#a6aabf] max-w-xl mx-auto leading-relaxed">
-                {sec.contentJson?.description ||
-                  "Elena Vance lives and works between her studio in the 1st arrondissement of Paris and the wind-sculpted granite coast of Brittany. Her canvases are represented in distinguished private collections across Europe, North America, and Japan."}
-              </p>
-              <div>
-                <Link
-                  href="/about"
-                  className="text-xs uppercase tracking-[0.2em] text-[#d1a86e] hover:underline"
-                >
-                  Read Full Artist Biography &amp; CV
-                </Link>
-              </div>
-            </section>
+              {/* Collector Concierge & Provenance Standards */}
+              <CollectorServicesSection />
+            </React.Fragment>
           );
         }
 
-        {/* 6. CURRENT EXHIBITION */}
-        if (sec.sectionKey === "featured_exhibition" && (currentExhibition || sec.contentJson?.imageUrl)) {
+        // 6. CURRENT / FEATURED EXHIBITION
+        if (
+          sec.sectionKey === "featured_exhibition" &&
+          (currentExhibition || sec.contentJson?.imageUrl)
+        ) {
           const exhImageUrl =
             sec.contentJson?.imageUrl || currentExhibition?.coverImageUrl;
           return (
             <section key={sec.id} className="max-w-7xl mx-auto px-6 md:px-12">
-              <div className="border-t border-[#1c1d25] pt-14 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+              <div className="border-t border-[#1c1d25] pt-16 sm:pt-24 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
                 {exhImageUrl && (
                   <div className="lg:col-span-7">
-                    <div className="relative aspect-[16/9] rounded-lg overflow-hidden border border-[#262833]">
+                    <div className="relative aspect-[16/9] rounded-2xl overflow-hidden border border-[#262833] shadow-2xl bg-[#14151a]">
                       <ProgressiveImage
                         src={exhImageUrl}
-                        alt={sec.title || currentExhibition?.title || "Exhibition"}
+                        alt={
+                          sec.title ||
+                          currentExhibition?.title ||
+                          "Solo Exhibition"
+                        }
                         fill
                         optimizeWidth={1200}
-                        optimizeQuality={80}
+                        optimizeQuality={85}
                         sizes="(max-width: 1024px) 100vw, 60vw"
                         className="object-cover"
                       />
+                      <div className="absolute top-4 left-4">
+                        <Badge
+                          variant="success"
+                          className="backdrop-blur-md bg-black/60 border border-white/10"
+                        >
+                          {currentExhibition?.status === "current"
+                            ? "Currently Open"
+                            : "Upcoming Exhibition"}
+                        </Badge>
+                      </div>
                     </div>
                   </div>
                 )}
 
-                <div className="lg:col-span-5 space-y-4">
-                  <span className="text-[11px] tracking-[0.25em] text-[#d1a86e] uppercase font-medium">
-                    {sec.subtitle || "Current Exhibition"}
+                <div className="lg:col-span-5 space-y-5">
+                  <span className="text-[11px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
+                    {sec.subtitle || "Current Solo Exhibition"}
                   </span>
-                  <h3 className="font-serif text-3xl text-white">
+                  <h3 className="font-serif text-3xl sm:text-4xl text-white font-medium">
                     {sec.title || currentExhibition?.title}
                   </h3>
                   {currentExhibition?.subtitle && (
@@ -466,22 +275,50 @@ export default async function HomePage() {
                   )}
                   {currentExhibition?.location && (
                     <div className="flex items-center gap-2 text-xs text-zinc-300 pt-1">
-                      <MapPin className="w-3.5 h-3.5 text-[#d1a86e]" />
+                      <MapPin className="w-3.5 h-3.5 text-[#d1a86e] shrink-0" />
                       <span>{currentExhibition.location}</span>
                     </div>
                   )}
+                  {currentExhibition?.startDate && (
+                    <div className="flex items-center gap-2 text-xs text-zinc-400">
+                      <Calendar className="w-3.5 h-3.5 text-[#d1a86e] shrink-0" />
+                      <span>
+                        {new Date(currentExhibition.startDate).toLocaleDateString(
+                          "en-US",
+                          { month: "long", day: "numeric", year: "numeric" }
+                        )}
+                        {currentExhibition.endDate
+                          ? ` — ${new Date(
+                              currentExhibition.endDate
+                            ).toLocaleDateString("en-US", {
+                              month: "long",
+                              day: "numeric",
+                              year: "numeric",
+                            })}`
+                          : ""}
+                      </span>
+                    </div>
+                  )}
                   <p className="text-sm text-[#a6aabf] leading-relaxed pt-2">
-                    {sec.contentJson?.description || currentExhibition?.description}
+                    {sec.contentJson?.description ||
+                      currentExhibition?.description ||
+                      currentExhibition?.curatorNote}
                   </p>
                   {currentExhibition && (
                     <div className="pt-3">
-                      <Link
-                        href={`/exhibitions/${currentExhibition.slug}`}
-                        className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[#d1a86e] hover:underline"
+                      <Button
+                        asChild
+                        variant="outline"
+                        className="rounded-full border-[#262833] bg-[#14151a] hover:bg-[#1a1c23] hover:border-[#d1a86e]/40 text-white text-xs uppercase tracking-wider"
                       >
-                        <span>View Exhibition Catalog</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </Link>
+                        <Link
+                          href={`/exhibitions/${currentExhibition.slug}`}
+                          className="flex items-center gap-2"
+                        >
+                          <span>View Exhibition Catalog</span>
+                          <ArrowRight className="w-3.5 h-3.5 text-[#d1a86e]" />
+                        </Link>
+                      </Button>
                     </div>
                   )}
                 </div>
@@ -490,31 +327,54 @@ export default async function HomePage() {
           );
         }
 
-        {/* 7. CONTACT / INQUIRY CTA */}
+        // 7. PRIVATE INQUIRIES & ACQUISITIONS CTA
         if (sec.sectionKey === "contact_cta") {
           return (
-            <section key={sec.id} className="max-w-5xl mx-auto px-6 md:px-12 text-center">
-              <div className="rounded-3xl border border-[#262833] bg-[#14151a] p-6 sm:p-10 md:p-16 space-y-6 shadow-2xl relative overflow-hidden">
-                <div className="inline-flex items-center gap-2 text-xs tracking-widest text-[#d1a86e] uppercase font-medium">
+            <section
+              key={sec.id}
+              className="max-w-5xl mx-auto px-6 md:px-12 text-center"
+            >
+              <div className="rounded-3xl border border-[#262833] bg-gradient-to-b from-[#14151a] to-[#101116] p-8 sm:p-12 md:p-16 space-y-6 shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-[#d1a86e]/8 rounded-full blur-[140px] pointer-events-none" />
+
+                <div className="inline-flex items-center gap-2 text-xs tracking-widest text-[#d1a86e] uppercase font-semibold">
                   <Mail className="w-4 h-4" />
                   <span>{sec.subtitle || "Inquiries & Acquisitions"}</span>
                 </div>
-                <h2 className="font-serif text-3xl md:text-5xl text-white">
+
+                <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-white font-medium">
                   {sec.title || "Direct Studio Acquisitions"}
                 </h2>
-                <p className="text-sm text-[#a6aabf] max-w-xl mx-auto leading-relaxed">
+
+                <p className="text-sm md:text-base text-[#a6aabf] max-w-xl mx-auto leading-relaxed font-light">
                   {sec.contentJson?.description ||
-                    "Inquire about acquiring original works, scheduling a private studio viewing, or commissioning bespoke architectural artworks directly with Elena Vance."}
+                    "Inquire about acquiring original works, scheduling a private studio viewing in Paris, or commissioning bespoke architectural artworks directly with Elena Vance."}
                 </p>
-                <div className="pt-3">
-                  <Button asChild size="lg" className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] px-8 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] shadow-xl shadow-[#d1a86e]/15">
+
+                <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+                  <Button
+                    asChild
+                    size="lg"
+                    className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] px-8 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] shadow-xl shadow-[#d1a86e]/15"
+                  >
                     <Link
                       href={sec.contentJson?.ctaUrl || "/contact"}
                       className="inline-flex items-center gap-2.5"
                     >
-                      <span>{sec.contentJson?.ctaText || "Inquire with Studio"}</span>
+                      <span>
+                        {sec.contentJson?.ctaText || "Inquire with Studio"}
+                      </span>
                       <ArrowRight className="w-4 h-4" />
                     </Link>
+                  </Button>
+
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="lg"
+                    className="rounded-full border-[#262833] bg-[#14151a] hover:bg-[#1a1c23] text-zinc-300 hover:text-white px-7 py-3.5 text-xs uppercase tracking-wider"
+                  >
+                    <Link href="/about">About the Artist</Link>
                   </Button>
                 </div>
               </div>

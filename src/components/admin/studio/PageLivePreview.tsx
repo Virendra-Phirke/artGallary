@@ -302,8 +302,48 @@ export function PageLivePreview({
                     <div key={sec.id} className="px-6 max-w-4xl mx-auto border-y border-[#1c1d25] py-12">
                       <div className="max-w-2xl mx-auto text-center space-y-3">
                         <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase">{sec.subtitle || "The Artist Statement"}</span>
-                        <h3 className="font-serif text-2xl md:text-3xl text-white italic font-normal">&ldquo;{sec.title || "A painting is an alteration of the atmospheric silence within a room."}&rdquo;</h3>
-                        <span className="text-xs text-[#d1a86e] font-serif">— {artistName}</span>
+                        <h3 className="font-serif text-2xl md:text-3xl text-white italic font-normal">&ldquo;{sec.contentJson?.quote || sec.title || "A painting is an alteration of the atmospheric silence within a room."}&rdquo;</h3>
+                        <p className="text-xs text-zinc-400 line-clamp-2 pt-1">{sec.contentJson?.description}</p>
+                        <span className="text-xs text-[#d1a86e] font-serif block">— {artistName}</span>
+                      </div>
+                    </div>
+                  );
+                }
+
+                // FEATURED EXHIBITION
+                if (sec.sectionKey === "featured_exhibition") {
+                  const exhImage = sec.contentJson?.imageUrl || currentExhibition?.coverImageUrl;
+                  return (
+                    <div key={sec.id} className="px-6 max-w-4xl mx-auto border-t border-[#1c1d25] pt-8">
+                      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                        {exhImage && (
+                          <div className="md:col-span-6 relative aspect-[16/9] rounded-lg overflow-hidden border border-[#262833] bg-[#14151a]">
+                            <Image src={exhImage} alt={sec.title || "Exhibition"} fill sizes="300px" className="object-cover" />
+                          </div>
+                        )}
+                        <div className="md:col-span-6 space-y-2">
+                          <span className="text-[10px] tracking-[0.2em] text-[#d1a86e] uppercase font-semibold">{sec.subtitle || "Current Exhibition"}</span>
+                          <h3 className="font-serif text-xl md:text-2xl text-white font-medium">{sec.title || currentExhibition?.title || "Solo Exhibition"}</h3>
+                          <p className="text-xs text-zinc-400 line-clamp-3">{sec.contentJson?.description || currentExhibition?.description}</p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
+
+                // CONTACT CTA
+                if (sec.sectionKey === "contact_cta") {
+                  return (
+                    <div key={sec.id} className="px-6 max-w-4xl mx-auto text-center">
+                      <div className="rounded-2xl border border-[#262833] bg-[#14151a] p-8 space-y-3">
+                        <span className="text-[10px] tracking-[0.2em] text-[#d1a86e] uppercase font-semibold">{sec.subtitle || "Inquiries & Acquisitions"}</span>
+                        <h3 className="font-serif text-2xl text-white font-medium">{sec.title || "Direct Studio Acquisitions"}</h3>
+                        <p className="text-xs text-zinc-400 max-w-md mx-auto">{sec.contentJson?.description || "Inquire about acquiring original works."}</p>
+                        <div className="pt-2">
+                          <button className="bg-[#d1a86e] text-[#0d0e12] px-5 py-2 rounded-full text-[11px] font-semibold uppercase tracking-wider">
+                            {sec.contentJson?.ctaText || "Inquire with Studio"}
+                          </button>
+                        </div>
                       </div>
                     </div>
                   );
