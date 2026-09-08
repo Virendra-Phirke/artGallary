@@ -72,6 +72,8 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
   const hitTestSourceRef = useRef<any>(null);
   const activeReferenceSpaceTypeRef = useRef<string>("local");
   const mediaStreamRef = useRef<MediaStream | null>(null);
+  const pendingStreamRef = useRef<MediaStream | null>(null);
+  const cameraArInitializedRef = useRef<boolean>(false);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const animIdRef = useRef<number | null>(null);
   const artworkPkgRef = useRef<any>(null);
@@ -151,6 +153,25 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
     };
   }, [teardownArSession]);
 
+  // 3b. useEffect to initialize Camera AR after DOM renders video element
+  useEffect(() => {
+    if (
+      viewerMode === "camera-ar" &&
+      pendingStreamRef.current &&
+      !cameraArInitializedRef.current
+    ) {
+      cameraArInitializedRef.current = true;
+      const stream = pendingStreamRef.current;
+      pendingStreamRef.current = null;
+
+      // Small delay to ensure DOM elements are fully painted
+      const timer = setTimeout(() => {
+        initCameraArEngine(stream);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [viewerMode]);
+
   // 4. Launch AR Experience with Multi-Stage Graceful Fallback
   const handleStartAr = async () => {
     // Prevent rapid duplicate clicks
@@ -204,9 +225,12 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
         });
 
         mediaStreamRef.current = stream;
+        // Store stream in ref — useEffect will pick it up after DOM renders
+        pendingStreamRef.current = stream;
+        cameraArInitializedRef.current = false;
         setViewerMode("camera-ar");
         setArState("active");
-        initCameraArEngine(stream);
+        // DO NOT call initCameraArEngine here — video element doesn't exist yet
         return;
       } catch (err: any) {
         console.warn("[AR] Camera stream error:", err);
@@ -387,13 +411,27 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
 
   // 6. Level 2: Camera Stream AR Engine (Fallback for Safari / Standard Mobile)
   const initCameraArEngine = (stream: MediaStream) => {
+    console.log("[AR] initCameraArEngine called. videoRef:", !!videoRef.current, "canvasRef:", !!canvasRef.current);
+
+    // Connect the camera stream to the video element
     if (videoRef.current) {
       videoRef.current.srcObject = stream;
-      videoRef.current.play().catch(() => {});
+      videoRef.current.onloadedmetadata = () => {
+        videoRef.current?.play().catch((e) => {
+          console.warn("[AR] Video play failed:", e);
+        });
+        console.log("[AR] Camera video stream playing.");
+      };
+    } else {
+      console.error("[AR] videoRef is still null — camera feed cannot attach.");
+      return;
     }
 
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {
+      console.error("[AR] canvasRef is null — Three.js cannot initialize.");
+      return;
+    }
 
     const width = window.innerWidth;
     const height = window.innerHeight;
@@ -424,7 +462,7 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
     pointLight.position.set(0.5, 1.5, 2);
     scene.add(pointLight);
 
-    // Create 1:1 artwork
+    // Create 1:1 artwork — initially hidden until user taps to place
     const artworkPkg = createArtworkMesh({
       dimensions: {
         widthCm: artwork.widthCm,
@@ -435,6 +473,7 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
       frameEnabled,
     });
     artworkPkgRef.current = artworkPkg;
+    artworkPkg.group.visible = false; // Hidden until user taps to place
     scene.add(artworkPkg.group);
 
     const textureLoader = new THREE.TextureLoader();
@@ -443,7 +482,7 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
       artworkPkg.updateTexture(tex);
     });
 
-    // Gesture Controller
+    // Gesture Controller for pinch/drag/rotate after placement
     if (containerRef.current) {
       const gesture = new GestureController({
         domElement: containerRef.current,
@@ -451,7 +490,7 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
         maxScale,
         defaultScale: artwork.arConfig?.defaultScale ?? 1.0,
         onTransformChange: (t: GestureTransform) => {
-          if (artworkPkg.group) {
+          if (artworkPkg.group && artworkPkg.group.visible) {
             artworkPkg.group.scale.set(t.scale, t.scale, t.scale);
             artworkPkg.group.rotation.z = t.rotationZ;
             artworkPkg.group.position.x = t.offsetX;
@@ -463,9 +502,23 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
       gestureControllerRef.current = gesture;
     }
 
-    setIsPlaced(true);
-    setIsScanning(false);
-    setSurfaceDetected(true);
+    // Start scanning — user taps to place the artwork
+    setIsPlaced(false);
+    setIsScanning(true);
+    setSurfaceDetected(true); // Camera is a valid surface
+
+    // Tap-to-place handler for camera-ar mode
+    const handleTapPlace = (e: MouseEvent | TouchEvent) => {
+      if (artworkPkg.group.visible) return; // Already placed
+      e.preventDefault();
+      artworkPkg.group.visible = true;
+      artworkPkg.group.position.set(0, 0, 0);
+      setIsPlaced(true);
+      setIsScanning(false);
+      console.log("[AR] Artwork placed via tap in camera-ar mode.");
+    };
+    canvas.addEventListener("click", handleTapPlace);
+    canvas.addEventListener("touchend", handleTapPlace, { passive: false });
 
     const animate = () => {
       animIdRef.current = requestAnimationFrame(animate);
@@ -549,23 +602,40 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
   return (
     <div
       ref={containerRef}
-      className={cn(
-        "fixed inset-0 z-50 overflow-hidden select-none",
-        viewerMode === "camera-ar" ? "bg-black" : "bg-transparent"
-      )}
-      style={{
-        backgroundColor: viewerMode === "camera-ar" ? "#000000" : "transparent",
-      }}
+      className="fixed inset-0 z-50 overflow-hidden select-none bg-black"
     >
-      {/* Background Camera Video for Level 2 Camera AR */}
-      {viewerMode === "camera-ar" && (
-        <video
-          ref={videoRef}
-          autoPlay
-          playsInline
-          muted
-          className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-        />
+      {/* Background Camera Video — always rendered so ref is available */}
+      <video
+        ref={videoRef}
+        autoPlay
+        playsInline
+        muted
+        className={cn(
+          "absolute inset-0 w-full h-full object-cover pointer-events-none",
+          viewerMode !== "camera-ar" && "hidden"
+        )}
+      />
+
+      {/* Scanning overlay — shown before user places artwork */}
+      {viewerMode === "camera-ar" && !isPlaced && (
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none">
+          {/* Scanning reticle */}
+          <div className="w-48 h-48 rounded-3xl border-2 border-[#d1a86e]/60 flex items-center justify-center animate-pulse">
+            <div className="w-36 h-36 rounded-2xl border border-[#d1a86e]/30 flex items-center justify-center">
+              <div className="text-center space-y-2">
+                <div className="w-8 h-8 mx-auto rounded-full bg-[#d1a86e]/20 flex items-center justify-center">
+                  <div className="w-3 h-3 rounded-full bg-[#d1a86e] animate-ping" />
+                </div>
+              </div>
+            </div>
+          </div>
+          <p className="mt-6 text-sm text-white font-medium text-center px-6 drop-shadow-lg">
+            Point your camera at a wall and tap to place the artwork
+          </p>
+          <p className="mt-1 text-[11px] text-white/60 font-mono text-center">
+            {artwork.widthCm} × {artwork.heightCm} cm • 1:1 Scale
+          </p>
+        </div>
       )}
 
       {/* Three.js AR Canvas with guaranteed transparent background */}
