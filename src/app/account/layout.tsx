@@ -31,7 +31,7 @@ export default async function AccountLayout({
         }}
         inquiriesCount={userInquiries.length}
       />
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 md:px-10 pt-8 pb-36">
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 md:pl-16 md:pr-10 pt-8 pb-16">
         {children}
       </main>
     </div>

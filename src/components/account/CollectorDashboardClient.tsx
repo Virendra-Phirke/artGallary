@@ -190,7 +190,7 @@ export function CollectorDashboardClient({
   const currentTabInfo = tabMetadata[activeTab] || tabMetadata.overview;
 
   return (
-    <div className="space-y-10 pb-36">
+    <div className="space-y-10 pb-16">
       {/* 1. EDITORIAL HUB BANNER */}
       <div className="border-b border-[#22242f] pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div className="space-y-1.5">

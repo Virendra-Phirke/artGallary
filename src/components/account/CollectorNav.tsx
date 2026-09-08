@@ -70,8 +70,8 @@ export function CollectorNav({ user, inquiriesCount = 0 }: CollectorNavProps) {
           </div>
         </div>
 
-        {/* Center / Link to Public Showcase */}
-        <div className="hidden md:flex items-center">
+        {/* Center / Link to Public Showcase & Left Dock Hint */}
+        <div className="hidden md:flex items-center gap-4">
           <Link
             href="/"
             className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#14151c] border border-[#262833] hover:border-[#3d4052] text-xs text-zinc-300 hover:text-white transition-all shadow-sm group"
@@ -81,6 +81,11 @@ export function CollectorNav({ user, inquiriesCount = 0 }: CollectorNavProps) {
               Exit to Public Gallery &amp; Landing
             </span>
           </Link>
+
+          <div className="hidden xl:flex items-center gap-1.5 text-[11px] text-zinc-500 font-mono">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#d1a86e]/60 animate-pulse" />
+            <span>Hover left edge for dock</span>
+          </div>
         </div>
 
         {/* Right Actions & User Menu */}
