@@ -13,6 +13,7 @@ import {
   Layers,
   Heart,
   ShoppingBag,
+  Menu,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -186,14 +187,15 @@ export function CollectorNav({ user, inquiriesCount = 0 }: CollectorNavProps) {
             </span>
           </button>
 
-          {/* Quick exit on mobile */}
-          <Link
-            href="/"
-            className="md:hidden inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#14151c] border border-[#262833] text-[10px] text-zinc-300 hover:text-white"
+          {/* Mobile Salon Sidebar Drawer Trigger */}
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent("atelier-toggle-mobile-sidebar"))}
+            className="md:hidden w-8 h-8 rounded-lg bg-[#14151c] border border-[#2b2e3c] hover:border-[#d1a86e]/70 flex items-center justify-center text-[#d1a86e] hover:text-white transition-all cursor-pointer"
+            aria-label="Toggle Salon Navigation Menu"
+            title="Salon Navigation Menu"
           >
-            <ArrowLeft className="w-3 h-3 text-[#d1a86e]" />
-            <span>Exit</span>
-          </Link>
+            <Menu className="w-4 h-4" />
+          </button>
 
           {/* Authenticated User Actions or Guest Sign In */}
           {user ? (

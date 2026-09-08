@@ -35,7 +35,7 @@ export default async function AccountLayout({
         user={currentUser}
         inquiriesCount={userInquiries.length}
       />
-      <main className="flex-1 w-full px-4 sm:px-6 md:px-12 lg:px-16 xl:px-20 max-w-[1850px] mx-auto pt-6 pb-28 md:pb-20">
+      <main className="flex-1 w-full px-4 sm:px-6 md:px-12 lg:px-16 xl:px-20 max-w-[1850px] mx-auto pt-6 pb-16 md:pb-20">
         {children}
       </main>
     </div>

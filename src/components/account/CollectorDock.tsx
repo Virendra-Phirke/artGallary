@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import {
   motion,
   AnimatePresence,
@@ -17,6 +18,9 @@ import {
   PinOff,
   ChevronRight,
   ShoppingBag,
+  Menu,
+  X,
+  ArrowLeft,
 } from "lucide-react";
 import { Dock, DockIcon } from "@/components/magicui/dock";
 import {
@@ -74,6 +78,7 @@ export function CollectorDock({
 }: CollectorDockProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isPinned, setIsPinned] = useState(true);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const exitTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Restore pinned preference from localStorage
@@ -87,6 +92,25 @@ export function CollectorDock({
       // ignore SSR
     }
   }, []);
+
+  // Listen for mobile toggle event from CollectorNav
+  useEffect(() => {
+    const handleToggle = () => setIsMobileOpen((prev) => !prev);
+    window.addEventListener("atelier-toggle-mobile-sidebar", handleToggle);
+    return () => window.removeEventListener("atelier-toggle-mobile-sidebar", handleToggle);
+  }, []);
+
+  // Lock body scroll when mobile sidebar is open
+  useEffect(() => {
+    if (isMobileOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileOpen]);
 
   const togglePin = () => {
     setIsPinned((prev) => {
@@ -113,6 +137,11 @@ export function CollectorDock({
     exitTimeoutRef.current = setTimeout(() => {
       setIsHovered(false);
     }, 320); // Grace window
+  };
+
+  const handleMobileTabSelect = (tab: CollectorTab) => {
+    onTabChange(tab);
+    setIsMobileOpen(false);
   };
 
   const isVisible = isPinned || isHovered;
@@ -354,64 +383,183 @@ export function CollectorDock({
         </Dock>
       </motion.nav>
 
-      {/* 4. Mobile Floating Bottom Navigation Dock (< 768px) */}
-      <nav
-        aria-label="Mobile Collector Navigation"
-        className="md:hidden fixed bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-lg bg-[#0c0d12]/92 backdrop-blur-2xl border border-[#262835] rounded-2xl p-1.5 shadow-2xl shadow-black/90 flex items-center justify-between"
-      >
-        {[...PRIMARY_NAV_ITEMS, ...SECONDARY_NAV_ITEMS].map((item) => {
-          const isActive = activeTab === item.id;
-          const Icon = item.icon;
-          const badgeCount = item.id === "inquiries" ? inquiriesCount : undefined;
-
-          return (
-            <button
-              key={item.id}
-              onClick={() => onTabChange(item.id)}
-              className={cn(
-                "relative flex-1 py-2 px-1 rounded-xl flex flex-col items-center justify-center transition-all cursor-pointer",
-                isActive
-                  ? "bg-[#1f212c] text-[#d1a86e] font-semibold shadow-sm shadow-[#d1a86e]/10"
-                  : "text-zinc-400 hover:text-zinc-200"
-              )}
-              aria-label={item.label}
-              title={item.label}
-            >
-              <div className="relative">
-                <Icon className={cn("w-4 h-4 transition-transform", isActive && "scale-110 text-[#d1a86e]")} />
-                {badgeCount !== undefined && badgeCount > 0 && (
-                  <span className="absolute -top-1 -right-1.5 flex h-3.5 min-w-3.5 px-0.5 items-center justify-center rounded-full bg-[#d1a86e] text-[8px] font-bold text-[#0d0e12]">
-                    {badgeCount}
-                  </span>
-                )}
-              </div>
-              {isActive && (
-                <span className="w-1 h-1 rounded-full bg-[#d1a86e] mt-1" />
-              )}
-            </button>
-          );
-        })}
-
-        {/* Mobile Dossier / Cart Trigger */}
+      {/* 4. Floating Mobile Trigger Button (< 768px) */}
+      <div className="md:hidden fixed bottom-5 right-5 z-40">
         <button
-          onClick={onOpenCart}
-          className={cn(
-            "relative flex-1 py-2 px-1 rounded-xl flex flex-col items-center justify-center transition-all cursor-pointer",
-            cartCount > 0 ? "text-[#d1a86e]" : "text-zinc-400 hover:text-zinc-200"
-          )}
-          aria-label="Acquisition Dossier"
-          title="Acquisition Dossier"
+          onClick={() => setIsMobileOpen((prev) => !prev)}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#121319]/90 hover:bg-[#181a24] active:scale-95 backdrop-blur-2xl border border-[#d1a86e]/40 shadow-2xl shadow-black/80 text-white font-medium text-xs tracking-wider uppercase transition-all cursor-pointer group"
+          aria-label={isMobileOpen ? "Close Salon Navigation" : "Open Salon Navigation"}
         >
-          <div className="relative">
-            <ShoppingBag className={cn("w-4 h-4", cartCount > 0 && "text-[#d1a86e]")} />
-            {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1.5 flex h-3.5 min-w-3.5 px-0.5 items-center justify-center rounded-full bg-[#d1a86e] text-[8px] font-bold text-[#0d0e12]">
-                {cartCount}
-              </span>
-            )}
-          </div>
+          {isMobileOpen ? (
+            <X className="w-4 h-4 text-[#d1a86e] transition-transform group-hover:rotate-90" />
+          ) : (
+            <Menu className="w-4 h-4 text-[#d1a86e]" />
+          )}
+          <span className="text-xs font-semibold text-zinc-200 group-hover:text-white">
+            {isMobileOpen ? "Close" : "Salon Menu"}
+          </span>
+          {inquiriesCount > 0 && (
+            <span className="flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-[#d1a86e] text-[9px] font-bold text-[#0d0e12]">
+              {inquiriesCount}
+            </span>
+          )}
         </button>
-      </nav>
+      </div>
+
+      {/* 5. Mobile Sliding Sidebar Drawer & Backdrop */}
+      <AnimatePresence>
+        {isMobileOpen && (
+          <>
+            {/* Backdrop Blur */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.22, ease: "easeOut" }}
+              onClick={() => setIsMobileOpen(false)}
+              className="md:hidden fixed inset-0 bg-black/80 backdrop-blur-md z-50 pointer-events-auto"
+              aria-hidden="true"
+            />
+
+            {/* Sliding Sidebar Panel */}
+            <motion.aside
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 320 }}
+              className="md:hidden fixed inset-y-0 left-0 w-[84%] max-w-[320px] bg-[#0c0d12] border-r border-[#262835] z-50 p-6 flex flex-col justify-between shadow-2xl shadow-black overflow-y-auto"
+              aria-label="Mobile Navigation Sidebar"
+            >
+              {/* Top Cluster & Navigation */}
+              <div className="space-y-6">
+                <div className="flex items-center justify-between border-b border-[#20222d] pb-4">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#d1a86e] to-[#8d6f3e] p-[1px]">
+                      <div className="w-full h-full rounded-[7px] bg-[#0d0e12] flex items-center justify-center text-[#d1a86e]">
+                        <Sparkles className="w-4 h-4 text-[#d1a86e]" />
+                      </div>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="font-serif text-sm tracking-[0.15em] font-medium text-white uppercase">
+                        L&apos;Atelier
+                      </span>
+                      <span className="text-[9px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
+                        Collector Suite
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => setIsMobileOpen(false)}
+                    className="w-8 h-8 rounded-lg bg-[#14151c] border border-[#2b2e3c] hover:border-[#d1a86e]/70 flex items-center justify-center text-zinc-400 hover:text-white transition-all cursor-pointer"
+                    aria-label="Close Navigation"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Primary Rooms List */}
+                <div className="space-y-1">
+                  <span className="text-[10px] tracking-[0.2em] text-zinc-500 uppercase font-mono px-3 block mb-2">
+                    Curatorial Rooms
+                  </span>
+                  {PRIMARY_NAV_ITEMS.map((item) => {
+                    const isActive = activeTab === item.id;
+                    const Icon = item.icon;
+                    const badgeCount = item.id === "inquiries" ? inquiriesCount : undefined;
+
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => handleMobileTabSelect(item.id)}
+                        className={cn(
+                          "w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-xs font-medium transition-all text-left cursor-pointer",
+                          isActive
+                            ? "bg-[#1f2230] text-[#d1a86e] font-semibold border border-[#d1a86e]/30 shadow-sm"
+                            : "text-zinc-300 hover:text-white hover:bg-[#151620]"
+                        )}
+                      >
+                        <div className="flex items-center gap-3">
+                          <Icon className={cn("w-4 h-4", isActive ? "text-[#d1a86e]" : "text-zinc-400")} />
+                          <span>{item.label}</span>
+                        </div>
+                        {badgeCount !== undefined && badgeCount > 0 && (
+                          <span className="px-2 py-0.5 rounded-full bg-[#d1a86e] text-[10px] font-mono font-bold text-[#0d0e12]">
+                            {badgeCount}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Secondary Studio Options */}
+                <div className="space-y-1 pt-3 border-t border-[#1e202b]">
+                  <span className="text-[10px] tracking-[0.2em] text-zinc-500 uppercase font-mono px-3 block mb-2">
+                    Studio Spatial
+                  </span>
+                  {SECONDARY_NAV_ITEMS.map((item) => {
+                    const isActive = activeTab === item.id;
+                    const Icon = item.icon;
+
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => handleMobileTabSelect(item.id)}
+                        className={cn(
+                          "w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-xs font-medium transition-all text-left cursor-pointer",
+                          isActive
+                            ? "bg-[#1f2230] text-[#d1a86e] font-semibold border border-[#d1a86e]/30 shadow-sm"
+                            : "text-zinc-300 hover:text-white hover:bg-[#151620]"
+                        )}
+                      >
+                        <Icon className={cn("w-4 h-4", isActive ? "text-[#d1a86e]" : "text-zinc-400")} />
+                        <span>{item.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Acquisition Dossier Trigger in Sidebar */}
+                <div className="pt-2">
+                  <button
+                    onClick={() => {
+                      setIsMobileOpen(false);
+                      onOpenCart?.();
+                    }}
+                    className="w-full flex items-center justify-between px-3.5 py-3 rounded-xl bg-[#14151e] border border-[#2b2e3d] hover:border-[#d1a86e]/50 text-xs font-medium text-zinc-200 hover:text-white transition-all cursor-pointer"
+                  >
+                    <div className="flex items-center gap-3">
+                      <ShoppingBag className="w-4 h-4 text-[#d1a86e]" />
+                      <span>Acquisition Dossier</span>
+                    </div>
+                    <span
+                      className={cn(
+                        "px-2 py-0.5 rounded-full text-[10px] font-mono font-bold",
+                        cartCount > 0 ? "bg-[#d1a86e] text-[#0d0e12]" : "bg-[#20222c] text-zinc-400"
+                      )}
+                    >
+                      {cartCount}
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="pt-6 border-t border-[#1e202b] space-y-3">
+                <Link
+                  href="/"
+                  onClick={() => setIsMobileOpen(false)}
+                  className="w-full h-10 rounded-full border border-[#2b2e3d] bg-[#14151c] hover:bg-[#1d1f2b] text-zinc-300 hover:text-white text-xs font-medium uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5 text-[#d1a86e]" />
+                  <span>Return to Gallery</span>
+                </Link>
+              </div>
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
     </TooltipProvider>
   );
 }
