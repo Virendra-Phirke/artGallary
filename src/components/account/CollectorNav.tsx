@@ -88,17 +88,17 @@ export function CollectorNav({ user, inquiriesCount = 0 }: CollectorNavProps) {
     <header className="sticky top-0 z-40 bg-[#0d0e12]/90 backdrop-blur-2xl border-b border-[#1f212c] px-4 sm:px-6 md:px-10 lg:px-12 xl:px-16 py-3.5 shadow-xl shadow-black/50">
       <div className="w-full max-w-[1850px] mx-auto flex items-center justify-between gap-4">
         {/* Left: Home Return Button & Brand Identity */}
-        <div className="flex items-center gap-3 sm:gap-4">
+        <div className="flex items-center gap-2.5 sm:gap-3">
           <Link
             href="/"
             aria-label="Return to Public Homepage"
             title="Return to Public Homepage"
-            className="w-8 h-8 rounded-full bg-[#14151c] border border-[#262833] hover:border-[#d1a86e]/60 hover:bg-[#1b1d26] flex items-center justify-center text-[#d1a86e] hover:text-white transition-all shadow-sm group focus-visible:outline-none"
+            className="w-8 h-8 rounded-lg bg-[#14151c] border border-[#2b2e3c] hover:border-[#d1a86e]/70 hover:bg-[#1c1e28] hover:shadow-md hover:shadow-[#d1a86e]/10 flex items-center justify-center text-[#d1a86e] hover:text-white transition-all group focus-visible:outline-none"
           >
             <Home className="w-4 h-4 transition-transform group-hover:scale-110" />
           </Link>
 
-          <span className="h-5 w-[1px] bg-[#222430] hidden sm:block" />
+          <span className="h-4 w-[1px] bg-[#262835]" />
 
           <Link
             href="/account"
