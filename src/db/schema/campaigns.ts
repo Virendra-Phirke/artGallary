@@ -7,7 +7,7 @@ import {
   integer,
   jsonb,
   index,
-  unique,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { artworks } from "./artworks";
 import { users } from "./auth";
@@ -61,7 +61,7 @@ export const emailJobs = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
   },
   (table) => [
-    unique("unique_campaign_recipient_job").on(
+    uniqueIndex("unique_campaign_recipient_job").on(
       table.campaignId,
       table.recipientEmail,
       table.jobType

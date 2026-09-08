@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { ClientDate } from "@/components/ui/client-date";
 import {
   Dialog,
   DialogContent,
@@ -504,7 +505,7 @@ export function ExhibitionsManagerClient({
                   <div className="flex items-center gap-1">
                     <Calendar className="w-3.5 h-3.5 text-[#d1a86e] shrink-0" />
                     <span className="truncate">
-                      {new Date(exh.startDate).toLocaleDateString()} — {new Date(exh.endDate).toLocaleDateString()}
+                      <ClientDate date={exh.startDate} format="date" /> — <ClientDate date={exh.endDate} format="date" />
                     </span>
                   </div>
                 </div>

@@ -26,6 +26,7 @@ import { formatCurrency, formatDimensions, cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ProgressiveImage } from "@/components/ui/progressive-image";
+import { ClientDate } from "@/components/ui/client-date";
 import { MarketingPreferenceToggle } from "@/components/account/MarketingPreferenceToggle";
 import { useCollector } from "@/components/account/context/CollectorContext";
 
@@ -525,13 +526,11 @@ export function OverviewTab() {
                   >
                     {inq.status}
                   </span>
-                  <span className="text-[10px] sm:text-xs text-zinc-500 font-mono">
-                    {new Date(inq.createdAt).toLocaleDateString(undefined, {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
-                  </span>
+                  <ClientDate
+                    date={inq.createdAt}
+                    format="date"
+                    className="text-[10px] sm:text-xs text-zinc-500 font-mono"
+                  />
                 </div>
                 <h4 className="font-serif text-sm sm:text-base text-white group-hover:text-[#d1a86e] transition-colors truncate font-medium">
                   {inq.subject || "Artwork Inquiry"}

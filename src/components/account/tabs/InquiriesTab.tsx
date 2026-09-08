@@ -21,6 +21,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { CollectorPaginationBar } from "@/components/account/shared/CollectorPaginationBar";
 import { useCollector } from "@/components/account/context/CollectorContext";
 import { PAGE_SIZE_OPTIONS } from "@/components/ui/pagination";
+import { ClientDate } from "@/components/ui/client-date";
 import type { MockInquiry } from "@/db/mockData";
 
 export function InquiriesTab() {
@@ -274,13 +275,7 @@ export function InquiriesTab() {
 
                     <div className="flex items-center gap-1 text-[10px] text-zinc-400 font-mono">
                       <Clock className="w-3 h-3 text-zinc-500 shrink-0" />
-                      <span>
-                        {new Date(inq.createdAt).toLocaleDateString(undefined, {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })}
-                      </span>
+                      <ClientDate date={inq.createdAt} format="date" />
                     </div>
                   </div>
 
@@ -354,15 +349,10 @@ export function InquiriesTab() {
                     {selectedInquiry.status === "replied" && <CheckCircle2 className="w-3 h-3 text-emerald-300" />}
                     <span>{selectedInquiry.status === "read" ? "In Review" : selectedInquiry.status}</span>
                   </span>
-                  <span className="text-[10px] font-mono text-zinc-500">
-                    {new Date(selectedInquiry.createdAt).toLocaleDateString(undefined, {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </span>
+                  <ClientDate
+                    date={selectedInquiry.createdAt}
+                    className="text-[10px] font-mono text-zinc-500"
+                  />
                 </div>
                 <h3 className="font-serif text-sm sm:text-base text-white truncate pt-0.5">
                   {selectedInquiry.subject || "Artwork Acquisition Inquiry"}

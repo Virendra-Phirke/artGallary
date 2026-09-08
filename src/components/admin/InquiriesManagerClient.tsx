@@ -30,6 +30,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { ClientDate } from "@/components/ui/client-date";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -521,15 +522,10 @@ export function InquiriesManagerClient({
                         </span>
                       )}
 
-                      <span className="text-[10px] text-zinc-400 font-mono ml-auto sm:ml-0">
-                        {new Date(inq.createdAt).toLocaleDateString(undefined, {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </span>
+                      <ClientDate
+                        date={inq.createdAt}
+                        className="text-[10px] text-zinc-400 font-mono ml-auto sm:ml-0"
+                      />
                     </div>
 
                     {/* Collector Name & Subject */}
@@ -849,15 +845,10 @@ export function InquiriesManagerClient({
                         {email.emailType.replace(/_/g, " ")}
                       </span>
 
-                      <span className="text-[10px] text-zinc-400 font-mono ml-auto sm:ml-0">
-                        {new Date(email.createdAt).toLocaleDateString(undefined, {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </span>
+                      <ClientDate
+                        date={email.createdAt}
+                        className="text-[10px] text-zinc-400 font-mono ml-auto sm:ml-0"
+                      />
                     </div>
 
                     <h4 className="font-serif text-xs sm:text-sm text-white group-hover:text-[#d1a86e] transition-colors font-medium truncate">
@@ -962,9 +953,10 @@ export function InquiriesManagerClient({
                   <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-md font-semibold font-mono bg-[#d1a86e]/10 text-[#d1a86e]">
                     Inquiry Dossier
                   </span>
-                  <span className="text-zinc-500 text-xs font-mono">
-                    {new Date(previewInquiry.createdAt).toLocaleString()}
-                  </span>
+                  <ClientDate
+                    date={previewInquiry.createdAt}
+                    className="text-zinc-500 text-xs font-mono"
+                  />
                 </div>
                 <h3 className="font-serif text-lg sm:text-xl text-white font-medium">
                   {previewInquiry.name}

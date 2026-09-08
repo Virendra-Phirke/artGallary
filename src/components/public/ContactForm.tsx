@@ -2,12 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Send, CheckCircle2, ShieldAlert, ArrowRight, Mail, Phone, PhoneCall } from "lucide-react";
+import { Send, CheckCircle2, ShieldAlert, ArrowRight, Mail, PhoneCall } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 export function ContactForm() {
   const [user, setUser] = useState<{ id: string; name: string; email: string } | null>(null);
@@ -99,8 +98,8 @@ export function ContactForm() {
 
       setIsSuccess(true);
       sessionStorage.removeItem("general_contact_draft");
-    } catch (err: any) {
-      setError(err.message || "An unexpected error occurred. Please try again.");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "An unexpected error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
