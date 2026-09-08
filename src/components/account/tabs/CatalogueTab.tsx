@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { Search, Heart, ShoppingBag, Palette, X, SlidersHorizontal, ArrowUpDown } from "lucide-react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArtworkCard } from "@/components/account/shared/ArtworkCard";
 import { CollectorPaginationBar } from "@/components/account/shared/CollectorPaginationBar";
@@ -96,7 +95,7 @@ export function CatalogueTab() {
   return (
     <div className="space-y-8 animate-in fade-in duration-200">
       {/* Top Filter & Search Bar */}
-      <div className="bg-[#121318] border border-[#242633] rounded-3xl p-5 sm:p-6 shadow-xl space-y-5">
+      <div className="bg-[#121319] rounded-3xl p-6 sm:p-8 shadow-xl shadow-black/40 space-y-6">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
@@ -122,7 +121,7 @@ export function CatalogueTab() {
                 placeholder="Search title, medium, series..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full h-10 bg-[#181922] border border-[#2b2e3c] rounded-full pl-10 pr-9 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-[#d1a86e]/70 transition-colors"
+                className="w-full h-10 bg-[#1c1d28] rounded-full pl-10 pr-9 text-xs text-white placeholder:text-zinc-500 focus:outline-none transition-colors shadow-inner"
               />
               {search && (
                 <button
@@ -140,7 +139,7 @@ export function CatalogueTab() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
-                className="w-full sm:w-auto h-10 appearance-none bg-[#181922] border border-[#2b2e3c] rounded-full px-4 pr-9 text-xs text-zinc-200 focus:outline-none focus:border-[#d1a86e]/70 cursor-pointer font-mono"
+                className="w-full sm:w-auto h-10 appearance-none bg-[#1c1d28] rounded-full px-4 pr-9 text-xs text-zinc-200 focus:outline-none cursor-pointer font-mono shadow-sm"
               >
                 <option value="featured">Curatorial Sequence</option>
                 <option value="price-desc">Valuation: High to Low</option>
@@ -153,7 +152,7 @@ export function CatalogueTab() {
         </div>
 
         {/* Category Filter Pills */}
-        <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-[#1c1d25]">
+        <div className="flex flex-wrap items-center gap-2 pt-2">
           {[
             { id: "all", label: "All Works", count: counts.all },
             { id: "available", label: "Available for Acquisition", count: counts.available },
@@ -164,10 +163,10 @@ export function CatalogueTab() {
             <button
               key={cat.id}
               onClick={() => setCategory(cat.id as any)}
-              className={`inline-flex items-center gap-2 h-9 px-4 rounded-full text-xs transition-all uppercase tracking-wider font-medium cursor-pointer ${
+              className={`inline-flex items-center gap-2 h-9 px-4 rounded-full text-xs transition-all uppercase tracking-wider font-medium cursor-pointer shadow-sm ${
                 category === cat.id
                   ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-md shadow-[#d1a86e]/20"
-                  : "bg-[#181922] text-zinc-400 hover:text-white border border-[#282b38] hover:border-zinc-700"
+                  : "bg-[#1c1d28] text-zinc-400 hover:text-white hover:bg-[#252736]"
               }`}
             >
               <span>{cat.label}</span>
@@ -175,7 +174,7 @@ export function CatalogueTab() {
                 className={`text-[10px] font-mono px-1.5 py-0.5 rounded-full ${
                   category === cat.id
                     ? "bg-[#0d0e12] text-[#d1a86e]"
-                    : "bg-[#101116] text-zinc-500"
+                    : "bg-[#121319] text-zinc-400"
                 }`}
               >
                 {cat.count}
@@ -187,9 +186,9 @@ export function CatalogueTab() {
 
       {/* Shortlist Action Bar when viewing Saved works */}
       {category === "saved" && (
-        <div className="bg-[#15161f] border border-[#2b2e3c] rounded-3xl p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
+        <div className="bg-[#181925] rounded-3xl p-6 sm:p-7 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl shadow-black/40">
           <div className="flex items-center gap-3.5">
-            <div className="w-10 h-10 rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 shrink-0">
+            <div className="w-10 h-10 rounded-2xl bg-[#2d1215] flex items-center justify-center text-rose-400 shrink-0 shadow-inner">
               <Heart className="w-5 h-5 fill-rose-400" />
             </div>
             <div>
@@ -216,7 +215,7 @@ export function CatalogueTab() {
 
       {/* Artworks Grid */}
       {processedArtworks.length === 0 ? (
-        <Card className="p-16 text-center bg-[#13141a]/50 border-[#242633] rounded-3xl space-y-4">
+        <div className="p-16 text-center bg-[#121319] rounded-3xl space-y-4 shadow-xl shadow-black/40">
           {category === "saved" ? (
             <>
               <Heart className="w-10 h-10 text-rose-500/40 mx-auto" />
@@ -226,7 +225,7 @@ export function CatalogueTab() {
               </p>
               <Button
                 onClick={() => setCategory("all")}
-                className="mt-2 rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] text-xs font-semibold uppercase tracking-wider px-6 cursor-pointer"
+                className="mt-2 rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-xs font-semibold uppercase tracking-wider px-6 h-10 cursor-pointer shadow-md shadow-[#d1a86e]/15"
               >
                 Explore Catalogue
               </Button>
@@ -243,14 +242,13 @@ export function CatalogueTab() {
                   setSearch("");
                   setCategory("all");
                 }}
-                variant="outline"
-                className="mt-2 rounded-full border-[#2b2e3c] bg-[#181922] text-zinc-300 text-xs uppercase tracking-wider px-6 cursor-pointer"
+                className="mt-2 rounded-full bg-[#1c1d28] hover:bg-[#252736] text-zinc-200 hover:text-white text-xs uppercase tracking-wider px-6 h-10 cursor-pointer shadow-md"
               >
                 Reset All Filters
               </Button>
             </>
           )}
-        </Card>
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-5 sm:gap-6">
           {paginatedArtworks.map((art) => (

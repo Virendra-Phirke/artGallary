@@ -140,11 +140,11 @@ ${notes || "Please advise on availability, crating protocol, and private viewing
       onClick={handleResetAndClose}
     >
       <div
-        className="relative w-full max-w-5xl xl:max-w-6xl max-h-[92vh] bg-[#121319] border border-[#2b2e3c] rounded-3xl shadow-2xl overflow-hidden flex flex-col text-[#f4f4f6]"
+        className="relative w-full max-w-5xl xl:max-w-6xl max-h-[92vh] bg-[#121319] rounded-3xl shadow-2xl overflow-hidden flex flex-col text-[#f4f4f6]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Header */}
-        <div className="p-6 sm:p-8 border-b border-[#22242f] flex items-center justify-between bg-[#14151c]/90">
+        <div className="p-6 sm:p-8 flex items-center justify-between bg-[#151620] shadow-sm">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-bold">
@@ -157,7 +157,7 @@ ${notes || "Please advise on availability, crating protocol, and private viewing
             </div>
             <h2 className="font-serif text-2xl sm:text-3xl text-white font-medium flex items-center gap-2.5">
               <span>Acquisition Dossier</span>
-              <Badge variant="outline" className="text-xs border-[#d1a86e]/40 text-[#d1a86e]">
+              <Badge variant="outline" className="text-xs border-0 bg-[#222432] text-[#d1a86e]">
                 {cartArtworks.length} {cartArtworks.length === 1 ? "Work" : "Works"}
               </Badge>
             </h2>
@@ -166,7 +166,7 @@ ${notes || "Please advise on availability, crating protocol, and private viewing
           <button
             onClick={handleResetAndClose}
             aria-label="Close dossier"
-            className="p-2.5 rounded-full bg-[#181920] hover:bg-[#252733] border border-[#2b2e3c] text-zinc-400 hover:text-white transition-colors focus-visible:outline-none"
+            className="p-2.5 rounded-full bg-[#1c1d28] hover:bg-[#252736] text-zinc-400 hover:text-white transition-colors focus-visible:outline-none cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -177,7 +177,7 @@ ${notes || "Please advise on availability, crating protocol, and private viewing
           {submittedInquiryId ? (
             /* SUCCESS CONFIRMATION STATE */
             <div className="py-8 text-center space-y-6 max-w-lg mx-auto animate-in zoom-in-95 duration-200">
-              <div className="w-16 h-16 rounded-full bg-[#d1a86e]/15 border border-[#d1a86e]/30 flex items-center justify-center text-[#d1a86e] mx-auto shadow-lg shadow-[#d1a86e]/15">
+              <div className="w-16 h-16 rounded-2xl bg-[#1c1e2b] flex items-center justify-center text-[#d1a86e] mx-auto shadow-inner">
                 <Check className="w-8 h-8" />
               </div>
 
@@ -188,26 +188,25 @@ ${notes || "Please advise on availability, crating protocol, and private viewing
                 <h3 className="font-serif text-2xl sm:text-3xl text-white font-medium">
                   Inquiry Registered in Studio Ledger
                 </h3>
-                <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed font-light">
                   Your acquisition request for {cartArtworks.length || "the selected"} canvases has been transmitted to Elena Vance&apos;s curatorial team. You will receive an authenticated response within 24 hours.
                 </p>
               </div>
 
-              <div className="p-4 rounded-2xl bg-[#161720] border border-[#2b2e3c] text-xs font-mono text-zinc-300">
+              <div className="p-4 rounded-2xl bg-[#1a1b26] text-xs font-mono text-zinc-300 shadow-inner">
                 Studio Reference: <span className="text-[#d1a86e] font-semibold">{submittedInquiryId}</span>
               </div>
 
               <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
                 <Button
                   onClick={handleResetAndClose}
-                  className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-xs uppercase tracking-wider px-6 py-2.5 w-full sm:w-auto"
+                  className="rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] font-semibold text-xs uppercase tracking-wider px-6 py-2.5 w-full sm:w-auto shadow-md shadow-[#d1a86e]/15"
                 >
                   Return to Viewing Room
                 </Button>
                 <Button
                   asChild
-                  variant="outline"
-                  className="rounded-full border-[#2b2e3c] bg-[#161720] text-zinc-300 hover:text-white text-xs uppercase tracking-wider px-6 py-2.5 w-full sm:w-auto"
+                  className="rounded-full bg-[#1c1d28] hover:bg-[#252736] text-zinc-200 hover:text-white text-xs uppercase tracking-wider px-6 py-2.5 w-full sm:w-auto shadow-sm"
                 >
                   <Link href="/account?tab=inquiries" onClick={handleResetAndClose}>
                     <span>View Inquiries Ledger &rarr;</span>
@@ -218,21 +217,21 @@ ${notes || "Please advise on availability, crating protocol, and private viewing
           ) : cartArtworks.length === 0 ? (
             /* EMPTY CART STATE */
             <div className="py-12 text-center space-y-4 max-w-md mx-auto">
-              <div className="w-14 h-14 rounded-full bg-[#181922] border border-[#2b2e3c] flex items-center justify-center text-zinc-500 mx-auto">
+              <div className="w-14 h-14 rounded-2xl bg-[#1a1b26] flex items-center justify-center text-zinc-500 mx-auto shadow-inner">
                 <ShoppingBag className="w-6 h-6 text-zinc-500" />
               </div>
               <div className="space-y-1">
                 <h3 className="font-serif text-xl text-white font-medium">
                   Your Acquisition Dossier is Empty
                 </h3>
-                <p className="text-xs text-zinc-400 leading-relaxed">
+                <p className="text-xs text-zinc-400 leading-relaxed font-light">
                   Explore the private catalog and click &ldquo;+ Add to Acquisition Cart&rdquo; to build a multi-artwork acquisition inquiry.
                 </p>
               </div>
               <div className="pt-2">
                 <Button
                   onClick={handleResetAndClose}
-                  className="rounded-full bg-[#d1a86e] text-[#0d0e12] font-semibold text-xs uppercase tracking-wider px-6 py-2.5"
+                  className="rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] font-semibold text-xs uppercase tracking-wider px-6 py-2.5 shadow-md shadow-[#d1a86e]/15"
                 >
                   Browse Catalog
                 </Button>
@@ -250,7 +249,7 @@ ${notes || "Please advise on availability, crating protocol, and private viewing
                     </span>
                     <button
                       onClick={onClearCart}
-                      className="text-[11px] text-zinc-500 hover:text-rose-400 transition-colors uppercase tracking-wider"
+                      className="text-[11px] text-zinc-500 hover:text-rose-400 transition-colors uppercase tracking-wider cursor-pointer"
                     >
                       Clear All
                     </button>
@@ -260,10 +259,10 @@ ${notes || "Please advise on availability, crating protocol, and private viewing
                     {cartArtworks.map((art) => (
                       <div
                         key={art.id}
-                        className="p-3.5 sm:p-4 rounded-2xl bg-[#161720] border border-[#2b2e3c] flex items-center justify-between gap-4 group hover:border-[#3f4357] transition-colors"
+                        className="p-4 rounded-2xl bg-[#1a1b26] flex items-center justify-between gap-4 group hover:bg-[#202230] transition-colors shadow-sm"
                       >
                         <div className="flex items-center gap-3.5 min-w-0">
-                          <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-[#0d0e12] shrink-0 border border-[#2b2e3c]">
+                          <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-[#0d0e12] shrink-0 shadow-inner">
                             <ProgressiveImage
                               src={art.coverImageUrl}
                               alt={art.title}
@@ -276,7 +275,7 @@ ${notes || "Please advise on availability, crating protocol, and private viewing
                             <h4 className="font-serif text-base text-white truncate group-hover:text-[#d1a86e] transition-colors">
                               {art.title}
                             </h4>
-                            <p className="text-[11px] text-zinc-400 truncate">
+                            <p className="text-[11px] text-zinc-400 truncate font-light">
                               {art.year} • {formatDimensions(art.widthCm, art.heightCm)} • {art.medium}
                             </p>
                             <span className="text-xs font-mono text-[#d1a86e] font-semibold block">
@@ -289,7 +288,7 @@ ${notes || "Please advise on availability, crating protocol, and private viewing
                           <button
                             onClick={() => onRemoveItem(art.id)}
                             aria-label={`Remove ${art.title} from dossier`}
-                            className="p-2 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors"
+                            className="p-2 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors cursor-pointer"
                             title="Remove artwork"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -301,7 +300,7 @@ ${notes || "Please advise on availability, crating protocol, and private viewing
                 </div>
 
                 {/* Total Investment Summary */}
-                <div className="p-5 rounded-2xl bg-[#171822] border border-[#2b2e3c] space-y-3">
+                <div className="p-5 rounded-2xl bg-[#1a1b26] space-y-3 shadow-md">
                   <div className="flex items-center justify-between text-xs text-zinc-400">
                     <span>Selected Paintings Subtotal:</span>
                     <span className="font-serif text-lg text-white font-medium">
@@ -328,7 +327,7 @@ ${notes || "Please advise on availability, crating protocol, and private viewing
               {/* Right Column: Inquiry Dispatch Form or Guest Sign In Prompt */}
               <div className="lg:col-span-6 space-y-6">
                 {user ? (
-                  <form onSubmit={handleSubmitAcquisition} className="space-y-4 bg-[#14151e] p-6 rounded-3xl border border-[#262835]">
+                  <form onSubmit={handleSubmitAcquisition} className="space-y-4 bg-[#1a1b26] p-6 sm:p-7 rounded-3xl shadow-xl">
                     <div className="space-y-1">
                       <span className="text-[10px] tracking-[0.2em] text-[#d1a86e] uppercase font-bold">
                         Acquisition Dispatch
@@ -336,7 +335,7 @@ ${notes || "Please advise on availability, crating protocol, and private viewing
                       <h3 className="font-serif text-xl text-white font-medium">
                         Submit Purchase &amp; Acquisition Inquiry
                       </h3>
-                      <p className="text-xs text-zinc-400">
+                      <p className="text-xs text-zinc-400 font-light">
                         The studio will review your selected pieces, calculate bespoke shipping crates, and coordinate private acquisition terms.
                       </p>
                     </div>
@@ -350,7 +349,7 @@ ${notes || "Please advise on availability, crating protocol, and private viewing
                           type="text"
                           value={user.name}
                           disabled
-                          className="w-full bg-[#161720] border border-[#2b2e3c] rounded-xl px-3.5 py-2 text-xs text-zinc-400 cursor-not-allowed"
+                          className="w-full bg-[#121319] rounded-xl px-3.5 py-2.5 text-xs text-zinc-400 cursor-not-allowed shadow-inner"
                         />
                       </div>
 
@@ -362,7 +361,7 @@ ${notes || "Please advise on availability, crating protocol, and private viewing
                           type="email"
                           value={user.email}
                           disabled
-                          className="w-full bg-[#161720] border border-[#2b2e3c] rounded-xl px-3.5 py-2 text-xs text-zinc-400 cursor-not-allowed"
+                          className="w-full bg-[#121319] rounded-xl px-3.5 py-2.5 text-xs text-zinc-400 cursor-not-allowed shadow-inner"
                         />
                       </div>
                     </div>
@@ -378,7 +377,7 @@ ${notes || "Please advise on availability, crating protocol, and private viewing
                           placeholder="+1 (555) 000-0000"
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
-                          className="w-full bg-[#161720] border border-[#2b2e3c] rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#d1a86e]"
+                          className="w-full bg-[#121319] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder:text-zinc-600 focus:outline-none shadow-inner"
                         />
                       </div>
 
@@ -392,7 +391,7 @@ ${notes || "Please advise on availability, crating protocol, and private viewing
                           placeholder="e.g. Zurich, Switzerland / New York, USA"
                           value={destination}
                           onChange={(e) => setDestination(e.target.value)}
-                          className="w-full bg-[#161720] border border-[#2b2e3c] rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#d1a86e]"
+                          className="w-full bg-[#121319] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder:text-zinc-600 focus:outline-none shadow-inner"
                         />
                       </div>
                     </div>
@@ -406,12 +405,12 @@ ${notes || "Please advise on availability, crating protocol, and private viewing
                         placeholder="Provide any custom framing requirements, installation questions, or foundation collection details..."
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
-                        className="w-full bg-[#161720] border border-[#2b2e3c] rounded-xl p-3 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#d1a86e]"
+                        className="w-full bg-[#121319] rounded-xl p-3 text-xs text-white placeholder:text-zinc-600 focus:outline-none shadow-inner"
                       />
                     </div>
 
                     {error && (
-                      <div className="p-3 rounded-xl bg-rose-950/40 border border-rose-800 text-rose-300 text-xs">
+                      <div className="p-3.5 rounded-xl bg-[#2d1215] text-rose-300 text-xs">
                         {error}
                       </div>
                     )}
@@ -424,7 +423,7 @@ ${notes || "Please advise on availability, crating protocol, and private viewing
                       <Button
                         type="submit"
                         disabled={submitting}
-                        className="rounded-full bg-gradient-to-r from-[#d1a86e] via-[#e2c18d] to-[#b98e54] text-[#0d0e12] font-semibold text-xs uppercase tracking-wider px-8 py-3 shadow-xl shadow-[#d1a86e]/20 hover:opacity-95 cursor-pointer"
+                        className="rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] font-semibold text-xs uppercase tracking-wider px-8 py-3 shadow-md shadow-[#d1a86e]/20 cursor-pointer"
                       >
                         {submitting ? (
                           <span>Transmitting Dossier...</span>
@@ -439,16 +438,16 @@ ${notes || "Please advise on availability, crating protocol, and private viewing
                     </div>
                   </form>
                 ) : (
-                  <div className="p-6 sm:p-8 rounded-3xl bg-[#14151e] border border-[#d1a86e]/40 space-y-5 shadow-2xl">
+                  <div className="p-6 sm:p-8 rounded-3xl bg-[#1a1b26] space-y-5 shadow-xl">
                     <div className="flex items-start gap-3.5">
-                      <div className="w-11 h-11 rounded-2xl bg-[#d1a86e]/15 border border-[#d1a86e]/30 flex items-center justify-center text-[#d1a86e] shrink-0 mt-0.5">
+                      <div className="w-11 h-11 rounded-2xl bg-[#222432] flex items-center justify-center text-[#d1a86e] shrink-0 mt-0.5 shadow-inner">
                         <ShieldCheck className="w-6 h-6" />
                       </div>
                       <div className="space-y-1.5">
                         <h3 className="font-serif text-xl text-white font-medium">
                           Collector Sign In Required to Transmit Inquiry
                         </h3>
-                        <p className="text-xs text-zinc-400 leading-relaxed">
+                        <p className="text-xs text-zinc-400 leading-relaxed font-light">
                           To submit your multi-artwork acquisition dossier to Elena Vance&apos;s studio and receive authenticated courier and viewing dispatch, please sign in. Your selected paintings will remain saved in your dossier.
                         </p>
                       </div>
@@ -457,7 +456,7 @@ ${notes || "Please advise on availability, crating protocol, and private viewing
                     <div className="flex flex-col sm:flex-row gap-3 pt-2">
                       <Button
                         asChild
-                        className="flex-1 rounded-full bg-gradient-to-r from-[#d1a86e] via-[#e2c18d] to-[#b98e54] text-[#0d0e12] font-semibold text-xs tracking-wider uppercase h-11 shadow-lg shadow-[#d1a86e]/20"
+                        className="flex-1 rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] font-semibold text-xs tracking-wider uppercase h-11 shadow-md shadow-[#d1a86e]/20"
                       >
                         <Link href="/login?redirect=/account">
                           <span className="flex items-center justify-center gap-2">
@@ -468,8 +467,7 @@ ${notes || "Please advise on availability, crating protocol, and private viewing
                       </Button>
                       <Button
                         asChild
-                        variant="outline"
-                        className="flex-1 rounded-full border-[#2b2e3c] bg-[#181922] hover:bg-[#222430] text-zinc-200 text-xs tracking-wider uppercase h-11"
+                        className="flex-1 rounded-full bg-[#1c1d28] hover:bg-[#252736] text-zinc-200 text-xs tracking-wider uppercase h-11 shadow-sm"
                       >
                         <Link href="/register?redirect=/account">
                           <span>Register Collector Account</span>

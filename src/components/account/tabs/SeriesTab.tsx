@@ -27,14 +27,14 @@ export function SeriesTab() {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-200">
-      <div className="border-b border-[#262833] pb-6">
+      <div className="bg-[#121319] rounded-3xl p-6 sm:p-8 shadow-xl shadow-black/40 space-y-2">
         <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-bold">
           Curatorial Cycles
         </span>
-        <h2 className="font-serif text-3xl text-white mt-1">
+        <h2 className="font-serif text-3xl sm:text-4xl text-white">
           Elena Vance Artwork Series
         </h2>
-        <p className="text-xs text-zinc-400 mt-1">
+        <p className="text-xs sm:text-sm text-zinc-400 max-w-2xl font-light leading-relaxed">
           Elena Vance organizes her inquiries into multi-year cycles exploring mineral glazes and raw Belgian linen.
         </p>
       </div>
@@ -43,10 +43,10 @@ export function SeriesTab() {
         {paginatedCollections.map((col) => (
           <div
             key={col.id}
-            className="group bg-[#14151a] border border-[#262833] hover:border-[#d1a86e]/50 hover:shadow-2xl hover:shadow-[#d1a86e]/5 rounded-3xl overflow-hidden flex flex-col justify-between transition-all duration-500"
+            className="group bg-[#121319] hover:bg-[#161722] rounded-3xl overflow-hidden flex flex-col justify-between transition-all duration-500 shadow-xl shadow-black/40 hover:shadow-2xl"
           >
             {col.coverImageUrl && (
-              <div className="relative aspect-[16/10] w-full bg-[#0d0e12] overflow-hidden">
+              <div className="relative aspect-[16/10] w-full bg-[#0d0e12] overflow-hidden shadow-inner">
                 <ProgressiveImage
                   src={col.coverImageUrl}
                   alt={col.title}
@@ -56,9 +56,9 @@ export function SeriesTab() {
                   sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#14151a] via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#121319] via-transparent to-transparent" />
                 <div className="absolute top-4 left-4">
-                  <span className="px-3 py-1 rounded-full bg-[#0d0e12]/80 backdrop-blur-md border border-[#262833] text-[10px] tracking-[0.2em] text-[#d1a86e] uppercase font-mono font-semibold">
+                  <span className="px-3 py-1 rounded-full bg-[#0d0e12]/85 backdrop-blur-md text-[10px] tracking-[0.2em] text-[#d1a86e] uppercase font-mono font-semibold">
                     Cycle Suite
                   </span>
                 </div>
@@ -76,7 +76,7 @@ export function SeriesTab() {
                 </p>
               </div>
 
-              <div className="pt-4 flex items-center justify-between border-t border-[#1c1d25]">
+              <div className="pt-4 flex items-center justify-between">
                 <span className="text-xs text-zinc-400 font-mono">
                   {col.artworkSlugs?.length || 1} Documented Canvases
                 </span>

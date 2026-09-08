@@ -29,12 +29,12 @@ export function ArtworkCard({ artwork, className = "" }: ArtworkCardProps) {
   return (
     <div
       className={cn(
-        "group relative bg-[#13141a] border border-[#242633] rounded-3xl overflow-hidden p-4 space-y-4 hover:border-[#d1a86e]/50 hover:shadow-2xl hover:shadow-[#d1a86e]/5 transition-all duration-300 flex flex-col justify-between",
+        "group relative bg-[#121319] hover:bg-[#161722] rounded-3xl overflow-hidden p-5 space-y-4 shadow-xl shadow-black/40 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between",
         className
       )}
     >
       <div>
-        <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-[#0a0b0e]">
+        <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-[#0a0b0e] shadow-inner">
           <ProgressiveImage
             src={artwork.coverImageUrl}
             alt={artwork.title}
@@ -55,13 +55,13 @@ export function ArtworkCard({ artwork, className = "" }: ArtworkCardProps) {
                   ? "warning"
                   : "secondary"
               }
-              className="backdrop-blur-md bg-black/70 border border-white/10 text-[10px] uppercase font-mono tracking-wider px-2 py-0.5"
+              className="backdrop-blur-md bg-black/80 border-0 text-[10px] uppercase font-mono tracking-wider px-2.5 py-0.5 rounded-full"
             >
               {artwork.status === "published" ? "Available" : artwork.status}
             </Badge>
 
             {artwork.collectionName && (
-              <span className="hidden sm:inline-block px-2 py-0.5 rounded-full backdrop-blur-md bg-black/60 border border-white/10 text-[9px] text-zinc-300 font-medium truncate max-w-[110px]">
+              <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full backdrop-blur-md bg-black/70 text-[9px] text-zinc-300 font-medium truncate max-w-[110px]">
                 {artwork.collectionName}
               </span>
             )}
@@ -71,10 +71,10 @@ export function ArtworkCard({ artwork, className = "" }: ArtworkCardProps) {
           <button
             onClick={() => toggleSaveArtwork(artwork.id)}
             className={cn(
-              "absolute top-3 right-3 z-10 p-2 rounded-full backdrop-blur-md border transition-all cursor-pointer shadow-lg",
+              "absolute top-3 right-3 z-10 p-2 rounded-full backdrop-blur-md transition-all cursor-pointer shadow-md",
               isSaved
-                ? "bg-[#d1a86e] text-[#0d0e12] border-[#d1a86e] shadow-[#d1a86e]/30 scale-105"
-                : "bg-black/60 text-zinc-400 hover:text-white border-white/10 hover:bg-black/80"
+                ? "bg-[#d1a86e] text-[#0d0e12] scale-105"
+                : "bg-black/70 text-zinc-300 hover:text-white hover:bg-black/90"
             )}
             title={isSaved ? "Shortlisted in Private Portfolio" : "Save to Private Shortlist"}
             aria-label="Bookmark artwork"
@@ -95,7 +95,7 @@ export function ArtworkCard({ artwork, className = "" }: ArtworkCardProps) {
 
             <Link
               href={`/ar/${artwork.slug}`}
-              className="w-11 h-11 bg-gradient-to-r from-[#d1a86e] to-[#b98e54] hover:brightness-110 text-[#0d0e12] rounded-full flex items-center justify-center shadow-xl shadow-[#d1a86e]/30 transform group-hover:scale-100 scale-90 transition-all duration-200 active:scale-95"
+              className="w-11 h-11 bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] rounded-full flex items-center justify-center shadow-xl shadow-[#d1a86e]/30 transform group-hover:scale-100 scale-90 transition-all duration-200 active:scale-95"
               title="View in Your Space (1:1 WebAR)"
               aria-label="View in AR"
             >
@@ -119,7 +119,7 @@ export function ArtworkCard({ artwork, className = "" }: ArtworkCardProps) {
 
           <p className="text-xs text-zinc-400 line-clamp-1 font-light">{artwork.medium}</p>
 
-          <div className="pt-2.5 border-t border-[#1e202b] flex items-center justify-between text-[11px] text-zinc-400">
+          <div className="pt-2.5 flex items-center justify-between text-[11px] text-zinc-400">
             <span className="flex items-center gap-1.5 font-mono text-zinc-400">
               <Ruler className="w-3 h-3 text-[#d1a86e]" />
               {formatDimensions(artwork.widthCm, artwork.heightCm)}
@@ -139,10 +139,10 @@ export function ArtworkCard({ artwork, className = "" }: ArtworkCardProps) {
       <button
         onClick={() => toggleCartArtwork(artwork.id)}
         className={cn(
-          "w-full h-10 px-4 rounded-full text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-2 transition-all mt-2 border cursor-pointer active:scale-[0.98]",
+          "w-full h-10 px-4 rounded-full text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-2 transition-all mt-2 cursor-pointer active:scale-[0.98] shadow-md",
           isInCart
-            ? "bg-[#1f2230] text-[#d1a86e] border-[#d1a86e]/60 shadow-md shadow-[#d1a86e]/10"
-            : "bg-[#161720] hover:bg-[#1d1f2b] text-zinc-300 hover:text-white border-[#282a38] hover:border-[#d1a86e]/40"
+            ? "bg-[#252838] text-[#d1a86e]"
+            : "bg-[#1c1d28] hover:bg-[#252736] text-zinc-200 hover:text-white"
         )}
       >
         {isInCart ? (

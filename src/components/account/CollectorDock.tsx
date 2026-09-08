@@ -198,7 +198,7 @@ export function CollectorDock({
           iconSize={40}
           iconMagnification={46}
           iconDistance={65}
-          className="bg-[#0b0c10]/95 border-[#262835] backdrop-blur-2xl shadow-2xl shadow-black/80 rounded-2xl py-2.5 px-2 gap-1"
+          className="bg-[#111218] shadow-2xl shadow-black/90 rounded-2xl py-2.5 px-2 gap-1 border-0"
         >
           {/* Primary Hub Items */}
           {PRIMARY_NAV_ITEMS.map((item) => {
@@ -217,10 +217,10 @@ export function CollectorDock({
                   >
                     <DockIcon
                       className={cn(
-                        "relative border transition-all duration-200",
+                        "relative transition-all duration-200 rounded-xl",
                         isActive
-                          ? "bg-[#1f212c] border-[#d1a86e] text-white shadow-lg shadow-[#d1a86e]/15"
-                          : "bg-[#121318] border-transparent text-zinc-400 hover:text-white hover:bg-[#1a1c24] hover:border-[#2b2d38]"
+                          ? "bg-[#222432] text-white shadow-md shadow-black/40"
+                          : "bg-[#161720] text-zinc-400 hover:text-white hover:bg-[#1d1f2b]"
                       )}
                     >
                       {/* Active indicator dot on left edge of icon */}
@@ -237,7 +237,7 @@ export function CollectorDock({
 
                       {/* Inquiry notification badge pill */}
                       {badgeCount !== undefined && badgeCount > 0 && (
-                        <span className="absolute -top-1 -right-1 flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-[#d1a86e] text-[9px] font-bold text-[#0d0e12] ring-2 ring-[#0b0c10]">
+                        <span className="absolute -top-1 -right-1 flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-[#d1a86e] text-[9px] font-bold text-[#0d0e12] ring-2 ring-[#111218]">
                           {badgeCount}
                         </span>
                       )}
@@ -248,7 +248,7 @@ export function CollectorDock({
                   <div className="flex items-center gap-2">
                     <span className="font-medium">{item.label}</span>
                     {badgeCount !== undefined && badgeCount > 0 && (
-                      <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 border-[#d1a86e]/40 text-[#d1a86e]">
+                      <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 border-0 bg-[#222432] text-[#d1a86e]">
                         {badgeCount} active
                       </Badge>
                     )}
@@ -268,10 +268,10 @@ export function CollectorDock({
               >
                 <DockIcon
                   className={cn(
-                    "relative border transition-all duration-200",
+                    "relative transition-all duration-200 rounded-xl",
                     cartCount > 0
-                      ? "bg-[#181a24] border-[#d1a86e]/60 text-white shadow-lg shadow-[#d1a86e]/20"
-                      : "bg-[#121318] border-transparent text-zinc-400 hover:text-white hover:bg-[#1a1c24] hover:border-[#2b2d38]"
+                      ? "bg-[#202230] text-white shadow-md shadow-black/40"
+                      : "bg-[#161720] text-zinc-400 hover:text-white hover:bg-[#1d1f2b]"
                   )}
                 >
                   <ShoppingBag
@@ -283,7 +283,7 @@ export function CollectorDock({
 
                   {/* Cart count badge */}
                   {cartCount > 0 && (
-                    <span className="absolute -top-1 -right-1 flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-[#d1a86e] text-[9px] font-bold text-[#0d0e12] ring-2 ring-[#0b0c10]">
+                    <span className="absolute -top-1 -right-1 flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-[#d1a86e] text-[9px] font-bold text-[#0d0e12] ring-2 ring-[#111218]">
                       {cartCount}
                     </span>
                   )}
@@ -294,7 +294,7 @@ export function CollectorDock({
               <div className="flex items-center gap-2">
                 <span className="font-medium">Acquisition Dossier (Cart)</span>
                 {cartCount > 0 ? (
-                  <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 border-[#d1a86e]/40 text-[#d1a86e]">
+                  <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 border-0 bg-[#222432] text-[#d1a86e]">
                     {cartCount} selected
                   </Badge>
                 ) : (
@@ -304,8 +304,8 @@ export function CollectorDock({
             </TooltipContent>
           </Tooltip>
 
-          {/* Subtle Divider */}
-          <div className="w-6 h-[1px] bg-[#22242e] my-1" />
+          {/* Subtle Spacer Inset */}
+          <div className="w-5 h-0.5 rounded-full bg-[#1c1d27] my-1" />
 
           {/* Secondary Studio Items (AR & Profile) */}
           {SECONDARY_NAV_ITEMS.map((item) => {
@@ -323,10 +323,10 @@ export function CollectorDock({
                   >
                     <DockIcon
                       className={cn(
-                        "relative border transition-all duration-200",
+                        "relative transition-all duration-200 rounded-xl",
                         isActive
-                          ? "bg-[#1f212c] border-[#d1a86e] text-white shadow-lg shadow-[#d1a86e]/15"
-                          : "bg-[#121318] border-transparent text-zinc-400 hover:text-white hover:bg-[#1a1c24] hover:border-[#2b2d38]"
+                          ? "bg-[#222432] text-white shadow-md shadow-black/40"
+                          : "bg-[#161720] text-zinc-400 hover:text-white hover:bg-[#1d1f2b]"
                       )}
                     >
                       {isActive && (
@@ -349,8 +349,8 @@ export function CollectorDock({
             );
           })}
 
-          {/* Subtle Divider */}
-          <div className="w-6 h-[1px] bg-[#22242e] my-1" />
+          {/* Subtle Spacer Inset */}
+          <div className="w-5 h-0.5 rounded-full bg-[#1c1d27] my-1" />
 
           {/* Pin / Auto-Hide Lock Toggle */}
           <Tooltip>
@@ -362,10 +362,10 @@ export function CollectorDock({
               >
                 <DockIcon
                   className={cn(
-                    "border transition-all duration-200",
+                    "transition-all duration-200 rounded-xl",
                     isPinned
-                      ? "bg-[#d1a86e]/15 border-[#d1a86e]/40 text-[#d1a86e]"
-                      : "bg-[#121318] border-transparent text-zinc-500 hover:text-zinc-300 hover:bg-[#1a1c24]"
+                      ? "bg-[#222432] text-[#d1a86e]"
+                      : "bg-[#161720] text-zinc-500 hover:text-zinc-300 hover:bg-[#1d1f2b]"
                   )}
                 >
                   {isPinned ? (
@@ -387,7 +387,7 @@ export function CollectorDock({
       <div className="md:hidden fixed bottom-5 right-5 z-40">
         <button
           onClick={() => setIsMobileOpen((prev) => !prev)}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#121319]/90 hover:bg-[#181a24] active:scale-95 backdrop-blur-2xl border border-[#d1a86e]/40 shadow-2xl shadow-black/80 text-white font-medium text-xs tracking-wider uppercase transition-all cursor-pointer group"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#161720] hover:bg-[#1f212c] active:scale-95 shadow-2xl shadow-black/90 text-white font-medium text-xs tracking-wider uppercase transition-all cursor-pointer group"
           aria-label={isMobileOpen ? "Close Salon Navigation" : "Open Salon Navigation"}
         >
           {isMobileOpen ? (
@@ -427,17 +427,15 @@ export function CollectorDock({
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 320 }}
-              className="md:hidden fixed inset-y-0 left-0 w-[84%] max-w-[320px] bg-[#0c0d12] border-r border-[#262835] z-50 p-6 flex flex-col justify-between shadow-2xl shadow-black overflow-y-auto"
+              className="md:hidden fixed inset-y-0 left-0 w-[84%] max-w-[320px] bg-[#0e0f15] z-50 p-6 flex flex-col justify-between shadow-2xl shadow-black overflow-y-auto"
               aria-label="Mobile Navigation Sidebar"
             >
               {/* Top Cluster & Navigation */}
               <div className="space-y-6">
-                <div className="flex items-center justify-between border-b border-[#20222d] pb-4">
+                <div className="flex items-center justify-between pb-2">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#d1a86e] to-[#8d6f3e] p-[1px]">
-                      <div className="w-full h-full rounded-[7px] bg-[#0d0e12] flex items-center justify-center text-[#d1a86e]">
-                        <Sparkles className="w-4 h-4 text-[#d1a86e]" />
-                      </div>
+                    <div className="w-8 h-8 rounded-xl bg-[#181923] flex items-center justify-center text-[#d1a86e] shadow-inner">
+                      <Sparkles className="w-4 h-4 text-[#d1a86e]" />
                     </div>
                     <div className="flex flex-col">
                       <span className="font-serif text-sm tracking-[0.15em] font-medium text-white uppercase">
@@ -451,7 +449,7 @@ export function CollectorDock({
 
                   <button
                     onClick={() => setIsMobileOpen(false)}
-                    className="w-8 h-8 rounded-lg bg-[#14151c] border border-[#2b2e3c] hover:border-[#d1a86e]/70 flex items-center justify-center text-zinc-400 hover:text-white transition-all cursor-pointer"
+                    className="w-8 h-8 rounded-xl bg-[#181923] hover:bg-[#222430] flex items-center justify-center text-zinc-400 hover:text-white transition-all cursor-pointer"
                     aria-label="Close Navigation"
                   >
                     <X className="w-4 h-4" />
@@ -475,8 +473,8 @@ export function CollectorDock({
                         className={cn(
                           "w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-xs font-medium transition-all text-left cursor-pointer",
                           isActive
-                            ? "bg-[#1f2230] text-[#d1a86e] font-semibold border border-[#d1a86e]/30 shadow-sm"
-                            : "text-zinc-300 hover:text-white hover:bg-[#151620]"
+                            ? "bg-[#222432] text-[#d1a86e] font-semibold shadow-sm"
+                            : "text-zinc-300 hover:text-white hover:bg-[#181923]"
                         )}
                       >
                         <div className="flex items-center gap-3">
@@ -494,7 +492,7 @@ export function CollectorDock({
                 </div>
 
                 {/* Secondary Studio Options */}
-                <div className="space-y-1 pt-3 border-t border-[#1e202b]">
+                <div className="space-y-1 pt-3">
                   <span className="text-[10px] tracking-[0.2em] text-zinc-500 uppercase font-mono px-3 block mb-2">
                     Studio Spatial
                   </span>
@@ -509,8 +507,8 @@ export function CollectorDock({
                         className={cn(
                           "w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-xs font-medium transition-all text-left cursor-pointer",
                           isActive
-                            ? "bg-[#1f2230] text-[#d1a86e] font-semibold border border-[#d1a86e]/30 shadow-sm"
-                            : "text-zinc-300 hover:text-white hover:bg-[#151620]"
+                            ? "bg-[#222432] text-[#d1a86e] font-semibold shadow-sm"
+                            : "text-zinc-300 hover:text-white hover:bg-[#181923]"
                         )}
                       >
                         <Icon className={cn("w-4 h-4", isActive ? "text-[#d1a86e]" : "text-zinc-400")} />
@@ -527,7 +525,7 @@ export function CollectorDock({
                       setIsMobileOpen(false);
                       onOpenCart?.();
                     }}
-                    className="w-full flex items-center justify-between px-3.5 py-3 rounded-xl bg-[#14151e] border border-[#2b2e3d] hover:border-[#d1a86e]/50 text-xs font-medium text-zinc-200 hover:text-white transition-all cursor-pointer"
+                    className="w-full flex items-center justify-between px-3.5 py-3 rounded-xl bg-[#181923] hover:bg-[#202230] text-xs font-medium text-zinc-200 hover:text-white transition-all cursor-pointer shadow-sm"
                   >
                     <div className="flex items-center gap-3">
                       <ShoppingBag className="w-4 h-4 text-[#d1a86e]" />
@@ -536,7 +534,7 @@ export function CollectorDock({
                     <span
                       className={cn(
                         "px-2 py-0.5 rounded-full text-[10px] font-mono font-bold",
-                        cartCount > 0 ? "bg-[#d1a86e] text-[#0d0e12]" : "bg-[#20222c] text-zinc-400"
+                        cartCount > 0 ? "bg-[#d1a86e] text-[#0d0e12]" : "bg-[#222432] text-zinc-400"
                       )}
                     >
                       {cartCount}
@@ -546,11 +544,11 @@ export function CollectorDock({
               </div>
 
               {/* Footer */}
-              <div className="pt-6 border-t border-[#1e202b] space-y-3">
+              <div className="pt-6 space-y-3">
                 <Link
                   href="/"
                   onClick={() => setIsMobileOpen(false)}
-                  className="w-full h-10 rounded-full border border-[#2b2e3d] bg-[#14151c] hover:bg-[#1d1f2b] text-zinc-300 hover:text-white text-xs font-medium uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer"
+                  className="w-full h-10 rounded-full bg-[#181923] hover:bg-[#222430] text-zinc-300 hover:text-white text-xs font-medium uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
                 >
                   <ArrowLeft className="w-3.5 h-3.5 text-[#d1a86e]" />
                   <span>Return to Gallery</span>

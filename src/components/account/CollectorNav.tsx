@@ -86,29 +86,25 @@ export function CollectorNav({ user, inquiriesCount = 0 }: CollectorNavProps) {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-[#0d0e12]/90 backdrop-blur-2xl border-b border-[#1f212c] px-4 sm:px-6 md:px-10 lg:px-12 xl:px-16 py-3.5 shadow-xl shadow-black/50">
+    <header className="sticky top-0 z-40 bg-[#0a0b10] px-4 sm:px-6 md:px-10 lg:px-12 xl:px-16 py-3.5 shadow-lg shadow-black/60">
       <div className="w-full max-w-[1850px] mx-auto flex items-center justify-between gap-4">
         {/* Left: Home Return Button & Brand Identity */}
-        <div className="flex items-center gap-2.5 sm:gap-3">
+        <div className="flex items-center gap-3">
           <Link
             href="/"
             aria-label="Return to Public Homepage"
             title="Return to Public Homepage"
-            className="w-8 h-8 rounded-lg bg-[#14151c] border border-[#2b2e3c] hover:border-[#d1a86e]/70 hover:bg-[#1c1e28] hover:shadow-md hover:shadow-[#d1a86e]/10 flex items-center justify-center text-[#d1a86e] hover:text-white transition-all group focus-visible:outline-none"
+            className="w-8 h-8 rounded-lg bg-[#151620] hover:bg-[#20222e] flex items-center justify-center text-[#d1a86e] hover:text-white transition-all group focus-visible:outline-none shadow-sm"
           >
             <Home className="w-4 h-4 transition-transform group-hover:scale-110" />
           </Link>
-
-          <span className="h-4 w-[1px] bg-[#262835]" />
 
           <Link
             href="/account"
             className="flex items-center gap-2.5 group focus-visible:outline-none"
           >
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#d1a86e] to-[#8d6f3e] p-[1px] shadow-sm">
-              <div className="w-full h-full rounded-[7px] bg-[#0d0e12] flex items-center justify-center text-[#d1a86e] group-hover:bg-[#151720] transition-colors">
-                <Sparkles className="w-4 h-4 text-[#d1a86e]" />
-              </div>
+            <div className="w-8 h-8 rounded-lg bg-[#151620] flex items-center justify-center text-[#d1a86e] group-hover:bg-[#20222e] transition-colors shadow-sm">
+              <Sparkles className="w-4 h-4 text-[#d1a86e]" />
             </div>
             <div className="flex flex-col">
               <span className="font-serif text-sm sm:text-base tracking-[0.15em] font-medium text-white group-hover:text-[#d1a86e] transition-colors uppercase">
@@ -127,10 +123,10 @@ export function CollectorNav({ user, inquiriesCount = 0 }: CollectorNavProps) {
           <button
             onClick={handleViewLiked}
             className={cn(
-              "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs transition-all shadow-sm group border",
+              "inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs transition-all shadow-sm group",
               savedCount > 0
-                ? "bg-[#161722] border-[#d1a86e]/30 hover:border-[#d1a86e] text-zinc-300 hover:text-white"
-                : "bg-[#14151c] border-[#262833] text-zinc-400 hover:text-zinc-200"
+                ? "bg-[#1f2230] text-zinc-200 hover:text-white"
+                : "bg-[#151620] text-zinc-400 hover:text-zinc-200"
             )}
             title="View Liked Paintings in Catalogue"
             aria-label="View liked artworks"
@@ -146,8 +142,8 @@ export function CollectorNav({ user, inquiriesCount = 0 }: CollectorNavProps) {
             </span>
             <span
               className={cn(
-                "text-[10px] font-mono px-1 rounded",
-                savedCount > 0 ? "text-[#d1a86e] font-bold" : "text-zinc-500"
+                "text-[10px] font-mono px-1.5 py-0.5 rounded-full",
+                savedCount > 0 ? "bg-[#25283a] text-[#d1a86e] font-bold" : "bg-[#1c1d27] text-zinc-500"
               )}
             >
               {savedCount}
@@ -158,10 +154,10 @@ export function CollectorNav({ user, inquiriesCount = 0 }: CollectorNavProps) {
           <button
             onClick={handleOpenCart}
             className={cn(
-              "relative inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs transition-all shadow-md group border",
+              "relative inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs transition-all shadow-sm group",
               cartCount > 0
-                ? "bg-[#181a24] border-[#d1a86e]/60 hover:border-[#d1a86e] text-white hover:bg-[#202330] shadow-[#d1a86e]/10"
-                : "bg-[#14151c] border-[#262833] text-zinc-300 hover:text-white hover:border-[#383b4b]"
+                ? "bg-[#1f2230] text-white hover:bg-[#25293d]"
+                : "bg-[#151620] text-zinc-300 hover:text-white hover:bg-[#1d1f2b]"
             )}
             title="Open Acquisition Dossier"
             aria-label="Open Acquisition Cart"
@@ -177,10 +173,10 @@ export function CollectorNav({ user, inquiriesCount = 0 }: CollectorNavProps) {
             </span>
             <span
               className={cn(
-                "flex h-4 min-w-4 px-1 items-center justify-center rounded-full text-[10px] font-bold font-mono transition-colors",
+                "flex h-4 min-w-4 px-1.5 items-center justify-center rounded-full text-[10px] font-bold font-mono transition-colors",
                 cartCount > 0
                   ? "bg-[#d1a86e] text-[#0d0e12]"
-                  : "bg-zinc-800 text-zinc-400"
+                  : "bg-[#20222d] text-zinc-400"
               )}
             >
               {cartCount}
@@ -190,7 +186,7 @@ export function CollectorNav({ user, inquiriesCount = 0 }: CollectorNavProps) {
           {/* Mobile Salon Sidebar Drawer Trigger */}
           <button
             onClick={() => window.dispatchEvent(new CustomEvent("atelier-toggle-mobile-sidebar"))}
-            className="md:hidden w-8 h-8 rounded-lg bg-[#14151c] border border-[#2b2e3c] hover:border-[#d1a86e]/70 flex items-center justify-center text-[#d1a86e] hover:text-white transition-all cursor-pointer"
+            className="md:hidden w-8 h-8 rounded-lg bg-[#151620] hover:bg-[#20222e] flex items-center justify-center text-[#d1a86e] hover:text-white transition-all cursor-pointer shadow-sm"
             aria-label="Toggle Salon Navigation Menu"
             title="Salon Navigation Menu"
           >
@@ -204,9 +200,9 @@ export function CollectorNav({ user, inquiriesCount = 0 }: CollectorNavProps) {
               {user.role === "ADMIN" && (
                 <Button
                   asChild
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
-                  className="hidden lg:inline-flex h-8 px-3 rounded-full border-amber-900/60 bg-amber-950/30 hover:bg-amber-900/50 text-amber-200 text-xs font-medium uppercase tracking-wider"
+                  className="hidden lg:inline-flex h-8 px-3.5 rounded-full bg-amber-950/40 hover:bg-amber-900/60 text-amber-200 text-xs font-semibold uppercase tracking-wider"
                 >
                   <Link href="/admin/dashboard" className="flex items-center gap-1.5">
                     <Shield className="w-3.5 h-3.5 text-amber-400" />
@@ -220,10 +216,10 @@ export function CollectorNav({ user, inquiriesCount = 0 }: CollectorNavProps) {
                 <DropdownMenuTrigger asChild>
                   <button
                     type="button"
-                    className="flex items-center gap-2 p-1 pl-1.5 pr-2 rounded-full bg-[#15161f] border border-[#2b2e3c] hover:border-[#404457] transition-all focus:outline-none"
+                    className="flex items-center gap-2 p-1 pl-1.5 pr-2 rounded-full bg-[#151620] hover:bg-[#20222e] transition-all focus:outline-none shadow-sm"
                   >
-                    <Avatar size="sm" className="h-7 w-7 border border-[#d1a86e]/30">
-                      <AvatarFallback className="text-xs text-[#d1a86e] font-serif bg-[#1c1e28]">
+                    <Avatar size="sm" className="h-7 w-7">
+                      <AvatarFallback className="text-xs text-[#d1a86e] font-serif bg-[#20222e]">
                         {user.name?.[0]?.toUpperCase() || "C"}
                       </AvatarFallback>
                     </Avatar>
@@ -238,7 +234,7 @@ export function CollectorNav({ user, inquiriesCount = 0 }: CollectorNavProps) {
                     <ChevronDown className="w-3 h-3 text-zinc-400 ml-0.5" />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 p-2 bg-[#121319] border-[#2b2e3c]">
+                <DropdownMenuContent align="end" className="w-56 p-2 bg-[#13141b] rounded-2xl shadow-2xl shadow-black/90 border-none">
                   <DropdownMenuLabel className="px-2 py-1.5">
                     <div className="flex flex-col space-y-0.5">
                       <span className="text-xs font-semibold text-white truncate">
@@ -249,7 +245,7 @@ export function CollectorNav({ user, inquiriesCount = 0 }: CollectorNavProps) {
                       </span>
                     </div>
                   </DropdownMenuLabel>
-                  <DropdownMenuSeparator className="bg-[#242633]" />
+                  <DropdownMenuSeparator className="bg-[#1f212e] my-1" />
 
                   <DropdownMenuItem asChild>
                     <Link
@@ -270,7 +266,7 @@ export function CollectorNav({ user, inquiriesCount = 0 }: CollectorNavProps) {
                       <span>Liked Paintings</span>
                     </div>
                     {savedCount > 0 && (
-                      <span className="px-1.5 py-0.5 text-[9px] font-mono font-semibold rounded-full bg-[#1e202c] text-[#d1a86e] border border-[#d1a86e]/30">
+                      <span className="px-1.5 py-0.5 text-[9px] font-mono font-semibold rounded-full bg-[#222432] text-[#d1a86e]">
                         {savedCount}
                       </span>
                     )}

@@ -108,13 +108,11 @@ function CollectorDashboardContent() {
   return (
     <div className="w-full space-y-8 animate-in fade-in duration-300">
       {/* 1. HERO TAB BANNER WITH CURATORIAL CHIPS */}
-      <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#181920] via-[#121318] to-[#0d0e12] border border-[#262833] p-6 sm:p-8 lg:p-10 shadow-2xl space-y-6">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#d1a86e]/5 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
-
+      <div className="relative rounded-3xl overflow-hidden bg-[#121319] p-6 sm:p-8 lg:p-10 shadow-xl shadow-black/40 space-y-6">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2.5">
             <div className="flex flex-wrap items-center gap-2.5">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#d1a86e]/10 border border-[#d1a86e]/30 text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-bold">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1c1e2b] text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-bold">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#d1a86e] animate-pulse" />
                 {currentMeta.tag}
               </span>
@@ -135,8 +133,7 @@ function CollectorDashboardContent() {
           <div className="flex flex-wrap items-center gap-3">
             <Button
               onClick={() => setActiveTab("ar")}
-              variant="outline"
-              className="rounded-full border-[#2b2e3d] bg-[#14151c] hover:bg-[#1d1f2b] hover:border-[#d1a86e]/50 text-white text-xs font-semibold uppercase tracking-wider px-5 h-10 shadow-lg cursor-pointer transition-all active:scale-[0.98]"
+              className="rounded-full bg-[#1c1d28] hover:bg-[#252736] text-white text-xs font-semibold uppercase tracking-wider px-5 h-10 shadow-md cursor-pointer transition-all active:scale-[0.98]"
             >
               <Sparkles className="w-3.5 h-3.5 mr-2 text-[#d1a86e]" />
               <span>Launch AR Studio</span>
@@ -157,25 +154,25 @@ function CollectorDashboardContent() {
           </div>
         </div>
 
-        {/* Curatorial Status Bar */}
-        <div className="relative z-10 pt-5 border-t border-[#22242f] flex flex-wrap items-center justify-between gap-3">
+        {/* Curatorial Status Bar as a distinct nested block */}
+        <div className="relative z-10 p-4 sm:p-5 rounded-2xl bg-[#171822] flex flex-wrap items-center justify-between gap-3 shadow-inner">
           <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#14151a] border border-[#262833] text-xs text-zinc-300">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#222432] text-xs text-zinc-300">
               <span className="text-[#d1a86e] font-semibold font-mono">{artworks.length}</span> Originals
             </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#14151a] border border-[#262833] text-xs text-zinc-300">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#222432] text-xs text-zinc-300">
               <span className="text-[#d1a86e] font-semibold font-mono">{collections.length}</span> Curatorial Series
             </span>
             <button
               onClick={() => setIsCartOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#14151a] hover:bg-[#1a1b24] border border-[#262833] hover:border-[#d1a86e]/50 text-xs text-zinc-300 hover:text-white transition-all cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#222432] hover:bg-[#2a2d3e] text-xs text-zinc-300 hover:text-white transition-all cursor-pointer"
             >
               <ShoppingBag className="w-3 h-3 text-[#d1a86e]" />
               <span className="text-[#d1a86e] font-semibold font-mono">{cartArtworkIds.length}</span> in Dossier
             </button>
             <button
               onClick={() => setActiveTab("inquiries")}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#14151a] hover:bg-[#1a1b24] border border-[#262833] hover:border-[#d1a86e]/50 text-xs text-zinc-300 hover:text-white transition-all cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#222432] hover:bg-[#2a2d3e] text-xs text-zinc-300 hover:text-white transition-all cursor-pointer"
             >
               <span className="text-[#d1a86e] font-semibold font-mono">{userInquiries.length}</span> Ledger Inquiries
             </button>

@@ -28,14 +28,14 @@ export function ExhibitionsTab() {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-200">
-      <div className="border-b border-[#262833] pb-6">
+      <div className="bg-[#121319] rounded-3xl p-6 sm:p-8 shadow-xl shadow-black/40 space-y-2">
         <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-bold">
           Retrospectives &amp; Showcases
         </span>
-        <h2 className="font-serif text-3xl text-white mt-1">
+        <h2 className="font-serif text-3xl sm:text-4xl text-white">
           Curated Exhibitions
         </h2>
-        <p className="text-xs text-zinc-400 mt-1">
+        <p className="text-xs sm:text-sm text-zinc-400 max-w-2xl font-light leading-relaxed">
           Chronology of museum installations, solo gallery shows, and private vernissages.
         </p>
       </div>
@@ -44,10 +44,10 @@ export function ExhibitionsTab() {
         {paginatedExhibitions.map((exh) => (
           <div
             key={exh.id}
-            className="group bg-[#14151a] border border-[#262833] hover:border-[#d1a86e]/40 rounded-3xl p-6 sm:p-8 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center shadow-xl hover:shadow-2xl hover:shadow-[#d1a86e]/5 transition-all duration-300"
+            className="group bg-[#121319] hover:bg-[#161722] rounded-3xl p-6 sm:p-8 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center shadow-xl shadow-black/40 hover:shadow-2xl transition-all duration-300"
           >
             {exh.coverImageUrl && (
-              <div className="lg:col-span-5 relative aspect-[16/10] rounded-2xl overflow-hidden border border-[#262833] bg-[#0d0e12]">
+              <div className="lg:col-span-5 relative aspect-[16/10] rounded-2xl overflow-hidden bg-[#0d0e12] shadow-inner">
                 <ProgressiveImage
                   src={exh.coverImageUrl}
                   alt={exh.title}
@@ -58,7 +58,7 @@ export function ExhibitionsTab() {
                   className="object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute top-3 left-3 flex items-center gap-2">
-                  <Badge variant={exh.status === "current" ? "success" : "gold"} className="gap-1.5 shadow-lg">
+                  <Badge variant={exh.status === "current" ? "success" : "gold"} className="gap-1.5 shadow-lg border-0">
                     {exh.status === "current" && (
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                     )}
@@ -101,7 +101,7 @@ export function ExhibitionsTab() {
                 )}
               </div>
 
-              <p className="text-xs sm:text-sm text-[#a6aabf] leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#a6aabf] leading-relaxed font-light">
                 {exh.description || exh.curatorNote}
               </p>
 
@@ -118,8 +118,7 @@ export function ExhibitionsTab() {
 
                 <Button
                   asChild
-                  variant="outline"
-                  className="h-10 px-5 rounded-full border-[#2b2e3d] bg-[#181920] hover:bg-[#22242e] hover:border-[#d1a86e]/40 text-zinc-300 hover:text-white text-xs uppercase tracking-wider cursor-pointer transition-all active:scale-[0.98]"
+                  className="h-10 px-5 rounded-full bg-[#1c1d28] hover:bg-[#252736] text-zinc-200 hover:text-white text-xs uppercase tracking-wider cursor-pointer transition-all active:scale-[0.98] shadow-md"
                 >
                   <Link href={`/contact?subject=VIP%20Vernissage%20Pass%20-%20${encodeURIComponent(exh.title)}`}>
                     <span>Request VIP Vernissage Pass</span>

@@ -49,10 +49,10 @@ export function MarketingPreferenceToggle({ initialSubscribed }: MarketingPrefer
   };
 
   return (
-    <Card className="p-6 bg-[#14151a] border-[#262833] rounded-xl space-y-4">
+    <div className="p-6 sm:p-7 bg-[#121319] rounded-3xl space-y-4 shadow-xl shadow-black/40">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-start gap-3.5">
-          <div className="w-10 h-10 rounded-lg bg-amber-950/40 border border-amber-800/40 flex items-center justify-center text-[#d1a86e] shrink-0">
+          <div className="w-10 h-10 rounded-2xl bg-[#1c1e2b] flex items-center justify-center text-[#d1a86e] shrink-0 shadow-inner">
             <Mail className="w-5 h-5" />
           </div>
           <div className="space-y-1">
@@ -67,11 +67,10 @@ export function MarketingPreferenceToggle({ initialSubscribed }: MarketingPrefer
           <Button
             onClick={handleToggle}
             disabled={isUpdating}
-            variant="outline"
-            className={`text-xs uppercase tracking-wider rounded-full px-5 py-2 transition-all ${
+            className={`text-xs uppercase tracking-wider rounded-full px-5 py-2 transition-all cursor-pointer shadow-md ${
               isSubscribed
-                ? "border-emerald-800/60 bg-emerald-950/40 text-emerald-300 hover:bg-emerald-900/60"
-                : "border-zinc-700 bg-zinc-900/60 text-zinc-400 hover:text-white"
+                ? "bg-[#142e20] text-emerald-300 hover:bg-[#1a3a29]"
+                : "bg-[#1c1d28] text-zinc-300 hover:bg-[#252736] hover:text-white"
             }`}
           >
             {isUpdating ? (
@@ -86,16 +85,16 @@ export function MarketingPreferenceToggle({ initialSubscribed }: MarketingPrefer
 
       {feedback && (
         <div
-          className={`text-xs p-3 rounded-lg flex items-center gap-2 ${
+          className={`text-xs p-3.5 rounded-xl flex items-center gap-2 ${
             isError
-              ? "bg-red-950/40 border border-red-800/60 text-red-300"
-              : "bg-amber-950/30 border border-amber-800/40 text-amber-200"
+              ? "bg-[#2d1215] text-red-300"
+              : "bg-[#241e16] text-[#d1a86e]"
           }`}
         >
           {isError ? <AlertCircle className="w-4 h-4 shrink-0" /> : <Check className="w-4 h-4 shrink-0 text-[#d1a86e]" />}
           <span>{feedback}</span>
         </div>
       )}
-    </Card>
+    </div>
   );
 }

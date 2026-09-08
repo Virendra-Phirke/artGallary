@@ -11,7 +11,6 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { formatCurrency, cn } from "@/lib/utils";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ProgressiveImage } from "@/components/ui/progressive-image";
@@ -37,19 +36,19 @@ export function OverviewTab() {
     <div className="space-y-10 animate-in fade-in duration-200">
       {/* Top Grid: Curatorial Spotlight & Concierge */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left: Spotlight Original Canvas */}
+        {/* Left: Spotlight Original Canvas (Tier 1 Master Block) */}
         {spotlightArtwork && (
-          <div className="lg:col-span-7 bg-[#14151a] border border-[#262833] rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl relative overflow-hidden">
+          <div className="lg:col-span-7 bg-[#121319] rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl shadow-black/40 relative overflow-hidden">
             <div className="flex items-center justify-between">
               <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-bold">
                 Atelier Spotlight Original
               </span>
-              <Badge variant="gold" className="text-[10px] uppercase font-mono">
+              <Badge variant="gold" className="text-[10px] uppercase font-mono border-0">
                 {spotlightArtwork.collectionName || "Solitary Series"}
               </Badge>
             </div>
 
-            <div className="relative aspect-[16/9] w-full rounded-2xl overflow-hidden border border-[#262833] bg-[#0d0e12] group">
+            <div className="relative aspect-[16/9] w-full rounded-2xl overflow-hidden bg-[#0d0e12] group shadow-inner">
               <ProgressiveImage
                 src={spotlightArtwork.coverImageUrl}
                 alt={spotlightArtwork.title}
@@ -59,7 +58,7 @@ export function OverviewTab() {
                 sizes="(max-width: 1024px) 100vw, 60vw"
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
               <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between">
                 <div>
                   <h3 className="font-serif text-2xl sm:text-3xl text-white font-medium">
@@ -80,11 +79,11 @@ export function OverviewTab() {
               </div>
             </div>
 
-            <p className="text-xs sm:text-sm text-[#a6aabf] leading-relaxed line-clamp-2">
+            <p className="text-xs sm:text-sm text-[#a6aabf] leading-relaxed line-clamp-2 font-light">
               {spotlightArtwork.description}
             </p>
 
-            <div className="flex flex-wrap items-center gap-3 pt-2">
+            <div className="flex flex-wrap items-center gap-3 pt-1">
               <Button
                 onClick={() => setInspectArtwork(spotlightArtwork)}
                 className="h-10 px-5 rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-xs font-semibold uppercase tracking-wider shadow-md shadow-[#d1a86e]/15 cursor-pointer transition-all active:scale-[0.98]"
@@ -96,10 +95,10 @@ export function OverviewTab() {
               <Button
                 onClick={() => toggleCartArtwork(spotlightArtwork.id)}
                 className={cn(
-                  "h-10 px-5 rounded-full text-xs font-semibold uppercase tracking-wider border transition-all cursor-pointer active:scale-[0.98]",
+                  "h-10 px-5 rounded-full text-xs font-semibold uppercase tracking-wider shadow-md transition-all cursor-pointer active:scale-[0.98]",
                   cartArtworkIds.includes(spotlightArtwork.id)
-                    ? "bg-[#1f2230] text-[#d1a86e] border-[#d1a86e]/60 shadow-md shadow-[#d1a86e]/10"
-                    : "bg-[#181920] hover:bg-[#22242e] text-zinc-200 hover:text-white border-[#2b2e3d] hover:border-[#d1a86e]/40"
+                    ? "bg-[#252838] text-[#d1a86e]"
+                    : "bg-[#1c1d28] hover:bg-[#252736] text-zinc-200 hover:text-white"
                 )}
               >
                 <ShoppingBag className="w-3.5 h-3.5 mr-2 text-[#d1a86e]" />
@@ -112,8 +111,7 @@ export function OverviewTab() {
 
               <Button
                 asChild
-                variant="outline"
-                className="h-10 px-5 rounded-full border-[#2b2e3d] bg-[#181920] hover:bg-[#22242e] hover:border-[#d1a86e]/40 text-white text-xs font-medium uppercase tracking-wider transition-all active:scale-[0.98]"
+                className="h-10 px-5 rounded-full bg-[#1c1d28] hover:bg-[#252736] text-white text-xs font-medium uppercase tracking-wider shadow-md transition-all active:scale-[0.98]"
               >
                 <Link href={`/ar/${spotlightArtwork.slug}`} className="flex items-center gap-2">
                   <Sparkles className="w-3.5 h-3.5 text-[#d1a86e]" />
@@ -126,39 +124,40 @@ export function OverviewTab() {
 
         {/* Right: Studio Concierge & Private Liaison */}
         <div className="lg:col-span-5 space-y-6">
-          <div className="bg-[#14151a] border border-[#262833] rounded-3xl p-6 sm:p-8 space-y-5 shadow-xl">
-            <div className="w-10 h-10 rounded-full bg-[#1c1d25] border border-[#262833] flex items-center justify-center text-[#d1a86e]">
+          {/* Master Block: Studio Liaison */}
+          <div className="bg-[#121319] rounded-3xl p-6 sm:p-8 space-y-5 shadow-xl shadow-black/40">
+            <div className="w-10 h-10 rounded-2xl bg-[#1c1e2b] flex items-center justify-center text-[#d1a86e] shadow-inner">
               <Award className="w-5 h-5" />
             </div>
             <div>
               <h3 className="font-serif text-xl text-white">
                 Direct Studio Liaison
               </h3>
-              <p className="text-xs text-[#8e92a4] mt-1 leading-relaxed">
+              <p className="text-xs text-[#8e92a4] mt-1.5 leading-relaxed font-light">
                 As a verified collector, you have direct priority correspondence with Elena Vance's studio team for bespoke acquisitions, framing advice, or private Paris viewing appointments.
               </p>
             </div>
 
-            <div className="space-y-2.5 pt-2 border-t border-[#1c1d25] text-xs text-zinc-300">
-              <div className="flex items-center justify-between">
-                <span className="text-zinc-500">Liaison Hours:</span>
-                <span className="font-mono">Mon – Sat (10:00 – 19:00 CET)</span>
+            {/* Distinct Liaison Hours Content Block */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-[#1a1b26] space-y-2.5 shadow-md">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-[11px] uppercase tracking-wider font-semibold text-[#d1a86e]">Liaison Hours</span>
+                <span className="font-mono text-zinc-200">Mon – Sat (10:00 – 19:00 CET)</span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-zinc-500">Studio Location:</span>
-                <span>1st Arrondissement, Paris</span>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-zinc-400">Studio Location:</span>
+                <span className="text-zinc-200">1st Arrondissement, Paris</span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-zinc-500">Handling Protocol:</span>
-                <span className="text-[#d1a86e]">Custom Archival Crate</span>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-zinc-400">Handling Protocol:</span>
+                <span className="text-[#d1a86e] font-medium">Custom Archival Crate</span>
               </div>
             </div>
 
-            <div className="pt-2">
+            <div>
               <Button
                 asChild
-                variant="outline"
-                className="w-full h-10 rounded-full border-[#2b2e3d] bg-[#181920] hover:bg-[#22242e] hover:border-[#d1a86e]/40 text-[#d1a86e] hover:text-white text-xs uppercase tracking-wider font-semibold transition-all active:scale-[0.98]"
+                className="w-full h-10 rounded-full bg-[#1c1d28] hover:bg-[#252736] text-[#d1a86e] hover:text-white text-xs uppercase tracking-wider font-semibold shadow-md transition-all active:scale-[0.98]"
               >
                 <Link href="/contact" className="flex items-center justify-center gap-2">
                   <Mail className="w-3.5 h-3.5" />
@@ -168,18 +167,18 @@ export function OverviewTab() {
             </div>
           </div>
 
-          {/* Collector Email Preferences */}
+          {/* Studio Dispatches & Releases Block */}
           {user ? (
             <MarketingPreferenceToggle initialSubscribed={marketingSubscribed} />
           ) : (
-            <Card className="p-6 bg-[#14151a] border-[#262833] rounded-3xl space-y-3 shadow-xl">
+            <div className="p-6 sm:p-7 bg-[#121319] rounded-3xl space-y-4 shadow-xl shadow-black/40">
               <div className="flex items-start gap-3.5">
-                <div className="w-10 h-10 rounded-full bg-[#1c1d25] border border-[#262833] flex items-center justify-center text-[#d1a86e] shrink-0">
+                <div className="w-10 h-10 rounded-2xl bg-[#1c1e2b] flex items-center justify-center text-[#d1a86e] shrink-0 shadow-inner">
                   <Mail className="w-5 h-5" />
                 </div>
                 <div className="space-y-1">
                   <h3 className="font-serif text-lg text-white">Studio Dispatches &amp; Releases</h3>
-                  <p className="text-xs text-[#8e92a4] leading-relaxed">
+                  <p className="text-xs text-[#8e92a4] leading-relaxed font-light">
                     Sign in to receive private VIP invitations to solo retrospectives, vernissage releases, and acquisition catalogues.
                   </p>
                 </div>
@@ -187,28 +186,27 @@ export function OverviewTab() {
               <div className="pt-1">
                 <Button
                   asChild
-                  variant="outline"
-                  className="w-full rounded-full border-[#262833] bg-[#181920] text-zinc-300 text-xs uppercase tracking-wider"
+                  className="w-full h-10 rounded-full bg-[#1c1d28] hover:bg-[#252736] text-zinc-200 hover:text-white text-xs uppercase tracking-wider font-semibold shadow-md transition-all active:scale-[0.98]"
                 >
                   <Link href="/login?redirect=/account">
                     <span>Sign In for VIP Dispatches</span>
                   </Link>
                 </Button>
               </div>
-            </Card>
+            </div>
           )}
         </div>
       </div>
 
-      {/* Curatorial Cycles & Series Preview */}
+      {/* Curatorial Cycles & Series Preview (Tier 1 Master Block) */}
       {collections.length > 0 && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between border-b border-[#262833] pb-3">
+        <div className="p-6 sm:p-8 rounded-3xl bg-[#121319] space-y-6 shadow-xl shadow-black/40">
+          <div className="flex items-center justify-between">
             <div>
               <span className="text-[10px] tracking-[0.2em] text-[#d1a86e] uppercase font-bold">
                 Atelier Suites
               </span>
-              <h2 className="font-serif text-xl text-white">Curatorial Cycles &amp; Series</h2>
+              <h2 className="font-serif text-xl sm:text-2xl text-white">Curatorial Cycles &amp; Series</h2>
             </div>
             <button
               onClick={() => setActiveTab("collections")}
@@ -219,12 +217,12 @@ export function OverviewTab() {
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {collections.slice(0, 3).map((col) => (
               <div
                 key={col.id}
                 onClick={() => setActiveTab("collections")}
-                className="group p-5 rounded-2xl bg-[#14151a] border border-[#262833] hover:border-[#d1a86e]/40 transition-all duration-300 space-y-4 cursor-pointer flex flex-col justify-between shadow-lg"
+                className="group p-5 rounded-2xl bg-[#1a1b26] hover:bg-[#202230] transition-all duration-300 space-y-4 cursor-pointer flex flex-col justify-between shadow-md"
               >
                 {col.coverImageUrl && (
                   <div className="relative aspect-[16/10] w-full rounded-xl overflow-hidden bg-[#0d0e12]">
@@ -246,8 +244,10 @@ export function OverviewTab() {
                     {col.curatorialStatement || col.description}
                   </p>
                 </div>
-                <div className="pt-2 border-t border-[#1e202a] flex items-center justify-between text-xs text-zinc-500">
-                  <span className="font-mono text-[11px]">{col.artworkSlugs?.length || 1} Works</span>
+                <div className="pt-2 flex items-center justify-between text-xs text-zinc-500">
+                  <span className="font-mono text-[11px] px-2.5 py-1 rounded-lg bg-[#121319] text-zinc-300">
+                    {col.artworkSlugs?.length || 1} Works
+                  </span>
                   <span className="text-[#d1a86e] group-hover:translate-x-0.5 transition-transform flex items-center gap-1 text-[11px] font-medium uppercase tracking-wider">
                     View Suite &rarr;
                   </span>
@@ -258,10 +258,15 @@ export function OverviewTab() {
         </div>
       )}
 
-      {/* Recent Inquiries Preview */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between border-b border-[#262833] pb-3">
-          <h2 className="font-serif text-xl text-white">Recent Studio Inquiries</h2>
+      {/* Recent Studio Inquiries (Tier 1 Master Block with Tier 2 Contained Cards) */}
+      <div className="p-6 sm:p-8 rounded-3xl bg-[#121319] space-y-6 shadow-xl shadow-black/40">
+        <div className="flex items-center justify-between">
+          <div>
+            <span className="text-[10px] tracking-[0.2em] text-[#d1a86e] uppercase font-bold">
+              Provenance &amp; Correspondence
+            </span>
+            <h2 className="font-serif text-xl sm:text-2xl text-white">Recent Studio Inquiries</h2>
+          </div>
           <button
             onClick={() => setActiveTab("inquiries")}
             className="text-xs text-[#d1a86e] hover:underline uppercase tracking-wider flex items-center gap-1 cursor-pointer"
@@ -272,17 +277,17 @@ export function OverviewTab() {
         </div>
 
         {userInquiries.length === 0 ? (
-          <Card className="p-8 text-center bg-[#14151a]/50 border-[#262833] rounded-2xl space-y-2">
+          <div className="p-8 text-center bg-[#1a1b26] rounded-2xl space-y-2 shadow-inner">
             <Mail className="w-6 h-6 text-zinc-600 mx-auto" />
-            <p className="text-sm text-zinc-400">No inquiries placed yet</p>
+            <p className="text-sm text-zinc-300 font-medium">No inquiries placed yet</p>
             <p className="text-xs text-zinc-500 max-w-sm mx-auto">
               When you inquire about an original canvas or request a private viewing, your studio correspondence is tracked here.
             </p>
-          </Card>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {userInquiries.slice(0, 2).map((inq) => (
-              <Card key={inq.id} className="p-5 bg-[#14151a] border-[#262833] rounded-2xl space-y-3">
+              <div key={inq.id} className="p-5 sm:p-6 bg-[#1a1b26] rounded-2xl space-y-3.5 shadow-md">
                 <div className="flex items-center justify-between">
                   <Badge
                     variant={
@@ -292,10 +297,11 @@ export function OverviewTab() {
                         ? "gold"
                         : "warning"
                     }
+                    className="border-0 text-[10px] uppercase font-mono"
                   >
                     {inq.status}
                   </Badge>
-                  <span className="text-[11px] text-zinc-500 font-mono">
+                  <span className="text-[11px] text-zinc-400 font-mono">
                     {new Date(inq.createdAt).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
@@ -304,10 +310,12 @@ export function OverviewTab() {
                   </span>
                 </div>
                 <h4 className="font-serif text-base text-white truncate">{inq.subject}</h4>
-                <p className="text-xs text-zinc-400 line-clamp-2 bg-[#101116] p-3 rounded-lg border border-[#22242f]">
-                  {inq.message}
-                </p>
-              </Card>
+                <div className="bg-[#121319] p-3.5 rounded-xl shadow-inner">
+                  <p className="text-xs text-zinc-300 line-clamp-2 leading-relaxed">
+                    {inq.message}
+                  </p>
+                </div>
+              </div>
             ))}
           </div>
         )}

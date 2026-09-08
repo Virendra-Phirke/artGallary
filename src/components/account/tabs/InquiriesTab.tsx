@@ -3,7 +3,6 @@
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import { Mail, Clock } from "lucide-react";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CollectorPaginationBar } from "@/components/account/shared/CollectorPaginationBar";
@@ -28,15 +27,15 @@ export function InquiriesTab() {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-200">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#262833] pb-6">
+      <div className="bg-[#121319] rounded-3xl p-6 sm:p-8 shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-bold">
             Studio Ledger
           </span>
-          <h2 className="font-serif text-3xl text-white mt-1">
+          <h2 className="font-serif text-3xl sm:text-4xl text-white mt-1">
             Your Acquisition Inquiries
           </h2>
-          <p className="text-xs text-zinc-400 mt-1">
+          <p className="text-xs sm:text-sm text-zinc-400 max-w-xl font-light leading-relaxed mt-1">
             Direct correspondence recorded with Elena Vance's studio team.
           </p>
         </div>
@@ -53,12 +52,12 @@ export function InquiriesTab() {
       </div>
 
       {!user ? (
-        <Card className="p-12 text-center bg-[#14151a] border-[#262833] rounded-3xl space-y-4 max-w-xl mx-auto my-6">
-          <div className="w-14 h-14 rounded-full bg-[#1c1d25] border border-[#d1a86e]/30 flex items-center justify-center text-[#d1a86e] mx-auto">
+        <div className="p-10 sm:p-12 text-center bg-[#121319] rounded-3xl space-y-4 max-w-xl mx-auto my-6 shadow-xl shadow-black/40">
+          <div className="w-14 h-14 rounded-2xl bg-[#1c1e2b] flex items-center justify-center text-[#d1a86e] mx-auto shadow-inner">
             <Mail className="w-6 h-6" />
           </div>
           <h3 className="font-serif text-2xl text-white">Acquisition Ledger Locked</h3>
-          <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+          <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed font-light">
             Sign in to your collector account to review active inquiries, curatorial correspondence, and acquisition status.
           </p>
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -67,29 +66,29 @@ export function InquiriesTab() {
                 <span>Sign In to Access Ledger</span>
               </Link>
             </Button>
-            <Button asChild variant="outline" className="h-10 px-5 rounded-full border-[#2b2e3d] bg-[#181920] hover:bg-[#22242e] text-zinc-300 hover:text-white text-xs uppercase tracking-wider transition-all active:scale-[0.98]">
+            <Button asChild className="h-10 px-5 rounded-full bg-[#1c1d28] hover:bg-[#252736] text-zinc-200 hover:text-white text-xs uppercase tracking-wider transition-all active:scale-[0.98] shadow-md">
               <Link href="/register?redirect=/account?tab=inquiries">
                 <span>Register Account</span>
               </Link>
             </Button>
           </div>
-        </Card>
+        </div>
       ) : userInquiries.length === 0 ? (
-        <Card className="p-12 text-center bg-[#14151a]/50 border-[#262833] rounded-3xl space-y-4">
+        <div className="p-12 text-center bg-[#121319] rounded-3xl space-y-4 shadow-xl shadow-black/40">
           <Mail className="w-10 h-10 text-zinc-600 mx-auto" />
-          <h3 className="font-serif text-xl text-white">No active inquiries recorded</h3>
-          <p className="text-xs text-zinc-400 max-w-md mx-auto leading-relaxed">
+          <h3 className="font-serif text-2xl text-white">No active inquiries recorded</h3>
+          <p className="text-xs sm:text-sm text-zinc-400 max-w-md mx-auto leading-relaxed font-light">
             When you inquire about acquiring an original painting or scheduling a private viewing, your studio correspondence will be tracked here in your private ledger.
           </p>
-          <Button asChild className="rounded-full bg-[#d1a86e] text-[#0d0e12] text-xs uppercase tracking-wider">
+          <Button asChild className="rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-xs uppercase tracking-wider font-semibold shadow-md shadow-[#d1a86e]/15 px-6 h-10">
             <Link href="/account?tab=gallery">Browse Gallery to Inquire</Link>
           </Button>
-        </Card>
+        </div>
       ) : (
         <div className="space-y-6">
           {/* Curatorial Ledger Summary Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="p-5 rounded-2xl bg-[#14151a] border border-[#262833] space-y-1">
+            <div className="p-5 sm:p-6 rounded-2xl bg-[#121319] space-y-1 shadow-md">
               <span className="text-[10px] uppercase font-mono tracking-widest text-zinc-500">
                 Total Inquiries
               </span>
@@ -99,7 +98,7 @@ export function InquiriesTab() {
               <p className="text-[11px] text-zinc-500">Logged studio transmissions</p>
             </div>
 
-            <div className="p-5 rounded-2xl bg-[#14151a] border border-[#262833] space-y-1">
+            <div className="p-5 sm:p-6 rounded-2xl bg-[#121319] space-y-1 shadow-md">
               <span className="text-[10px] uppercase font-mono tracking-widest text-zinc-500">
                 Studio Responses
               </span>
@@ -109,7 +108,7 @@ export function InquiriesTab() {
               <p className="text-[11px] text-zinc-500">Curatorial replies received</p>
             </div>
 
-            <div className="p-5 rounded-2xl bg-[#14151a] border border-[#262833] space-y-1">
+            <div className="p-5 sm:p-6 rounded-2xl bg-[#121319] space-y-1 shadow-md">
               <span className="text-[10px] uppercase font-mono tracking-widest text-zinc-500">
                 Liaison Status
               </span>
@@ -123,11 +122,11 @@ export function InquiriesTab() {
 
           <div className="space-y-4">
             {paginatedInquiries.map((inq) => (
-              <Card
+              <div
                 key={inq.id}
-                className="p-6 sm:p-8 bg-[#14151a] border-[#262833] rounded-3xl space-y-4 shadow-xl"
+                className="p-6 sm:p-8 bg-[#1a1b26] rounded-3xl space-y-5 shadow-xl shadow-black/40"
               >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#1c1d25] pb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <Badge
                       variant={
@@ -137,6 +136,7 @@ export function InquiriesTab() {
                           ? "gold"
                           : "warning"
                       }
+                      className="border-0 text-[10px] uppercase font-mono"
                     >
                       Status: {inq.status}
                     </Badge>
@@ -145,7 +145,7 @@ export function InquiriesTab() {
                     </h4>
                   </div>
 
-                  <div className="flex items-center gap-2 text-xs text-zinc-500 font-mono">
+                  <div className="flex items-center gap-2 text-xs text-zinc-400 font-mono">
                     <Clock className="w-3.5 h-3.5 text-[#d1a86e]" />
                     <span>
                       {new Date(inq.createdAt).toLocaleDateString("en-US", {
@@ -159,11 +159,11 @@ export function InquiriesTab() {
                   </div>
                 </div>
 
-                <div className="bg-[#101116] p-4 sm:p-5 rounded-2xl border border-[#22242f] space-y-2">
+                <div className="bg-[#121319] p-4 sm:p-5 rounded-2xl space-y-2 shadow-inner">
                   <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-mono">
                     Collector Message
                   </span>
-                  <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed whitespace-pre-wrap">
+                  <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed whitespace-pre-wrap font-light">
                     {inq.message}
                   </p>
                 </div>
@@ -177,7 +177,7 @@ export function InquiriesTab() {
                     Send Follow-up Message &rarr;
                   </Link>
                 </div>
-              </Card>
+              </div>
             ))}
           </div>
 

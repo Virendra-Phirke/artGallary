@@ -76,7 +76,7 @@ export function ArtworkQuickViewModal({
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-5xl max-h-[92vh] bg-[#14151a] border border-[#262833] rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row text-[#f4f4f6]"
+        className="relative w-full max-w-5xl max-h-[92vh] bg-[#121319] rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row text-[#f4f4f6]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Controls: Like / Save & Close */}
@@ -86,10 +86,10 @@ export function ArtworkQuickViewModal({
               onClick={() => onToggleSave(artwork)}
               aria-label={isSaved ? "Remove from saved" : "Save artwork"}
               className={cn(
-                "p-2.5 rounded-full backdrop-blur-md border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d1a86e]",
+                "p-2.5 rounded-full backdrop-blur-md transition-all focus-visible:outline-none cursor-pointer shadow-md",
                 isSaved
-                  ? "bg-[#d1a86e] text-[#0d0e12] border-[#d1a86e]"
-                  : "bg-[#0d0e12]/80 hover:bg-[#22232a] border-[#262833] text-zinc-400 hover:text-white"
+                  ? "bg-[#d1a86e] text-[#0d0e12]"
+                  : "bg-[#1c1d28] hover:bg-[#252736] text-zinc-400 hover:text-white"
               )}
               title={isSaved ? "Saved to Liked Works" : "Save to Liked Works"}
             >
@@ -100,15 +100,15 @@ export function ArtworkQuickViewModal({
           <button
             onClick={onClose}
             aria-label="Close artwork preview"
-            className="p-2.5 rounded-full bg-[#0d0e12]/80 hover:bg-[#22232a] border border-[#262833] text-zinc-400 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d1a86e]"
+            className="p-2.5 rounded-full bg-[#1c1d28] hover:bg-[#252736] text-zinc-400 hover:text-white transition-colors focus-visible:outline-none cursor-pointer shadow-md"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Left Column: Artwork Image & Gallery Thumbnails */}
-        <div className="md:w-7/12 bg-[#0a0b0d] p-6 sm:p-8 flex flex-col justify-center items-center relative border-b md:border-b-0 md:border-r border-[#1c1d25]">
-          <div className="relative w-full aspect-[4/3] sm:aspect-[1/1] max-h-[50vh] md:max-h-[560px] flex items-center justify-center rounded-lg overflow-hidden border border-[#262833]/70 shadow-2xl bg-[#101116]">
+        <div className="md:w-7/12 bg-[#090a0f] p-6 sm:p-8 flex flex-col justify-center items-center relative">
+          <div className="relative w-full aspect-[4/3] sm:aspect-[1/1] max-h-[50vh] md:max-h-[560px] flex items-center justify-center rounded-2xl overflow-hidden shadow-2xl bg-[#0d0e12]">
             <ProgressiveImage
               src={currentImage}
               alt={artwork.altText || artwork.title}
@@ -127,10 +127,10 @@ export function ArtworkQuickViewModal({
                 <button
                   key={i}
                   onClick={() => setSelectedImageIndex(i)}
-                  className={`relative w-14 h-14 rounded-md overflow-hidden border transition-all shrink-0 ${
+                  className={`relative w-14 h-14 rounded-xl overflow-hidden transition-all shrink-0 cursor-pointer ${
                     selectedImageIndex === i
-                      ? "border-[#d1a86e] ring-2 ring-[#d1a86e]/30 scale-105"
-                      : "border-[#262833] opacity-60 hover:opacity-100"
+                      ? "ring-2 ring-[#d1a86e] scale-105"
+                      : "opacity-60 hover:opacity-100 bg-[#161720]"
                   }`}
                   aria-label={`View image view ${i + 1}`}
                 >
@@ -145,12 +145,12 @@ export function ArtworkQuickViewModal({
           )}
 
           <div className="mt-3 flex items-center gap-4 text-[11px] text-zinc-400">
-            <span className="flex items-center gap-1.5">
+            <span className="flex items-center gap-1.5 font-mono">
               <Ruler className="w-3.5 h-3.5 text-[#d1a86e]" />
               {formatDimensions(artwork.widthCm, artwork.heightCm)}
             </span>
             <span>•</span>
-            <span className="flex items-center gap-1.5">
+            <span className="flex items-center gap-1.5 font-mono">
               <Layers className="w-3.5 h-3.5 text-[#d1a86e]" />
               {artwork.year} Original
             </span>
@@ -173,6 +173,7 @@ export function ArtworkQuickViewModal({
                     ? "warning"
                     : "secondary"
                 }
+                className="border-0 text-[10px] uppercase font-mono"
               >
                 {artwork.status === "published"
                   ? "Available for Acquisition"
@@ -190,7 +191,7 @@ export function ArtworkQuickViewModal({
               </p>
             </div>
 
-            <div className="pt-2 border-t border-[#1c1d25] flex items-baseline justify-between">
+            <div className="pt-2 flex items-baseline justify-between">
               <span className="text-xs text-zinc-400 uppercase tracking-wider">
                 Studio Acquisition Price
               </span>
@@ -200,12 +201,12 @@ export function ArtworkQuickViewModal({
             </div>
 
             {/* Description */}
-            <p className="text-xs sm:text-sm text-[#a6aabf] leading-relaxed line-clamp-4">
+            <p className="text-xs sm:text-sm text-[#a6aabf] leading-relaxed line-clamp-4 font-light">
               {artwork.description}
             </p>
 
             {/* Curatorial Provenance Checklist */}
-            <div className="bg-[#18191e] border border-[#262833] rounded-xl p-4 space-y-2.5 text-xs text-zinc-300">
+            <div className="bg-[#1a1b26] rounded-2xl p-4 space-y-2.5 text-xs text-zinc-300 shadow-inner">
               <div className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-[#d1a86e] shrink-0" />
                 <span>Signed Certificate of Authenticity by Elena Vance</span>
@@ -222,16 +223,16 @@ export function ArtworkQuickViewModal({
           </div>
 
           {/* Action CTAs */}
-          <div className="pt-4 border-t border-[#1c1d25] space-y-2.5">
+          <div className="pt-4 space-y-2.5">
             {onToggleCart && (
               <Button
                 type="button"
                 onClick={() => onToggleCart(artwork)}
                 className={cn(
-                  "w-full rounded-full border text-xs tracking-wider uppercase font-semibold transition-all shadow-md py-2.5",
+                  "w-full rounded-full text-xs tracking-wider uppercase font-semibold transition-all shadow-md py-2.5 cursor-pointer",
                   isInCart
-                    ? "bg-[#1d202d] border-[#d1a86e] text-[#d1a86e] hover:bg-[#25293a]"
-                    : "bg-[#191a22] hover:bg-[#222430] border-[#2f3242] text-white hover:border-[#d1a86e]/60"
+                    ? "bg-[#252838] text-[#d1a86e]"
+                    : "bg-[#1c1d28] hover:bg-[#252736] text-white"
                 )}
               >
                 <ShoppingBag className="w-3.5 h-3.5 mr-2 text-[#d1a86e]" />
@@ -246,7 +247,7 @@ export function ArtworkQuickViewModal({
             <Button
               asChild
               size="lg"
-              className="w-full rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-xs tracking-[0.18em] uppercase shadow-lg shadow-[#d1a86e]/15"
+              className="w-full rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] font-semibold text-xs tracking-[0.18em] uppercase shadow-md shadow-[#d1a86e]/15 cursor-pointer"
             >
               <Link
                 href={`/ar/${artwork.slug}`}
@@ -261,8 +262,7 @@ export function ArtworkQuickViewModal({
             <div className="grid grid-cols-2 gap-2.5">
               <Button
                 asChild
-                variant="outline"
-                className="rounded-full border-[#262833] bg-[#18191e] hover:bg-[#22232a] text-white text-xs uppercase tracking-wider"
+                className="rounded-full bg-[#1c1d28] hover:bg-[#252736] text-white text-xs uppercase tracking-wider shadow-sm cursor-pointer"
               >
                 <Link
                   href={`/artwork/${artwork.slug}`}
@@ -276,8 +276,7 @@ export function ArtworkQuickViewModal({
 
               <Button
                 asChild
-                variant="outline"
-                className="rounded-full border-[#262833] bg-[#18191e] hover:bg-[#22232a] text-[#d1a86e] hover:text-white text-xs uppercase tracking-wider"
+                className="rounded-full bg-[#1c1d28] hover:bg-[#252736] text-[#d1a86e] hover:text-white text-xs uppercase tracking-wider shadow-sm cursor-pointer"
               >
                 <Link
                   href={`/contact?artwork=${artwork.slug}`}
