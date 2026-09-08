@@ -108,8 +108,8 @@ export function CollectorNav({ user, inquiriesCount = 0 }: CollectorNavProps) {
             </div>
             <div className="flex flex-col min-w-0">
               <span className="font-serif text-xs sm:text-base tracking-[0.08em] sm:tracking-[0.15em] font-medium text-white group-hover:text-[#d1a86e] transition-colors uppercase truncate">
-                <span className="inline sm:hidden">L&apos;Atelier</span>
-                <span className="hidden sm:inline">L&apos;Atelier Lumineux</span>
+                <span className="inline sm:hidden">Seclusion</span>
+                <span className="hidden sm:inline">Seclusion Art Gallary</span>
               </span>
               <span className="text-[8px] sm:text-[9px] tracking-[0.15em] sm:tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
                 <span className="inline sm:hidden">Portal</span>

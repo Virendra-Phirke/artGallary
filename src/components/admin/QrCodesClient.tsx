@@ -152,13 +152,13 @@ export function QrCodesClient({ artworks }: QrCodesClientProps) {
           >
             <div className="space-y-1">
               <span className="text-[10px] tracking-[0.25em] text-zinc-500 uppercase font-semibold">
-                L&apos;Atelier Lumineux • Paris
+                Seclusion Art Gallary
               </span>
               <h3 className="font-serif text-2xl text-black font-semibold">
                 {selectedArtwork.title}
               </h3>
               <p className="text-xs text-zinc-600 font-light">
-                Elena Vance, {selectedArtwork.year}
+                Vishal Patil, {selectedArtwork.year}
               </p>
             </div>
 

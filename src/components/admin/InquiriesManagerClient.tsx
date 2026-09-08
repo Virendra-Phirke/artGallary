@@ -99,15 +99,15 @@ export function InquiriesManagerClient({
     setEmailComposerInquiry(inq);
     setEmailSubject(
       inq.subject
-        ? `Re: ${inq.subject} • Helena Vance Studio`
-        : `Re: Artwork Acquisition Inquiry • Helena Vance Studio`
+        ? `Re: ${inq.subject} • Seclusion Art Gallary`
+        : `Re: Artwork Acquisition Inquiry • Seclusion Art Gallary`
     );
     setEmailSendStatus("idle");
     setEmailSendError(null);
     const firstName = inq.name.split(" ")[0] || "Collector";
     const artwork = inq.artworkTitle || "the artwork";
     setEmailBody(
-      `Dear ${firstName},\n\nThank you for contacting our curatorial office regarding "${artwork}".\n\nWe are pleased to inform you that this piece is available and currently preserved in pristine condition in our studio archive. We have placed a preliminary reserve on it for your consideration.\n\nPlease let us know if you have specific crating preferences (such as museum-grade climate-controlled crating) or if you would like to arrange a private atelier viewing.\n\nWarm regards,\nHelena Vance Curatorial Office`
+      `Dear ${firstName},\n\nThank you for contacting our curatorial office regarding "${artwork}".\n\nWe are pleased to inform you that this piece is available and currently preserved in pristine condition in our gallery archive. We have placed a preliminary reserve on it for your consideration.\n\nPlease let us know if you have specific crating preferences (such as museum-grade climate-controlled crating) or if you would like to arrange a private atelier viewing.\n\nWarm regards,\nVishal Patil • Seclusion Art Gallary`
     );
   };
 
@@ -119,22 +119,22 @@ export function InquiriesManagerClient({
     switch (templateKey) {
       case "availability":
         setEmailBody(
-          `Dear ${firstName},\n\nThank you for contacting our curatorial office regarding "${artwork}".\n\nWe are pleased to inform you that this piece is available and currently preserved in pristine condition in our studio archive. We have placed a preliminary reserve on it for your consideration.\n\nPlease let us know if you have specific crating preferences (such as museum-grade climate-controlled crating) or if you would like to arrange a private atelier viewing.\n\nWarm regards,\nHelena Vance Curatorial Office`
+          `Dear ${firstName},\n\nThank you for contacting our curatorial office regarding "${artwork}".\n\nWe are pleased to inform you that this piece is available and currently preserved in pristine condition in our gallery archive. We have placed a preliminary reserve on it for your consideration.\n\nPlease let us know if you have specific crating preferences (such as museum-grade climate-controlled crating) or if you would like to arrange a private atelier viewing.\n\nWarm regards,\nVishal Patil • Seclusion Art Gallary`
         );
         break;
       case "crating":
         setEmailBody(
-          `Dear ${firstName},\n\nFollowing your inquiry for "${artwork}", our fine-art logistics team has reviewed transport protocols for your destination.\n\nWe provide museum-grade climate-controlled wooden crating with specialized shock-absorption, accompanied by full commercial transit insurance and customs clearance.\n\nPlease advise on your delivery timeline so we can finalize the freight schedule.\n\nWarm regards,\nHelena Vance Curatorial Office`
+          `Dear ${firstName},\n\nFollowing your inquiry for "${artwork}", our fine-art logistics team has reviewed transport protocols for your destination.\n\nWe provide museum-grade climate-controlled wooden crating with specialized shock-absorption, accompanied by full commercial transit insurance and customs clearance.\n\nPlease advise on your delivery timeline so we can finalize the freight schedule.\n\nWarm regards,\nVishal Patil • Seclusion Art Gallary`
         );
         break;
       case "viewing":
         setEmailBody(
-          `Dear ${firstName},\n\nWe would be delighted to invite you for a private atelier viewing of "${artwork}" with the artist, or alternatively arrange a bespoke 1-on-1 virtual walkthrough.\n\nPlease let us know your preferred dates and whether you will be accompanied by an art advisor.\n\nWarm regards,\nHelena Vance Curatorial Office`
+          `Dear ${firstName},\n\nWe would be delighted to invite you for a private atelier viewing of "${artwork}" with Vishal Patil, or alternatively arrange a bespoke 1-on-1 virtual walkthrough.\n\nPlease let us know your preferred dates and whether you will be accompanied by an art advisor.\n\nWarm regards,\nVishal Patil • Seclusion Art Gallary`
         );
         break;
       case "phoneFollowup":
         setEmailBody(
-          `Dear ${firstName},\n\nThank you for your telephone consultation today regarding "${artwork}".\n\nAs discussed during our call, we have logged your specifications in our curatorial registry. Please review the attached notes and let us know if any further details are required.\n\nWarm regards,\nHelena Vance Curatorial Office`
+          `Dear ${firstName},\n\nThank you for your telephone consultation today regarding "${artwork}".\n\nAs discussed during our call, we have logged your specifications in our curatorial registry. Please review the attached notes and let us know if any further details are required.\n\nWarm regards,\nVishal Patil • Seclusion Art Gallary`
         );
         break;
       case "custom":

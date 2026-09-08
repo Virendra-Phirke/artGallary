@@ -129,7 +129,7 @@ export function AboutPageEditor({
             <Input
               value={settings.artistName}
               onChange={(e) => onUpdateSetting("artistName", e.target.value)}
-              placeholder="Elena Vance"
+              placeholder="Vishal Patil"
               className="bg-[#181920] border-[#262833] text-xs text-white focus:border-[#d1a86e]"
             />
           </div>
@@ -176,7 +176,7 @@ export function AboutPageEditor({
               onUpdateAboutConfig("story", e.target.value);
               onUpdateSetting("statement", e.target.value);
             }}
-            placeholder="Elena Vance explores the threshold where mineral glazes, raw Belgian linen, and oceanic quietude meet..."
+            placeholder="Vishal Patil explores the threshold where mineral glazes, raw Belgian linen, and oceanic quietude meet..."
             className="bg-[#181920] border-[#262833] text-xs text-zinc-300 focus:border-[#d1a86e] leading-relaxed"
           />
         </div>

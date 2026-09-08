@@ -259,8 +259,8 @@ export async function broadcastArtworkAnnouncement(
   const {
     artwork,
     subscribers,
-    artistName = "Elena Vance",
-    galleryTitle = "L'Atelier Lumineux",
+    artistName = "Vishal Patil",
+    galleryTitle = "Seclusion Art Gallary",
   } = payload;
 
   const artworkUrl = `${baseUrl}/artwork/${artwork.slug}`;
@@ -333,7 +333,7 @@ export async function sendInquiryConfirmation(params: {
 }) {
   const baseUrl = getAppBaseUrl();
   const artworkUrl = params.artworkSlug ? `${baseUrl}/artwork/${params.artworkSlug}` : undefined;
-  const subject = `Inquiry Confirmation • ${params.artworkTitle || "Elena Vance Studio"}`;
+  const subject = `Inquiry Confirmation • ${params.artworkTitle || "Seclusion Art Gallary"}`;
 
   const html = generateInquiryUserConfirmationHtml({
     inquiry: params.inquiry,
@@ -544,14 +544,14 @@ export async function sendAdminInquiryReply(params: {
       <body>
         <div class="card">
           <div class="header">
-            <span class="atelier-tag">Contemporary Art Atelier</span>
+            <span class="atelier-tag">Seclusion Art Gallary</span>
             <h1 class="title">Curatorial Correspondence</h1>
           </div>
           <div class="content">
             ${formattedHtmlContent}
           </div>
           <div class="footer">
-            <div>Helena Vance Fine Art Studio • Curatorial Liaison Office</div>
+            <div>Vishal Patil • Seclusion Art Gallary • Curatorial Liaison Office</div>
             <div class="ref">Inquiry Reference: ${params.inquiryId}</div>
           </div>
         </div>

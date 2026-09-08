@@ -18,10 +18,10 @@ export async function generateMetadata({
   const { slug } = await params;
   const col = await getCollectionBySlug(slug);
 
-  if (!col) return { title: "Collection Not Found | L'Atelier Lumineux" };
+  if (!col) return { title: "Collection Not Found | Seclusion Art Gallary" };
 
   return {
-    title: `${col.title} | Curated Series by Elena Vance`,
+    title: `${col.title} | Curated Series by Vishal Patil`,
     description: col.description,
   };
 }

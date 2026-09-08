@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
         {
           to: recipient,
           recipientName: "Curator Preview",
-          subject: `[PREVIEW] Masterwork Release: “${artwork.title}” by Elena Vance`,
+          subject: `[PREVIEW] Masterwork Release: “${artwork.title}” by Vishal Patil`,
           html,
           text,
           artworkId: artwork.id,

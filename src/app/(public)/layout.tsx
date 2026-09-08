@@ -30,7 +30,7 @@ export default async function PublicLayout({
           </div>
           <div className="space-y-2">
             <span className="text-xs uppercase tracking-[0.25em] text-[#d1a86e] font-semibold">
-              {settings.siteTitle || "L'Atelier Lumineux"}
+              {settings.siteTitle || "Seclusion Art Gallary"}
             </span>
             <h1 className="font-serif text-3xl sm:text-4xl text-white">
               {settings.maintenanceMode.title || "Studio Under Curation"}

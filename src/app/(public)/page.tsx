@@ -86,10 +86,10 @@ export default async function HomePage() {
       {
         "@type": "ArtGallery",
         "@id": `${siteUrl}/#gallery`,
-        "name": settings.siteTitle || "L'Atelier Lumineux — Elena Vance Studio",
+        "name": settings.siteTitle || "Seclusion Art Gallary",
         "description":
           settings.bioSummary ||
-          "Fine art studio and gallery of contemporary painter Elena Vance. Natural mineral lapis lazuli paintings, physical spatial AR calibrations, and curated acquisitions.",
+          "Fine art gallery of contemporary painter Vishal Patil. Natural mineral lapis lazuli paintings, physical spatial AR calibrations, and curated acquisitions.",
         "url": siteUrl,
         "telephone": settings.phone || "+33 (0)1 42 68 55 00",
         "email": settings.contactEmail || "curator@latelier-lumineux.art",
@@ -104,7 +104,7 @@ export default async function HomePage() {
         "founder": {
           "@type": "Person",
           "@id": `${siteUrl}/#artist`,
-          "name": settings.artistName || "Elena Vance",
+          "name": settings.artistName || "Vishal Patil",
           "jobTitle": "Contemporary Fine Artist & Painter",
           "nationality": "French",
           "alumniOf": "École Nationale Supérieure des Beaux-Arts, Paris",
@@ -119,7 +119,7 @@ export default async function HomePage() {
         "@type": "WebSite",
         "@id": `${siteUrl}/#website`,
         "url": siteUrl,
-        "name": settings.siteTitle || "L'Atelier Lumineux",
+        "name": settings.siteTitle || "Seclusion Art Gallary",
         "publisher": {
           "@id": `${siteUrl}/#gallery`,
         },
@@ -163,7 +163,7 @@ export default async function HomePage() {
                 }
                 heroDescription={
                   sec.contentJson?.description ||
-                  "Original fine artworks by Elena Vance. Exploring the threshold where lapis lazuli glazes, crushed mineral earth, and oceanic silence alter the atmospheric presence of space."
+                  "Original fine artworks by Vishal Patil. Exploring the threshold where lapis lazuli glazes, crushed mineral earth, and oceanic silence alter the atmospheric presence of space."
                 }
                 primaryCtaText={sec.contentJson?.ctaText || "Explore Curated Catalog"}
                 primaryCtaUrl={sec.contentJson?.ctaUrl || "/gallery"}
@@ -335,11 +335,11 @@ export default async function HomePage() {
                   sec.contentJson?.description ||
                   settings.aboutPageConfig?.bio ||
                   settings.bioSummary ||
-                  "Elena Vance (b. 1986) divides her studio practice between Paris and the wind-sculpted granite coast of Brittany. Her monumental canvases investigate the physical threshold where lapis lazuli glazes, crushed mineral earth, and oceanic silence transform architectural interiors."
+                  "Vishal Patil (b. 1986) divides his practice between contemporary ateliers and wind-sculpted coasts. His monumental canvases investigate the physical threshold where lapis lazuli glazes, crushed mineral earth, and oceanic silence transform architectural interiors."
                 }
                 imageUrl={sec.contentJson?.imageUrl || settings.aboutPageConfig?.artistImageUrl}
                 subtitle={sec.subtitle || "Studio Monologue & Biography"}
-                artistName={settings.artistName || "Elena Vance"}
+                artistName={settings.artistName || "Vishal Patil"}
                 location={settings.location || "Paris & Côtes-d'Armor, France"}
                 tagline={settings.tagline || "Contemporary Mineral & Oil Paintings"}
                 bio={settings.aboutPageConfig?.bio || settings.bioSummary}

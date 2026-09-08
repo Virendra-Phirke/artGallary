@@ -28,9 +28,9 @@ export const homepageSections = pgTable("homepage_sections", {
 
 export const siteSettings = pgTable("site_settings", {
   id: uuid("id").defaultRandom().primaryKey(),
-  artistName: varchar("artist_name", { length: 255 }).default("Elena Vance").notNull(),
-  siteTitle: varchar("site_title", { length: 255 }).default("L'Atelier Lumineux").notNull(),
-  shortBrandName: varchar("short_brand_name", { length: 100 }).default("L'Atelier"),
+  artistName: varchar("artist_name", { length: 255 }).default("Vishal Patil").notNull(),
+  siteTitle: varchar("site_title", { length: 255 }).default("Seclusion Art Gallary").notNull(),
+  shortBrandName: varchar("short_brand_name", { length: 100 }).default("Seclusion Art Gallary"),
   tagline: varchar("tagline", { length: 255 }).default("Contemporary Oil & Mixed Media Gallery").notNull(),
   logoUrl: text("logo_url"),
   faviconUrl: text("favicon_url"),
@@ -171,7 +171,7 @@ export const siteSettings = pgTable("site_settings", {
     ctaLabel?: string;
     fallbackMessage?: string;
   }>(),
-  copyrightText: varchar("copyright_text", { length: 255 }).default("© 2026 Elena Vance. All rights reserved."),
+  copyrightText: varchar("copyright_text", { length: 255 }).default("© 2026 Vishal Patil • Seclusion Art Gallary. All rights reserved."),
   updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
 });
 

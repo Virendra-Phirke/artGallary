@@ -51,7 +51,7 @@ async function runSeed() {
     const adminUser = await db
       .insert(schema.users)
       .values({
-        name: "Elena Vance (Curator)",
+        name: "Vishal Patil (Curator)",
         email: "curator@latelier-lumineux.art",
         emailVerified: true,
         role: "ADMIN",

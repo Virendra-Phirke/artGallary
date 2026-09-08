@@ -28,11 +28,11 @@ interface ArtistAtelierSectionProps {
 export function ArtistAtelierSection({
   title = "The Alchemy of Natural Earth & Luminous Glazes",
   quote = "A painting is not merely an image hanging upon a partition; it is an alteration of the atmospheric silence within a room.",
-  description = "Elena Vance (b. 1986) divides her studio practice between Paris and the wind-sculpted granite coast of Brittany. Her monumental canvases investigate the physical threshold where lapis lazuli glazes, crushed mineral earth, and oceanic silence transform architectural interiors.",
+  description = "Vishal Patil (b. 1986) divides his practice between contemporary ateliers and wind-sculpted coasts. His monumental canvases investigate the physical threshold where lapis lazuli glazes, crushed mineral earth, and oceanic silence transform architectural interiors.",
   imageUrl,
-  subtitle = "Studio Monologue & Biography",
-  artistName = "Elena Vance",
-  location = "Paris & Côtes-d'Armor, France",
+  subtitle = "Artist Monologue & Biography",
+  artistName = "Vishal Patil",
+  location = "Seclusion Art Gallary",
   tagline = "Contemporary Mineral & Oil Paintings",
   bio,
   philosophy,
@@ -76,7 +76,7 @@ export function ArtistAtelierSection({
           </blockquote>
           <div className="flex items-center justify-center gap-2.5 text-[10px] sm:text-xs tracking-widest text-zinc-400 uppercase font-mono">
             <span className="w-6 sm:w-8 h-[1px] bg-[#d1a86e]" />
-            <span>{artistName} — Atelier Paris</span>
+            <span>{artistName} — Seclusion Art Gallary</span>
             <span className="w-6 sm:w-8 h-[1px] bg-[#d1a86e]" />
           </div>
         </div>
@@ -88,7 +88,7 @@ export function ArtistAtelierSection({
             <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#14151a] shadow-2xl border border-[#262833] group">
               <ProgressiveImage
                 src={atelierImage}
-                alt={`${artistName} Studio Archive`}
+                alt={`${artistName} Archive`}
                 fill
                 optimizeWidth={1200}
                 optimizeQuality={85}
@@ -97,10 +97,10 @@ export function ArtistAtelierSection({
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent flex flex-col justify-end p-5 sm:p-6 pointer-events-none">
                 <span className="text-[9px] font-mono text-[#d1a86e] tracking-widest uppercase">
-                  Studio Archive • {new Date().getFullYear()}
+                  Gallery Archive • {new Date().getFullYear()}
                 </span>
                 <p className="text-xs sm:text-sm text-white font-serif font-light">
-                  {artistName} Studio, 14 Rue de Beaune
+                  Seclusion Art Gallary
                 </p>
               </div>
             </div>

@@ -17,7 +17,7 @@ export function CollectorServicesSection() {
             Museum-Grade Handling for Distinguished Collectors
           </h2>
           <p className="text-xs sm:text-sm text-[#a6aabf] leading-relaxed font-light break-words">
-            Every acquired canvas is prepared directly in the Paris studio under museum archival standards to ensure permanent preservation and flawless international transit.
+            Every acquired canvas is prepared directly under museum archival standards to ensure permanent preservation and flawless international transit.
           </p>
         </div>
 
@@ -31,7 +31,7 @@ export function CollectorServicesSection() {
               Signed Certificate &amp; Provenance
             </h3>
             <p className="text-[10px] sm:text-xs text-zinc-400 leading-snug sm:leading-relaxed font-light line-clamp-3 sm:line-clamp-none">
-              Embossed fine art paper certificate signed by Elena Vance with documented photographic catalog register.
+              Embossed fine art paper certificate signed by Vishal Patil with documented photographic catalog register.
             </p>
           </div>
 

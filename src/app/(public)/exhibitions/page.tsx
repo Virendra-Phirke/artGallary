@@ -6,9 +6,9 @@ import { getExhibitions, getSiteSettings } from "@/db/repository";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Exhibitions & Museum Shows | Elena Vance",
+  title: "Exhibitions & Museum Shows | Vishal Patil",
   description:
-    "Current, upcoming, and archival solo and group exhibitions of Elena Vance's contemporary oil and mineral works.",
+    "Current, upcoming, and archival solo and group exhibitions of Vishal Patil's contemporary oil and mineral works.",
 };
 
 export const revalidate = 3600; // Cache ISR for 1 hour with instant write-invalidation

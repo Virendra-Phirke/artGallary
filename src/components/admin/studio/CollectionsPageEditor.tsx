@@ -30,7 +30,7 @@ export function CollectionsPageEditor({
   const cfg = settings.collectionsPageConfig || {
     title: "Curated Series",
     subtitle: "Thematic Bodies of Work",
-    description: "Elena Vance groups her artistic inquiries into multi-year cycles. Each series represents a focused exploration of specific pigments, geological binders, and spatial tensions.",
+    description: "Vishal Patil groups his artistic inquiries into multi-year cycles. Each series represents a focused exploration of specific pigments, geological binders, and spatial tensions.",
     eyebrow: "Thematic Bodies of Work",
   };
 

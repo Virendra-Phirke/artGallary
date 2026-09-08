@@ -56,30 +56,30 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "L'Atelier Lumineux | Fine Contemporary Art & AR Gallery",
-    template: "%s | L'Atelier Lumineux",
+    default: "Seclusion Art Gallary | Fine Contemporary Art & AR Gallery",
+    template: "%s | Seclusion Art Gallary",
   },
   description:
-    "Explore original fine artworks by Elena Vance. Experience museum-grade contemporary paintings in your own living space using WebAR technology.",
+    "Explore original fine artworks by Vishal Patil. Experience museum-grade contemporary paintings in your own living space using WebAR technology.",
   keywords: [
     "contemporary art",
     "fine art gallery",
-    "Elena Vance",
+    "Vishal Patil",
     "augmented reality art",
     "WebAR art preview",
     "oil on canvas",
     "original paintings",
   ],
-  authors: [{ name: "Elena Vance", url: "https://latelier-lumineux.art" }],
-  creator: "Elena Vance",
+  authors: [{ name: "Vishal Patil", url: "https://latelier-lumineux.art" }],
+  creator: "Vishal Patil",
   openGraph: {
     type: "website",
     locale: "en_US",
     url: "https://latelier-lumineux.art",
-    siteName: "L'Atelier Lumineux",
-    title: "L'Atelier Lumineux | Fine Contemporary Art & AR Gallery",
+    siteName: "Seclusion Art Gallary",
+    title: "Seclusion Art Gallary | Fine Contemporary Art & AR Gallery",
     description:
-      "Original fine artworks, museum-grade collections, and immersive WebAR wall previews by contemporary artist Elena Vance.",
+      "Original fine artworks, museum-grade collections, and immersive WebAR wall previews by contemporary artist Vishal Patil.",
   },
 };
 

@@ -30,7 +30,7 @@ const DEFAULT_USERS: AuthUser[] = [
   },
   {
     id: "usr-admin-1",
-    name: "Elena Vance (Curator)",
+    name: "Vishal Patil (Curator)",
     email: "curator@latelier-lumineux.art",
     role: "ADMIN",
   },

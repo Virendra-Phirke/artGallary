@@ -272,7 +272,7 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
                       setSettings({ ...settings, siteTitle: e.target.value });
                       if (errors.siteTitle) setErrors({ ...errors, siteTitle: "" });
                     }}
-                    placeholder="e.g. L'Atelier Lumineux"
+                    placeholder="e.g. Seclusion Art Gallary"
                     className={`bg-[#1a1b26] text-white text-xs placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e] ${
                       errors.siteTitle ? "ring-1 ring-red-500" : ""
                     }`}
@@ -297,7 +297,7 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
                       setSettings({ ...settings, artistName: e.target.value });
                       if (errors.artistName) setErrors({ ...errors, artistName: "" });
                     }}
-                    placeholder="e.g. Elena Vance"
+                    placeholder="e.g. Vishal Patil"
                     className={`bg-[#1a1b26] text-white text-xs placeholder:text-zinc-600 rounded-xl px-3.5 py-2.5 border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e] ${
                       errors.artistName ? "ring-1 ring-red-500" : ""
                     }`}
@@ -617,10 +617,10 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
                   </div>
                   <div className="min-w-0 flex-1">
                     <span className="text-[10px] uppercase tracking-wider text-zinc-500 font-mono block">
-                      {settings.shortBrandName || "Fine Art Studio"}
+                      {settings.shortBrandName || "Seclusion Art Gallary"}
                     </span>
                     <h3 className="font-serif text-lg text-white font-medium truncate">
-                      {settings.siteTitle || "L'Atelier Lumineux"}
+                      {settings.siteTitle || "Seclusion Art Gallary"}
                     </h3>
                   </div>
                 </div>
@@ -629,7 +629,7 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
                   <div className="text-zinc-300">
                     <span className="text-zinc-500">Lead Artist: </span>
                     <span className="text-[#d1a86e] font-serif font-medium">
-                      {settings.artistName || "Elena Vance"}
+                      {settings.artistName || "Vishal Patil"}
                     </span>
                   </div>
 

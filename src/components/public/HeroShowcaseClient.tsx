@@ -36,7 +36,7 @@ export function HeroShowcaseClient({
   artworks,
   heroBadge = "Spring 2026 Collection",
   heroTitle = "The Architecture of Luminous Stillness",
-  heroDescription = "Original fine artworks by Elena Vance. Exploring the threshold where lapis lazuli glazes, crushed mineral earth, and oceanic silence alter the atmospheric presence of space.",
+  heroDescription = "Original fine artworks by Vishal Patil. Exploring the threshold where lapis lazuli glazes, crushed mineral earth, and oceanic silence alter the atmospheric presence of space.",
   primaryCtaText = "Explore Curated Catalog",
   primaryCtaUrl = "/gallery",
   customHeroImage,

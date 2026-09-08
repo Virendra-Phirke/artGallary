@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
       const sendResult = await sendEmail({
         to: job.recipientEmail,
         recipientName: job.recipientName ?? undefined,
-        subject: `Masterwork Release: “${artwork.title}” by Elena Vance`,
+        subject: `Masterwork Release: “${artwork.title}” by Vishal Patil`,
         html,
         text,
         headers: {
@@ -179,7 +179,7 @@ export async function POST(request: NextRequest) {
             recipientEmail: job.recipientEmail,
             recipientName: job.recipientName || undefined,
             emailType: "artwork_announcement",
-            subject: `Masterwork Release: “${artwork.title}” by Elena Vance`,
+            subject: `Masterwork Release: “${artwork.title}” by Vishal Patil`,
             artworkId: artwork.id,
             status: "failed",
             errorMessage: sendResult.error,
@@ -208,7 +208,7 @@ export async function POST(request: NextRequest) {
         recipientEmail: job.recipientEmail,
         recipientName: job.recipientName || undefined,
         emailType: "artwork_announcement",
-        subject: `Masterwork Release: “${artwork.title}” by Elena Vance`,
+        subject: `Masterwork Release: “${artwork.title}” by Vishal Patil`,
         artworkId: artwork.id,
         status: "delivered",
         resendId: sendResult.messageId,
@@ -230,7 +230,7 @@ export async function POST(request: NextRequest) {
       const isCurator = payload.jobType === "curator_alert";
       const subject = isCurator
         ? `[Inquiry Alert] New Acquisition Dossier: ${inquiry.artworkTitle || "General Gallery"}`
-        : `Acquisition Dossier Received — Elena Vance Studio`;
+        : `Acquisition Dossier Received — Seclusion Art Gallary`;
 
       const html = isCurator
         ? generateCuratorInquiryAlertHtml({

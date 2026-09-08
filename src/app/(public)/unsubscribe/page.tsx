@@ -100,7 +100,7 @@ function UnsubscribeContent() {
         </span>
         <h1 className="font-serif text-3xl text-white">Email Preferences</h1>
         <p className="text-xs text-[#8e92a4]">
-          Elena Vance Studio & Curatorial Communications
+          Seclusion Art Gallary & Curatorial Communications
         </p>
       </div>
 
@@ -168,7 +168,7 @@ function UnsubscribeContent() {
             <p className="text-sm text-[#a6aabf] leading-relaxed">
               {affectedEmail ? (
                 <>
-                  <strong className="text-white">{affectedEmail}</strong> has been re-enrolled in Elena Vance studio dispatches.
+                  <strong className="text-white">{affectedEmail}</strong> has been re-enrolled in Seclusion Art Gallary dispatches.
                 </>
               ) : (
                 "Your subscription has been re-activated."
@@ -221,7 +221,7 @@ function UnsubscribeContent() {
       {status === "manual" && (
         <form onSubmit={handleManualUnsubscribe} className="space-y-4">
           <p className="text-sm text-zinc-300">
-            Enter your email address below to unsubscribe from Elena Vance studio notifications:
+            Enter your email address below to unsubscribe from Seclusion Art Gallary notifications:
           </p>
           <div>
             <input

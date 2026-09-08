@@ -19,8 +19,8 @@ export function generateInquiryUserConfirmationHtml(props: InquiryEmailProps): s
     inquiry,
     artworkTitle,
     artworkUrl,
-    artistName = "Elena Vance",
-    galleryTitle = "L'Atelier Lumineux",
+    artistName = "Vishal Patil",
+    galleryTitle = "Seclusion Art Gallary",
   } = props;
 
   return `<!DOCTYPE html>
@@ -60,7 +60,7 @@ export function generateInquiryUserConfirmationHtml(props: InquiryEmailProps): s
 <body>
   <div class="main">
     <div class="header">
-      <div style="font-size: 10px; letter-spacing: 0.25em; color: #d1a86e; text-transform: uppercase; margin-bottom: 4px;">Private Studio Correspondence</div>
+      <div style="font-size: 10px; letter-spacing: 0.25em; color: #d1a86e; text-transform: uppercase; margin-bottom: 4px;">Private Gallery Correspondence</div>
       <h1 class="brand">${galleryTitle}</h1>
     </div>
     <div class="body-cell">
@@ -68,7 +68,7 @@ export function generateInquiryUserConfirmationHtml(props: InquiryEmailProps): s
         Dear ${inquiry.name},
       </p>
       <p style="font-size: 14px; line-height: 1.65; color: #a6aabf; margin: 0 0 16px;">
-        Thank you for contacting ${artistName}’s curatorial studio. We have received your acquisition inquiry${
+        Thank you for contacting ${artistName}’s curatorial desk at ${galleryTitle}. We have received your acquisition inquiry${
           artworkTitle ? ` regarding <strong>${artworkTitle}</strong>` : ""
         }.
       </p>
@@ -80,7 +80,7 @@ export function generateInquiryUserConfirmationHtml(props: InquiryEmailProps): s
         “${inquiry.message}”
       </div>
       <p style="font-size: 13px; line-height: 1.6; color: #a6aabf; margin: 0 0 20px;">
-        Our studio curator reviews every collector inquiry personally. You may expect a formal response within 24 to 48 hours.
+        Our curatorial desk reviews every collector inquiry personally. You may expect a formal response within 24 to 48 hours.
       </p>
       ${
         artworkUrl
@@ -93,8 +93,8 @@ export function generateInquiryUserConfirmationHtml(props: InquiryEmailProps): s
       }
     </div>
     <div class="footer">
-      ${galleryTitle} • Elena Vance Curatorial Office<br>
-      Paris & Brittany, France
+      ${galleryTitle} • ${artistName} Curatorial Desk<br>
+      Contemporary Art &amp; Spatial WebAR Platform
     </div>
   </div>
 </body>
@@ -106,7 +106,7 @@ export function generateCuratorInquiryAlertHtml(props: InquiryEmailProps): strin
     inquiry,
     artworkTitle,
     artworkUrl,
-    galleryTitle = "L'Atelier Lumineux",
+    galleryTitle = "Seclusion Art Gallary",
     adminDashboardUrl = "http://localhost:3000/admin/inquiries",
   } = props;
 

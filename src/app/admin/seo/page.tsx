@@ -13,7 +13,7 @@ export default function AdminSeoPage() {
     name: "Solitude in Ultramarine",
     artist: {
       "@type": "Person",
-      name: "Elena Vance",
+      name: "Vishal Patil",
       sameAs: "https://latelier-lumineux.art/about",
     },
     artMedium: "Oil and pulverized lapis lazuli on Belgian linen",
@@ -61,7 +61,7 @@ export default function AdminSeoPage() {
                 latelier-lumineux.art
               </span>
               <h3 className="text-sm font-serif text-white font-medium">
-                Solitude in Ultramarine (2025) – Elena Vance
+                Solitude in Ultramarine (2025) – Vishal Patil
               </h3>
               <p className="text-xs text-zinc-400 line-clamp-2">
                 Original oil and pulverized lapis lazuli on Belgian linen. 140 × 100 cm. Inquire for acquisition or view in your space via WebAR.

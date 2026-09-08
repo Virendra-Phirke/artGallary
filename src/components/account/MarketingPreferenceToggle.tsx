@@ -33,7 +33,7 @@ export function MarketingPreferenceToggle({ initialSubscribed }: MarketingPrefer
         setIsSubscribed(nextState);
         setFeedback(
           nextState
-            ? "Enrolled in Elena Vance studio dispatches and new artwork releases."
+            ? "Enrolled in Seclusion Art Gallary dispatches and new artwork releases."
             : "Unsubscribed from marketing dispatches. You will still receive inquiry receipts."
         );
       } else {

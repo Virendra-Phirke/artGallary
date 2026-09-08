@@ -103,12 +103,8 @@ export function PageLivePreview({
   const currentExhibition = exhibitions[0];
 
   const brandTitle = siteSettings.siteTitle || "SECLUSION ART GALLARY";
-  const artistName = siteSettings.artistName || "Elena Vance";
-  const brandSubtitle = siteSettings.shortBrandName
-    ? `${siteSettings.shortBrandName} Studio`
-    : siteSettings.artistName
-    ? `${siteSettings.artistName} Studio`
-    : "L'ATELIER STUDIO";
+  const artistName = siteSettings.artistName || "Vishal Patil";
+  const brandSubtitle = siteSettings.artistName || "Vishal Patil";
 
   const excludedNavPatterns = ["/gallery", "/collections", "/exhibitions"];
   const rawLinks = siteSettings?.navigationItems
@@ -139,7 +135,7 @@ export function PageLivePreview({
   const collectionsCfg = siteSettings.collectionsPageConfig || {
     title: "Curated Series",
     eyebrow: "Thematic Bodies of Work",
-    description: "Elena Vance groups her artistic inquiries into multi-year cycles exploring mineral glazes and raw linen.",
+    description: "Vishal Patil groups his artistic inquiries into multi-year cycles exploring mineral glazes and raw linen.",
   };
 
   const exhibitionsCfg = siteSettings.exhibitionsPageConfig || {
@@ -410,7 +406,7 @@ export function PageLivePreview({
                     sec.title || "The Architecture of Luminous Stillness";
                   const heroDesc =
                     sec.contentJson?.description ||
-                    "Original fine artworks by Elena Vance. Exploring the threshold where lapis lazuli glazes, crushed mineral earth, and oceanic silence alter the atmospheric presence of space.";
+                    "Original fine artworks by Vishal Patil. Exploring the threshold where lapis lazuli glazes, crushed mineral earth, and oceanic silence alter the atmospheric presence of space.";
                   const heroCtaText =
                     sec.contentJson?.ctaText || "Collector Portal";
 
@@ -766,7 +762,7 @@ export function PageLivePreview({
                     sec.contentJson?.description ||
                     targetCol?.curatorialStatement ||
                     targetCol?.description ||
-                    "Elena Vance groups her artistic inquiries into multi-year cycles exploring mineral glazes, crushed pigments, and Belgian linen.";
+                    "Vishal Patil groups his artistic inquiries into multi-year cycles exploring mineral glazes, crushed pigments, and Belgian linen.";
                   const collectionCta = sec.contentJson?.ctaText || "Explore Series";
 
                   return (
@@ -955,7 +951,7 @@ export function PageLivePreview({
                     sec.contentJson?.biography ||
                     sec.contentJson?.description ||
                     siteSettings.aboutPageConfig?.bio ||
-                    "Elena Vance (b. 1986) divides her studio practice between Paris and the wind-sculpted granite coast of Brittany. Her monumental canvases investigate the physical threshold where lapis lazuli glazes, crushed mineral earth, and oceanic silence transform architectural interiors.";
+                    "Vishal Patil (b. 1986) divides his practice between contemporary ateliers and wind-sculpted coasts. His monumental canvases investigate the physical threshold where lapis lazuli glazes, crushed mineral earth, and oceanic silence transform architectural interiors.";
                   const quoteText =
                     sec.contentJson?.quote ||
                     "A painting is not merely an image hanging upon a partition; it is an alteration of the atmospheric silence within a room.";
@@ -1975,7 +1971,7 @@ export function PageLivePreview({
                 </h3>
                 <p className="text-xs leading-relaxed max-w-md text-[#a6aabf] font-light">
                   {siteSettings.footerConfig?.description ||
-                    "The independent studio and private gallery of contemporary artist Elena Vance. Dedicated to exploring lapis lazuli glazes, geological materiality, and true-scale spatial WebAR curation."}
+                    "The independent gallery of contemporary artist Vishal Patil. Dedicated to exploring lapis lazuli glazes, geological materiality, and true-scale spatial WebAR curation."}
                 </p>
                 <div className="pt-1 flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-wider">
                   <span className="text-zinc-500">Studios:</span>

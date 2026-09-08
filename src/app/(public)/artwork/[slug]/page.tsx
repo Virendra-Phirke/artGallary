@@ -15,14 +15,14 @@ export async function generateMetadata({
   const artwork = await getArtworkBySlug(slug);
 
   if (!artwork) {
-    return { title: "Artwork Not Found | L'Atelier Lumineux" };
+    return { title: "Artwork Not Found | Seclusion Art Gallary" };
   }
 
   return {
-    title: `${artwork.title} (${artwork.year}) | Elena Vance`,
-    description: `${artwork.title} by Elena Vance. ${artwork.medium}, ${artwork.widthCm}x${artwork.heightCm} cm. Explore curatorial provenance and view in your space via WebAR.`,
+    title: `${artwork.title} (${artwork.year}) | Vishal Patil`,
+    description: `${artwork.title} by Vishal Patil. ${artwork.medium}, ${artwork.widthCm}x${artwork.heightCm} cm. Explore curatorial provenance and view in your space via WebAR.`,
     openGraph: {
-      title: `${artwork.title} | Fine Art by Elena Vance`,
+      title: `${artwork.title} | Fine Art by Vishal Patil`,
       description: artwork.description,
       images: [{ url: artwork.coverImageUrl, width: 1200, height: 900, alt: artwork.altText }],
     },
@@ -71,7 +71,7 @@ export default async function ArtworkPage({ params }: ArtworkPageProps) {
       : {}),
     creator: {
       "@type": "Person",
-      name: "Elena Vance",
+      name: "Vishal Patil",
       jobTitle: "Contemporary Master Painter",
       nationality: "French",
       birthDate: "1986",
@@ -89,7 +89,7 @@ export default async function ArtworkPage({ params }: ArtworkPageProps) {
           : "https://schema.org/InStock",
       seller: {
         "@type": "ArtGallery",
-        name: "L'Atelier Lumineux",
+        name: "Seclusion Art Gallary",
       },
     },
   };

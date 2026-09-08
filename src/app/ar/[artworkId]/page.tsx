@@ -17,8 +17,8 @@ export async function generateMetadata({ params }: ArPageProps): Promise<Metadat
   }
 
   return {
-    title: `View "${artwork.title}" in Your Space (WebAR) | L'Atelier Lumineux`,
-    description: `Experience Elena Vance's painting "${artwork.title}" calibrated to exact 1:1 scale on your wall via WebAR and interactive 3D virtual preview.`,
+    title: `View "${artwork.title}" in Your Space (WebAR) | Seclusion Art Gallary`,
+    description: `Experience Vishal Patil's painting "${artwork.title}" calibrated to exact 1:1 scale on your wall via WebAR and interactive 3D virtual preview.`,
   };
 }
 

@@ -121,7 +121,7 @@ export function OverviewTab() {
               {artworks.length} Originals
             </div>
             <p className="text-[11px] sm:text-xs text-zinc-400 font-light mt-1.5 truncate">
-              Available Elena Vance Masterworks
+              Available Vishal Patil Masterworks
             </p>
           </div>
         </button>
@@ -288,7 +288,7 @@ export function OverviewTab() {
             /* EMPTY DOSSIER STATE WITH CURATORIAL SUGGESTIONS */
             <div className="space-y-5">
               <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed font-light">
-                Assemble a private dossier of Elena Vance’s original canvases to request fine-art transit, framing quotes, or private atelier viewing reservations.
+                Assemble a private dossier of Vishal Patil’s original canvases to request fine-art transit, framing quotes, or private gallery viewing reservations.
               </p>
 
               {/* Curatorial Quick-Picks */}

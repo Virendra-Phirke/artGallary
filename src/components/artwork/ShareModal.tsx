@@ -24,7 +24,7 @@ export function ShareModal({ title, url, isOpen, onClose }: ShareModalProps) {
   };
 
   const encodedUrl = encodeURIComponent(url);
-  const encodedTitle = encodeURIComponent(`Discover "${title}" by Elena Vance at L'Atelier Lumineux`);
+  const encodedTitle = encodeURIComponent(`Discover "${title}" by Vishal Patil at Seclusion Art Gallary`);
 
   return (
     <div

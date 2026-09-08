@@ -14,7 +14,7 @@ export default async function TermsPage() {
   const settings = await getSiteSettings();
   const termsText =
     settings.legalPages.termsOfService ||
-    "All artworks displayed on this platform are original copyright-protected creations of Elena Vance. Authenticated certificates of authenticity are registered with ADAGP France upon completion of acquisition.";
+    "All artworks displayed on this platform are original copyright-protected creations of Vishal Patil. Authenticated certificates of authenticity are registered with ADAGP France upon completion of acquisition.";
 
   return (
     <div className="max-w-4xl mx-auto px-6 md:px-12 pt-36 pb-24 space-y-10">

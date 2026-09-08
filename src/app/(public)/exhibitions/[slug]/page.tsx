@@ -18,10 +18,10 @@ export async function generateMetadata({
   const { slug } = await params;
   const exh = await getExhibitionBySlug(slug);
 
-  if (!exh) return { title: "Exhibition Not Found | L'Atelier Lumineux" };
+  if (!exh) return { title: "Exhibition Not Found | Seclusion Art Gallary" };
 
   return {
-    title: `${exh.title} | Elena Vance Exhibition`,
+    title: `${exh.title} | Vishal Patil Exhibition`,
     description: exh.description,
   };
 }

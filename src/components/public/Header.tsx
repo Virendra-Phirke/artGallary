@@ -157,12 +157,8 @@ export function Header({ settings }: HeaderProps) {
     href: resolveHref(item.href, item.label),
   }));
 
-  const brandTitle = settings?.siteTitle || "L'Atelier Lumineux";
-  const brandSubtitle = settings?.shortBrandName
-    ? `${settings.shortBrandName} Studio`
-    : settings?.artistName
-    ? `${settings.artistName} Studio`
-    : "Elena Vance Studio";
+  const brandTitle = settings?.siteTitle || "Seclusion Art Gallary";
+  const brandSubtitle = settings?.artistName || "Vishal Patil";
 
   return (
     <header

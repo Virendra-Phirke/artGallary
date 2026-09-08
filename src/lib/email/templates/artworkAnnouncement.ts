@@ -26,8 +26,8 @@ export function generateArtworkAnnouncementHtml(props: ArtworkAnnouncementEmailP
     recipientName = "Esteemed Collector",
     artworkUrl,
     unsubscribeUrl,
-    artistName = "Elena Vance",
-    galleryTitle = "L'Atelier Lumineux",
+    artistName = "Vishal Patil",
+    galleryTitle = "Seclusion Art Gallary",
   } = props;
 
   const formattedDimensions = `${artwork.widthCm} × ${artwork.heightCm}${
@@ -200,7 +200,7 @@ export function generateArtworkAnnouncementHtml(props: ArtworkAnnouncementEmailP
               <td class="header">
                 <div class="eyebrow">Studio Dispatch • Private Acquisition Notice</div>
                 <h1 class="gallery-brand">${galleryTitle}</h1>
-                <div style="font-size: 12px; color: #8e92a4; margin-top: 4px;">Elena Vance Studio & Provenance Registry</div>
+                <div style="font-size: 12px; color: #8e92a4; margin-top: 4px;">${galleryTitle} &amp; Provenance Registry</div>
               </td>
             </tr>
 
@@ -278,8 +278,8 @@ export function generateArtworkAnnouncementHtml(props: ArtworkAnnouncementEmailP
             <tr>
               <td class="footer">
                 <p style="margin: 0 0 10px;">
-                  <strong>${galleryTitle}</strong> • Elena Vance Studio<br>
-                  Paris • Côtes-d'Armor, Brittany, France
+                  <strong>${galleryTitle}</strong> • ${artistName}<br>
+                  Contemporary Fine Art &amp; WebAR Gallery
                 </p>
                 <p style="margin: 0 0 10px;">
                   You received this email because your email address is registered for studio announcements and newly released artwork notifications.
@@ -306,8 +306,8 @@ export function generateArtworkAnnouncementText(props: ArtworkAnnouncementEmailP
     recipientName = "Esteemed Collector",
     artworkUrl,
     unsubscribeUrl,
-    artistName = "Elena Vance",
-    galleryTitle = "L'Atelier Lumineux",
+    artistName = "Vishal Patil",
+    galleryTitle = "Seclusion Art Gallary",
   } = props;
 
   const formattedDimensions = `${artwork.widthCm} × ${artwork.heightCm}${
@@ -336,7 +336,7 @@ Experience the artwork in true 1:1 spatial AR or submit a private acquisition in
 ${artworkUrl}
 
 ---
-${galleryTitle} • Elena Vance Studio (Paris & Brittany, France)
+${galleryTitle} • ${artistName}
 To modify your email preferences or unsubscribe from artwork dispatches:
 ${unsubscribeUrl}
 `;

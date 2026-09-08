@@ -12,8 +12,8 @@ export class ResendEmailProvider implements EmailProvider {
       defaultSender ||
       process.env.EMAIL_FROM ||
       (process.env.ADMIN_EMAIL
-        ? `Elena Vance Studio <${process.env.ADMIN_EMAIL.trim()}>`
-        : "Elena Vance Studio <curator@latelier-lumineux.art>");
+        ? `Vishal Patil • Seclusion Art Gallary <${process.env.ADMIN_EMAIL.trim()}>`
+        : "Vishal Patil • Seclusion Art Gallary <curator@latelier-lumineux.art>");
   }
 
   async send(input: SendEmailInput): Promise<SendEmailResult> {

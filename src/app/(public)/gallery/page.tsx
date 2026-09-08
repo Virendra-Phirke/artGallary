@@ -4,9 +4,9 @@ import { GalleryCatalog } from "@/components/public/GalleryCatalog";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Art Gallery & Catalogue | Elena Vance",
+  title: "Art Gallery & Catalogue | Vishal Patil",
   description:
-    "Explore the complete collection of fine contemporary paintings by Elena Vance. Available for private collection acquisition with true-scale WebAR previews.",
+    "Explore the complete collection of fine contemporary paintings by Vishal Patil. Available for private collection acquisition with true-scale WebAR previews.",
 };
 
 export const revalidate = 3600; // Cache ISR for 1 hour with instant write-invalidation

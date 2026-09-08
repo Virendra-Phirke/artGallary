@@ -9,12 +9,12 @@ interface FooterProps {
 }
 
 export function Footer({ settings }: FooterProps) {
-  const brandTitle = settings?.siteTitle || "L'Atelier Lumineux";
+  const brandTitle = settings?.siteTitle || "Seclusion Art Gallary";
   const description =
     settings?.footerConfig?.description ||
-    "The independent studio and private gallery of contemporary artist Elena Vance. Dedicated to exploring lapis lazuli glazes, geological materiality, and true-scale spatial WebAR curation.";
+    "The independent gallery of contemporary artist Vishal Patil. Dedicated to exploring lapis lazuli glazes, geological materiality, and true-scale spatial WebAR curation.";
   const contactEmail = settings?.footerConfig?.contactText || settings?.contactEmail || "curator@latelier-lumineux.art";
-  const copyright = settings?.copyrightText || `© ${new Date().getFullYear()} ${settings?.artistName || "Elena Vance"}. All rights reserved.`;
+  const copyright = settings?.copyrightText || `© ${new Date().getFullYear()} ${settings?.artistName || "Vishal Patil"}. All rights reserved.`;
 
   const columns = settings?.footerConfig?.columns && settings.footerConfig.columns.length > 0
     ? settings.footerConfig.columns.map(col => ({

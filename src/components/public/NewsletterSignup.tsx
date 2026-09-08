@@ -27,7 +27,7 @@ export function NewsletterSignup() {
       const data = await res.json();
       if (res.ok && data.success) {
         setStatus("success");
-        setMessage("You are now enrolled in Elena Vance studio dispatches.");
+        setMessage("You are now enrolled in Seclusion Art Gallary dispatches.");
         setEmail("");
       } else {
         setStatus("error");

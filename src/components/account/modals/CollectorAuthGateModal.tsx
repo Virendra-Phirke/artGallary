@@ -43,9 +43,9 @@ export function CollectorAuthGateModal() {
           tag: "Acquisition Dossier Protocol",
           title: "Sign In to Add to Dossier",
           description:
-            "An authentic collector account is required to reserve Elena Vance original canvases, calculate museum-grade crating logistics, and compile acquisition dossiers.",
+            "An authentic collector account is required to reserve Vishal Patil original canvases, calculate museum-grade crating logistics, and compile acquisition dossiers.",
           features: [
-            "Direct atelier reservation without intermediary gallery markups",
+            "Direct gallery reservation without intermediary markups",
             "Museum-grade crating & insured white-glove shipping quotes",
             "Synchronize acquisition dossier across all your devices",
           ],
@@ -54,11 +54,11 @@ export function CollectorAuthGateModal() {
         return {
           icon: <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-[#d1a86e]" />,
           tag: "Curatorial Liaison Correspondence",
-          title: "Sign In to Contact Atelier",
+          title: "Sign In to Contact Gallery",
           description:
-            "To correspond directly with Madame Vance's Paris atelier desk and inquire about original acquisitions, bespoke commissions, or private studio viewings, please sign in with your collector credentials.",
+            "To correspond directly with Vishal Patil at Seclusion Art Gallary and inquire about original acquisitions, bespoke commissions, or private gallery viewings, please sign in with your collector credentials.",
           features: [
-            "Direct access to Elena Vance's Paris curatorial liaison",
+            "Direct access to Vishal Patil's curatorial liaison",
             "Guaranteed priority response within 2 business hours",
             "Inquiries and provenance records automatically logged in your private portal",
           ],

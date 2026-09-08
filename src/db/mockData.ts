@@ -242,8 +242,8 @@ export const INITIAL_HOMEPAGE_SECTIONS: MockHomepageSection[] = [
     title: "Hero Showcase",
     subtitle: "Opening visual statement and featured canvas reveal",
     contentJson: {
-      heading: "L'Atelier Lumineux",
-      subheading: "Fine contemporary paintings by Elena Vance",
+      heading: "Seclusion Art Gallary",
+      subheading: "Fine contemporary paintings by Vishal Patil",
       description: "Exploring the silence of oceanic horizon, geological stratification, and the ethereal physics of light through museum-grade oils.",
       ctaText: "Explore Collection",
       ctaUrl: "/gallery",
@@ -291,7 +291,7 @@ export const INITIAL_HOMEPAGE_SECTIONS: MockHomepageSection[] = [
     contentJson: {
       heading: "Art as an Encounter with Space",
       quote: "A painting is not merely an image hanging upon a partition; it is an alteration of the atmospheric silence within a room.",
-      description: "Elena Vance (b. 1986) lives and works between Paris and coastal Brittany. Her paintings have been acquired by prominent private foundations across Europe, North America, and Japan.",
+      description: "Vishal Patil lives and creates with dedication to contemporary fine art. His paintings have been acquired by prominent private collectors and foundations across the globe.",
       ctaText: "Inquire With Curatorial Office",
       ctaUrl: "/#contact",
     },
@@ -306,7 +306,7 @@ export const INITIAL_HOMEPAGE_SECTIONS: MockHomepageSection[] = [
     contentJson: {
       heading: "View in Your Space",
       subheading: "Instant Augmented Reality without App Downloads",
-      description: "Experience Elena Vance's paintings calibrated to exact 1:1 physical centimeter dimensions on your living room, office, or gallery wall using WebXR technology.",
+      description: "Experience Vishal Patil's paintings calibrated to exact 1:1 physical centimeter dimensions on your living room, office, or gallery wall using WebXR technology.",
       ctaText: "Try Interactive AR Studio",
       ctaUrl: "/ar/solitude-in-ultramarine",
     },
@@ -493,10 +493,10 @@ export const DEFAULT_NAVIGATION_ITEMS = [
 ];
 
 export const DEFAULT_SITE_SETTINGS: SiteSettingsData = {
-  artistName: "Elena Vance",
-  siteTitle: "L'Atelier Lumineux",
-  shortBrandName: "L'Atelier",
-  tagline: "Contemporary Fine Art Studio & WebAR Gallery",
+  artistName: "Vishal Patil",
+  siteTitle: "Seclusion Art Gallary",
+  shortBrandName: "Seclusion Art Gallary",
+  tagline: "Contemporary Fine Art & WebAR Gallery",
   logoUrl: "",
   faviconUrl: "",
   bioSummary: "Contemporary fine artist exploring oceanic silence and mineral materiality.",
@@ -527,7 +527,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingsData = {
   },
   headerConfig: {
     logoType: "text",
-    logoText: "L'Atelier Lumineux",
+    logoText: "Seclusion Art Gallary",
     logoUrl: "",
     style: "transparent",
     showCta: true,
@@ -536,7 +536,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingsData = {
   },
   navigationItems: DEFAULT_NAVIGATION_ITEMS,
   footerConfig: {
-    description: "The independent studio and private gallery of contemporary artist Elena Vance. Dedicated to exploring lapis lazuli glazes, geological materiality, and true-scale spatial WebAR curation.",
+    description: "The independent private gallery of contemporary artist Vishal Patil. Dedicated to fine contemporary paintings and spatial WebAR curation.",
     columns: [
       {
         title: "Explore",
@@ -558,7 +558,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingsData = {
       },
     ],
     contactText: "curator@latelier-lumineux.art",
-    copyrightText: "© 2026 Elena Vance Studio. All rights reserved.",
+    copyrightText: "© 2026 Vishal Patil • Seclusion Art Gallary. All rights reserved.",
     showNewsletterCta: true,
   },
   galleryPageConfig: {
@@ -579,7 +579,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingsData = {
   collectionsPageConfig: {
     title: "Curated Series",
     subtitle: "Thematic Bodies of Work",
-    description: "Elena Vance groups her artistic inquiries into multi-year cycles. Each series represents a focused exploration of specific pigments, geological binders, and spatial tensions.",
+    description: "Vishal Patil groups his artistic inquiries into multi-year cycles. Each series represents a focused exploration of specific pigments, geological binders, and spatial tensions.",
     coverImageUrl: "",
     eyebrow: "Thematic Bodies of Work",
   },
@@ -592,7 +592,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingsData = {
   },
   aboutPageConfig: {
     intro: "Biography & Studio Practice",
-    bio: "Elena Vance is a contemporary fine artist whose paintings investigate the physics of optical depth, geological materiality, and oceanic stillness. Combining archaic mineral pigments—chiefly Afghan lapis lazuli and Roman pozzolana—with multi-layered stand-oil glazes on raw Belgian linen.",
+    bio: "Vishal Patil is a contemporary fine artist whose paintings investigate the physics of optical depth, geological materiality, and oceanic stillness. Combining archaic mineral pigments with multi-layered glazes on fine linen.",
     artistImageUrl: "https://ik.imagekit.io/bpnsp30ni/artworks/gallery/1788717079935-kazuha__EB1yso0A.jpeg?updatedAt=1788717081490",
     story: "Her studio practice resists the rapid consumption of images. Canvases are frequently held in progress across several seasons, receiving up to twenty gossamer layers of translucent stand-oil glaze.",
     philosophy: "A painting is not merely a depiction; it is an alteration of the atmospheric stillness and light acoustics within a room.",
@@ -629,7 +629,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingsData = {
   },
   legalPages: {
     privacyPolicy: "We respect your collector privacy. Personal data submitted through inquiries or account registration is encrypted, never sold, and used solely for private studio correspondence, provenance records, and authenticated certificate delivery.",
-    termsOfService: "All artworks displayed on this platform are original copyright-protected creations of Elena Vance. Authenticated certificates of authenticity are registered with ADAGP France upon completion of acquisition.",
+    termsOfService: "All artworks displayed on this platform are original copyright-protected creations of Vishal Patil. Authenticated certificates of authenticity are registered upon completion of acquisition.",
     cookiePolicy: "This studio uses essential session cookies for collector authentication and anonymous telemetry to evaluate exhibition interest and true-scale AR room sessions. Camera data used in AR never leaves your local device.",
     refundPolicy: "Private collection acquisitions include a 14-day inspection period upon white-glove crated delivery. Inquiries regarding condition reports and international transit insurance are handled directly by the curatorial office.",
     shippingPolicy: "International museum-grade crating and climate-controlled freight are coordinated through specialized fine art logistics couriers (Crozier / Hasenkamp).",
@@ -637,7 +637,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingsData = {
   maintenanceMode: {
     isEnabled: false,
     title: "Studio Under Curation",
-    message: "L'Atelier Lumineux is currently undergoing curatorial updates for an upcoming retrospective exhibition. The digital gallery will resume normal visitor access shortly.",
+    message: "Seclusion Art Gallary is currently undergoing curatorial updates for an upcoming retrospective exhibition. The digital gallery will resume normal visitor access shortly.",
     expectedReturn: "Returning Today at 18:00 CET",
   },
   globalArDefaults: {
@@ -648,7 +648,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingsData = {
     ctaLabel: "View in Your Space",
     fallbackMessage: "AR requires a WebXR or camera-enabled mobile device. You can explore true-scale dimensions and virtual room views directly above.",
   },
-  copyrightText: "© 2026 Elena Vance Studio. All rights reserved.",
+  copyrightText: "© 2026 Vishal Patil • Seclusion Art Gallary. All rights reserved.",
 };
 
 export interface ThemeSettingsData {

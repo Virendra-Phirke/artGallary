@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: "You have been successfully enrolled in Elena Vance studio dispatches.",
+      message: "You have been successfully enrolled in Seclusion Art Gallary dispatches.",
     });
   } catch (err: any) {
     console.error("Subscribe route error:", err);

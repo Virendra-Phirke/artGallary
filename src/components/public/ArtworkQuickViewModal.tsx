@@ -217,7 +217,7 @@ export function ArtworkQuickViewModal({
             <div className="bg-[#1a1b26] rounded-2xl p-4 space-y-2.5 text-xs text-zinc-300 shadow-inner">
               <div className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-[#d1a86e] shrink-0" />
-                <span>Signed Certificate of Authenticity by Elena Vance</span>
+                <span>Signed Certificate of Authenticity by Vishal Patil</span>
               </div>
               <div className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-[#d1a86e] shrink-0" />

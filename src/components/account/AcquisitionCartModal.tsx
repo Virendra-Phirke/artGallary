@@ -195,7 +195,7 @@ ${notes || "Please advise on availability, crating protocol, and private viewing
                   Inquiry Registered in Studio Ledger
                 </h3>
                 <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed font-light">
-                  Your acquisition request for {cartArtworks.length || "the selected"} canvases has been transmitted to Elena Vance&apos;s curatorial team. You will receive an authenticated response within 24 hours.
+                  Your acquisition request for {cartArtworks.length || "the selected"} canvases has been transmitted to Vishal Patil&apos;s curatorial team at Seclusion Art Gallary. You will receive an authenticated response within 24 hours.
                 </p>
               </div>
 
@@ -454,7 +454,7 @@ ${notes || "Please advise on availability, crating protocol, and private viewing
                           Sign In Required to Transmit Inquiry
                         </h3>
                         <p className="text-xs text-zinc-400 leading-relaxed font-light">
-                          To submit your multi-artwork acquisition dossier to Elena Vance&apos;s studio and receive authenticated courier and viewing dispatch, please sign in. Your selected paintings will remain saved.
+                          To submit your multi-artwork acquisition dossier to Vishal Patil at Seclusion Art Gallary and receive authenticated courier and viewing dispatch, please sign in. Your selected paintings will remain saved.
                         </p>
                       </div>
                     </div>

@@ -6,9 +6,9 @@ import { getCollections, getSiteSettings } from "@/db/repository";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Curated Series & Collections | Elena Vance",
+  title: "Curated Series & Collections | Vishal Patil",
   description:
-    "Explore the distinct thematic series of paintings by Elena Vance, including Chromatic Solitude and Ephemeral Terrains.",
+    "Explore the distinct thematic series of paintings by Vishal Patil, including Chromatic Solitude and Ephemeral Terrains.",
 };
 
 export const revalidate = 3600; // Cache ISR for 1 hour with instant write-invalidation
@@ -28,7 +28,7 @@ export default async function CollectionsPage() {
   const title = cfg?.title || "Curated Series";
   const description =
     cfg?.description ||
-    "Elena Vance groups her artistic inquiries into multi-year cycles. Each series represents a focused exploration of specific pigments, geological binders, and spatial tensions.";
+    "Vishal Patil groups his artistic inquiries into multi-year cycles. Each series represents a focused exploration of specific pigments, geological binders, and spatial tensions.";
 
   return (
     <div className="max-w-[1800px] mx-auto px-6 sm:px-10 md:px-14 lg:px-16 pt-32 pb-24 space-y-16">
