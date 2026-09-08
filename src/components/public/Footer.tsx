@@ -17,13 +17,19 @@ export function Footer({ settings }: FooterProps) {
   const copyright = settings?.copyrightText || `© ${new Date().getFullYear()} ${settings?.artistName || "Elena Vance"}. All rights reserved.`;
 
   const columns = settings?.footerConfig?.columns && settings.footerConfig.columns.length > 0
-    ? settings.footerConfig.columns
+    ? settings.footerConfig.columns.map(col => ({
+        ...col,
+        links: col.links.map(lnk => ({
+          ...lnk,
+          href: lnk.href === "/about" ? "/#about" : lnk.href === "/contact" ? "/#contact" : lnk.href
+        }))
+      }))
     : [
         {
           title: "Studio",
           links: [
-            { label: "Artist Monologue & CV", href: "/about" },
-            { label: "Studio Inquiries & Press", href: "/contact" },
+            { label: "Artist Monologue & CV", href: "/#about" },
+            { label: "Studio Inquiries & Press", href: "/#contact" },
             { label: "Collector Portal", href: "/account" },
           ],
         },
@@ -32,7 +38,7 @@ export function Footer({ settings }: FooterProps) {
           links: [
             { label: "Privacy Policy", href: "/privacy" },
             { label: "Terms of Acquisition", href: "/terms" },
-            { label: "Collector Inquiries", href: "/contact" },
+            { label: "Collector Inquiries", href: "/#contact" },
           ],
         },
       ];

@@ -63,7 +63,7 @@ export function FeaturedArtworksClient({
     <>
       <section className="max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 w-full max-w-full overflow-hidden">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 sm:mb-8 pb-4 sm:pb-6 gap-4 sm:gap-6 w-full min-w-0">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 sm:mb-8 pb-4 sm:pb-6 gap-4 sm:gap-6 w-full min-w-0 border-b border-[#1c1d25]">
           <div>
             <span className="text-[10px] sm:text-xs tracking-[0.25em] text-[#d1a86e] uppercase font-medium">
               {sectionSubtitle}
@@ -124,7 +124,7 @@ export function FeaturedArtworksClient({
             (art, idx) => (
               <div
                 key={art.id}
-                className="group flex flex-col space-y-2.5 sm:space-y-4 bg-[#14151a] p-2.5 sm:p-4 rounded-xl sm:rounded-2xl transition-all duration-300 shadow-xl shadow-black/40 hover:shadow-2xl"
+                className="group flex flex-col space-y-2.5 sm:space-y-4 bg-[#14151a] border border-[#262833] p-2.5 sm:p-4 rounded-xl sm:rounded-2xl transition-all duration-300 shadow-xl shadow-black/40 hover:border-[#d1a86e]/40 hover:shadow-2xl"
               >
                 {/* Canvas Box */}
                 <div className="relative aspect-[4/3] rounded-lg sm:rounded-xl overflow-hidden bg-[#101116]">
@@ -139,32 +139,11 @@ export function FeaturedArtworksClient({
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
 
-                  {/* Status Badge */}
-                  <div className="absolute top-2 left-2 sm:top-3 sm:left-3 z-10">
-                    <Badge
-                      variant={
-                        art.status === "published"
-                          ? "success"
-                          : art.status === "reserved"
-                          ? "warning"
-                          : "secondary"
-                      }
-                      className="backdrop-blur-md bg-black/70 border-0 text-[8px] sm:text-[10px] px-1.5 sm:px-2.5 py-0.5"
-                    >
-                      {art.status === "published" ? "Available" : art.status}
-                    </Badge>
-                  </div>
-
-                  {/* Year / Medium Tag */}
-                  <div className="absolute top-2 right-2 sm:top-3 sm:right-3 z-10 text-[8px] sm:text-[10px] uppercase font-mono px-1.5 sm:px-2.5 py-0.5 rounded-full bg-black/70 backdrop-blur-md text-zinc-300">
-                    {art.year}
-                  </div>
-
                   {/* Hover Quick Action Buttons */}
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2 sm:gap-3 p-2 sm:p-4">
+                  <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2 sm:gap-3 p-2 sm:p-4">
                     <button
                       onClick={() => setInspectArtwork(art)}
-                      className="p-2 sm:p-3 bg-white text-black rounded-full hover:bg-zinc-200 transition-colors shadow-xl"
+                      className="p-2 sm:p-3 bg-white text-black rounded-full hover:bg-zinc-200 transition-colors shadow-xl cursor-pointer"
                       title="Inspect Details"
                       aria-label={`Inspect ${art.title}`}
                     >
@@ -182,39 +161,20 @@ export function FeaturedArtworksClient({
                   </div>
                 </div>
 
-                {/* Museum Exhibition Plaque */}
-                <div className="space-y-1 sm:space-y-2 pt-0.5">
+                {/* Clean Metadata: Name & Price Only */}
+                <div className="pt-0.5 px-0.5">
                   <div className="flex items-baseline justify-between gap-1.5">
                     <Link
                       href={`/artwork/${art.slug}`}
-                      className="font-serif text-xs sm:text-xl text-white group-hover:text-[#d1a86e] transition-colors line-clamp-1 font-medium"
+                      className="font-serif text-xs sm:text-base text-white group-hover:text-[#d1a86e] transition-colors line-clamp-1 font-medium"
                     >
                       {art.title}
                     </Link>
                     {art.price && (
-                      <span className="text-[10px] sm:text-sm text-[#d1a86e] font-mono font-medium shrink-0">
+                      <span className="text-xs sm:text-sm text-[#d1a86e] font-mono font-semibold shrink-0">
                         {formatCurrency(art.price, art.currency)}
                       </span>
                     )}
-                  </div>
-
-                  <p className="text-[10px] sm:text-xs text-[#8e92a4] line-clamp-1">
-                    {art.medium}
-                  </p>
-
-                  <div className="flex items-center justify-between text-[9px] sm:text-[11px] text-zinc-400 pt-1.5">
-                    <span className="flex items-center gap-1 font-mono truncate">
-                      <Ruler className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#d1a86e] shrink-0" />
-                      <span className="truncate">{formatDimensions(art.widthCm, art.heightCm)}</span>
-                    </span>
-
-                    <Link
-                      href={`/ar/${art.slug}`}
-                      className="inline-flex items-center gap-1 text-[9px] sm:text-[11px] uppercase tracking-wider text-[#d1a86e] hover:text-[#e2c18d] transition-colors shrink-0 ml-1"
-                    >
-                      <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-                      <span>AR</span>
-                    </Link>
                   </div>
                 </div>
               </div>

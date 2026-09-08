@@ -330,8 +330,8 @@ export function AdminSidebar({
         {/* Dynamic Route Children - Responsive Padding Scroll Container */}
         <main
           className={cn(
-            "flex-1 min-h-0 overflow-y-auto overscroll-contain transition-all max-w-full",
-            isStudio ? "p-2 sm:p-4 md:p-5" : "p-3 sm:p-5 md:p-8 lg:p-10"
+            "flex-1 min-h-0 transition-all max-w-full",
+            isStudio ? "p-0 overflow-hidden flex flex-col h-full" : "overflow-y-auto overscroll-contain p-3 sm:p-5 md:p-8 lg:p-10"
           )}
         >
           {children}

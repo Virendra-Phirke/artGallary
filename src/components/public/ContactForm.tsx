@@ -66,7 +66,7 @@ export function ContactForm() {
         "general_contact_draft",
         JSON.stringify({ name, email, phone, subject, message })
       );
-      window.location.href = `/login?redirect=${encodeURIComponent("/contact?restored=1")}`;
+      window.location.href = `/login?redirect=${encodeURIComponent("/#contact?restored=1")}`;
       return;
     }
 

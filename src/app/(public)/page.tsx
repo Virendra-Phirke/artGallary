@@ -8,6 +8,10 @@ import {
   Calendar,
   Layers,
   Compass,
+  Phone,
+  Clock,
+  ShieldCheck,
+  MessageCircle,
 } from "lucide-react";
 import {
   getArtworks,
@@ -25,6 +29,7 @@ import { FeaturedArtworksClient } from "@/components/public/FeaturedArtworksClie
 import { InteractiveRoomPreviewer } from "@/components/public/InteractiveRoomPreviewer";
 import { ArtistAtelierSection } from "@/components/public/ArtistAtelierSection";
 import { CollectorServicesSection } from "@/components/public/CollectorServicesSection";
+import { ContactForm } from "@/components/public/ContactForm";
 
 export const revalidate = 3600; // ISR revalidation every 1 hour with instant write-invalidation
 
@@ -39,10 +44,14 @@ export default async function HomePage() {
       getSiteSettings(),
     ]);
 
-  // Ensure rich data fallback if no artworks exist in DB
-  let masterworks = featuredArtworks.length > 0 ? featuredArtworks : allArtworks;
+  // Curated masterworks: prioritize featured works, then fill remaining slots with published artworks up to 6
+  const featuredIds = new Set(featuredArtworks.map((a) => a.id));
+  const remaining = allArtworks.filter(
+    (a) => !featuredIds.has(a.id) && (a.status === "published" || !a.status)
+  );
+  let masterworks = [...featuredArtworks, ...remaining].slice(0, 6);
   if (masterworks.length === 0) {
-    masterworks = INITIAL_ARTWORKS;
+    masterworks = allArtworks.length > 0 ? allArtworks.slice(0, 6) : INITIAL_ARTWORKS.slice(0, 6);
   }
 
   const featuredCollection = collections[0];
@@ -203,7 +212,7 @@ export default async function HomePage() {
           );
         }
 
-        // 5. ARTIST ATELIER & STATEMENT
+        // 5. ARTIST ATELIER & STATEMENT (MERGED ABOUT THE ARTIST EXPERIENCE)
         if (sec.sectionKey === "artist_story") {
           return (
             <React.Fragment key={sec.id}>
@@ -215,10 +224,19 @@ export default async function HomePage() {
                 }
                 description={
                   sec.contentJson?.description ||
+                  settings.aboutPageConfig?.bio ||
+                  settings.bioSummary ||
                   "Elena Vance (b. 1986) divides her studio practice between Paris and the wind-sculpted granite coast of Brittany. Her monumental canvases investigate the physical threshold where lapis lazuli glazes, crushed mineral earth, and oceanic silence transform architectural interiors."
                 }
-                imageUrl={sec.contentJson?.imageUrl}
-                subtitle={sec.subtitle || "Studio Monologue & Philosophy"}
+                imageUrl={sec.contentJson?.imageUrl || settings.aboutPageConfig?.artistImageUrl}
+                subtitle={sec.subtitle || "Studio Monologue & Biography"}
+                artistName={settings.artistName || "Elena Vance"}
+                location={settings.location || "Paris & Côtes-d'Armor, France"}
+                tagline={settings.tagline || "Contemporary Mineral & Oil Paintings"}
+                bio={settings.aboutPageConfig?.bio || settings.bioSummary}
+                philosophy={settings.aboutPageConfig?.philosophy}
+                exhibitions={settings.aboutPageConfig?.exhibitions}
+                achievements={settings.aboutPageConfig?.achievements}
               />
 
               {/* Collector Concierge & Provenance Standards */}
@@ -344,52 +362,124 @@ export default async function HomePage() {
           );
         }
 
-        // 7. PRIVATE INQUIRIES & ACQUISITIONS CTA
+        // 7. PRIVATE INQUIRIES & ACQUISITIONS (MERGED CONTACT EXPERIENCE)
         if (sec.sectionKey === "contact_cta") {
+          const cfg = settings.contactPageConfig;
+          const recipientEmail = cfg?.recipientEmail || settings.contactEmail || "curator@latelier-lumineux.art";
+          const phone = settings.phone || "+33 (0)1 42 68 55 00";
+          const address = settings.address || "14 Rue de Beaune, 7th Arrondissement, 75007 Paris, France";
+          const hours = settings.businessHours || "Tuesday – Saturday, 10:00 – 18:00 CET (By Appointment)";
+
           return (
             <section
+              id="contact"
               key={sec.id}
-              className="max-w-5xl mx-auto px-3.5 sm:px-10 md:px-12 text-center w-full max-w-full overflow-hidden"
+              className="max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 w-full max-w-full overflow-hidden scroll-mt-24 sm:scroll-mt-32 space-y-8 sm:space-y-12"
             >
-              <div className="rounded-3xl bg-gradient-to-b from-[#14151a] to-[#101116] p-6 sm:p-12 md:p-16 space-y-5 sm:space-y-6 shadow-2xl relative overflow-hidden w-full min-w-0">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[280px] sm:w-[500px] h-[200px] sm:h-[300px] bg-[#d1a86e]/8 rounded-full blur-[100px] sm:blur-[140px] pointer-events-none" />
+              <div className="max-w-3xl space-y-3">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#181924] border border-[#262833] text-[9px] sm:text-[10px] tracking-[0.22em] text-[#d1a86e] uppercase font-semibold">
+                  <Mail className="w-3 h-3 text-[#d1a86e]" />
+                  <span>{sec.subtitle || "Curatorial Liaison & Private Acquisitions"}</span>
+                </div>
+                <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl text-white font-medium">
+                  {sec.title || "Contact & Studio Inquiries"}
+                </h2>
+                <p className="text-xs sm:text-sm md:text-base text-[#a6aabf] leading-relaxed font-light">
+                  {sec.contentJson?.description ||
+                    cfg?.description ||
+                    "For private acquisitions, curatorial exhibition loans, bespoke commissions, and private salon viewings, please correspond directly with Madame Vance's Paris liaison desk."}
+                </p>
+              </div>
 
-                <div className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs tracking-widest text-[#d1a86e] uppercase font-semibold">
-                  <Mail className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                  <span>{sec.subtitle || "Inquiries & Acquisitions"}</span>
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+                {/* Interactive Contact Form Column */}
+                <div className="lg:col-span-7">
+                  <ContactForm />
                 </div>
 
-                <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl text-white font-medium">
-                  {sec.title || "Direct Studio Acquisitions"}
-                </h2>
+                {/* Studio Dossier Info Column */}
+                <div className="lg:col-span-5 space-y-6 lg:pl-4">
+                  <div className="p-6 sm:p-8 bg-[#14151a] border border-[#262833] rounded-2xl space-y-6 shadow-xl">
+                    <h3 className="font-serif text-xl sm:text-2xl text-white">Direct Correspondence</h3>
 
-                <p className="text-xs sm:text-sm md:text-base text-[#a6aabf] max-w-xl mx-auto leading-relaxed font-light">
-                  {sec.contentJson?.description ||
-                    "Inquire about acquiring original works, scheduling a private studio viewing in Paris, or commissioning bespoke architectural artworks directly with Elena Vance."}
-                </p>
+                    <div className="space-y-4 text-xs">
+                      <div className="flex items-start gap-3">
+                        <Mail className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5" />
+                        <div>
+                          <span className="text-zinc-500 uppercase tracking-wider block text-[10px]">
+                            Curatorial Email
+                          </span>
+                          <a
+                            href={`mailto:${recipientEmail}`}
+                            className="text-white hover:text-[#d1a86e] transition-colors font-medium text-xs sm:text-sm"
+                          >
+                            {recipientEmail}
+                          </a>
+                        </div>
+                      </div>
 
-                <div className="pt-2 sm:pt-4 flex flex-wrap items-center justify-center gap-2 sm:gap-4">
-                  <Button
-                    asChild
-                    className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] h-7.5 sm:h-9.5 px-4 sm:px-7 text-[10px] sm:text-xs font-semibold uppercase tracking-wider sm:tracking-[0.18em] shadow-lg shadow-[#d1a86e]/15 active:scale-[0.98] w-auto inline-flex"
-                  >
-                    <Link
-                      href={sec.contentJson?.ctaUrl || "/contact"}
-                      className="inline-flex items-center justify-center gap-1.5"
-                    >
-                      <span>
-                        {sec.contentJson?.ctaText || "Inquire Studio"}
-                      </span>
-                      <ArrowRight className="w-3 h-3 shrink-0" />
-                    </Link>
-                  </Button>
+                      {phone && (
+                        <div className="flex items-start gap-3">
+                          <Phone className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5" />
+                          <div>
+                            <span className="text-zinc-500 uppercase tracking-wider block text-[10px]">
+                              Studio Desk
+                            </span>
+                            <a href={`tel:${phone}`} className="text-white hover:text-[#d1a86e] transition-colors">
+                              {phone}
+                            </a>
+                          </div>
+                        </div>
+                      )}
 
-                  <Button
-                    asChild
-                    className="rounded-full bg-[#1a1b24] hover:bg-[#232432] text-zinc-300 hover:text-white h-7.5 sm:h-9.5 px-3.5 sm:px-6 text-[10px] sm:text-xs uppercase tracking-wider active:scale-[0.98] w-auto inline-flex"
-                  >
-                    <Link href="/about">About Artist</Link>
-                  </Button>
+                      {settings.whatsapp && (
+                        <div className="flex items-start gap-3">
+                          <MessageCircle className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5" />
+                          <div>
+                            <span className="text-zinc-500 uppercase tracking-wider block text-[10px]">
+                              WhatsApp Liaison
+                            </span>
+                            <span className="text-white">{settings.whatsapp}</span>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="flex items-start gap-3">
+                        <MapPin className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5" />
+                        <div>
+                          <span className="text-zinc-500 uppercase tracking-wider block text-[10px]">
+                            Atelier &amp; Private Gallery
+                          </span>
+                          <span className="text-white leading-relaxed">
+                            {address}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-3">
+                        <Clock className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5" />
+                        <div>
+                          <span className="text-zinc-500 uppercase tracking-wider block text-[10px]">
+                            Studio Hours
+                          </span>
+                          <span className="text-white">
+                            {hours}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Privacy & Provenance Guarantee */}
+                  <div className="p-5 sm:p-6 bg-[#14151a]/70 border border-[#262833] rounded-2xl space-y-2.5 text-xs text-[#8e92a4]">
+                    <div className="flex items-center gap-2 text-white font-medium">
+                      <ShieldCheck className="w-4 h-4 text-[#d1a86e]" />
+                      <span className="text-xs uppercase tracking-wider text-[#d1a86e]">Confidentiality Protocol</span>
+                    </div>
+                    <p className="leading-relaxed text-[11px] sm:text-xs">
+                      All collector inquiries, institutional loans, and client identities are maintained under strict non-disclosure conventions. Authenticated certificates of provenance accompany all acquisitions.
+                    </p>
+                  </div>
                 </div>
               </div>
             </section>

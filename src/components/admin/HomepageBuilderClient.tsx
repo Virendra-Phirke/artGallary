@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -14,8 +14,6 @@ import {
 import {
   Eye,
   Check,
-  MoveUp,
-  MoveDown,
   Save,
   Sparkles,
   Upload,
@@ -26,33 +24,25 @@ import {
   Monitor,
   RotateCcw,
   X,
-  Plus,
   Search,
-  ChevronDown,
-  ChevronUp,
   RefreshCw,
-  MapPin,
-  ArrowRight,
-  ShieldCheck,
-  Split,
-  Sliders,
   ExternalLink,
-  Compass,
-  PanelLeft,
-  LayoutTemplate,
-  Maximize2,
-  Minimize2,
   ZoomIn,
   ZoomOut,
+  MousePointer,
+  ListOrdered,
+  ArrowUp,
+  ArrowDown,
+  EyeOff,
+  ChevronDown,
+  GripVertical,
+  ChevronsUp,
+  ChevronsDown,
 } from "lucide-react";
-import { formatCurrency, formatDimensions } from "@/lib/utils";
-import { NavbarLayoutModal } from "./studio/NavbarLayoutModal";
-import { GalleryPageEditor } from "./studio/GalleryPageEditor";
-import { CollectionsPageEditor } from "./studio/CollectionsPageEditor";
-import { ExhibitionsPageEditor } from "./studio/ExhibitionsPageEditor";
-import { AboutPageEditor } from "./studio/AboutPageEditor";
-import { ContactPageEditor } from "./studio/ContactPageEditor";
 import { PageLivePreview } from "./studio/PageLivePreview";
+import { StudioSelectionProvider, useStudioSelection } from "./studio/StudioSelectionManager";
+import { StudioInspector } from "./studio/StudioInspector";
+import { StudioLayersTree } from "./studio/StudioLayersTree";
 
 interface MediaAsset {
   id: string;
@@ -76,10 +66,17 @@ interface HomepageBuilderClientProps {
 }
 
 type ActiveStorefrontPage = "home" | "gallery" | "collections" | "exhibitions" | "about" | "contact";
-type ViewMode = "split" | "editor" | "preview";
 type DeviceMode = "desktop" | "tablet" | "mobile";
 
-export function HomepageBuilderClient({
+export function HomepageBuilderClient(props: HomepageBuilderClientProps) {
+  return (
+    <StudioSelectionProvider>
+      <HomepageBuilderContent {...props} />
+    </StudioSelectionProvider>
+  );
+}
+
+function HomepageBuilderContent({
   initialSections,
   artworks = [],
   collections = [],
@@ -87,27 +84,102 @@ export function HomepageBuilderClient({
   initialSiteSettings,
   initialPage = "home",
 }: HomepageBuilderClientProps) {
+  const {
+    mode,
+    setMode,
+    activeTool,
+    setActiveTool,
+    selectedElement,
+    selectElement,
+    clearSelection,
+  } = useStudioSelection();
+
   const [activePage, setActivePage] = useState<ActiveStorefrontPage>(
     initialPage && ["home", "gallery", "collections", "exhibitions", "about", "contact"].includes(initialPage)
       ? initialPage
       : "home"
   );
-  const [sections, setSections] = useState<MockHomepageSection[]>(initialSections);
+
+  const CANONICAL_SECTION_TITLES: Record<string, string> = {
+    hero: "Hero Showcase",
+    featured_artworks: "Curated Masterworks",
+    latest_collection: "Series Spotlight",
+    artist_story: "About the Artist",
+    ar_experience: "WebAR Spatial Preview",
+    featured_exhibition: "Exhibition Note",
+    contact_cta: "Contact & Studio Inquiries",
+  };
+
+  const normalizeSections = (raw: MockHomepageSection[]): MockHomepageSection[] => {
+    return raw.map((sec) => {
+      let title = sec.title;
+      if (sec.sectionKey === "artist_story" && (title === "The Artist's Monologue" || !title)) {
+        title = "About the Artist";
+      }
+      if (sec.sectionKey === "contact_cta" && (title === "Private Inquiries & Acquisitions" || !title)) {
+        title = "Contact & Studio Inquiries";
+      }
+      return {
+        ...sec,
+        title,
+      };
+    });
+  };
+
+  const [sections, setSections] = useState<MockHomepageSection[]>(() =>
+    normalizeSections(initialSections)
+  );
   const [siteSettings, setSiteSettings] = useState<SiteSettingsData>(
     initialSiteSettings || DEFAULT_SITE_SETTINGS
   );
-  const [isNavbarModalOpen, setIsNavbarModalOpen] = useState(false);
 
   const [canvasZoom, setCanvasZoom] = useState<number>(100);
   const [canvasRefreshKey, setCanvasRefreshKey] = useState<number>(0);
-
-  const [expandedSectionId, setExpandedSectionId] = useState<string | null>(
-    initialSections[0]?.id || null
-  );
-  const [viewMode, setViewMode] = useState<ViewMode>("split");
   const [deviceMode, setDeviceMode] = useState<DeviceMode>("desktop");
   const [isSaving, setIsSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [isInspectorOpen, setIsInspectorOpen] = useState(false);
+
+  // Auto-open Inspector whenever user clicks / selects any element or section
+  useEffect(() => {
+    if (selectedElement) {
+      setIsInspectorOpen(true);
+    }
+  }, [selectedElement]);
+
+  const syncCanonicalTitles = () => {
+    setSections((prev) =>
+      prev.map((sec) => ({
+        ...sec,
+        title: CANONICAL_SECTION_TITLES[sec.sectionKey] || sec.title,
+      }))
+    );
+  };
+
+  const handleSelectSectionRow = (sec: MockHomepageSection) => {
+    selectElement({
+      id: `sec:${sec.id}`,
+      type: "section",
+      label: sec.title || sec.sectionKey,
+      path: [
+        { id: `page:${activePage}`, label: activePage.toUpperCase(), type: "section" },
+        { id: `sec:${sec.id}`, label: sec.title || sec.sectionKey, type: "section" },
+      ],
+      sectionId: sec.id,
+      sectionKey: sec.sectionKey,
+    });
+
+    const el =
+      document.querySelector(`[data-studio-id="sec:${sec.id}"]`) ||
+      document.querySelector(`[data-studio-section="${sec.id}"]`);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  // Drag and drop reordering state
+  const [draggedSectionIndex, setDraggedSectionIndex] = useState<number | null>(null);
+  const [dragOverSectionIndex, setDragOverSectionIndex] = useState<number | null>(null);
 
   // Media Library Modal state
   const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
@@ -116,9 +188,6 @@ export function HomepageBuilderClient({
   const [loadingMedia, setLoadingMedia] = useState(false);
   const [mediaSearchQuery, setMediaSearchQuery] = useState("");
   const [uploadingForSectionId, setUploadingForSectionId] = useState<string | null>(null);
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const directUploadInputRef = useRef<HTMLInputElement>(null);
 
   // Fetch media records when modal opens
   const openMediaPicker = async (targetId: string) => {
@@ -149,10 +218,7 @@ export function HomepageBuilderClient({
   };
 
   // Direct upload handler
-  const handleFileUploadForSection = async (
-    targetId: string,
-    file: File
-  ) => {
+  const handleFileUploadForSection = async (targetId: string, file: File) => {
     setUploadingForSectionId(targetId);
     try {
       const formData = new FormData();
@@ -207,6 +273,38 @@ export function HomepageBuilderClient({
     setSections(updated);
   };
 
+  const reorderSections = (fromIndex: number, toIndex: number) => {
+    if (
+      fromIndex === toIndex ||
+      fromIndex < 0 ||
+      toIndex < 0 ||
+      fromIndex >= sections.length ||
+      toIndex >= sections.length
+    )
+      return;
+
+    const updated = [...sections];
+    const [moved] = updated.splice(fromIndex, 1);
+    if (!moved) return;
+    updated.splice(toIndex, 0, moved);
+
+    updated.forEach((s, idx) => {
+      s.displayOrder = idx + 1;
+    });
+
+    setSections(updated);
+  };
+
+  const moveToTop = (index: number) => {
+    if (index <= 0 || index >= sections.length) return;
+    reorderSections(index, 0);
+  };
+
+  const moveToBottom = (index: number) => {
+    if (index < 0 || index >= sections.length - 1) return;
+    reorderSections(index, sections.length - 1);
+  };
+
   const toggleSection = (id: string) => {
     setSections((prev) =>
       prev.map((s) => (s.id === id ? { ...s, isEnabled: !s.isEnabled } : s))
@@ -236,17 +334,6 @@ export function HomepageBuilderClient({
             }
           : s
       )
-    );
-  };
-
-  const clearSectionImage = (id: string) => {
-    setSections((prev) =>
-      prev.map((s) => {
-        if (s.id !== id) return s;
-        const newJson = { ...(s.contentJson || {}) };
-        delete newJson.imageUrl;
-        return { ...s, contentJson: newJson };
-      })
     );
   };
 
@@ -333,7 +420,8 @@ export function HomepageBuilderClient({
     setIsSaving(true);
     try {
       if (activePage === "home") {
-        await handleSaveHomepage();
+        // Save both homepage sections AND site settings (so contact details and bio are saved simultaneously)
+        await Promise.all([handleSaveHomepage(), handleSaveSettings()]);
       } else {
         await handleSaveSettings();
       }
@@ -354,694 +442,429 @@ export function HomepageBuilderClient({
         e.preventDefault();
         handleSave();
       }
+      if (e.key === "Escape") {
+        clearSelection();
+      }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [sections, siteSettings, activePage]);
-
-  const heroArtwork = artworks[0];
-  const featuredCollection = collections[0];
-  const currentExhibition = exhibitions[0];
+  }, [sections, siteSettings, activePage, clearSelection]);
 
   const filteredMedia = mediaAssets.filter((m) =>
     m.fileName.toLowerCase().includes(mediaSearchQuery.toLowerCase())
   );
 
-  // Dynamic tabs labels synced with navigationItems
-  const navItemGallery = siteSettings.navigationItems?.find((i) => i.href.includes("gallery"));
-  const navItemCollections = siteSettings.navigationItems?.find((i) => i.href.includes("collection"));
-  const navItemExhibitions = siteSettings.navigationItems?.find((i) => i.href.includes("exhibit"));
-  const navItemAbout = siteSettings.navigationItems?.find((i) => i.href.includes("about"));
-  const navItemContact = siteSettings.navigationItems?.find((i) => i.href.includes("contact"));
-
-  const storefrontNavTabs: Array<{
-    key: ActiveStorefrontPage;
-    label: string;
-    href: string;
-  }> = [
-    { key: "gallery", label: navItemGallery?.label || "Gallery", href: "/gallery" },
-    { key: "collections", label: navItemCollections?.label || "Collections", href: "/collections" },
-    { key: "exhibitions", label: navItemExhibitions?.label || "Exhibitions", href: "/exhibitions" },
-    { key: "about", label: navItemAbout?.label || "About", href: "/about" },
-    { key: "contact", label: navItemContact?.label || "Contact", href: "/contact" },
-  ];
-
-  const getPageTitle = () => {
-    switch (activePage) {
-      case "gallery":
-        return "Gallery Studio & Curation";
-      case "collections":
-        return "Collections Studio";
-      case "exhibitions":
-        return "Exhibitions Studio";
-      case "about":
-        return "About & Artist Studio";
-      case "contact":
-        return "Contact & Liaison Studio";
-      default:
-        return "Homepage Visual Studio";
-    }
-  };
-
   return (
-    <div className="space-y-6">
-      {/* 1. STUDIO COMMAND BAR */}
-      <div className="bg-[#121318] border border-[#232530] rounded-2xl shadow-xl overflow-hidden">
-        {/* Tier 1: Main Control Toolbar */}
-        <div className="p-3.5 sm:p-4 border-b border-[#1f212b] flex flex-col xl:flex-row xl:items-center justify-between gap-4 bg-gradient-to-r from-[#14151c] to-[#101116]">
-          {/* Left: Branding & Current Editing Target */}
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[#1b1d26] border border-[#2d303e] flex items-center justify-center text-[#d1a86e] shrink-0">
-              <LayoutTemplate className="w-4.5 h-4.5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] tracking-[0.2em] text-[#d1a86e] uppercase font-bold">
-                  Storefront Studio
-                </span>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-[10px] font-mono text-zinc-500 uppercase">
-                  100% Canvas Mode
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Center: Viewport & View Mode Controls */}
-          <div className="flex flex-wrap items-center gap-2 bg-[#0c0d11] p-1.5 rounded-xl border border-[#20222a]">
-            {/* View Mode Segmented Control */}
-            <div className="flex items-center bg-[#15161d] p-0.5 rounded-lg border border-[#262833]">
-              <button
-                type="button"
-                onClick={() => setViewMode("split")}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium transition-all ${
-                  viewMode === "split"
-                    ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-sm"
-                    : "text-zinc-400 hover:text-white"
-                }`}
-                title="Split View: Editor & Live Preview"
-              >
-                <Split className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Split</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setViewMode("editor")}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium transition-all ${
-                  viewMode === "editor"
-                    ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-sm"
-                    : "text-zinc-400 hover:text-white"
-                }`}
-                title="Editor Form Only"
-              >
-                <Sliders className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Editor</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setViewMode("preview")}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium transition-all ${
-                  viewMode === "preview"
-                    ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-sm"
-                    : "text-zinc-400 hover:text-white"
-                }`}
-                title="Full Live Canvas"
-              >
-                <Eye className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Canvas</span>
-              </button>
-            </div>
-
-            {/* Device Simulator Toggle */}
-            {viewMode !== "editor" && (
-              <div className="flex items-center bg-[#15161d] p-0.5 rounded-lg border border-[#262833]">
-                <button
-                  type="button"
-                  onClick={() => setDeviceMode("desktop")}
-                  className={`p-1.5 rounded-md text-xs transition-colors ${
-                    deviceMode === "desktop"
-                      ? "bg-[#252834] text-[#d1a86e]"
-                      : "text-zinc-400 hover:text-white"
-                  }`}
-                  title="Desktop View (100% Fluid)"
-                >
-                  <Monitor className="w-3.5 h-3.5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setDeviceMode("tablet")}
-                  className={`p-1.5 rounded-md text-xs transition-colors ${
-                    deviceMode === "tablet"
-                      ? "bg-[#252834] text-[#d1a86e]"
-                      : "text-zinc-400 hover:text-white"
-                  }`}
-                  title="Tablet View (768px)"
-                >
-                  <Tablet className="w-3.5 h-3.5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setDeviceMode("mobile")}
-                  className={`p-1.5 rounded-md text-xs transition-colors ${
-                    deviceMode === "mobile"
-                      ? "bg-[#252834] text-[#d1a86e]"
-                      : "text-zinc-400 hover:text-white"
-                  }`}
-                  title="Mobile View (390px)"
-                >
-                  <Smartphone className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            )}
-
-            {/* Zoom Controls & Canvas Reload */}
-            {viewMode !== "editor" && (
-              <div className="flex items-center px-1 text-xs gap-0.5">
-                <button
-                  type="button"
-                  onClick={() => setCanvasZoom((z) => Math.max(50, z - 10))}
-                  className="p-1 text-zinc-400 hover:text-white transition-colors"
-                  title="Zoom Out"
-                >
-                  <ZoomOut className="w-3.5 h-3.5" />
-                </button>
-                <span className="px-1 text-[11px] font-mono text-zinc-300 min-w-[36px] text-center select-none">
-                  {canvasZoom}%
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setCanvasZoom((z) => Math.min(150, z + 10))}
-                  className="p-1 text-zinc-400 hover:text-white transition-colors"
-                  title="Zoom In"
-                >
-                  <ZoomIn className="w-3.5 h-3.5" />
-                </button>
-                <div className="w-px h-3.5 bg-[#262833] mx-1" />
-                <button
-                  type="button"
-                  onClick={() => setCanvasRefreshKey((k) => k + 1)}
-                  className="p-1 text-zinc-400 hover:text-white transition-colors"
-                  title="Refresh Live Canvas"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Right: Actions */}
-          <div className="flex items-center gap-2.5 shrink-0">
+    <div className="h-full w-full flex flex-col overflow-hidden bg-[#090a0f] text-[#f4f4f6]">
+      {/* 1. UNIFIED STUDIO COMMAND BAR (PRO LEVEL) */}
+      <header className="h-12 sm:h-13 bg-[#111218] border-b border-[#1f212b] px-3 sm:px-4 flex items-center justify-between gap-3 shrink-0 z-30">
+        {/* Mode (Select/Preview) + Device Mode + Zoom */}
+        <div className="flex items-center gap-2 shrink-0 bg-[#0c0d12] p-1 rounded-xl border border-[#1f212b]">
+          {/* Select vs Preview Toggle */}
+          <div className="flex items-center bg-[#15161f] p-0.5 rounded-lg border border-[#252834]">
             <button
               type="button"
-              onClick={() => setIsNavbarModalOpen(true)}
-              className="px-3 py-1.5 rounded-xl bg-[#171821] hover:bg-[#20222d] text-zinc-300 hover:text-white flex items-center gap-1.5 transition-colors border border-[#292c3a] text-xs font-medium"
-              title="Configure Storefront Navigation Header & Links"
-            >
-              <Compass className="w-3.5 h-3.5 text-[#d1a86e]" />
-              <span>Navbar Layout</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={handleSave}
-              disabled={isSaving}
-              className="flex items-center gap-2 bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] px-4 py-1.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all shadow-md shadow-[#d1a86e]/20 disabled:opacity-50"
-            >
-              {isSaving ? (
-                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-              ) : savedSuccess ? (
-                <Check className="w-3.5 h-3.5 text-emerald-950 font-bold" />
-              ) : (
-                <Save className="w-3.5 h-3.5" />
-              )}
-              <span>
-                {isSaving
-                  ? "Saving..."
-                  : savedSuccess
-                  ? "Saved!"
-                  : activePage === "home"
-                  ? "Publish Layout"
-                  : `Publish ${activePage.charAt(0).toUpperCase() + activePage.slice(1)}`}
-              </span>
-            </button>
-          </div>
-        </div>
-
-        {/* Tier 2: Dedicated Storefront Page Switcher Strip */}
-        <div className="px-4 py-2 bg-[#0e0f14] flex flex-wrap items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none py-0.5">
-            <span className="text-[10px] uppercase tracking-widest font-mono text-zinc-500 mr-2 shrink-0">
-              Pages:
-            </span>
-
-            {/* Home Tab */}
-            <button
-              type="button"
-              onClick={() => setActivePage("home")}
-              className={`px-3 py-1 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
-                activePage === "home"
-                  ? "bg-[#d1a86e]/15 text-[#d1a86e] border border-[#d1a86e]/40 font-semibold shadow-sm"
-                  : "text-zinc-400 hover:text-white hover:bg-[#181921] border border-transparent"
+              onClick={() => setMode("select")}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
+                mode === "select"
+                  ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-xs"
+                  : "text-zinc-400 hover:text-white"
               }`}
+              title="Select Mode: Click any element in preview to edit"
             >
-              <span>Home</span>
-              <a
-                href="/"
-                target="_blank"
-                rel="noopener noreferrer"
-                title="Open live / in new tab"
-                onClick={(e) => e.stopPropagation()}
-                className="text-zinc-500 hover:text-white"
-              >
-                <ExternalLink className="w-2.5 h-2.5" />
-              </a>
+              <MousePointer className="w-3 h-3" />
+              <span>Select</span>
             </button>
-
-            {/* Other Tabs */}
-            {storefrontNavTabs.map((tab) => {
-              const isActive = activePage === tab.key;
-              return (
-                <button
-                  key={tab.key}
-                  type="button"
-                  onClick={() => setActivePage(tab.key)}
-                  className={`px-3 py-1 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
-                    isActive
-                      ? "bg-[#d1a86e]/15 text-[#d1a86e] border border-[#d1a86e]/40 font-semibold shadow-sm"
-                      : "text-zinc-400 hover:text-white hover:bg-[#181921] border border-transparent"
-                  }`}
-                >
-                  <span>{tab.label}</span>
-                  <a
-                    href={tab.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title={`Open live ${tab.href} in new tab`}
-                    onClick={(e) => e.stopPropagation()}
-                    className="text-zinc-500 hover:text-white"
-                  >
-                    <ExternalLink className="w-2.5 h-2.5" />
-                  </a>
-                </button>
-              );
-            })}
+            <button
+              type="button"
+              onClick={() => {
+                setMode("preview");
+                clearSelection();
+              }}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
+                mode === "preview"
+                  ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-xs"
+                  : "text-zinc-400 hover:text-white"
+              }`}
+              title="Preview Mode: Test storefront freely without editor outlines"
+            >
+              <Eye className="w-3 h-3" />
+              <span>Preview</span>
+            </button>
           </div>
 
-          <div className="flex items-center gap-3 text-[11px] text-zinc-500 font-mono">
-            <span className="hidden sm:inline">Press Ctrl+S to publish</span>
-            <span className="w-1 h-1 rounded-full bg-zinc-600" />
-            <a
-              href={activePage === "home" ? "/" : `/${activePage}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#d1a86e] hover:underline flex items-center gap-1"
+          <div className="h-3.5 w-px bg-[#262834]" />
+
+          {/* Viewport Width Preset */}
+          <div className="flex items-center bg-[#15161f] p-0.5 rounded-lg border border-[#252834]">
+            <button
+              type="button"
+              onClick={() => setDeviceMode("desktop")}
+              className={`p-1.5 rounded-md text-xs transition-colors cursor-pointer ${
+                deviceMode === "desktop"
+                  ? "bg-[#252836] text-[#d1a86e]"
+                  : "text-zinc-400 hover:text-white"
+              }`}
+              title="Desktop View (Full Width)"
             >
-              <span>Live Store</span>
-              <ExternalLink className="w-2.5 h-2.5" />
-            </a>
+              <Monitor className="w-3.5 h-3.5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setDeviceMode("tablet")}
+              className={`p-1.5 rounded-md text-xs transition-colors cursor-pointer ${
+                deviceMode === "tablet"
+                  ? "bg-[#252836] text-[#d1a86e]"
+                  : "text-zinc-400 hover:text-white"
+              }`}
+              title="Tablet View (768px)"
+            >
+              <Tablet className="w-3.5 h-3.5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setDeviceMode("mobile")}
+              className={`p-1.5 rounded-md text-xs transition-colors cursor-pointer ${
+                deviceMode === "mobile"
+                  ? "bg-[#252836] text-[#d1a86e]"
+                  : "text-zinc-400 hover:text-white"
+              }`}
+              title="Mobile View (390px)"
+            >
+              <Smartphone className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          <div className="h-3.5 w-px bg-[#262834]" />
+
+          {/* Zoom */}
+          <div className="flex items-center gap-0.5 text-xs text-zinc-400">
+            <button
+              type="button"
+              onClick={() => setCanvasZoom((z) => Math.max(50, z - 10))}
+              className="p-1 hover:text-white transition-colors cursor-pointer"
+              title="Zoom Out"
+            >
+              <ZoomOut className="w-3.5 h-3.5" />
+            </button>
+            <span className="font-mono text-[10px] min-w-[32px] text-center text-zinc-300">
+              {canvasZoom}%
+            </span>
+            <button
+              type="button"
+              onClick={() => setCanvasZoom((z) => Math.min(150, z + 10))}
+              className="p-1 hover:text-white transition-colors cursor-pointer"
+              title="Zoom In"
+            >
+              <ZoomIn className="w-3.5 h-3.5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setCanvasRefreshKey((k) => k + 1)}
+              className="p-1 hover:text-white transition-colors cursor-pointer ml-1"
+              title="Refresh Canvas"
+            >
+              <RotateCcw className="w-3 h-3" />
+            </button>
           </div>
         </div>
-      </div>
 
-      {/* 2. MAIN WORKSPACE CONTAINER (SPLIT / EDITOR / PREVIEW) */}
-      <div
-        className={`grid gap-6 items-start ${
-          viewMode === "split"
-            ? "grid-cols-1 lg:grid-cols-12"
-            : "grid-cols-1"
-        }`}
-      >
-        {/* LEFT COLUMN: PAGE EDITORS */}
-        {viewMode !== "preview" && (
-          <div
-            className={`space-y-4 ${
-              viewMode === "split" ? "lg:col-span-5" : "w-full max-w-4xl mx-auto"
-            }`}
+        {/* Right: Publish button */}
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={isSaving}
+            className="flex items-center gap-1.5 bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] px-3 sm:px-4 py-1.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all shadow-md shadow-[#d1a86e]/20 disabled:opacity-50 cursor-pointer"
           >
-            {/* RENDER HOME PAGE EDITOR (7 EDITORIAL SECTIONS) */}
-            {activePage === "home" && (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between px-1">
-                  <span className="text-xs font-semibold uppercase tracking-widest text-zinc-400">
-                    Editorial Sections ({sections.length})
-                  </span>
-                  <span className="text-[11px] text-zinc-500">
-                    Drag or use arrows to reorder
-                  </span>
-                </div>
-
-                {sections.map((sec, idx) => {
-                  const isExpanded = expandedSectionId === sec.id;
-                  const currentImageUrl =
-                    sec.contentJson?.imageUrl ||
-                    (sec.sectionKey === "hero"
-                      ? heroArtwork?.coverImageUrl
-                      : sec.sectionKey === "latest_collection"
-                      ? featuredCollection?.coverImageUrl
-                      : sec.sectionKey === "featured_exhibition"
-                      ? currentExhibition?.coverImageUrl
-                      : undefined);
-
-                  const hasCustomImage = Boolean(sec.contentJson?.imageUrl);
-
-                  return (
-                    <div
-                      key={sec.id}
-                      className={`rounded-2xl border transition-all shadow-md ${
-                        sec.isEnabled
-                          ? "bg-[#14151a] border-[#262833]"
-                          : "bg-[#14151a]/50 border-[#1f212b] opacity-65"
-                      }`}
-                    >
-                      {/* Card Header & Controls */}
-                      <div className="p-3.5 sm:p-4 flex items-center justify-between gap-3">
-                        <div
-                          onClick={() =>
-                            setExpandedSectionId(isExpanded ? null : sec.id)
-                          }
-                          className="flex items-center gap-3 cursor-pointer flex-1 select-none group"
-                        >
-                          {/* Number Badge */}
-                          <div className="w-8 h-8 rounded-xl bg-[#1a1c24] border border-[#2b2d3c] flex items-center justify-center font-mono text-xs text-[#d1a86e] font-semibold shrink-0 group-hover:border-[#d1a86e]/40 transition-colors">
-                            0{sec.displayOrder}
-                          </div>
-
-                          <div>
-                            <h3 className="text-sm font-medium text-white group-hover:text-[#d1a86e] transition-colors">
-                              {sec.title || sec.sectionKey}
-                            </h3>
-                            <span className="text-[10px] text-zinc-400 font-mono capitalize">
-                              {sec.sectionKey.replace(/_/g, " ")}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          {/* Reorder Up/Down */}
-                          <div className="flex items-center bg-[#15161e] border border-[#252834] rounded-lg p-0.5">
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                moveSection(idx, "up");
-                              }}
-                              disabled={idx === 0}
-                              className="p-1 rounded text-zinc-400 hover:text-white hover:bg-zinc-800 disabled:opacity-20 transition-colors"
-                              title="Move Up"
-                            >
-                              <MoveUp className="w-3.5 h-3.5" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                moveSection(idx, "down");
-                              }}
-                              disabled={idx === sections.length - 1}
-                              className="p-1 rounded text-zinc-400 hover:text-white hover:bg-zinc-800 disabled:opacity-20 transition-colors"
-                              title="Move Down"
-                            >
-                              <MoveDown className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-
-                          {/* Visibility Toggle */}
-                          <button
-                            type="button"
-                            onClick={() => toggleSection(sec.id)}
-                            className={`p-1.5 rounded-lg text-xs transition-colors border ${
-                              sec.isEnabled
-                                ? "bg-emerald-950/40 text-emerald-400 border-emerald-800/50"
-                                : "bg-[#15161e] text-zinc-500 border-[#252834]"
-                            }`}
-                            title={sec.isEnabled ? "Section Active (Click to Hide)" : "Section Hidden (Click to Show)"}
-                          >
-                            <Eye className="w-3.5 h-3.5" />
-                          </button>
-
-                          {/* Expand/Collapse Chevron */}
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setExpandedSectionId(isExpanded ? null : sec.id)
-                            }
-                            className="p-1.5 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors"
-                          >
-                            <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? "rotate-180 text-[#d1a86e]" : ""}`} />
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Expanded Section Editor */}
-                      {isExpanded && (
-                        <div className="p-4 sm:p-5 border-t border-[#1f212b] space-y-4 bg-[#0f1015]/80 rounded-b-2xl">
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div className="space-y-1.5">
-                              <label className="text-[11px] font-medium text-zinc-300 block">
-                                Headline / Title
-                              </label>
-                              <input
-                                type="text"
-                                value={sec.title || ""}
-                                onChange={(e) =>
-                                  updateSectionText(sec.id, "title", e.target.value)
-                                }
-                                className="w-full bg-[#0d0e12] border border-[#262834] rounded-xl px-3.5 py-2 text-xs text-white focus:border-[#d1a86e]/70 focus:ring-1 focus:ring-[#d1a86e]/30 focus:outline-none transition-all placeholder:text-zinc-600"
-                              />
-                            </div>
-                            <div className="space-y-1.5">
-                              <label className="text-[11px] font-medium text-zinc-300 block">
-                                Subtitle / Eyebrow
-                              </label>
-                              <input
-                                type="text"
-                                value={sec.subtitle || ""}
-                                onChange={(e) =>
-                                  updateSectionText(sec.id, "subtitle", e.target.value)
-                                }
-                                className="w-full bg-[#0d0e12] border border-[#262834] rounded-xl px-3.5 py-2 text-xs text-white focus:border-[#d1a86e]/70 focus:ring-1 focus:ring-[#d1a86e]/30 focus:outline-none transition-all placeholder:text-zinc-600"
-                              />
-                            </div>
-                          </div>
-
-                          <div className="space-y-1.5">
-                            <label className="text-[11px] font-medium text-zinc-300 block">
-                              Description / Curatorial Text
-                            </label>
-                            <textarea
-                              rows={3}
-                              value={sec.contentJson?.description || ""}
-                              onChange={(e) =>
-                                updateSectionContent(
-                                  sec.id,
-                                  "description",
-                                  e.target.value
-                                )
-                              }
-                              className="w-full bg-[#0d0e12] border border-[#262834] rounded-xl px-3.5 py-2 text-xs text-white focus:border-[#d1a86e]/70 focus:ring-1 focus:ring-[#d1a86e]/30 focus:outline-none transition-all placeholder:text-zinc-600 resize-none leading-relaxed"
-                            />
-                          </div>
-
-                          {/* Specific Quote field for Artist Story */}
-                          {sec.sectionKey === "artist_story" && (
-                            <div className="space-y-1.5">
-                              <label className="text-[11px] font-medium text-zinc-300 block">
-                                Artist Statement / Curatorial Quote
-                              </label>
-                              <textarea
-                                rows={2}
-                                value={sec.contentJson?.quote || ""}
-                                onChange={(e) =>
-                                  updateSectionContent(sec.id, "quote", e.target.value)
-                                }
-                                placeholder="A painting is not merely an image hanging upon a partition..."
-                                className="w-full bg-[#0d0e12] border border-[#262834] rounded-xl px-3.5 py-2 text-xs text-white focus:border-[#d1a86e]/70 focus:ring-1 focus:ring-[#d1a86e]/30 focus:outline-none transition-all placeholder:text-zinc-600 resize-none italic"
-                              />
-                            </div>
-                          )}
-
-                          {/* Call to Action Controls for Hero, AR, and Contact CTA */}
-                          {(sec.sectionKey === "hero" ||
-                            sec.sectionKey === "contact_cta" ||
-                            sec.sectionKey === "ar_experience") && (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                              <div className="space-y-1.5">
-                                <label className="text-[11px] font-medium text-zinc-300 block">
-                                  Button (CTA) Label
-                                </label>
-                                <input
-                                  type="text"
-                                  value={sec.contentJson?.ctaText || ""}
-                                  onChange={(e) =>
-                                    updateSectionContent(sec.id, "ctaText", e.target.value)
-                                  }
-                                  placeholder={
-                                    sec.sectionKey === "hero"
-                                      ? "Explore Catalog"
-                                      : sec.sectionKey === "ar_experience"
-                                      ? "Launch Spatial Studio"
-                                      : "Inquire with Studio"
-                                  }
-                                  className="w-full bg-[#0d0e12] border border-[#262834] rounded-xl px-3.5 py-2 text-xs text-white focus:border-[#d1a86e]/70 focus:ring-1 focus:ring-[#d1a86e]/30 focus:outline-none transition-all placeholder:text-zinc-600"
-                                />
-                              </div>
-                              <div className="space-y-1.5">
-                                <label className="text-[11px] font-medium text-zinc-300 block">
-                                  Button (CTA) Link URL
-                                </label>
-                                <input
-                                  type="text"
-                                  value={sec.contentJson?.ctaUrl || ""}
-                                  onChange={(e) =>
-                                    updateSectionContent(sec.id, "ctaUrl", e.target.value)
-                                  }
-                                  placeholder={
-                                    sec.sectionKey === "hero"
-                                      ? "/gallery"
-                                      : sec.sectionKey === "ar_experience"
-                                      ? "/ar"
-                                      : "/contact"
-                                  }
-                                  className="w-full bg-[#0d0e12] border border-[#262834] rounded-xl px-3.5 py-2 text-xs text-white focus:border-[#d1a86e]/70 focus:ring-1 focus:ring-[#d1a86e]/30 focus:outline-none transition-all placeholder:text-zinc-600"
-                                />
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Image controls */}
-                          <div className="pt-2 border-t border-[#1f212b] space-y-2">
-                            <div className="flex items-center justify-between">
-                              <span className="text-[10px] uppercase tracking-wider text-zinc-400 font-medium">
-                                Visual Asset / Image
-                              </span>
-                              {hasCustomImage && (
-                                <button
-                                  type="button"
-                                  onClick={() => clearSectionImage(sec.id)}
-                                  className="text-[10px] text-zinc-500 hover:text-rose-400"
-                                >
-                                  Reset to Default
-                                </button>
-                              )}
-                            </div>
-
-                            <div className="flex items-center gap-3">
-                              {currentImageUrl ? (
-                                <div className="relative w-16 h-12 rounded-lg overflow-hidden border border-[#262833] bg-black/40 shrink-0">
-                                  <Image
-                                    src={currentImageUrl}
-                                    alt="Section asset"
-                                    fill
-                                    sizes="80px"
-                                    className="object-cover"
-                                  />
-                                </div>
-                              ) : (
-                                <div className="w-16 h-12 rounded-lg border border-[#262833] bg-black/20 flex items-center justify-center text-zinc-600 shrink-0">
-                                  <ImageIcon className="w-4 h-4" />
-                                </div>
-                              )}
-
-                              <div className="flex-1 flex flex-wrap gap-2">
-                                <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#181920] hover:bg-[#22242e] border border-[#262833] text-xs text-zinc-300 hover:text-white transition-colors">
-                                  {uploadingForSectionId === sec.id ? (
-                                    <RefreshCw className="w-3 h-3 animate-spin text-[#d1a86e]" />
-                                  ) : (
-                                    <Upload className="w-3 h-3 text-[#d1a86e]" />
-                                  )}
-                                  <span>
-                                    {uploadingForSectionId === sec.id
-                                      ? "Uploading..."
-                                      : "Upload File"}
-                                  </span>
-                                  <input
-                                    type="file"
-                                    accept="image/jpeg,image/png,image/webp,image/avif"
-                                    className="hidden"
-                                    onChange={async (e) => {
-                                      const file = e.target.files?.[0];
-                                      if (file) {
-                                        await handleFileUploadForSection(sec.id, file);
-                                      }
-                                    }}
-                                  />
-                                </label>
-
-                                <button
-                                  type="button"
-                                  onClick={() => openMediaPicker(sec.id)}
-                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#181920] hover:bg-[#22242e] border border-[#262833] text-xs text-zinc-300 hover:text-white transition-colors"
-                                >
-                                  <Layers className="w-3 h-3 text-[#d1a86e]" />
-                                  <span>Media Library</span>
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+            {isSaving ? (
+              <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+            ) : savedSuccess ? (
+              <Check className="w-3.5 h-3.5 text-emerald-950 font-bold" />
+            ) : (
+              <Save className="w-3.5 h-3.5" />
             )}
+            <span>
+              {isSaving
+                ? "Saving..."
+                : savedSuccess
+                ? "Published!"
+                : "Publish Layout"}
+            </span>
+          </button>
+        </div>
+      </header>
 
-            {/* RENDER GALLERY PAGE EDITOR */}
-            {activePage === "gallery" && (
-              <GalleryPageEditor
-                settings={siteSettings}
-                onUpdateConfig={updateGalleryConfig}
-                artworksCount={artworks.length}
-              />
-            )}
+      {/* 2. DOCKED 3-PANE WORKSPACE (ZERO WEIRD FLOATING GAPS) */}
+      <div className="flex-1 flex overflow-hidden min-h-0 relative">
+        {/* COLUMN 1: SLIM TOOL RAIL (DOCK-STYLE) */}
+        <div className="w-12 sm:w-13 h-full bg-[#111218] border-r border-[#1f212b] py-3 flex flex-col items-center justify-between shrink-0 z-20">
+          {/* Top Tools */}
+          <div className="flex flex-col items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTool("select");
+                setMode("select");
+              }}
+              className={`p-2.5 rounded-xl text-xs transition-all cursor-pointer ${
+                activeTool === "select"
+                  ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-md shadow-[#d1a86e]/20"
+                  : "text-zinc-400 hover:text-white hover:bg-[#1a1b24]"
+              }`}
+              title="Select Tool: Click canvas elements directly"
+            >
+              <MousePointer className="w-4 h-4" />
+            </button>
 
-            {/* RENDER COLLECTIONS PAGE EDITOR */}
-            {activePage === "collections" && (
-              <CollectionsPageEditor
-                settings={siteSettings}
-                onUpdateConfig={updateCollectionsConfig}
-                collectionsCount={collections.length}
-              />
-            )}
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTool(activeTool === "layers" ? "select" : "layers");
+              }}
+              className={`p-2.5 rounded-xl text-xs transition-all cursor-pointer ${
+                activeTool === "layers"
+                  ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-md shadow-[#d1a86e]/20"
+                  : "text-zinc-400 hover:text-white hover:bg-[#1a1b24]"
+              }`}
+              title="Layers Navigator (Tree View)"
+            >
+              <Layers className="w-4 h-4" />
+            </button>
 
-            {/* RENDER EXHIBITIONS PAGE EDITOR */}
-            {activePage === "exhibitions" && (
-              <ExhibitionsPageEditor
-                settings={siteSettings}
-                onUpdateConfig={updateExhibitionsConfig}
-                exhibitionsCount={exhibitions.length}
-              />
-            )}
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTool(activeTool === "sections" ? "select" : "sections");
+              }}
+              className={`p-2.5 rounded-xl text-xs transition-all cursor-pointer ${
+                activeTool === "sections"
+                  ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-md shadow-[#d1a86e]/20"
+                  : "text-zinc-400 hover:text-white hover:bg-[#1a1b24]"
+              }`}
+              title="Sections Structure & Order"
+            >
+              <ListOrdered className="w-4 h-4" />
+            </button>
+          </div>
 
-            {/* RENDER ABOUT PAGE EDITOR */}
-            {activePage === "about" && (
-              <AboutPageEditor
-                settings={siteSettings}
-                onUpdateSetting={updateSiteSetting}
-                onUpdateAboutConfig={updateAboutConfig}
-                onOpenMediaPicker={() => openMediaPicker("about_portrait")}
-              />
-            )}
+          {/* Bottom Tools */}
+          <div className="flex flex-col items-center gap-2">
+            <button
+              type="button"
+              onClick={() => openMediaPicker("homepage_media")}
+              className="p-2.5 rounded-xl text-zinc-400 hover:text-white hover:bg-[#1a1b24] transition-colors cursor-pointer"
+              title="Media Library Asset Manager"
+            >
+              <ImageIcon className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
 
-            {/* RENDER CONTACT PAGE EDITOR */}
-            {activePage === "contact" && (
-              <ContactPageEditor
-                settings={siteSettings}
-                onUpdateSetting={updateSiteSetting}
-                onUpdateContactConfig={updateContactConfig}
-              />
-            )}
+        {/* COLUMN 1.5: DOCKED DRAWER (LAYERS OR SECTIONS) */}
+        {activeTool === "layers" && (
+          <div className="w-80 lg:w-96 xl:w-[410px] h-full shrink-0 border-r border-[#1f212b] bg-[#111218] overflow-hidden z-10 shadow-xl animate-in slide-in-from-left duration-200">
+            <StudioLayersTree
+              sections={sections}
+              activePage={activePage}
+              onMoveSection={moveSection}
+              onReorderSections={reorderSections}
+              onToggleSection={toggleSection}
+            />
           </div>
         )}
 
-        {/* RIGHT COLUMN: INTERACTIVE VISUAL CANVAS PREVIEW */}
-        {viewMode !== "editor" && (
+        {activeTool === "sections" && (
+          <div className="w-80 lg:w-96 xl:w-[410px] h-full shrink-0 border-r border-[#1f212b] bg-[#111218] overflow-hidden z-10 shadow-xl flex flex-col text-xs text-white animate-in slide-in-from-left duration-200">
+            <div className="p-3.5 border-b border-[#20222a] shrink-0 bg-[#14151c] space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <ListOrdered className="w-4 h-4 text-[#d1a86e]" />
+                  <span className="font-serif text-sm font-medium">Sections Order</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={syncCanonicalTitles}
+                    className="text-[10px] text-zinc-400 hover:text-[#d1a86e] bg-[#181922] hover:bg-[#20222e] px-2 py-0.5 rounded border border-white/5 transition-colors flex items-center gap-1 cursor-pointer"
+                    title="Reset all section names to clean canonical titles"
+                  >
+                    <Sparkles className="w-3 h-3 text-[#d1a86e]" />
+                    <span>Sync Titles</span>
+                  </button>
+                  <span className="text-[10px] font-mono text-zinc-400 uppercase bg-[#181922] px-2 py-0.5 rounded border border-white/5">
+                    {sections.length} Units
+                  </span>
+                </div>
+              </div>
+              <p className="text-[10px] text-zinc-500 font-light">
+                Click any section to inspect &amp; edit. Grab handle to reorder anywhere.
+              </p>
+            </div>
+            <div className="p-2.5 space-y-1.5 overflow-y-auto flex-1 scrollbar-thin scrollbar-thumb-zinc-700 select-none">
+              {sections.map((sec, idx) => {
+                const isDragging = draggedSectionIndex === idx;
+                const isDragOver = dragOverSectionIndex === idx && draggedSectionIndex !== idx;
+                const isSelected =
+                  selectedElement?.sectionId === sec.id ||
+                  selectedElement?.id === `sec:${sec.id}`;
+
+                return (
+                  <div
+                    key={sec.id}
+                    draggable
+                    onClick={() => handleSelectSectionRow(sec)}
+                    onDragStart={(e) => {
+                      setDraggedSectionIndex(idx);
+                      e.dataTransfer.effectAllowed = "move";
+                      e.dataTransfer.setData("text/plain", `${idx}`);
+                    }}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      e.dataTransfer.dropEffect = "move";
+                      if (dragOverSectionIndex !== idx) {
+                        setDragOverSectionIndex(idx);
+                      }
+                    }}
+                    onDragEnter={(e) => {
+                      e.preventDefault();
+                      setDragOverSectionIndex(idx);
+                    }}
+                    onDragLeave={(e) => {
+                      if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                        setDragOverSectionIndex((curr) => (curr === idx ? null : curr));
+                      }
+                    }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      if (draggedSectionIndex !== null && draggedSectionIndex !== idx) {
+                        reorderSections(draggedSectionIndex, idx);
+                      }
+                      setDraggedSectionIndex(null);
+                      setDragOverSectionIndex(null);
+                    }}
+                    onDragEnd={() => {
+                      setDraggedSectionIndex(null);
+                      setDragOverSectionIndex(null);
+                    }}
+                    className={`group p-2.5 rounded-xl border flex items-center justify-between gap-2 shadow-sm transition-all duration-150 cursor-pointer ${
+                      isDragging
+                        ? "opacity-30 scale-[0.98] border-dashed border-[#d1a86e] bg-[#1a1b26]"
+                        : isDragOver
+                        ? "border-[#d1a86e] bg-[#d1a86e]/15 ring-2 ring-[#d1a86e]/70 shadow-lg shadow-[#d1a86e]/20 translate-y-0.5"
+                        : isSelected
+                        ? "border-[#d1a86e] bg-[#d1a86e]/15 ring-1 ring-[#d1a86e]/50 shadow-md shadow-[#d1a86e]/10 text-white"
+                        : "bg-[#161722] border-white/5 hover:border-[#d1a86e]/40 hover:bg-[#1a1c2a]"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                      {/* Active Indicator Bar */}
+                      <div
+                        className={`w-1 h-5 rounded-full shrink-0 transition-colors ${
+                          isSelected ? "bg-[#d1a86e]" : "bg-transparent group-hover:bg-[#d1a86e]/40"
+                        }`}
+                      />
+
+                      {/* Grab Drag Handle */}
+                      <div
+                        onClick={(e) => e.stopPropagation()}
+                        className="text-zinc-500 group-hover:text-[#d1a86e] transition-colors p-0.5 shrink-0 cursor-grab active:cursor-grabbing hover:bg-white/5 rounded"
+                        title="Grab to drag and reorder"
+                      >
+                        <GripVertical className="w-3.5 h-3.5" />
+                      </div>
+                      <span className="font-mono text-[10px] text-zinc-500 shrink-0">
+                        0{idx + 1}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p
+                          className="truncate text-white text-xs font-medium"
+                          title={sec.title || sec.sectionKey}
+                        >
+                          {sec.title || sec.sectionKey}
+                        </p>
+                        <p className="text-[10px] text-zinc-500 font-mono truncate">
+                          {sec.sectionKey.replace(/_/g, " ")}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div
+                      className="flex items-center gap-0.5 shrink-0"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {/* Quick Move to Top */}
+                      <button
+                        type="button"
+                        disabled={idx === 0}
+                        onClick={() => moveToTop(idx)}
+                        className="p-1 rounded text-zinc-500 hover:text-[#d1a86e] disabled:opacity-15 cursor-pointer hover:bg-zinc-800 transition-colors hidden sm:inline-flex"
+                        title="Move to Top"
+                      >
+                        <ChevronsUp className="w-3 h-3" />
+                      </button>
+
+                      {/* Step Up */}
+                      <button
+                        type="button"
+                        disabled={idx === 0}
+                        onClick={() => moveSection(idx, "up")}
+                        className="p-1 rounded text-zinc-400 hover:text-white disabled:opacity-20 cursor-pointer hover:bg-zinc-800 transition-colors"
+                        title="Move Up"
+                      >
+                        <ArrowUp className="w-3 h-3" />
+                      </button>
+
+                      {/* Step Down */}
+                      <button
+                        type="button"
+                        disabled={idx === sections.length - 1}
+                        onClick={() => moveSection(idx, "down")}
+                        className="p-1 rounded text-zinc-400 hover:text-white disabled:opacity-20 cursor-pointer hover:bg-zinc-800 transition-colors"
+                        title="Move Down"
+                      >
+                        <ArrowDown className="w-3 h-3" />
+                      </button>
+
+                      {/* Quick Move to Bottom */}
+                      <button
+                        type="button"
+                        disabled={idx === sections.length - 1}
+                        onClick={() => moveToBottom(idx)}
+                        className="p-1 rounded text-zinc-500 hover:text-[#d1a86e] disabled:opacity-15 cursor-pointer hover:bg-zinc-800 transition-colors hidden sm:inline-flex"
+                        title="Move to Bottom"
+                      >
+                        <ChevronsDown className="w-3 h-3" />
+                      </button>
+
+                      {/* Toggle Visibility */}
+                      <button
+                        type="button"
+                        onClick={() => toggleSection(sec.id)}
+                        className={`p-1 rounded cursor-pointer hover:bg-zinc-800 transition-colors ${
+                          sec.isEnabled ? "text-emerald-400" : "text-zinc-600"
+                        }`}
+                        title="Toggle Visibility"
+                      >
+                        {sec.isEnabled ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* COLUMN 2: CENTER CANVAS STAGE (ARTBOARD VIEWPORT) */}
+        <div className="flex-1 h-full overflow-y-auto bg-[#08090d] p-3 sm:p-5 lg:p-7 flex justify-center items-start scrollbar-thin scrollbar-thumb-[#1f212b] relative">
           <div
-            className={`sticky top-4 ${
-              viewMode === "split" ? "lg:col-span-7" : "w-full"
+            className={`w-full flex justify-center transition-all duration-300 ${
+              isInspectorOpen
+                ? "max-w-6xl xl:max-w-7xl"
+                : "max-w-7xl xl:max-w-[1540px]"
             }`}
           >
-            {/* Real-time Multi-Page Simulated Canvas */}
             <PageLivePreview
               key={canvasRefreshKey}
               activePage={activePage}
@@ -1052,22 +875,48 @@ export function HomepageBuilderClient({
               exhibitions={exhibitions}
               deviceMode={deviceMode}
               zoom={canvasZoom}
+              onMoveSection={(secId, dir) => {
+                const idx = sections.findIndex((s) => s.id === secId);
+                if (idx !== -1) moveSection(idx, dir);
+              }}
+              onToggleSection={toggleSection}
+              onOpenMediaPicker={openMediaPicker}
             />
           </div>
-        )}
+        </div>
+
+        {/* COLUMN 3: DOCKED RIGHT INSPECTOR (COLLAPSIBLE) */}
+        <div
+          className={`h-full shrink-0 z-10 transition-all duration-300 ease-in-out ${
+            isInspectorOpen
+              ? "w-72 sm:w-80 lg:w-84 xl:w-92 opacity-100"
+              : "w-0 opacity-0 pointer-events-none overflow-hidden"
+          }`}
+        >
+          <StudioInspector
+            sections={sections}
+            siteSettings={siteSettings}
+            activePage={activePage}
+            onUpdateSectionText={updateSectionText}
+            onUpdateSectionContent={updateSectionContent}
+            onUpdateSiteSetting={updateSiteSetting}
+            onUpdateGalleryConfig={updateGalleryConfig}
+            onUpdateCollectionsConfig={updateCollectionsConfig}
+            onUpdateExhibitionsConfig={updateExhibitionsConfig}
+            onUpdateAboutConfig={updateAboutConfig}
+            onUpdateContactConfig={updateContactConfig}
+            onOpenMediaPicker={openMediaPicker}
+            onMoveSection={moveSection}
+            onToggleSection={toggleSection}
+            onClose={() => {
+              setIsInspectorOpen(false);
+              clearSelection();
+            }}
+          />
+        </div>
       </div>
 
-      {/* 3. NAVBAR ARCHITECTURE & LAYOUT MODAL */}
-      <NavbarLayoutModal
-        isOpen={isNavbarModalOpen}
-        onClose={() => setIsNavbarModalOpen(false)}
-        siteSettings={siteSettings}
-        onUpdateSettings={setSiteSettings}
-        onSave={handleSaveSettings}
-        isSaving={isSaving}
-      />
-
-      {/* 4. MEDIA ASSET PICKER MODAL */}
+      {/* MEDIA ASSET PICKER MODAL */}
       {isMediaModalOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-[#14151a] border border-[#262833] rounded-2xl w-full max-w-3xl max-h-[85vh] flex flex-col shadow-2xl">
@@ -1078,7 +927,7 @@ export function HomepageBuilderClient({
                   Select Image Asset from Media Library
                 </h3>
                 <p className="text-xs text-zinc-400">
-                  Select any verified image hosted on ImageKit / CDN for{" "}
+                  Select any verified image hosted on Cloudflare R2 / ImageKit for{" "}
                   {activeSectionForMedia === "about_portrait"
                     ? "the artist studio portrait"
                     : "this editorial section"}
@@ -1087,7 +936,7 @@ export function HomepageBuilderClient({
               </div>
               <button
                 onClick={() => setIsMediaModalOpen(false)}
-                className="p-1.5 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800"
+                className="p-1.5 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1143,7 +992,7 @@ export function HomepageBuilderClient({
                       key={asset.id}
                       type="button"
                       onClick={() => handleSelectMedia(asset.fileUrl)}
-                      className="group relative rounded-xl overflow-hidden border border-[#262833] bg-[#101115] hover:border-[#d1a86e] text-left transition-all p-2 flex flex-col space-y-2 hover:shadow-lg"
+                      className="group relative rounded-xl overflow-hidden border border-[#262833] bg-[#101115] hover:border-[#d1a86e] text-left transition-all p-2 flex flex-col space-y-2 hover:shadow-lg cursor-pointer"
                     >
                       <div className="relative aspect-[4/3] rounded-lg overflow-hidden bg-black/50 w-full">
                         <Image

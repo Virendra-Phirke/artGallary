@@ -153,26 +153,6 @@ export function HeroShowcaseClient({
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
 
-                {/* Status Indicator */}
-                {activeArtwork?.status && (
-                  <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10">
-                    <Badge
-                      variant={
-                        activeArtwork.status === "published"
-                          ? "success"
-                          : activeArtwork.status === "reserved"
-                          ? "warning"
-                          : "secondary"
-                      }
-                      className="backdrop-blur-md bg-black/60 border-0 text-[8px] sm:text-[10px]"
-                    >
-                      {activeArtwork.status === "published"
-                        ? "Available"
-                        : activeArtwork.status}
-                    </Badge>
-                  </div>
-                )}
-
                 {/* Interactive Overlay on Hover */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 sm:p-6">
                   {activeArtwork && (
@@ -211,9 +191,6 @@ export function HeroShowcaseClient({
                         </span>
                       )}
                     </div>
-                    <p className="text-[10px] sm:text-xs text-[#8e92a4] truncate">
-                      {activeArtwork.year} • {formatDimensions(activeArtwork.widthCm, activeArtwork.heightCm)} • {activeArtwork.medium}
-                    </p>
                   </div>
 
                   <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">

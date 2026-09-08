@@ -50,6 +50,8 @@ export function Header({ settings }: HeaderProps) {
   const [user, setUser] = useState<UserSession | null>(null);
   const [scrolled, setScrolled] = useState(false);
 
+  const [activeSection, setActiveSection] = useState<string>("");
+
   useEffect(() => {
     // Check active session
     fetch("/api/auth/session")
@@ -68,10 +70,70 @@ export function Header({ settings }: HeaderProps) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (pathname !== "/") {
+      setActiveSection("");
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id);
+          }
+        });
+      },
+      { threshold: 0.2, rootMargin: "-80px 0px -40% 0px" }
+    );
+
+    const aboutEl = document.getElementById("about");
+    const contactEl = document.getElementById("contact");
+    if (aboutEl) observer.observe(aboutEl);
+    if (contactEl) observer.observe(contactEl);
+
+    return () => observer.disconnect();
+  }, [pathname]);
+
   const handleSignOut = async () => {
     await fetch("/api/auth/sign-out", { method: "POST" });
     setUser(null);
     window.location.reload();
+  };
+
+  const resolveHref = (href: string, label: string) => {
+    if (href === "/about" || label.toLowerCase() === "about") return "/#about";
+    if (href === "/contact" || label.toLowerCase() === "contact") return "/#contact";
+    return href;
+  };
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href.startsWith("/#") && pathname === "/") {
+      e.preventDefault();
+      const targetId = href.replace("/#", "");
+      const elem = document.getElementById(targetId);
+      if (elem) {
+        elem.scrollIntoView({ behavior: "smooth" });
+        window.history.pushState(null, "", `#${targetId}`);
+        setActiveSection(targetId);
+      }
+    }
+  };
+
+  const handleMobileNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    setMobileMenuOpen(false);
+    if (href.startsWith("/#") && pathname === "/") {
+      e.preventDefault();
+      const targetId = href.replace("/#", "");
+      setTimeout(() => {
+        const elem = document.getElementById(targetId);
+        if (elem) {
+          elem.scrollIntoView({ behavior: "smooth" });
+          window.history.pushState(null, "", `#${targetId}`);
+          setActiveSection(targetId);
+        }
+      }, 200);
+    }
   };
 
   // Public navbar displays exclusively About and Contact (all curation, catalog, series, and exhibitions are housed in the Collector Portal)
@@ -79,18 +141,21 @@ export function Header({ settings }: HeaderProps) {
   const rawLinks = settings?.navigationItems
     ? settings.navigationItems.filter((i) => i.isEnabled).sort((a, b) => a.order - b.order)
     : [
-        { label: "About", href: "/about" },
-        { label: "Contact", href: "/contact" },
+        { label: "About", href: "/#about" },
+        { label: "Contact", href: "/#contact" },
       ];
   const filteredLinks = rawLinks.filter(
     (l) =>
       !excludedNavPatterns.some((p) => l.href.startsWith(p)) &&
       !["gallery", "collection", "exhibition"].some((k) => l.label.toLowerCase().includes(k))
   );
-  const navLinks = filteredLinks.length > 0 ? filteredLinks : [
-    { label: "About", href: "/about" },
-    { label: "Contact", href: "/contact" },
-  ];
+  const navLinks = (filteredLinks.length > 0 ? filteredLinks : [
+    { label: "About", href: "/#about" },
+    { label: "Contact", href: "/#contact" },
+  ]).map((item) => ({
+    ...item,
+    href: resolveHref(item.href, item.label),
+  }));
 
   const brandTitle = settings?.siteTitle || "L'Atelier Lumineux";
   const brandSubtitle = settings?.shortBrandName
@@ -130,13 +195,16 @@ export function Header({ settings }: HeaderProps) {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
           {navLinks.map((link) => {
-            const isActive =
-              pathname === link.href ||
-              (link.href !== "/" && pathname.startsWith(link.href));
+            const isAnchor = link.href.startsWith("/#");
+            const anchorId = isAnchor ? link.href.replace("/#", "") : "";
+            const isActive = isAnchor
+              ? pathname === "/" && activeSection === anchorId
+              : pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
             return (
               <Link
                 key={link.href}
                 href={link.href}
+                onClick={(e) => handleNavClick(e, link.href)}
                 className={`text-xs uppercase tracking-[0.2em] font-medium transition-colors relative py-1 ${
                   isActive
                     ? "text-[#d1a86e]"
@@ -154,17 +222,19 @@ export function Header({ settings }: HeaderProps) {
 
         {/* Right Desktop CTA & Auth Dropdown */}
         <div className="hidden md:flex items-center space-x-3">
-          <Button
-            asChild
-            variant="outline"
-            size="sm"
-            className="rounded-full border-[#d1a86e]/40 text-[#d1a86e] hover:bg-[#d1a86e]/10 text-xs uppercase tracking-wider h-8 px-3.5"
-          >
-            <Link href="/account" className="flex items-center">
-              <Sparkles className="w-3.5 h-3.5 mr-1.5 text-[#d1a86e]" />
-              <span>Collector Portal</span>
-            </Link>
-          </Button>
+          {!user && (
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="rounded-full border-[#d1a86e]/40 text-[#d1a86e] hover:bg-[#d1a86e]/10 text-xs uppercase tracking-wider h-8 px-3.5"
+            >
+              <Link href="/account" className="flex items-center">
+                <Sparkles className="w-3.5 h-3.5 mr-1.5 text-[#d1a86e]" />
+                <span>Collector Portal</span>
+              </Link>
+            </Button>
+          )}
 
           {user ? (
             <div className="flex items-center gap-2.5">
@@ -304,14 +374,16 @@ export function Header({ settings }: HeaderProps) {
                 {/* Navigation Links */}
                 <nav className="flex flex-col space-y-1">
                   {navLinks.map((link) => {
-                    const isActive =
-                      pathname === link.href ||
-                      (link.href !== "/" && pathname.startsWith(link.href));
+                    const isAnchor = link.href.startsWith("/#");
+                    const anchorId = isAnchor ? link.href.replace("/#", "") : "";
+                    const isActive = isAnchor
+                      ? pathname === "/" && activeSection === anchorId
+                      : pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
                     return (
                       <Link
                         key={link.href}
                         href={link.href}
-                        onClick={() => setMobileMenuOpen(false)}
+                        onClick={(e) => handleMobileNavClick(e, link.href)}
                         className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-xs uppercase tracking-[0.2em] font-medium transition-colors ${
                           isActive
                             ? "bg-[#1a1c23] text-[#d1a86e] font-semibold"
