@@ -30,6 +30,25 @@ export function InquiriesTab() {
   // Selection & Preview Modal State
   const [selectedInquiry, setSelectedInquiry] = useState<MockInquiry | null>(null);
 
+  const curatorialReply = useMemo(() => {
+    if (!selectedInquiry?.adminNotes) return null;
+    try {
+      const parsed = JSON.parse(selectedInquiry.adminNotes);
+      if (parsed && typeof parsed === "object" && parsed.message) {
+        return {
+          subject: parsed.subject || "Curatorial Response",
+          message: parsed.message as string,
+          sentAt: parsed.sentAt || null,
+        };
+      }
+    } catch {}
+    return {
+      subject: "Curatorial Response",
+      message: selectedInquiry.adminNotes,
+      sentAt: null,
+    };
+  }, [selectedInquiry]);
+
   // New Inquiry Modal State
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
   const [newName, setNewName] = useState(user?.name || "");
@@ -395,6 +414,37 @@ export function InquiriesTab() {
                   </span>
                 </div>
               )}
+
+              {/* Studio Curatorial Response Section */}
+              {curatorialReply ? (
+                <div className="space-y-2 p-3.5 sm:p-4 rounded-xl bg-[#1a1c26] border border-[#d1a86e]/30 shadow-lg shadow-black/40">
+                  <div className="flex items-center justify-between gap-2 pb-2 border-b border-white/5">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-[#d1a86e] animate-pulse" />
+                      <span className="text-[11px] font-semibold text-[#d1a86e] uppercase tracking-wider font-mono">
+                        Studio Curatorial Response
+                      </span>
+                    </div>
+                    {curatorialReply.sentAt && (
+                      <ClientDate
+                        date={curatorialReply.sentAt}
+                        className="text-[10px] text-zinc-400 font-mono"
+                      />
+                    )}
+                  </div>
+                  <h4 className="text-xs font-serif text-white font-medium pt-0.5">
+                    {curatorialReply.subject}
+                  </h4>
+                  <div className="text-xs text-zinc-200 whitespace-pre-wrap leading-relaxed pt-1 font-sans">
+                    {curatorialReply.message}
+                  </div>
+                </div>
+              ) : selectedInquiry.status === "replied" ? (
+                <div className="p-3 bg-emerald-950/30 border border-emerald-800/40 rounded-xl text-xs text-emerald-300/90 flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>The curatorial office has dispatched an email reply to your inquiry. Please check your inbox or spam folder.</span>
+                </div>
+              ) : null}
 
               <div className="space-y-1.5">
                 <span className="text-[10px] uppercase tracking-wider text-zinc-500 font-mono block">

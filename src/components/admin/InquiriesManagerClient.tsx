@@ -97,7 +97,11 @@ export function InquiriesManagerClient({
 
   const openEmailComposer = (inq: MockInquiry) => {
     setEmailComposerInquiry(inq);
-    setEmailSubject(inq.subject ? `Re: ${inq.subject}` : "Re: Artwork Acquisition Inquiry");
+    setEmailSubject(
+      inq.subject
+        ? `Re: ${inq.subject} • Helena Vance Studio`
+        : `Re: Artwork Acquisition Inquiry • Helena Vance Studio`
+    );
     setEmailSendStatus("idle");
     setEmailSendError(null);
     const firstName = inq.name.split(" ")[0] || "Collector";
@@ -107,7 +111,7 @@ export function InquiriesManagerClient({
     );
   };
 
-  const applyEmailTemplate = (templateKey: "availability" | "crating" | "viewing" | "phoneFollowup") => {
+  const applyEmailTemplate = (templateKey: "availability" | "crating" | "viewing" | "phoneFollowup" | "custom") => {
     if (!emailComposerInquiry) return;
     const firstName = emailComposerInquiry.name.split(" ")[0] || "Collector";
     const artwork = emailComposerInquiry.artworkTitle || "the artwork";
@@ -131,6 +135,11 @@ export function InquiriesManagerClient({
       case "phoneFollowup":
         setEmailBody(
           `Dear ${firstName},\n\nThank you for your telephone consultation today regarding "${artwork}".\n\nAs discussed during our call, we have logged your specifications in our curatorial registry. Please review the attached notes and let us know if any further details are required.\n\nWarm regards,\nHelena Vance Curatorial Office`
+        );
+        break;
+      case "custom":
+        setEmailBody(
+          `Dear ${firstName},\n\n`
         );
         break;
     }
@@ -162,6 +171,20 @@ export function InquiriesManagerClient({
 
       setEmailSendStatus("success");
       handleStatusChange(emailComposerInquiry.id, "replied");
+
+      // Update local inquiry with reply notes
+      const replyData = JSON.stringify({
+        subject: emailSubject.trim(),
+        message: emailBody.trim(),
+        sentAt: new Date().toISOString(),
+      });
+      setInquiries((prev) =>
+        prev.map((i) =>
+          i.id === emailComposerInquiry.id
+            ? { ...i, status: "replied", adminNotes: replyData }
+            : i
+        )
+      );
 
       setTimeout(() => {
         setEmailComposerInquiry(null);
@@ -1076,6 +1099,30 @@ export function InquiriesManagerClient({
                   {previewInquiry.message}
                 </div>
               </div>
+
+              {/* Sent Curatorial Reply Record */}
+              {(() => {
+                if (!previewInquiry.adminNotes) return null;
+                let parsedReply: { subject?: string; message?: string; sentAt?: string } | null = null;
+                try {
+                  const p = JSON.parse(previewInquiry.adminNotes);
+                  if (p && typeof p === "object" && p.message) parsedReply = p;
+                } catch {}
+                return (
+                  <div className="space-y-1.5 p-3.5 sm:p-4 rounded-2xl bg-[#161822] border border-[#d1a86e]/30">
+                    <div className="flex items-center justify-between text-[10px] font-mono text-[#d1a86e] pb-1 border-b border-white/5">
+                      <span className="font-semibold uppercase tracking-wider">Dispatched Curatorial Reply</span>
+                      {parsedReply?.sentAt && <ClientDate date={parsedReply.sentAt} />}
+                    </div>
+                    {parsedReply?.subject && (
+                      <div className="text-xs font-serif text-white font-medium">{parsedReply.subject}</div>
+                    )}
+                    <div className="text-xs text-zinc-300 whitespace-pre-wrap leading-relaxed">
+                      {parsedReply?.message || previewInquiry.adminNotes}
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
 
             <div className="p-4 sm:p-5 bg-[#161720] flex items-center justify-between border-t border-white/5">
@@ -1257,6 +1304,13 @@ export function InquiriesManagerClient({
                     className="px-2.5 py-1 rounded-full bg-[#181924] hover:bg-[#202232] border border-white/5 hover:border-[#d1a86e]/40 text-[10px] text-zinc-300 transition-colors cursor-pointer"
                   >
                     4. Phone Consultation Follow-up
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => applyEmailTemplate("custom")}
+                    className="px-2.5 py-1 rounded-full bg-[#181924] hover:bg-[#202232] border border-dashed border-[#d1a86e]/50 hover:border-[#d1a86e] text-[10px] text-[#d1a86e] transition-colors cursor-pointer font-medium"
+                  >
+                    + Blank / Custom Composition
                   </button>
                 </div>
               </div>

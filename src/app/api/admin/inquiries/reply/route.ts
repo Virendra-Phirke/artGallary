@@ -26,9 +26,17 @@ export async function POST(request: NextRequest) {
       messageText: message.trim(),
     });
 
+    if (!result.success) {
+      return NextResponse.json(
+        { error: result.error || "Email delivery failed with provider" },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(result);
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Error in admin inquiry reply:", err);
-    return NextResponse.json({ error: err.message || "Failed to send email" }, { status: 500 });
+    const message = err instanceof Error ? err.message : "Failed to send email";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

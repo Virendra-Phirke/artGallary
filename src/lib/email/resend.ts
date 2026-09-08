@@ -1,5 +1,5 @@
 import { Resend } from "resend";
-import { recordSentEmail, updateInquiryStatus } from "@/db/repository";
+import { recordSentEmail, updateInquiryStatus, saveInquiryReply } from "@/db/repository";
 import {
   generateArtworkAnnouncementHtml,
   generateArtworkAnnouncementText,
@@ -497,6 +497,25 @@ export async function sendCuratorInquiryAlert(params: {
  * Sends a formal curatorial email reply from the admin to a customer inquiry,
  * logs the dispatch in sent_emails, and sets inquiry status to 'replied'.
  */
+function formatEmailParagraphs(text: string): string {
+  const normalized = text.replace(/\r\n/g, "\n").trim();
+  const paragraphs = normalized.split(/\n\s*\n/);
+
+  return paragraphs
+    .map((para) => {
+      const trimmed = para.trim();
+      if (!trimmed) return "";
+      const escaped = trimmed
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+      const withBreaks = escaped.replace(/\n/g, "<br />");
+      return `<p style="margin: 0 0 16px 0; font-size: 14px; line-height: 1.75; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">${withBreaks}</p>`;
+    })
+    .filter(Boolean)
+    .join("\n");
+}
+
 export async function sendAdminInquiryReply(params: {
   inquiryId: string;
   recipientEmail: string;
@@ -504,6 +523,8 @@ export async function sendAdminInquiryReply(params: {
   subject: string;
   messageText: string;
 }) {
+  const formattedHtmlContent = formatEmailParagraphs(params.messageText);
+
   const html = `
     <!DOCTYPE html>
     <html>
@@ -515,7 +536,7 @@ export async function sendAdminInquiryReply(params: {
           .header { text-align: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 20px; margin-bottom: 28px; }
           .atelier-tag { font-size: 10px; letter-spacing: 3px; color: #d1a86e; text-transform: uppercase; font-family: monospace; }
           .title { font-size: 20px; color: #ffffff; margin: 8px 0 0 0; font-family: Georgia, serif; font-weight: normal; }
-          .content { font-size: 14px; line-height: 1.75; color: #e2e8f0; white-space: pre-wrap; word-break: break-word; }
+          .content { font-size: 14px; line-height: 1.75; color: #e2e8f0; }
           .footer { margin-top: 36px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); text-align: center; font-size: 11px; color: #71717a; }
           .ref { font-family: monospace; color: #a1a1aa; margin-top: 4px; }
         </style>
@@ -526,7 +547,9 @@ export async function sendAdminInquiryReply(params: {
             <span class="atelier-tag">Contemporary Art Atelier</span>
             <h1 class="title">Curatorial Correspondence</h1>
           </div>
-          <div class="content">${params.messageText.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
+          <div class="content">
+            ${formattedHtmlContent}
+          </div>
           <div class="footer">
             <div>Helena Vance Fine Art Studio • Curatorial Liaison Office</div>
             <div class="ref">Inquiry Reference: ${params.inquiryId}</div>
@@ -541,34 +564,49 @@ export async function sendAdminInquiryReply(params: {
       const res = await resend.emails.send({
         from: SENDER_EMAIL,
         to: params.recipientEmail,
+        replyTo: process.env.ADMIN_EMAIL || "quizmas@quizmastor.tech",
         subject: params.subject,
         html,
         text: params.messageText,
+        headers: {
+          "X-Entity-Ref-ID": params.inquiryId,
+        },
       });
 
       if (res.error) {
+        console.error("Resend returned delivery error:", res.error);
         await recordSentEmail({
           recipientEmail: params.recipientEmail,
           recipientName: params.recipientName,
           emailType: "inquiry_reply",
           subject: params.subject,
           inquiryId: params.inquiryId,
-          status: "sandbox_restricted",
+          status: "failed",
           errorMessage: res.error.message,
           htmlContent: html,
         });
-      } else {
-        await recordSentEmail({
-          recipientEmail: params.recipientEmail,
-          recipientName: params.recipientName,
-          emailType: "inquiry_reply",
-          subject: params.subject,
-          inquiryId: params.inquiryId,
-          status: "delivered",
-          resendId: res.data?.id,
-          htmlContent: html,
-        });
+
+        // Still persist reply in database ledger so collector can read it online
+        await saveInquiryReply(params.inquiryId, params.messageText, params.subject);
+
+        return { success: false, error: res.error.message };
       }
+
+      await recordSentEmail({
+        recipientEmail: params.recipientEmail,
+        recipientName: params.recipientName,
+        emailType: "inquiry_reply",
+        subject: params.subject,
+        inquiryId: params.inquiryId,
+        status: "delivered",
+        resendId: res.data?.id,
+        htmlContent: html,
+      });
+
+      // Save inquiry reply to database
+      await saveInquiryReply(params.inquiryId, params.messageText, params.subject);
+
+      return { success: true, resendId: res.data?.id };
     } catch (e: any) {
       console.error("Failed to send admin reply email:", e);
       await recordSentEmail({
@@ -581,6 +619,10 @@ export async function sendAdminInquiryReply(params: {
         errorMessage: e.message,
         htmlContent: html,
       });
+
+      await saveInquiryReply(params.inquiryId, params.messageText, params.subject);
+
+      return { success: false, error: e.message || "Failed to dispatch email reply" };
     }
   } else {
     console.log(`[Resend DEV MOCK] Sent admin reply to ${params.recipientEmail}`);
@@ -593,15 +635,10 @@ export async function sendAdminInquiryReply(params: {
       status: "simulated",
       htmlContent: html,
     });
-  }
 
-  // Update inquiry status to replied
-  try {
-    await updateInquiryStatus(params.inquiryId, "replied");
-  } catch (err) {
-    console.warn("Could not update inquiry status in db:", err);
-  }
+    await saveInquiryReply(params.inquiryId, params.messageText, params.subject);
 
-  return { success: true };
+    return { success: true, simulated: true };
+  }
 }
 

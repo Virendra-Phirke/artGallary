@@ -1724,6 +1724,7 @@ export async function getInquiries(): Promise<MockInquiry[]> {
       subject: r.inquiry.subject,
       message: r.inquiry.message,
       status: r.inquiry.status as any,
+      adminNotes: r.inquiry.adminNotes || undefined,
       createdAt: r.inquiry.createdAt.toISOString(),
     }));
   } catch (e) {
@@ -1760,6 +1761,7 @@ export async function getInquiryById(id: string): Promise<MockInquiry | null> {
       subject: r.inquiry.subject,
       message: r.inquiry.message,
       status: r.inquiry.status as any,
+      adminNotes: r.inquiry.adminNotes || undefined,
       createdAt: r.inquiry.createdAt.toISOString(),
     };
   } catch (e) {
@@ -1865,6 +1867,43 @@ export async function updateInquiryStatus(
     return true;
   } catch (e) {
     console.error("Database updateInquiryStatus failed:", e);
+    return false;
+  }
+}
+
+export async function saveInquiryReply(
+  id: string,
+  replyText: string,
+  replySubject?: string
+): Promise<boolean> {
+  const db = getDb();
+  if (!db) return false;
+
+  try {
+    const formattedNote = JSON.stringify({
+      subject: replySubject || "Curatorial Response",
+      message: replyText,
+      sentAt: new Date().toISOString(),
+    });
+
+    await db
+      .update(schema.inquiries)
+      .set({
+        status: "replied",
+        adminNotes: formattedNote,
+        updatedAt: new Date(),
+      })
+      .where(eq(schema.inquiries.id, id));
+
+    recordActivityLog(
+      "REPLY_INQUIRY",
+      "inquiry",
+      `Dispatched curatorial response to inquiry ${id}`,
+      id
+    );
+    return true;
+  } catch (e) {
+    console.error("Database saveInquiryReply failed:", e);
     return false;
   }
 }
