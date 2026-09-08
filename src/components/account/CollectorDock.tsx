@@ -16,6 +16,7 @@ import {
   Pin,
   PinOff,
   ChevronRight,
+  ShoppingBag,
 } from "lucide-react";
 import { Dock, DockIcon } from "@/components/magicui/dock";
 import {
@@ -40,6 +41,8 @@ interface CollectorDockProps {
   activeTab: CollectorTab;
   onTabChange: (tab: CollectorTab) => void;
   inquiriesCount?: number;
+  cartCount?: number;
+  onOpenCart?: () => void;
 }
 
 interface DockItemConfig {
@@ -66,6 +69,8 @@ export function CollectorDock({
   activeTab,
   onTabChange,
   inquiriesCount = 0,
+  cartCount = 0,
+  onOpenCart,
 }: CollectorDockProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
@@ -223,6 +228,52 @@ export function CollectorDock({
               </Tooltip>
             );
           })}
+
+          {/* Acquisition Dossier (Cart) Trigger */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={onOpenCart}
+                className="focus:outline-none"
+                aria-label="Acquisition Portfolio Dossier"
+              >
+                <DockIcon
+                  className={cn(
+                    "relative border transition-all duration-200",
+                    cartCount > 0
+                      ? "bg-[#181a24] border-[#d1a86e]/60 text-white shadow-lg shadow-[#d1a86e]/20"
+                      : "bg-[#121318] border-transparent text-zinc-400 hover:text-white hover:bg-[#1a1c24] hover:border-[#2b2d38]"
+                  )}
+                >
+                  <ShoppingBag
+                    className={cn(
+                      "w-4.5 h-4.5 transition-colors",
+                      cartCount > 0 ? "text-[#d1a86e]" : "text-zinc-400 hover:text-white"
+                    )}
+                  />
+
+                  {/* Cart count badge */}
+                  {cartCount > 0 && (
+                    <span className="absolute -top-1 -right-1 flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-[#d1a86e] text-[9px] font-bold text-[#0d0e12] ring-2 ring-[#0b0c10]">
+                      {cartCount}
+                    </span>
+                  )}
+                </DockIcon>
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              <div className="flex items-center gap-2">
+                <span className="font-medium">Acquisition Dossier (Cart)</span>
+                {cartCount > 0 ? (
+                  <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 border-[#d1a86e]/40 text-[#d1a86e]">
+                    {cartCount} selected
+                  </Badge>
+                ) : (
+                  <span className="text-[10px] text-zinc-400">Empty</span>
+                )}
+              </div>
+            </TooltipContent>
+          </Tooltip>
 
           {/* Subtle Divider */}
           <div className="w-6 h-[1px] bg-[#22242e] my-1" />

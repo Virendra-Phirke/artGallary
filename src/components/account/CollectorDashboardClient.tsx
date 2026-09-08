@@ -24,6 +24,7 @@ import {
   ExternalLink,
   ShieldCheck,
   Ruler,
+  ShoppingBag,
 } from "lucide-react";
 import {
   MockArtwork,
@@ -31,7 +32,7 @@ import {
   MockExhibition,
   MockInquiry,
 } from "@/db/mockData";
-import { formatCurrency, formatDimensions } from "@/lib/utils";
+import { formatCurrency, formatDimensions, cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -40,6 +41,7 @@ import { CollectorDock, CollectorTab } from "@/components/account/CollectorDock"
 import { MarketingPreferenceToggle } from "@/components/account/MarketingPreferenceToggle";
 import { ArtworkQuickViewModal } from "@/components/public/ArtworkQuickViewModal";
 import { InteractiveRoomPreviewer } from "@/components/public/InteractiveRoomPreviewer";
+import { AcquisitionCartModal } from "@/components/account/AcquisitionCartModal";
 
 interface CollectorDashboardClientProps {
   user: {
@@ -80,21 +82,47 @@ export function CollectorDashboardClient({
   // Quick View Modal
   const [inspectArtwork, setInspectArtwork] = useState<MockArtwork | null>(null);
 
+  // Cart / Acquisition Dossier State
+  const [cartArtworkIds, setCartArtworkIds] = useState<string[]>([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+
   // Gallery Search & Filters
   const [gallerySearch, setGallerySearch] = useState("");
   const [galleryCategory, setGalleryCategory] = useState<"all" | "available" | "monumental" | "mineral" | "saved">("all");
   const [savedArtworkIds, setSavedArtworkIds] = useState<string[]>([]);
 
-  // Load saved bookmarks from localStorage
+  // Load saved bookmarks and cart from localStorage
   useEffect(() => {
     try {
       const saved = localStorage.getItem("atelier_collector_saved_works");
       if (saved) {
         setSavedArtworkIds(JSON.parse(saved));
       }
+      const cart = localStorage.getItem("atelier_collector_cart_works");
+      if (cart) {
+        setCartArtworkIds(JSON.parse(cart));
+      }
     } catch {
       // ignore
     }
+
+    // Nav header listeners
+    const handleOpenCart = () => setIsCartOpen(true);
+    const handleViewLiked = () => {
+      setActiveTab("gallery");
+      setGalleryCategory("saved");
+      const params = new URLSearchParams(window.location.search);
+      params.set("tab", "gallery");
+      window.history.replaceState(null, "", `/account?${params.toString()}`);
+    };
+
+    window.addEventListener("atelier-open-cart", handleOpenCart);
+    window.addEventListener("atelier-view-liked", handleViewLiked);
+
+    return () => {
+      window.removeEventListener("atelier-open-cart", handleOpenCart);
+      window.removeEventListener("atelier-view-liked", handleViewLiked);
+    };
   }, []);
 
   const toggleSaveArtwork = (id: string) => {
@@ -105,8 +133,59 @@ export function CollectorDashboardClient({
       } catch {
         // ignore
       }
+      window.dispatchEvent(new CustomEvent("atelier-saved-updated", { detail: next }));
       return next;
     });
+  };
+
+  const toggleCartArtwork = (id: string) => {
+    setCartArtworkIds((prev) => {
+      const next = prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id];
+      try {
+        localStorage.setItem("atelier_collector_cart_works", JSON.stringify(next));
+      } catch {
+        // ignore
+      }
+      window.dispatchEvent(new CustomEvent("atelier-cart-updated", { detail: next }));
+      return next;
+    });
+  };
+
+  const removeFromCart = (id: string) => {
+    setCartArtworkIds((prev) => {
+      const next = prev.filter((item) => item !== id);
+      try {
+        localStorage.setItem("atelier_collector_cart_works", JSON.stringify(next));
+      } catch {
+        // ignore
+      }
+      window.dispatchEvent(new CustomEvent("atelier-cart-updated", { detail: next }));
+      return next;
+    });
+  };
+
+  const clearCart = () => {
+    setCartArtworkIds([]);
+    try {
+      localStorage.removeItem("atelier_collector_cart_works");
+    } catch {
+      // ignore
+    }
+    window.dispatchEvent(new CustomEvent("atelier-cart-updated", { detail: [] }));
+  };
+
+  const addAllLikedToCart = () => {
+    setCartArtworkIds((prev) => {
+      const combined = Array.from(new Set([...prev, ...savedArtworkIds]));
+      try {
+        localStorage.setItem("atelier_collector_cart_works", JSON.stringify(combined));
+      } catch {
+        // ignore
+      }
+      window.dispatchEvent(new CustomEvent("atelier-cart-updated", { detail: combined }));
+      return combined;
+    });
+    setIsCartOpen(true);
   };
 
   const handleTabChange = (tab: CollectorTab) => {
@@ -223,7 +302,17 @@ export function CollectorDashboardClient({
               className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#15161f] border border-[#2b2e3c] text-xs text-zinc-300 hover:text-white transition-colors"
             >
               <Heart className="w-3.5 h-3.5 text-[#d1a86e] fill-[#d1a86e]" />
-              <span>{savedArtworkIds.length} Bookmarked Works</span>
+              <span>{savedArtworkIds.length} Liked Works</span>
+            </button>
+          )}
+
+          {cartArtworkIds.length > 0 && (
+            <button
+              onClick={() => setIsCartOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#181a24] border border-[#d1a86e]/50 text-xs text-[#d1a86e] hover:text-white transition-colors shadow-sm"
+            >
+              <ShoppingBag className="w-3.5 h-3.5 text-[#d1a86e]" />
+              <span>{cartArtworkIds.length} in Dossier</span>
             </button>
           )}
 
@@ -306,6 +395,36 @@ export function CollectorDashboardClient({
             </Card>
           </div>
 
+          {/* Acquisition Dossier Readiness Banner */}
+          {cartArtworkIds.length > 0 && (
+            <div className="bg-gradient-to-r from-[#171822] via-[#1a1c26] to-[#171822] border border-[#d1a86e]/40 rounded-3xl p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl shadow-black/40">
+              <div className="flex items-center gap-3.5">
+                <div className="w-10 h-10 rounded-2xl bg-[#d1a86e]/15 border border-[#d1a86e]/40 flex items-center justify-center text-[#d1a86e]">
+                  <ShoppingBag className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-serif text-lg text-white font-medium">
+                      Acquisition Portfolio Dossier
+                    </h3>
+                    <Badge variant="gold">{cartArtworkIds.length} Paintings Selected</Badge>
+                  </div>
+                  <p className="text-xs text-zinc-400 mt-0.5">
+                    Your multi-artwork portfolio is ready. Submit a consolidated inquiry directly to Elena Vance's studio team.
+                  </p>
+                </div>
+              </div>
+
+              <Button
+                onClick={() => setIsCartOpen(true)}
+                className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-xs uppercase tracking-wider px-6 h-10 shadow-lg shadow-[#d1a86e]/20 flex items-center gap-2 shrink-0"
+              >
+                <span>Review &amp; Inquire Dossier</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Button>
+            </div>
+          )}
+
           {/* Curated Masterpiece Spotlight + Curator Liaison */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* Left: Masterpiece Spotlight */}
@@ -356,6 +475,23 @@ export function CollectorDashboardClient({
                   >
                     <Eye className="w-3.5 h-3.5 mr-2" />
                     <span>Inspect Details</span>
+                  </Button>
+
+                  <Button
+                    onClick={() => toggleCartArtwork(spotlightArtwork.id)}
+                    className={cn(
+                      "rounded-full text-xs font-semibold uppercase tracking-wider px-5 border transition-all",
+                      cartArtworkIds.includes(spotlightArtwork.id)
+                        ? "bg-[#1f2230] text-[#d1a86e] border-[#d1a86e]"
+                        : "bg-[#181920] hover:bg-[#22242e] text-zinc-200 hover:text-white border-[#262833]"
+                    )}
+                  >
+                    <ShoppingBag className="w-3.5 h-3.5 mr-2 text-[#d1a86e]" />
+                    <span>
+                      {cartArtworkIds.includes(spotlightArtwork.id)
+                        ? "In Dossier"
+                        : "+ Add to Dossier"}
+                    </span>
                   </Button>
 
                   <Button
@@ -533,14 +669,63 @@ export function CollectorDashboardClient({
             ))}
           </div>
 
+          {/* Liked Works Action Bar */}
+          {galleryCategory === "saved" && (
+            <div className="bg-[#15161f] border border-[#2b2e3c] rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
+                  <Heart className="w-4 h-4 fill-rose-400" />
+                </div>
+                <div>
+                  <h3 className="font-serif text-base text-white">
+                    Private Shortlist ({savedArtworkIds.length} Liked Paintings)
+                  </h3>
+                  <p className="text-xs text-zinc-400">
+                    Paintings you have shortlisted. Add them to your Acquisition Dossier to inquire in a single consolidated submission.
+                  </p>
+                </div>
+              </div>
+
+              {savedArtworkIds.length > 0 && (
+                <div className="flex items-center gap-2.5 w-full sm:w-auto">
+                  <Button
+                    onClick={addAllLikedToCart}
+                    className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-xs tracking-wider uppercase px-4 h-9 shadow-md shadow-[#d1a86e]/15 flex items-center gap-1.5"
+                  >
+                    <ShoppingBag className="w-3.5 h-3.5" />
+                    <span>Add All to Acquisition Dossier</span>
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Artworks Grid */}
           {filteredArtworks.length === 0 ? (
             <Card className="p-12 text-center bg-[#14151a]/50 border-[#262833] rounded-2xl space-y-3">
-              <Palette className="w-8 h-8 text-zinc-600 mx-auto" />
-              <p className="font-serif text-lg text-white">No matching paintings found</p>
-              <p className="text-xs text-zinc-500">
-                Try adjusting your search query or filter selection.
-              </p>
+              {galleryCategory === "saved" ? (
+                <>
+                  <Heart className="w-8 h-8 text-rose-500/50 mx-auto" />
+                  <p className="font-serif text-lg text-white">Your shortlist is currently empty</p>
+                  <p className="text-xs text-zinc-500 max-w-sm mx-auto">
+                    Click the heart icon on any artwork while exploring the catalogue to save paintings to your personal portfolio.
+                  </p>
+                  <Button
+                    onClick={() => setGalleryCategory("all")}
+                    className="mt-2 rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] text-xs font-semibold uppercase tracking-wider px-5"
+                  >
+                    Explore Catalogue
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Palette className="w-8 h-8 text-zinc-600 mx-auto" />
+                  <p className="font-serif text-lg text-white">No matching paintings found</p>
+                  <p className="text-xs text-zinc-500">
+                    Try adjusting your search query or filter selection.
+                  </p>
+                </>
+              )}
             </Card>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
@@ -642,6 +827,24 @@ export function CollectorDashboardClient({
                           Details &rarr;
                         </button>
                       </div>
+
+                      {/* Add to Acquisition Dossier Button */}
+                      <button
+                        onClick={() => toggleCartArtwork(art.id)}
+                        className={cn(
+                          "w-full py-2 px-3 rounded-xl text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all mt-2 border",
+                          cartArtworkIds.includes(art.id)
+                            ? "bg-[#1f2230] text-[#d1a86e] border-[#d1a86e]/60 shadow-sm"
+                            : "bg-[#181920] hover:bg-[#20222d] text-zinc-300 hover:text-white border-[#262833] hover:border-[#d1a86e]/30"
+                        )}
+                      >
+                        <ShoppingBag className="w-3.5 h-3.5 text-[#d1a86e]" />
+                        <span>
+                          {cartArtworkIds.includes(art.id)
+                            ? "In Dossier"
+                            : "+ Add to Acquisition Dossier"}
+                        </span>
+                      </button>
                     </div>
                   </div>
                 );
@@ -1055,6 +1258,8 @@ export function CollectorDashboardClient({
         activeTab={activeTab}
         onTabChange={handleTabChange}
         inquiriesCount={userInquiries.length}
+        cartCount={cartArtworkIds.length}
+        onOpenCart={() => setIsCartOpen(true)}
       />
 
       {/* 4. HIGH-RESOLUTION ARTWORK QUICK VIEW MODAL */}
@@ -1062,6 +1267,24 @@ export function CollectorDashboardClient({
         artwork={inspectArtwork}
         isOpen={!!inspectArtwork}
         onClose={() => setInspectArtwork(null)}
+        onToggleCart={(art) => toggleCartArtwork(art.id)}
+        isInCart={inspectArtwork ? cartArtworkIds.includes(inspectArtwork.id) : false}
+        onToggleSave={(art) => toggleSaveArtwork(art.id)}
+        isSaved={inspectArtwork ? savedArtworkIds.includes(inspectArtwork.id) : false}
+      />
+
+      {/* 5. ACQUISITION PORTFOLIO CART / DOSSIER MODAL */}
+      <AcquisitionCartModal
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        cartArtworkIds={cartArtworkIds}
+        artworks={artworks}
+        onRemoveItem={removeFromCart}
+        onClearCart={clearCart}
+        user={user}
+        onInquirySubmitted={() => {
+          handleTabChange("inquiries");
+        }}
       />
     </div>
   );

@@ -10,9 +10,11 @@ import {
   Layers,
   Ruler,
   Check,
+  Heart,
+  ShoppingBag,
 } from "lucide-react";
 import { MockArtwork } from "@/db/mockData";
-import { formatCurrency, formatDimensions } from "@/lib/utils";
+import { formatCurrency, formatDimensions, cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ProgressiveImage } from "@/components/ui/progressive-image";
@@ -21,12 +23,20 @@ interface ArtworkQuickViewModalProps {
   artwork: MockArtwork | null;
   isOpen: boolean;
   onClose: () => void;
+  onToggleCart?: (artwork: MockArtwork) => void;
+  isInCart?: boolean;
+  onToggleSave?: (artwork: MockArtwork) => void;
+  isSaved?: boolean;
 }
 
 export function ArtworkQuickViewModal({
   artwork,
   isOpen,
   onClose,
+  onToggleCart,
+  isInCart = false,
+  onToggleSave,
+  isSaved = false,
 }: ArtworkQuickViewModalProps) {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
@@ -69,14 +79,32 @@ export function ArtworkQuickViewModal({
         className="relative w-full max-w-5xl max-h-[92vh] bg-[#14151a] border border-[#262833] rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row text-[#f4f4f6]"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          aria-label="Close artwork preview"
-          className="absolute top-4 right-4 z-20 p-2.5 rounded-full bg-[#0d0e12]/80 hover:bg-[#22232a] border border-[#262833] text-zinc-400 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d1a86e]"
-        >
-          <X className="w-5 h-5" />
-        </button>
+        {/* Top Controls: Like / Save & Close */}
+        <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
+          {onToggleSave && (
+            <button
+              onClick={() => onToggleSave(artwork)}
+              aria-label={isSaved ? "Remove from saved" : "Save artwork"}
+              className={cn(
+                "p-2.5 rounded-full backdrop-blur-md border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d1a86e]",
+                isSaved
+                  ? "bg-[#d1a86e] text-[#0d0e12] border-[#d1a86e]"
+                  : "bg-[#0d0e12]/80 hover:bg-[#22232a] border-[#262833] text-zinc-400 hover:text-white"
+              )}
+              title={isSaved ? "Saved to Liked Works" : "Save to Liked Works"}
+            >
+              <Heart className={cn("w-4 h-4", isSaved && "fill-current")} />
+            </button>
+          )}
+
+          <button
+            onClick={onClose}
+            aria-label="Close artwork preview"
+            className="p-2.5 rounded-full bg-[#0d0e12]/80 hover:bg-[#22232a] border border-[#262833] text-zinc-400 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d1a86e]"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
 
         {/* Left Column: Artwork Image & Gallery Thumbnails */}
         <div className="md:w-7/12 bg-[#0a0b0d] p-6 sm:p-8 flex flex-col justify-center items-center relative border-b md:border-b-0 md:border-r border-[#1c1d25]">
@@ -194,7 +222,27 @@ export function ArtworkQuickViewModal({
           </div>
 
           {/* Action CTAs */}
-          <div className="pt-4 border-t border-[#1c1d25] space-y-3">
+          <div className="pt-4 border-t border-[#1c1d25] space-y-2.5">
+            {onToggleCart && (
+              <Button
+                type="button"
+                onClick={() => onToggleCart(artwork)}
+                className={cn(
+                  "w-full rounded-full border text-xs tracking-wider uppercase font-semibold transition-all shadow-md py-2.5",
+                  isInCart
+                    ? "bg-[#1d202d] border-[#d1a86e] text-[#d1a86e] hover:bg-[#25293a]"
+                    : "bg-[#191a22] hover:bg-[#222430] border-[#2f3242] text-white hover:border-[#d1a86e]/60"
+                )}
+              >
+                <ShoppingBag className="w-3.5 h-3.5 mr-2 text-[#d1a86e]" />
+                <span>
+                  {isInCart
+                    ? "In Acquisition Dossier (Click to Remove)"
+                    : "+ Add to Acquisition Dossier"}
+                </span>
+              </Button>
+            )}
+
             <Button
               asChild
               size="lg"

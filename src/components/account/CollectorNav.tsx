@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -10,6 +10,8 @@ import {
   User as UserIcon,
   ChevronDown,
   Layers,
+  Heart,
+  ShoppingBag,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -21,6 +23,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface CollectorNavProps {
   user: {
@@ -34,6 +37,47 @@ interface CollectorNavProps {
 }
 
 export function CollectorNav({ user, inquiriesCount = 0 }: CollectorNavProps) {
+  const [cartCount, setCartCount] = useState(0);
+  const [savedCount, setSavedCount] = useState(0);
+
+  useEffect(() => {
+    // Initial sync from localStorage
+    try {
+      const saved = localStorage.getItem("atelier_collector_saved_works");
+      if (saved) setSavedCount(JSON.parse(saved).length);
+      const cart = localStorage.getItem("atelier_collector_cart_works");
+      if (cart) setCartCount(JSON.parse(cart).length);
+    } catch {
+      // ignore SSR
+    }
+
+    const handleCartUpdated = (e: any) => {
+      const count = Array.isArray(e.detail) ? e.detail.length : typeof e.detail === "number" ? e.detail : 0;
+      setCartCount(count);
+    };
+
+    const handleSavedUpdated = (e: any) => {
+      const count = Array.isArray(e.detail) ? e.detail.length : typeof e.detail === "number" ? e.detail : 0;
+      setSavedCount(count);
+    };
+
+    window.addEventListener("atelier-cart-updated", handleCartUpdated);
+    window.addEventListener("atelier-saved-updated", handleSavedUpdated);
+
+    return () => {
+      window.removeEventListener("atelier-cart-updated", handleCartUpdated);
+      window.removeEventListener("atelier-saved-updated", handleSavedUpdated);
+    };
+  }, []);
+
+  const handleOpenCart = () => {
+    window.dispatchEvent(new CustomEvent("atelier-open-cart"));
+  };
+
+  const handleViewLiked = () => {
+    window.dispatchEvent(new CustomEvent("atelier-view-liked"));
+  };
+
   const handleSignOut = async () => {
     await fetch("/api/auth/sign-out", { method: "POST" });
     window.location.href = "/";
@@ -89,14 +133,78 @@ export function CollectorNav({ user, inquiriesCount = 0 }: CollectorNavProps) {
         </div>
 
         {/* Right Actions & User Menu */}
-        <div className="flex items-center gap-2.5 sm:gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Liked / Saved Works Trigger */}
+          <button
+            onClick={handleViewLiked}
+            className={cn(
+              "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs transition-all shadow-sm group border",
+              savedCount > 0
+                ? "bg-[#161722] border-[#d1a86e]/30 hover:border-[#d1a86e] text-zinc-300 hover:text-white"
+                : "bg-[#14151c] border-[#262833] text-zinc-400 hover:text-zinc-200"
+            )}
+            title="View Liked Paintings in Catalogue"
+            aria-label="View liked artworks"
+          >
+            <Heart
+              className={cn(
+                "w-3.5 h-3.5 transition-transform group-hover:scale-110",
+                savedCount > 0 ? "text-[#d1a86e] fill-[#d1a86e]" : "text-zinc-500"
+              )}
+            />
+            <span className="hidden xs:inline text-[11px] font-medium tracking-wide">
+              Liked
+            </span>
+            <span
+              className={cn(
+                "text-[10px] font-mono px-1 rounded",
+                savedCount > 0 ? "text-[#d1a86e] font-bold" : "text-zinc-500"
+              )}
+            >
+              {savedCount}
+            </span>
+          </button>
+
+          {/* Acquisition Dossier (Cart) Trigger */}
+          <button
+            onClick={handleOpenCart}
+            className={cn(
+              "relative inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs transition-all shadow-md group border",
+              cartCount > 0
+                ? "bg-[#181a24] border-[#d1a86e]/60 hover:border-[#d1a86e] text-white hover:bg-[#202330] shadow-[#d1a86e]/10"
+                : "bg-[#14151c] border-[#262833] text-zinc-300 hover:text-white hover:border-[#383b4b]"
+            )}
+            title="Open Acquisition Dossier"
+            aria-label="Open Acquisition Cart"
+          >
+            <ShoppingBag
+              className={cn(
+                "w-3.5 h-3.5 transition-transform group-hover:scale-110",
+                cartCount > 0 ? "text-[#d1a86e]" : "text-zinc-400"
+              )}
+            />
+            <span className="hidden sm:inline text-[11px] font-medium tracking-wide">
+              Dossier
+            </span>
+            <span
+              className={cn(
+                "flex h-4 min-w-4 px-1 items-center justify-center rounded-full text-[10px] font-bold font-mono transition-colors",
+                cartCount > 0
+                  ? "bg-[#d1a86e] text-[#0d0e12]"
+                  : "bg-zinc-800 text-zinc-400"
+              )}
+            >
+              {cartCount}
+            </span>
+          </button>
+
           {/* Quick exit on mobile */}
           <Link
             href="/"
             className="md:hidden inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#14151c] border border-[#262833] text-[10px] text-zinc-300 hover:text-white"
           >
             <ArrowLeft className="w-3 h-3 text-[#d1a86e]" />
-            <span>Gallery</span>
+            <span>Exit</span>
           </Link>
 
           {/* Admin Switcher */}
@@ -158,6 +266,36 @@ export function CollectorNav({ user, inquiriesCount = 0 }: CollectorNavProps) {
                   <UserIcon className="w-3.5 h-3.5 text-zinc-400" />
                   <span>Profile &amp; Preferences</span>
                 </Link>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                onClick={handleViewLiked}
+                className="flex items-center justify-between text-zinc-300 hover:text-white cursor-pointer w-full"
+              >
+                <div className="flex items-center gap-2">
+                  <Heart className="w-3.5 h-3.5 text-[#d1a86e]" />
+                  <span>Liked Paintings</span>
+                </div>
+                {savedCount > 0 && (
+                  <span className="px-1.5 py-0.5 text-[9px] font-mono font-semibold rounded-full bg-[#1e202c] text-[#d1a86e] border border-[#d1a86e]/30">
+                    {savedCount}
+                  </span>
+                )}
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                onClick={handleOpenCart}
+                className="flex items-center justify-between text-zinc-300 hover:text-white cursor-pointer w-full"
+              >
+                <div className="flex items-center gap-2">
+                  <ShoppingBag className="w-3.5 h-3.5 text-[#d1a86e]" />
+                  <span>Acquisition Dossier</span>
+                </div>
+                {cartCount > 0 && (
+                  <span className="px-1.5 py-0.5 text-[9px] font-mono font-semibold rounded-full bg-[#d1a86e] text-[#0d0e12]">
+                    {cartCount}
+                  </span>
+                )}
               </DropdownMenuItem>
 
               <DropdownMenuItem asChild>
