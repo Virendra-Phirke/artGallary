@@ -73,15 +73,15 @@ export function CollectorDock({
   onOpenCart,
 }: CollectorDockProps) {
   const [isHovered, setIsHovered] = useState(false);
-  const [isPinned, setIsPinned] = useState(false);
+  const [isPinned, setIsPinned] = useState(true);
   const exitTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Restore pinned preference from localStorage
   useEffect(() => {
     try {
       const savedPin = localStorage.getItem("atelier-collector-dock-pinned");
-      if (savedPin === "true") {
-        setIsPinned(true);
+      if (savedPin !== null) {
+        setIsPinned(savedPin === "true");
       }
     } catch {
       // ignore SSR
@@ -119,15 +119,15 @@ export function CollectorDock({
 
   return (
     <TooltipProvider>
-      {/* 1. Invisible Left-Edge Hit Sensor Zone */}
+      {/* 1. Invisible Left-Edge Hit Sensor Zone (Desktop only) */}
       <div
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className="fixed left-0 top-0 bottom-0 w-4 md:w-5 z-40 pointer-events-auto"
+        className="hidden md:block fixed left-0 top-0 bottom-0 w-4 md:w-5 z-40 pointer-events-auto"
         aria-hidden="true"
       />
 
-      {/* 2. Visual Peek Tab Indicator when Hidden */}
+      {/* 2. Visual Peek Tab Indicator when Hidden (Desktop only) */}
       <AnimatePresence>
         {!isVisible && (
           <motion.div
@@ -136,7 +136,7 @@ export function CollectorDock({
             exit={{ opacity: 0, x: -10 }}
             transition={{ duration: 0.2 }}
             onMouseEnter={handleMouseEnter}
-            className="fixed left-0 top-1/2 -translate-y-1/2 z-40 flex items-center group cursor-pointer"
+            className="hidden md:flex fixed left-0 top-1/2 -translate-y-1/2 z-40 items-center group cursor-pointer"
             title="Hover to reveal navigation dock"
           >
             <div className="h-16 w-2.5 bg-[#d1a86e]/30 group-hover:bg-[#d1a86e] rounded-r-md transition-all duration-200 group-hover:w-3.5 shadow-lg shadow-black/60 flex items-center justify-center">
@@ -162,7 +162,7 @@ export function CollectorDock({
         }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className="fixed left-3 top-1/2 -translate-y-1/2 z-50 flex flex-col items-center select-none"
+        className="hidden md:flex fixed left-3 sm:left-4 top-1/2 -translate-y-1/2 z-50 flex-col items-center select-none"
       >
         <Dock
           orientation="vertical"
@@ -353,6 +353,65 @@ export function CollectorDock({
           </Tooltip>
         </Dock>
       </motion.nav>
+
+      {/* 4. Mobile Floating Bottom Navigation Dock (< 768px) */}
+      <nav
+        aria-label="Mobile Collector Navigation"
+        className="md:hidden fixed bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-lg bg-[#0c0d12]/92 backdrop-blur-2xl border border-[#262835] rounded-2xl p-1.5 shadow-2xl shadow-black/90 flex items-center justify-between"
+      >
+        {[...PRIMARY_NAV_ITEMS, ...SECONDARY_NAV_ITEMS].map((item) => {
+          const isActive = activeTab === item.id;
+          const Icon = item.icon;
+          const badgeCount = item.id === "inquiries" ? inquiriesCount : undefined;
+
+          return (
+            <button
+              key={item.id}
+              onClick={() => onTabChange(item.id)}
+              className={cn(
+                "relative flex-1 py-2 px-1 rounded-xl flex flex-col items-center justify-center transition-all cursor-pointer",
+                isActive
+                  ? "bg-[#1f212c] text-[#d1a86e] font-semibold shadow-sm shadow-[#d1a86e]/10"
+                  : "text-zinc-400 hover:text-zinc-200"
+              )}
+              aria-label={item.label}
+              title={item.label}
+            >
+              <div className="relative">
+                <Icon className={cn("w-4 h-4 transition-transform", isActive && "scale-110 text-[#d1a86e]")} />
+                {badgeCount !== undefined && badgeCount > 0 && (
+                  <span className="absolute -top-1 -right-1.5 flex h-3.5 min-w-3.5 px-0.5 items-center justify-center rounded-full bg-[#d1a86e] text-[8px] font-bold text-[#0d0e12]">
+                    {badgeCount}
+                  </span>
+                )}
+              </div>
+              {isActive && (
+                <span className="w-1 h-1 rounded-full bg-[#d1a86e] mt-1" />
+              )}
+            </button>
+          );
+        })}
+
+        {/* Mobile Dossier / Cart Trigger */}
+        <button
+          onClick={onOpenCart}
+          className={cn(
+            "relative flex-1 py-2 px-1 rounded-xl flex flex-col items-center justify-center transition-all cursor-pointer",
+            cartCount > 0 ? "text-[#d1a86e]" : "text-zinc-400 hover:text-zinc-200"
+          )}
+          aria-label="Acquisition Dossier"
+          title="Acquisition Dossier"
+        >
+          <div className="relative">
+            <ShoppingBag className={cn("w-4 h-4", cartCount > 0 && "text-[#d1a86e]")} />
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1.5 flex h-3.5 min-w-3.5 px-0.5 items-center justify-center rounded-full bg-[#d1a86e] text-[8px] font-bold text-[#0d0e12]">
+                {cartCount}
+              </span>
+            )}
+          </div>
+        </button>
+      </nav>
     </TooltipProvider>
   );
 }

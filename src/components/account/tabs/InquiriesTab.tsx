@@ -43,7 +43,7 @@ export function InquiriesTab() {
 
         <Button
           asChild
-          className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] text-xs font-semibold uppercase tracking-wider px-6 self-start sm:self-auto cursor-pointer"
+          className="h-10 px-5 rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-xs font-semibold uppercase tracking-wider shadow-md shadow-[#d1a86e]/15 self-start sm:self-auto cursor-pointer transition-all active:scale-[0.98]"
         >
           <Link href="/contact">
             <Mail className="w-3.5 h-3.5 mr-1.5" />
@@ -62,12 +62,12 @@ export function InquiriesTab() {
             Sign in to your collector account to review active inquiries, curatorial correspondence, and acquisition status.
           </p>
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Button asChild className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] text-xs font-semibold uppercase tracking-wider px-6">
+            <Button asChild className="h-10 px-5 rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-xs font-semibold uppercase tracking-wider shadow-md shadow-[#d1a86e]/15 transition-all active:scale-[0.98]">
               <Link href="/login?redirect=/account?tab=inquiries">
                 <span>Sign In to Access Ledger</span>
               </Link>
             </Button>
-            <Button asChild variant="outline" className="rounded-full border-[#262833] text-zinc-300 text-xs uppercase tracking-wider px-6">
+            <Button asChild variant="outline" className="h-10 px-5 rounded-full border-[#2b2e3d] bg-[#181920] hover:bg-[#22242e] text-zinc-300 hover:text-white text-xs uppercase tracking-wider transition-all active:scale-[0.98]">
               <Link href="/register?redirect=/account?tab=inquiries">
                 <span>Register Account</span>
               </Link>

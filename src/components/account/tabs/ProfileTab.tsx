@@ -35,12 +35,12 @@ export function ProfileTab() {
             Create an account or sign in to configure your acquisition preferences, save personal delivery information, and manage curatorial communications.
           </p>
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Button asChild className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] text-xs font-semibold uppercase tracking-wider px-6">
+            <Button asChild className="h-10 px-5 rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-xs font-semibold uppercase tracking-wider shadow-md shadow-[#d1a86e]/15 transition-all active:scale-[0.98]">
               <Link href="/login?redirect=/account?tab=profile">
                 <span>Sign In with Email</span>
               </Link>
             </Button>
-            <Button asChild variant="outline" className="rounded-full border-[#262833] text-zinc-300 text-xs uppercase tracking-wider px-6">
+            <Button asChild variant="outline" className="h-10 px-5 rounded-full border-[#2b2e3d] bg-[#181920] hover:bg-[#22242e] text-zinc-300 hover:text-white text-xs uppercase tracking-wider transition-all active:scale-[0.98]">
               <Link href="/register?redirect=/account?tab=profile">
                 <span>Register Account</span>
               </Link>
@@ -116,7 +116,7 @@ export function ProfileTab() {
               <Button
                 onClick={handleSignOut}
                 variant="outline"
-                className="w-full rounded-full border-[#262833] bg-[#181920] hover:bg-rose-950/40 hover:text-rose-400 text-zinc-300 text-xs uppercase tracking-wider h-10 cursor-pointer"
+                className="w-full h-10 rounded-full border-[#2b2e3d] bg-[#181920] hover:bg-rose-950/40 hover:border-rose-800/60 hover:text-rose-400 text-zinc-300 text-xs font-semibold uppercase tracking-wider cursor-pointer transition-all active:scale-[0.98]"
               >
                 <LogOut className="w-3.5 h-3.5 mr-2" />
                 <span>Sign Out of Collector Salon</span>

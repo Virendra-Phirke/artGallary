@@ -83,10 +83,10 @@ export function ArtworkCard({ artwork, className = "" }: ArtworkCardProps) {
           </button>
 
           {/* Hover Overlay with Inspect & AR Buttons */}
-          <div className="absolute inset-0 bg-black/65 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
+          <div className="absolute inset-0 bg-black/65 backdrop-blur-[3px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
             <button
               onClick={() => setInspectArtwork(artwork)}
-              className="p-3 bg-white text-[#0d0e12] rounded-full hover:bg-zinc-200 transition-colors shadow-xl cursor-pointer transform group-hover:scale-100 scale-90 transition-transform duration-200"
+              className="w-11 h-11 bg-white hover:bg-zinc-100 text-[#0d0e12] rounded-full flex items-center justify-center shadow-xl cursor-pointer transform group-hover:scale-100 scale-90 transition-all duration-200 active:scale-95"
               title="Inspect 4K Details"
               aria-label="Inspect artwork"
             >
@@ -95,7 +95,7 @@ export function ArtworkCard({ artwork, className = "" }: ArtworkCardProps) {
 
             <Link
               href={`/ar/${artwork.slug}`}
-              className="p-3 bg-gradient-to-r from-[#d1a86e] to-[#b98e54] text-[#0d0e12] rounded-full hover:brightness-110 transition-all shadow-xl shadow-[#d1a86e]/30 transform group-hover:scale-100 scale-90 transition-transform duration-200"
+              className="w-11 h-11 bg-gradient-to-r from-[#d1a86e] to-[#b98e54] hover:brightness-110 text-[#0d0e12] rounded-full flex items-center justify-center shadow-xl shadow-[#d1a86e]/30 transform group-hover:scale-100 scale-90 transition-all duration-200 active:scale-95"
               title="View in Your Space (1:1 WebAR)"
               aria-label="View in AR"
             >
@@ -127,7 +127,7 @@ export function ArtworkCard({ artwork, className = "" }: ArtworkCardProps) {
 
             <button
               onClick={() => setInspectArtwork(artwork)}
-              className="text-[#d1a86e] hover:text-[#e2c18d] uppercase tracking-wider text-[10px] font-semibold cursor-pointer transition-colors"
+              className="text-[#d1a86e] hover:text-[#e2c18d] uppercase tracking-wider text-[11px] font-semibold cursor-pointer transition-colors"
             >
               Examine &rarr;
             </button>
@@ -139,7 +139,7 @@ export function ArtworkCard({ artwork, className = "" }: ArtworkCardProps) {
       <button
         onClick={() => toggleCartArtwork(artwork.id)}
         className={cn(
-          "w-full py-2.5 px-3 rounded-xl text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-2 transition-all mt-2 border cursor-pointer",
+          "w-full h-10 px-4 rounded-full text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-2 transition-all mt-2 border cursor-pointer active:scale-[0.98]",
           isInCart
             ? "bg-[#1f2230] text-[#d1a86e] border-[#d1a86e]/60 shadow-md shadow-[#d1a86e]/10"
             : "bg-[#161720] hover:bg-[#1d1f2b] text-zinc-300 hover:text-white border-[#282a38] hover:border-[#d1a86e]/40"

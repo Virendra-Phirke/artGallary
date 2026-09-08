@@ -83,7 +83,7 @@ export function SeriesTab() {
 
                 <Button
                   asChild
-                  className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] text-xs font-semibold uppercase tracking-wider px-5 shadow-md shadow-[#d1a86e]/15 cursor-pointer"
+                  className="h-10 px-5 rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-xs font-semibold uppercase tracking-wider shadow-md shadow-[#d1a86e]/15 cursor-pointer transition-all active:scale-[0.98]"
                 >
                   <Link href={`/collections/${col.slug}`} className="flex items-center gap-1.5">
                     <span>Explore Series</span>

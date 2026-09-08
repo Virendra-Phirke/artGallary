@@ -122,7 +122,7 @@ export function CatalogueTab() {
                 placeholder="Search title, medium, series..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full bg-[#181922] border border-[#2b2e3c] rounded-full pl-10 pr-9 py-2 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-[#d1a86e]/70 transition-colors"
+                className="w-full h-10 bg-[#181922] border border-[#2b2e3c] rounded-full pl-10 pr-9 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-[#d1a86e]/70 transition-colors"
               />
               {search && (
                 <button
@@ -140,7 +140,7 @@ export function CatalogueTab() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
-                className="w-full sm:w-auto appearance-none bg-[#181922] border border-[#2b2e3c] rounded-full px-4 py-2 pr-9 text-xs text-zinc-200 focus:outline-none focus:border-[#d1a86e]/70 cursor-pointer font-mono"
+                className="w-full sm:w-auto h-10 appearance-none bg-[#181922] border border-[#2b2e3c] rounded-full px-4 pr-9 text-xs text-zinc-200 focus:outline-none focus:border-[#d1a86e]/70 cursor-pointer font-mono"
               >
                 <option value="featured">Curatorial Sequence</option>
                 <option value="price-desc">Valuation: High to Low</option>
@@ -164,7 +164,7 @@ export function CatalogueTab() {
             <button
               key={cat.id}
               onClick={() => setCategory(cat.id as any)}
-              className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs transition-all uppercase tracking-wider font-medium cursor-pointer ${
+              className={`inline-flex items-center gap-2 h-9 px-4 rounded-full text-xs transition-all uppercase tracking-wider font-medium cursor-pointer ${
                 category === cat.id
                   ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-md shadow-[#d1a86e]/20"
                   : "bg-[#181922] text-zinc-400 hover:text-white border border-[#282b38] hover:border-zinc-700"
@@ -172,7 +172,7 @@ export function CatalogueTab() {
             >
               <span>{cat.label}</span>
               <span
-                className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
+                className={`text-[10px] font-mono px-1.5 py-0.5 rounded-full ${
                   category === cat.id
                     ? "bg-[#0d0e12] text-[#d1a86e]"
                     : "bg-[#101116] text-zinc-500"
@@ -205,7 +205,7 @@ export function CatalogueTab() {
           {savedArtworkIds.length > 0 && (
             <Button
               onClick={addAllLikedToCart}
-              className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-xs tracking-wider uppercase px-5 h-10 shadow-md shadow-[#d1a86e]/15 flex items-center gap-2 cursor-pointer shrink-0"
+              className="rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] font-semibold text-xs tracking-wider uppercase px-5 h-10 shadow-md shadow-[#d1a86e]/15 flex items-center gap-2 cursor-pointer shrink-0 transition-all active:scale-[0.98]"
             >
               <ShoppingBag className="w-4 h-4" />
               <span>Add All to Acquisition Dossier</span>

@@ -87,7 +87,7 @@ export function OverviewTab() {
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <Button
                 onClick={() => setInspectArtwork(spotlightArtwork)}
-                className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] text-xs font-semibold uppercase tracking-wider px-6 cursor-pointer"
+                className="h-10 px-5 rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-xs font-semibold uppercase tracking-wider shadow-md shadow-[#d1a86e]/15 cursor-pointer transition-all active:scale-[0.98]"
               >
                 <Eye className="w-3.5 h-3.5 mr-2" />
                 <span>Inspect Details</span>
@@ -96,10 +96,10 @@ export function OverviewTab() {
               <Button
                 onClick={() => toggleCartArtwork(spotlightArtwork.id)}
                 className={cn(
-                  "rounded-full text-xs font-semibold uppercase tracking-wider px-5 border transition-all cursor-pointer",
+                  "h-10 px-5 rounded-full text-xs font-semibold uppercase tracking-wider border transition-all cursor-pointer active:scale-[0.98]",
                   cartArtworkIds.includes(spotlightArtwork.id)
-                    ? "bg-[#1f2230] text-[#d1a86e] border-[#d1a86e]"
-                    : "bg-[#181920] hover:bg-[#22242e] text-zinc-200 hover:text-white border-[#262833]"
+                    ? "bg-[#1f2230] text-[#d1a86e] border-[#d1a86e]/60 shadow-md shadow-[#d1a86e]/10"
+                    : "bg-[#181920] hover:bg-[#22242e] text-zinc-200 hover:text-white border-[#2b2e3d] hover:border-[#d1a86e]/40"
                 )}
               >
                 <ShoppingBag className="w-3.5 h-3.5 mr-2 text-[#d1a86e]" />
@@ -113,7 +113,7 @@ export function OverviewTab() {
               <Button
                 asChild
                 variant="outline"
-                className="rounded-full border-[#262833] bg-[#181920] hover:bg-[#22242e] text-white text-xs uppercase tracking-wider"
+                className="h-10 px-5 rounded-full border-[#2b2e3d] bg-[#181920] hover:bg-[#22242e] hover:border-[#d1a86e]/40 text-white text-xs font-medium uppercase tracking-wider transition-all active:scale-[0.98]"
               >
                 <Link href={`/ar/${spotlightArtwork.slug}`} className="flex items-center gap-2">
                   <Sparkles className="w-3.5 h-3.5 text-[#d1a86e]" />
@@ -158,7 +158,7 @@ export function OverviewTab() {
               <Button
                 asChild
                 variant="outline"
-                className="w-full rounded-full border-[#262833] bg-[#181920] hover:bg-[#22242e] text-[#d1a86e] hover:text-white text-xs uppercase tracking-wider"
+                className="w-full h-10 rounded-full border-[#2b2e3d] bg-[#181920] hover:bg-[#22242e] hover:border-[#d1a86e]/40 text-[#d1a86e] hover:text-white text-xs uppercase tracking-wider font-semibold transition-all active:scale-[0.98]"
               >
                 <Link href="/contact" className="flex items-center justify-center gap-2">
                   <Mail className="w-3.5 h-3.5" />

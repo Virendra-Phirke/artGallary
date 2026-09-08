@@ -112,12 +112,12 @@ function CollectorDashboardContent() {
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#d1a86e]/5 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-bold">
+          <div className="space-y-2.5">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#d1a86e]/10 border border-[#d1a86e]/30 text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-bold">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#d1a86e] animate-pulse" />
                 {currentMeta.tag}
               </span>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#d1a86e]" />
               <span className="text-[10px] text-zinc-400 font-mono tracking-wider uppercase">
                 {user ? `Verified Collector (${user.name})` : "Guest Salon Access"}
               </span>
@@ -127,7 +127,7 @@ function CollectorDashboardContent() {
               {currentMeta.title}
             </h1>
 
-            <p className="text-xs sm:text-sm text-[#8e92a4] max-w-2xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#9ca3af] max-w-2xl leading-relaxed font-light">
               {currentMeta.subtitle}
             </p>
           </div>
@@ -136,7 +136,7 @@ function CollectorDashboardContent() {
             <Button
               onClick={() => setActiveTab("ar")}
               variant="outline"
-              className="rounded-full border-[#262833] bg-[#14151a] hover:bg-[#1c1d25] text-white text-xs uppercase tracking-wider px-5 h-10 shadow-lg cursor-pointer"
+              className="rounded-full border-[#2b2e3d] bg-[#14151c] hover:bg-[#1d1f2b] hover:border-[#d1a86e]/50 text-white text-xs font-semibold uppercase tracking-wider px-5 h-10 shadow-lg cursor-pointer transition-all active:scale-[0.98]"
             >
               <Sparkles className="w-3.5 h-3.5 mr-2 text-[#d1a86e]" />
               <span>Launch AR Studio</span>
@@ -145,12 +145,12 @@ function CollectorDashboardContent() {
             {user?.role === "ADMIN" && (
               <Button
                 asChild
-                className="rounded-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-semibold text-xs uppercase tracking-wider px-5 h-10 shadow-lg"
+                className="rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] font-semibold text-xs uppercase tracking-wider px-5 h-10 shadow-md shadow-[#d1a86e]/15 transition-all active:scale-[0.98]"
               >
                 <Link href="/admin/dashboard" className="flex items-center gap-1.5">
-                  <Shield className="w-3.5 h-3.5" />
+                  <Shield className="w-3.5 h-3.5 text-[#0d0e12]" />
                   <span>Studio CMS</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <ArrowRight className="w-3.5 h-3.5 text-[#0d0e12]" />
                 </Link>
               </Button>
             )}
@@ -159,26 +159,31 @@ function CollectorDashboardContent() {
 
         {/* Curatorial Status Bar */}
         <div className="relative z-10 pt-5 border-t border-[#22242f] flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
             <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#14151a] border border-[#262833] text-xs text-zinc-300">
-              <span className="text-[#d1a86e] font-semibold">{artworks.length}</span> Originals
+              <span className="text-[#d1a86e] font-semibold font-mono">{artworks.length}</span> Originals
             </span>
             <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#14151a] border border-[#262833] text-xs text-zinc-300">
-              <span className="text-[#d1a86e] font-semibold">{collections.length}</span> Curatorial Series
+              <span className="text-[#d1a86e] font-semibold font-mono">{collections.length}</span> Curatorial Series
             </span>
             <button
               onClick={() => setIsCartOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#14151a] hover:bg-[#1a1b22] border border-[#262833] hover:border-[#d1a86e]/40 text-xs text-zinc-300 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#14151a] hover:bg-[#1a1b24] border border-[#262833] hover:border-[#d1a86e]/50 text-xs text-zinc-300 hover:text-white transition-all cursor-pointer"
             >
               <ShoppingBag className="w-3 h-3 text-[#d1a86e]" />
-              <span className="text-[#d1a86e] font-semibold">{cartArtworkIds.length}</span> in Dossier
+              <span className="text-[#d1a86e] font-semibold font-mono">{cartArtworkIds.length}</span> in Dossier
             </button>
             <button
               onClick={() => setActiveTab("inquiries")}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#14151a] hover:bg-[#1a1b22] border border-[#262833] hover:border-[#d1a86e]/40 text-xs text-zinc-300 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#14151a] hover:bg-[#1a1b24] border border-[#262833] hover:border-[#d1a86e]/50 text-xs text-zinc-300 hover:text-white transition-all cursor-pointer"
             >
-              <span className="text-[#d1a86e] font-semibold">{userInquiries.length}</span> Ledger Inquiries
+              <span className="text-[#d1a86e] font-semibold font-mono">{userInquiries.length}</span> Ledger Inquiries
             </button>
+          </div>
+
+          <div className="text-[11px] text-zinc-500 font-mono hidden sm:flex items-center gap-2">
+            <span>Room:</span>
+            <span className="text-[#d1a86e] uppercase tracking-wider">{currentMeta.title}</span>
           </div>
         </div>
       </div>
