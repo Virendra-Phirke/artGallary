@@ -22,13 +22,10 @@ import {
   AlignLeft,
   AlignCenter,
   AlignRight,
-  Sparkles,
   Sliders,
   Check,
   X,
-  Compass,
   FileText,
-  Keyboard,
   Maximize2,
 } from "lucide-react";
 
@@ -180,90 +177,9 @@ export function StudioInspector({
     }
   };
 
-  // EMPTY SELECTION STATE: Global Canvas / Page Inspector
+  // When no UI element is selected, do not render the empty inspector panel
   if (!selectedElement) {
-    return (
-      <div className="h-full bg-[#111218] border-l border-[#1f212b] p-4 sm:p-5 flex flex-col justify-between text-xs text-white overflow-y-auto scrollbar-thin">
-        <div className="space-y-4">
-          <div className="flex items-center justify-between border-b border-[#20222b] pb-3">
-            <div className="flex items-center gap-2">
-              <Compass className="w-4 h-4 text-[#d1a86e]" />
-              <span className="font-serif text-sm font-medium">Inspector</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono text-zinc-400 uppercase bg-[#181922] px-2 py-0.5 rounded border border-white/5">
-                {activePage}
-              </span>
-              {onClose && (
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="p-1 rounded-md text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
-                  title="Close Inspector"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-          </div>
-
-          <div className="p-3.5 rounded-xl bg-[#171822] border border-[#262834] space-y-2">
-            <div className="flex items-center gap-2 text-[#d1a86e] font-semibold text-xs">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Direct Visual Selector</span>
-            </div>
-            <p className="text-[11px] text-zinc-400 leading-relaxed font-light">
-              Click any element inside the live storefront canvas to inspect and edit its content, typography, or styling directly.
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <span className="text-[10px] uppercase font-mono tracking-wider text-zinc-500 block">
-              Page Structure
-            </span>
-            <div className="p-3 rounded-xl bg-[#161720] space-y-2 border border-white/5">
-              <div className="flex items-center justify-between text-[11px]">
-                <span className="text-zinc-400">Current View:</span>
-                <span className="font-mono text-white capitalize">{activePage}</span>
-              </div>
-              <div className="flex items-center justify-between text-[11px]">
-                <span className="text-zinc-400">Total Sections:</span>
-                <span className="font-mono text-[#d1a86e]">{sections.length} Units</span>
-              </div>
-              <div className="flex items-center justify-between text-[11px]">
-                <span className="text-zinc-400">Published Status:</span>
-                <span className="font-mono text-emerald-400 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                  Live Storefront
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Keyboard Shortcuts Guide */}
-        <div className="pt-4 border-t border-white/5 space-y-2">
-          <span className="text-[10px] uppercase font-mono tracking-wider text-zinc-500 flex items-center gap-1.5">
-            <Keyboard className="w-3 h-3 text-[#d1a86e]" />
-            <span>Shortcuts</span>
-          </span>
-          <div className="space-y-1.5 text-[11px] text-zinc-400 font-mono">
-            <div className="flex items-center justify-between">
-              <span>Select Element</span>
-              <kbd className="px-1.5 py-0.5 rounded bg-[#1c1d27] text-zinc-300 text-[10px] border border-white/10">Click</kbd>
-            </div>
-            <div className="flex items-center justify-between">
-              <span>Deselect</span>
-              <kbd className="px-1.5 py-0.5 rounded bg-[#1c1d27] text-zinc-300 text-[10px] border border-white/10">Esc</kbd>
-            </div>
-            <div className="flex items-center justify-between">
-              <span>Publish Changes</span>
-              <kbd className="px-1.5 py-0.5 rounded bg-[#1c1d27] text-[#d1a86e] text-[10px] border border-white/10">Ctrl+S</kbd>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   // ACTIVE ELEMENT INSPECTOR

@@ -860,7 +860,7 @@ function HomepageBuilderContent({
         <div className="flex-1 h-full overflow-y-auto bg-[#08090d] p-3 sm:p-5 lg:p-7 flex justify-center items-start scrollbar-thin scrollbar-thumb-[#1f212b] relative">
           <div
             className={`w-full flex justify-center transition-all duration-300 ${
-              isInspectorOpen
+              isInspectorOpen && selectedElement
                 ? "max-w-6xl xl:max-w-7xl"
                 : "max-w-7xl xl:max-w-[1540px]"
             }`}
@@ -888,7 +888,7 @@ function HomepageBuilderContent({
         {/* COLUMN 3: DOCKED RIGHT INSPECTOR (COLLAPSIBLE) */}
         <div
           className={`h-full shrink-0 z-10 transition-all duration-300 ease-in-out ${
-            isInspectorOpen
+            isInspectorOpen && selectedElement
               ? "w-72 sm:w-80 lg:w-84 xl:w-92 opacity-100"
               : "w-0 opacity-0 pointer-events-none overflow-hidden"
           }`}
