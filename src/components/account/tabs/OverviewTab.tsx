@@ -361,10 +361,10 @@ export function OverviewTab() {
             <div className="flex justify-center sm:block">
               <Button
                 asChild
-                className="w-auto sm:w-full h-8 px-5 sm:px-4 rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-xs uppercase tracking-wider font-semibold shadow-md cursor-pointer transition-all active:scale-[0.98] mx-auto sm:mx-0"
+                className="w-auto sm:w-full h-7 sm:h-7.5 px-3.5 sm:px-4 rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold shadow-sm cursor-pointer transition-all active:scale-[0.98] mx-auto sm:mx-0"
               >
                 <Link href="/contact" className="flex items-center justify-center gap-1.5">
-                  <Mail className="w-3.5 h-3.5" />
+                  <Mail className="w-3 h-3" />
                   <span>Contact Curatorial Team</span>
                 </Link>
               </Button>
@@ -385,7 +385,7 @@ export function OverviewTab() {
               <div className="flex justify-center sm:block">
                 <Button
                   asChild
-                  className="w-auto sm:w-full h-8 px-5 sm:px-4 rounded-full bg-[#1c1d28] hover:bg-[#252736] text-zinc-200 hover:text-white text-xs uppercase tracking-wider font-semibold shadow-sm transition-all active:scale-[0.98] mx-auto sm:mx-0"
+                  className="w-auto sm:w-full h-7 sm:h-7.5 px-3.5 sm:px-4 rounded-full bg-[#1c1d28] hover:bg-[#252736] text-zinc-200 hover:text-white text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold shadow-sm transition-all active:scale-[0.98] mx-auto sm:mx-0"
                 >
                   <Link href="/login?redirect=/account">
                     <span>Sign In for VIP Dispatches</span>
