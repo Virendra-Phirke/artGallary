@@ -19,6 +19,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
+  PaginationPageSizeSelect,
 } from "@/components/ui/pagination";
 
 export interface PaginationMeta {
@@ -297,27 +298,11 @@ export function GalleryCatalog({
         </div>
 
         {/* Page Size Selector */}
-        <div className="flex items-center gap-2">
-          <span className="text-zinc-500 font-mono text-[11px] uppercase tracking-wider">Per Page:</span>
-          <div className="flex items-center rounded-md border border-[#262833] bg-[#14151a] p-0.5">
-            {PAGE_SIZE_OPTIONS.map((size) => (
-              <button
-                key={size}
-                type="button"
-                onClick={() => handlePageSizeChange(size)}
-                disabled={isLoading}
-                className={cn(
-                  "px-2.5 py-0.5 text-xs font-mono rounded transition-colors cursor-pointer",
-                  pagination.limit === size
-                    ? "bg-[#d1a86e] text-black font-semibold shadow-sm"
-                    : "text-zinc-400 hover:text-white"
-                )}
-              >
-                {size}
-              </button>
-            ))}
-          </div>
-        </div>
+        <PaginationPageSizeSelect
+          pageSize={pagination.limit}
+          onPageSizeChange={handlePageSizeChange}
+          options={PAGE_SIZE_OPTIONS}
+        />
       </div>
 
       {/* Main Catalog View / Skeletons */}
@@ -486,27 +471,12 @@ export function GalleryCatalog({
             </Pagination>
           </div>
 
-          <div className="flex items-center gap-2 order-3">
-            <span className="text-zinc-500 font-mono text-[11px] uppercase tracking-wider">Per Page:</span>
-            <div className="flex items-center rounded-xl bg-[#14151a] p-0.5">
-              {PAGE_SIZE_OPTIONS.map((size) => (
-                <button
-                  key={size}
-                  type="button"
-                  onClick={() => handlePageSizeChange(size)}
-                  disabled={isLoading}
-                  className={cn(
-                    "px-2.5 py-0.5 text-xs font-mono rounded-lg transition-colors cursor-pointer",
-                    pagination.limit === size
-                      ? "bg-[#d1a86e] text-black font-semibold shadow-sm"
-                      : "text-zinc-400 hover:text-white"
-                  )}
-                >
-                  {size}
-                </button>
-              ))}
-            </div>
-          </div>
+          <PaginationPageSizeSelect
+            pageSize={pagination.limit}
+            onPageSizeChange={handlePageSizeChange}
+            options={PAGE_SIZE_OPTIONS}
+            className="order-3"
+          />
         </div>
       )}
     </div>

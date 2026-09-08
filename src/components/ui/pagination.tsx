@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown, MoreHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ButtonProps, buttonVariants } from "@/components/ui/button";
 
@@ -125,6 +125,42 @@ export function getPaginationRange(current: number, total: number): (number | st
     return [1, "...", total - 4, total - 3, total - 2, total - 1, total];
   }
   return [1, "...", current - 1, current, current + 1, "...", total];
+}
+
+export interface PaginationPageSizeSelectProps {
+  pageSize: number;
+  onPageSizeChange: (size: number) => void;
+  options?: number[];
+  className?: string;
+}
+
+export function PaginationPageSizeSelect({
+  pageSize,
+  onPageSizeChange,
+  options = PAGE_SIZE_OPTIONS,
+  className,
+}: PaginationPageSizeSelectProps) {
+  return (
+    <div className={cn("flex items-center gap-2", className)}>
+      <span className="text-zinc-500 font-mono text-[11px] uppercase tracking-wider whitespace-nowrap">
+        Per Page:
+      </span>
+      <div className="relative inline-flex items-center">
+        <select
+          value={pageSize}
+          onChange={(e) => onPageSizeChange(Number(e.target.value))}
+          className="appearance-none bg-[#1a1b26] hover:bg-[#222432] text-zinc-200 hover:text-white font-mono text-xs font-semibold pl-2.5 pr-6 py-1 rounded-xl border border-white/10 hover:border-[#d1a86e]/40 focus:ring-1 focus:ring-[#d1a86e] focus:outline-none cursor-pointer transition-colors shadow-sm"
+        >
+          {options.map((size) => (
+            <option key={size} value={size} className="bg-[#121319] text-white font-mono">
+              {size}
+            </option>
+          ))}
+        </select>
+        <ChevronDown className="w-3 h-3 text-zinc-400 absolute right-2 pointer-events-none" />
+      </div>
+    </div>
+  );
 }
 
 export {

@@ -9,6 +9,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
+  PaginationPageSizeSelect,
   getPaginationRange,
 } from "@/components/ui/pagination";
 
@@ -101,25 +102,11 @@ export function CollectorPaginationBar({
       </div>
 
       {onPageSizeChange && (
-        <div className="flex items-center gap-2">
-          <span className="text-zinc-500 font-mono text-[11px] uppercase tracking-wider">Per Page:</span>
-          <div className="flex items-center rounded-xl bg-[#1a1b26] p-1 shadow-inner">
-            {pageSizeOptions.map((size) => (
-              <button
-                key={size}
-                type="button"
-                onClick={() => onPageSizeChange(size)}
-                className={`px-2.5 py-1 text-xs font-mono rounded-lg transition-colors cursor-pointer ${
-                  pageSize === size
-                    ? "bg-[#d1a86e] text-black font-semibold shadow-sm"
-                    : "text-zinc-400 hover:text-white"
-                }`}
-              >
-                {size}
-              </button>
-            ))}
-          </div>
-        </div>
+        <PaginationPageSizeSelect
+          pageSize={pageSize}
+          onPageSizeChange={onPageSizeChange}
+          options={pageSizeOptions}
+        />
       )}
     </div>
   );

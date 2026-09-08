@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { CollectorPaginationBar } from "@/components/account/shared/CollectorPaginationBar";
 import { useCollector } from "@/components/account/context/CollectorContext";
 
-const INQUIRIES_PAGE_SIZE_OPTIONS = [5, 10, 15, 20];
+const INQUIRIES_PAGE_SIZE_OPTIONS = [5, 10, 20, 50];
 
 export function InquiriesTab() {
   const { user, userInquiries } = useCollector();

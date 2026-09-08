@@ -43,6 +43,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
+  PaginationPageSizeSelect,
   PAGE_SIZE_OPTIONS,
   getPaginationRange,
 } from "@/components/ui/pagination";
@@ -79,6 +80,7 @@ export function InquiriesManagerClient({
   const [emailSearchQuery, setEmailSearchQuery] = useState<string>("");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [previewEmail, setPreviewEmail] = useState<SentEmailRecord | null>(null);
+  const [previewInquiry, setPreviewInquiry] = useState<MockInquiry | null>(null);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -364,25 +366,24 @@ export function InquiriesManagerClient({
             </DropdownMenu>
           </div>
 
-          {/* Inquiries Cards - 2 Column Layout with Compact Mobile Blocks */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-3.5">
+          {/* Inquiries List - Sleek Compact View Matching Sent Emails */}
+          <div className="bg-[#121319] rounded-xl sm:rounded-2xl border border-white/5 divide-y divide-white/5 overflow-hidden shadow-xl">
             {filteredInquiries.length === 0 ? (
-              <div className="col-span-full p-8 text-center bg-[#121319] rounded-2xl text-xs text-zinc-500 border border-white/5">
+              <div className="p-8 text-center text-xs text-zinc-500">
                 No inquiries matching criteria.
               </div>
             ) : (
               paginatedInquiries.map((inq) => (
-                <Card
+                <div
                   key={inq.id}
-                  className="p-3.5 sm:p-4 bg-[#14151e] rounded-xl sm:rounded-2xl border border-[#222432] hover:border-[#d1a86e]/30 transition-all flex flex-col justify-between gap-2.5 shadow-lg shadow-black/20"
+                  onClick={() => setPreviewInquiry(inq)}
+                  className="p-3 sm:p-3.5 hover:bg-white/[0.04] transition-all flex items-center justify-between gap-3 cursor-pointer group"
                 >
-                  <div className="space-y-2">
-                    {/* Status Select Badge + Date */}
-                    <div className="flex items-center justify-between gap-2">
-                      <select
-                        value={inq.status}
-                        onChange={(e) => handleStatusChange(inq.id, e.target.value)}
-                        className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-lg font-semibold cursor-pointer border-none focus:outline-none focus:ring-1 focus:ring-[#d1a86e] ${
+                  <div className="space-y-1 min-w-0 flex-1">
+                    {/* Status Badge + Canvas + Date */}
+                    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                      <span
+                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wider ${
                           inq.status === "new"
                             ? "bg-amber-950/80 text-amber-300"
                             : inq.status === "read"
@@ -392,80 +393,50 @@ export function InquiriesManagerClient({
                             : "bg-zinc-800 text-zinc-400"
                         }`}
                       >
-                        <option value="new">New</option>
-                        <option value="read">Read</option>
-                        <option value="replied">Replied</option>
-                        <option value="closed">Closed</option>
-                      </select>
+                        {inq.status === "new" && <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />}
+                        {inq.status === "read" && <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />}
+                        {inq.status === "replied" && <CheckCircle2 className="w-3 h-3 text-emerald-300" />}
+                        <span>{inq.status === "read" ? "In Review" : inq.status}</span>
+                      </span>
 
-                      <span className="font-mono text-[10px] text-zinc-500">
+                      {inq.artworkTitle && (
+                        <span className="text-[10px] text-[#d1a86e] bg-[#d1a86e]/10 px-2 py-0.5 rounded-md font-medium truncate max-w-[150px] sm:max-w-xs">
+                          Canvas: {inq.artworkTitle}
+                        </span>
+                      )}
+
+                      <span className="text-[10px] text-zinc-400 font-mono ml-auto sm:ml-0">
                         {new Date(inq.createdAt).toLocaleDateString(undefined, {
                           month: "short",
                           day: "numeric",
                           year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
                         })}
                       </span>
                     </div>
 
-                    {/* Collector Name & Contact Details */}
-                    <div>
-                      <h3 className="font-serif text-sm sm:text-base text-white font-medium truncate">
-                        {inq.name}
-                      </h3>
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-0.5 text-[11px] text-zinc-400">
-                        <div className="flex items-center gap-1 font-mono">
-                          <Mail className="w-3 h-3 text-zinc-500 shrink-0" />
-                          <a
-                            href={`mailto:${inq.email}`}
-                            className="hover:text-white transition-colors truncate max-w-[170px] sm:max-w-none"
-                          >
-                            {inq.email}
-                          </a>
-                        </div>
-                        {inq.phone && (
-                          <div className="flex items-center gap-1 font-mono text-zinc-400">
-                            <Phone className="w-3 h-3 text-zinc-500 shrink-0" />
-                            <span>{inq.phone}</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                    {/* Collector Name & Subject */}
+                    <h4 className="font-serif text-xs sm:text-sm text-white group-hover:text-[#d1a86e] transition-colors font-medium truncate">
+                      {inq.name} {inq.subject ? `— ${inq.subject}` : ""}
+                    </h4>
 
-                    {/* Associated Canvas Pill */}
-                    {inq.artworkTitle && (
-                      <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#d1a86e]/10 text-[#d1a86e] text-[10px] font-medium max-w-full truncate">
-                        <Palette className="w-3 h-3 shrink-0" />
-                        <span className="truncate">Canvas: {inq.artworkTitle}</span>
-                      </div>
-                    )}
-
-                    {/* Message Box - Compact Clamp */}
-                    <div className="p-2.5 bg-[#0d0e12] rounded-xl text-xs text-zinc-300 leading-relaxed border border-white/5 line-clamp-3 sm:line-clamp-4">
-                      {inq.message}
+                    {/* Email, Phone & Message Preview */}
+                    <div className="text-[11px] text-zinc-400 font-mono flex items-center gap-1.5 truncate">
+                      <Mail className="w-3 h-3 text-zinc-500 shrink-0" />
+                      <span className="text-zinc-300 truncate">{inq.email}</span>
+                      {inq.phone && <span className="text-zinc-500 truncate hidden sm:inline">• {inq.phone}</span>}
+                      <span className="text-zinc-600 mx-1 hidden sm:inline">|</span>
+                      <span className="text-zinc-400 truncate italic font-sans">{inq.message}</span>
                     </div>
                   </div>
 
-                  {/* Footer with ID & Compact Email Reply */}
-                  <div className="pt-1 flex items-center justify-between border-t border-white/5">
-                    <span className="text-[10px] font-mono text-zinc-600 truncate">
-                      ID: {inq.id.slice(0, 8)}...
-                    </span>
-                    <Button
-                      asChild
-                      size="sm"
-                      variant="ghost"
-                      className="h-7 px-2.5 bg-[#1a1b26] hover:bg-[#222432] text-white text-[11px] font-medium rounded-lg border-none transition-colors"
-                    >
-                      <a
-                        href={`mailto:${inq.email}?subject=Re: ${encodeURIComponent(inq.subject || "Artwork Inquiry")}`}
-                        className="inline-flex items-center gap-1.5"
-                      >
-                        <Mail className="w-3 h-3 text-[#d1a86e]" />
-                        <span>Reply via Email</span>
-                      </a>
-                    </Button>
+                  {/* Hover indicator */}
+                  <div className="shrink-0 flex items-center gap-1.5 text-zinc-500 group-hover:text-[#d1a86e] transition-colors pl-2">
+                    <Eye className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity hidden sm:block" />
+                    <ChevronRight className="w-4 h-4" />
                   </div>
-                </Card>
+                </div>
               ))
             )}
           </div>
@@ -522,25 +493,10 @@ export function InquiriesManagerClient({
                 </Pagination>
               </div>
 
-              <div className="flex items-center gap-2">
-                <span className="text-zinc-500 font-mono text-[11px] uppercase tracking-wider">Per Page:</span>
-                <div className="flex items-center rounded-xl bg-transparent border border-white/10 p-0.5">
-                  {PAGE_SIZE_OPTIONS.map((size) => (
-                    <button
-                      key={size}
-                      type="button"
-                      onClick={() => setInquiryPageSize(size)}
-                      className={`px-2.5 py-1 text-xs font-mono rounded-lg transition-colors cursor-pointer border-none ${
-                        inquiryPageSize === size
-                          ? "bg-[#d1a86e] text-black font-semibold shadow-sm"
-                          : "text-zinc-400 hover:text-white hover:bg-white/5"
-                      }`}
-                    >
-                      {size}
-                    </button>
-                  ))}
-                </div>
-              </div>
+              <PaginationPageSizeSelect
+                pageSize={inquiryPageSize}
+                onPageSizeChange={setInquiryPageSize}
+              />
             </div>
           )}
         </div>
@@ -865,27 +821,123 @@ export function InquiriesManagerClient({
                 </Pagination>
               </div>
 
-              <div className="flex items-center gap-2">
-                <span className="text-zinc-500 font-mono text-[11px] uppercase tracking-wider">Per Page:</span>
-                <div className="flex items-center rounded-xl bg-transparent border border-white/10 p-0.5">
-                  {PAGE_SIZE_OPTIONS.map((size) => (
-                    <button
-                      key={size}
-                      type="button"
-                      onClick={() => setEmailPageSize(size)}
-                      className={`px-2.5 py-1 text-xs font-mono rounded-lg transition-colors cursor-pointer border-none ${
-                        emailPageSize === size
-                          ? "bg-[#d1a86e] text-black font-semibold shadow-sm"
-                          : "text-zinc-400 hover:text-white hover:bg-white/5"
-                      }`}
-                    >
-                      {size}
-                    </button>
-                  ))}
+              <PaginationPageSizeSelect
+                pageSize={emailPageSize}
+                onPageSizeChange={setEmailPageSize}
+              />
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ==================================================================== */}
+      {/* INQUIRY DETAIL & REPLY MODAL                                         */}
+      {/* ==================================================================== */}
+      {previewInquiry && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[#121319] rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl shadow-black/80 border border-white/5">
+            <div className="p-5 sm:p-6 bg-[#161720] flex items-center justify-between gap-4 border-b border-white/5">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-md font-semibold font-mono bg-[#d1a86e]/10 text-[#d1a86e]">
+                    Inquiry Dossier
+                  </span>
+                  <span className="text-zinc-500 text-xs font-mono">
+                    {new Date(previewInquiry.createdAt).toLocaleString()}
+                  </span>
+                </div>
+                <h3 className="font-serif text-lg sm:text-xl text-white font-medium">
+                  {previewInquiry.name}
+                </h3>
+              </div>
+              <button
+                onClick={() => setPreviewInquiry(null)}
+                className="p-2 text-zinc-400 hover:text-white rounded-xl hover:bg-[#1a1b26] transition-colors cursor-pointer border-none"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4 bg-[#0d0e13]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 bg-[#14151f] rounded-2xl border border-white/5">
+                <div>
+                  <span className="text-[10px] uppercase tracking-wider text-zinc-500 font-mono block">Email</span>
+                  <a href={`mailto:${previewInquiry.email}`} className="text-xs text-[#d1a86e] hover:underline font-mono">
+                    {previewInquiry.email}
+                  </a>
+                </div>
+                {previewInquiry.phone && (
+                  <div>
+                    <span className="text-[10px] uppercase tracking-wider text-zinc-500 font-mono block">Phone</span>
+                    <span className="text-xs text-zinc-300 font-mono">{previewInquiry.phone}</span>
+                  </div>
+                )}
+                {previewInquiry.artworkTitle && (
+                  <div className="sm:col-span-2 pt-1 border-t border-white/5">
+                    <span className="text-[10px] uppercase tracking-wider text-zinc-500 font-mono block">Associated Canvas</span>
+                    <span className="text-xs text-white font-serif">{previewInquiry.artworkTitle}</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center justify-between p-3 bg-[#14151f] rounded-2xl border border-white/5">
+                <span className="text-xs text-zinc-400 font-medium">Workflow Status:</span>
+                <select
+                  value={previewInquiry.status}
+                  onChange={(e) => {
+                    const newStatus = e.target.value as MockInquiry["status"];
+                    handleStatusChange(previewInquiry.id, newStatus);
+                    setPreviewInquiry((prev) => (prev ? { ...prev, status: newStatus } : null));
+                  }}
+                  className={`text-xs uppercase tracking-wider px-3 py-1.5 rounded-xl font-semibold cursor-pointer border-none focus:outline-none focus:ring-1 focus:ring-[#d1a86e] ${
+                    previewInquiry.status === "new"
+                      ? "bg-amber-950/80 text-amber-300"
+                      : previewInquiry.status === "read"
+                      ? "bg-blue-950/80 text-blue-300"
+                      : previewInquiry.status === "replied"
+                      ? "bg-emerald-950/80 text-emerald-300"
+                      : "bg-zinc-800 text-zinc-400"
+                  }`}
+                >
+                  <option value="new">New (Action Required)</option>
+                  <option value="read">In Review</option>
+                  <option value="replied">Replied</option>
+                  <option value="closed">Closed / Archived</option>
+                </select>
+              </div>
+
+              <div className="space-y-1.5">
+                <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-semibold block">Message Content</span>
+                <div className="p-4 bg-[#14151f] rounded-2xl text-xs sm:text-sm text-zinc-200 leading-relaxed border border-white/5 whitespace-pre-wrap">
+                  {previewInquiry.message}
                 </div>
               </div>
             </div>
-          )}
+
+            <div className="p-4 sm:p-5 bg-[#161720] flex items-center justify-between border-t border-white/5">
+              <span className="text-[10px] font-mono text-zinc-600">ID: {previewInquiry.id}</span>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setPreviewInquiry(null)}
+                  className="bg-[#1a1b26] hover:bg-[#222432] text-zinc-300 text-xs cursor-pointer rounded-xl border-none px-3"
+                >
+                  Close
+                </Button>
+                <Button
+                  asChild
+                  size="sm"
+                  className="bg-[#d1a86e] hover:bg-[#c49a5f] text-black font-semibold text-xs gap-1.5 rounded-xl border-none px-4 cursor-pointer shadow-lg"
+                >
+                  <a href={`mailto:${previewInquiry.email}?subject=Re: ${encodeURIComponent(previewInquiry.subject || "Artwork Inquiry")}`}>
+                    <Mail className="w-3.5 h-3.5" />
+                    <span>Reply via Email</span>
+                  </a>
+                </Button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 

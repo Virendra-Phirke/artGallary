@@ -50,6 +50,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
+  PaginationPageSizeSelect,
   PAGE_SIZE_OPTIONS,
   getPaginationRange,
 } from "@/components/ui/pagination";
@@ -584,25 +585,10 @@ export function ExhibitionsManagerClient({
             </Pagination>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-zinc-500 font-mono text-[11px] uppercase tracking-wider">Per Page:</span>
-            <div className="flex items-center rounded-xl bg-transparent border border-white/10 p-0.5">
-              {PAGE_SIZE_OPTIONS.map((size) => (
-                <button
-                  key={size}
-                  type="button"
-                  onClick={() => setPageSize(size)}
-                  className={`px-2.5 py-1 text-xs font-mono rounded-lg transition-colors cursor-pointer ${
-                    pageSize === size
-                      ? "bg-[#d1a86e] text-black font-semibold shadow-sm"
-                      : "text-zinc-400 hover:text-white hover:bg-white/5"
-                  }`}
-                >
-                  {size}
-                </button>
-              ))}
-            </div>
-          </div>
+          <PaginationPageSizeSelect
+            pageSize={pageSize}
+            onPageSizeChange={setPageSize}
+          />
         </div>
       )}
 
