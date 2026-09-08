@@ -49,8 +49,9 @@ interface CollectorContextValue {
   setInspectArtwork: (art: MockArtwork | null) => void;
 
   // Intent-Gated Login Prompt
-  loginPromptReason: "like" | "contact" | "inquiries" | "profile" | null;
-  setLoginPromptReason: (reason: "like" | "contact" | "inquiries" | "profile" | null) => void;
+  loginPromptReason: "like" | "add" | "contact" | "inquiries" | "profile" | null;
+  setLoginPromptReason: (reason: "like" | "add" | "contact" | "inquiries" | "profile" | null) => void;
+  triggerContact: (artworkTitle?: string) => void;
 
   // Auth Actions
   handleSignOut: () => Promise<void>;
@@ -118,7 +119,18 @@ export function CollectorProvider({
   const [savedArtworkIds, setSavedArtworkIds] = useState<string[]>([]);
 
   // Intent-Gated Login Prompt
-  const [loginPromptReason, setLoginPromptReason] = useState<"like" | "contact" | "inquiries" | "profile" | null>(null);
+  const [loginPromptReason, setLoginPromptReason] = useState<"like" | "add" | "contact" | "inquiries" | "profile" | null>(null);
+
+  // Intent-Gated Contact Trigger
+  const triggerContact = useCallback((artworkTitle?: string) => {
+    if (!user) {
+      setLoginPromptReason("contact");
+    } else {
+      window.location.href = artworkTitle
+        ? `/#contact?artwork=${encodeURIComponent(artworkTitle)}`
+        : "/#contact";
+    }
+  }, [user]);
 
   // Load saved bookmarks and cart from localStorage
   useEffect(() => {
@@ -151,6 +163,10 @@ export function CollectorProvider({
 
   // Cart mutations
   const toggleCartArtwork = useCallback((id: string) => {
+    if (!user) {
+      setLoginPromptReason("add");
+      return;
+    }
     setCartArtworkIds((prev) => {
       const next = prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id];
       try {
@@ -161,7 +177,7 @@ export function CollectorProvider({
       window.dispatchEvent(new CustomEvent("atelier:cart-updated", { detail: { count: next.length } }));
       return next;
     });
-  }, []);
+  }, [user]);
 
   const removeFromCart = useCallback((id: string) => {
     setCartArtworkIds((prev) => {
@@ -213,6 +229,10 @@ export function CollectorProvider({
   );
 
   const addAllLikedToCart = useCallback(() => {
+    if (!user) {
+      setLoginPromptReason("add");
+      return;
+    }
     setCartArtworkIds((prev) => {
       const set = new Set([...prev, ...savedArtworkIds]);
       const next = Array.from(set);
@@ -225,7 +245,7 @@ export function CollectorProvider({
       return next;
     });
     setIsCartOpen(true);
-  }, [savedArtworkIds]);
+  }, [user, savedArtworkIds]);
 
   const handleSignOut = useCallback(async () => {
     await fetch("/api/auth/sign-out", { method: "POST" });
@@ -256,6 +276,7 @@ export function CollectorProvider({
       setInspectArtwork,
       loginPromptReason,
       setLoginPromptReason,
+      triggerContact,
       handleSignOut,
     }),
     [
@@ -281,6 +302,7 @@ export function CollectorProvider({
       setInspectArtwork,
       loginPromptReason,
       setLoginPromptReason,
+      triggerContact,
       handleSignOut,
     ]
   );

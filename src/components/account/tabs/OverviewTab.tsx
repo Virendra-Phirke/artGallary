@@ -44,6 +44,7 @@ export function OverviewTab() {
     addAllLikedToCart,
     setIsCartOpen,
     setInspectArtwork,
+    triggerContact,
   } = useCollector();
 
   // Selected artworks in Dossier & Shortlist
@@ -124,9 +125,10 @@ export function OverviewTab() {
         </div>
 
         {/* Card 4: Studio Liaison */}
-        <Link
-          href="/contact"
-          className="bg-[#121319] hover:bg-[#161722] transition-colors rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-white/5 shadow-md flex flex-col justify-between text-left group"
+        <button
+          type="button"
+          onClick={() => triggerContact()}
+          className="bg-[#121319] hover:bg-[#161722] transition-colors rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-white/5 shadow-md flex flex-col justify-between text-left group cursor-pointer"
         >
           <div className="flex items-center justify-between w-full">
             <span className="text-[9px] sm:text-[10px] tracking-wider text-[#d1a86e] uppercase font-mono font-semibold truncate">
@@ -138,7 +140,7 @@ export function OverviewTab() {
             <span>&lt; 2h Response</span>
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
           </div>
-        </Link>
+        </button>
       </div>
 
       {/* 2. CURATORIAL DOSSIER & CONCIERGE LIAISON (2 COLUMNS) */}
@@ -360,13 +362,14 @@ export function OverviewTab() {
 
             <div className="flex justify-center sm:block">
               <Button
-                asChild
+                type="button"
+                onClick={() => triggerContact()}
                 className="w-auto sm:w-full h-7 sm:h-7.5 px-3.5 sm:px-4 rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold shadow-sm cursor-pointer transition-all active:scale-[0.98] mx-auto sm:mx-0"
               >
-                <Link href="/contact" className="flex items-center justify-center gap-1.5">
+                <span className="flex items-center justify-center gap-1.5">
                   <Mail className="w-3 h-3" />
                   <span>Contact Curatorial Team</span>
-                </Link>
+                </span>
               </Button>
             </div>
           </div>

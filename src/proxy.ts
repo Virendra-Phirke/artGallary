@@ -31,8 +31,8 @@ export function proxy(request: NextRequest) {
     }
   }
 
-  // Protect Account routes
-  if (pathname.startsWith("/account")) {
+  // Protect private Inquiries route specifically (allow guests to browse all other collector portal tabs)
+  if (pathname.startsWith("/account/inquiries")) {
     if (!token) {
       const loginUrl = new URL("/login", request.url);
       loginUrl.searchParams.set("redirect", pathname);
@@ -44,5 +44,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/account/:path*"],
+  matcher: ["/admin/:path*", "/account/inquiries/:path*"],
 };

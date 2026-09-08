@@ -108,7 +108,7 @@ export function HeroShowcaseClient({
                 className="rounded-full bg-gradient-to-r from-[#d1a86e] via-[#e2c18d] to-[#b98e54] text-[#0d0e12] px-3.5 sm:px-6 py-1.5 sm:py-2.5 text-[10px] sm:text-xs font-semibold uppercase tracking-wider sm:tracking-[0.18em] shadow-md shadow-[#d1a86e]/20 hover:shadow-[#d1a86e]/30 transition-all h-7.5 sm:h-9 active:scale-[0.98] w-auto inline-flex shrink-0"
               >
                 <Link
-                  href="/account"
+                  href={primaryCtaUrl || "/account"}
                   className="flex items-center justify-center gap-1.5"
                 >
                   <Sparkles className="w-3 h-3 text-[#0d0e12] shrink-0" />

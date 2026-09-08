@@ -101,6 +101,7 @@ function CollectorDashboardContent() {
     toggleSaveArtwork,
     inspectArtwork,
     setInspectArtwork,
+    triggerContact,
   } = useCollector();
 
   const currentMeta = TAB_METADATA[activeTab] || TAB_METADATA.overview;
@@ -134,6 +135,7 @@ function CollectorDashboardContent() {
         isInCart={inspectArtwork ? cartArtworkIds.includes(inspectArtwork.id) : false}
         onToggleSave={(art) => toggleSaveArtwork(art.id)}
         isSaved={inspectArtwork ? savedArtworkIds.includes(inspectArtwork.id) : false}
+        onContactClick={(art) => triggerContact(art.title)}
       />
 
       {/* 5. ACQUISITION PORTFOLIO CART / DOSSIER MODAL */}

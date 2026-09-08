@@ -28,6 +28,7 @@ interface ArtworkQuickViewModalProps {
   isInCart?: boolean;
   onToggleSave?: (artwork: MockArtwork) => void;
   isSaved?: boolean;
+  onContactClick?: (artwork: MockArtwork) => void;
 }
 
 export function ArtworkQuickViewModal({
@@ -38,6 +39,7 @@ export function ArtworkQuickViewModal({
   isInCart = false,
   onToggleSave,
   isSaved = false,
+  onContactClick,
 }: ArtworkQuickViewModalProps) {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
@@ -281,17 +283,21 @@ export function ArtworkQuickViewModal({
               </Button>
 
               <Button
-                asChild
+                type="button"
+                onClick={() => {
+                  if (onContactClick) {
+                    onContactClick(artwork);
+                  } else {
+                    onClose();
+                    window.location.href = `/contact?artwork=${artwork.slug}`;
+                  }
+                }}
                 className="rounded-full bg-[#1c1d28] hover:bg-[#252736] text-[#d1a86e] hover:text-white text-xs uppercase tracking-wider shadow-sm cursor-pointer"
               >
-                <Link
-                  href={`/contact?artwork=${artwork.slug}`}
-                  onClick={onClose}
-                  className="flex items-center justify-center gap-1.5"
-                >
+                <span className="flex items-center justify-center gap-1.5">
                   <span>Inquire</span>
                   <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
+                </span>
               </Button>
             </div>
           </div>
