@@ -87,6 +87,13 @@ export default async function HomePage() {
               primaryCtaText={sec.contentJson?.ctaText || "Explore Curated Catalog"}
               primaryCtaUrl={sec.contentJson?.ctaUrl || "/gallery"}
               customHeroImage={sec.contentJson?.imageUrl}
+              heroImages={sec.contentJson?.heroImages}
+              heroSlideCount={
+                sec.contentJson?.heroSlideCount
+                  ? Number(sec.contentJson.heroSlideCount)
+                  : undefined
+              }
+              heroArtworkIds={sec.contentJson?.heroArtworkIds}
             />
           );
         }

@@ -27,6 +27,9 @@ interface HeroShowcaseClientProps {
   primaryCtaText?: string;
   primaryCtaUrl?: string;
   customHeroImage?: string;
+  heroImages?: string[];
+  heroSlideCount?: number;
+  heroArtworkIds?: string[];
 }
 
 export function HeroShowcaseClient({
@@ -37,21 +40,38 @@ export function HeroShowcaseClient({
   primaryCtaText = "Explore Curated Catalog",
   primaryCtaUrl = "/gallery",
   customHeroImage,
+  heroImages,
+  heroSlideCount,
+  heroArtworkIds,
 }: HeroShowcaseClientProps) {
-  // Use first 4 featured artworks for the hero carousel showcase
-  const showcaseWorks = artworks.slice(0, 4);
+  const slideCount = Math.max(1, Math.min(6, heroSlideCount ?? 4));
+
+  // Build slide items based on slideCount and optional custom artwork assignments
+  const showcaseWorks = Array.from({ length: slideCount }).map((_, idx) => {
+    const linkedArtId = heroArtworkIds?.[idx];
+    const linkedArt = linkedArtId
+      ? artworks.find((a) => a.id === linkedArtId) || artworks[idx] || artworks[0]
+      : artworks[idx] || artworks[0];
+    return linkedArt;
+  }).filter(Boolean) as MockArtwork[];
+
   const [activeIndex, setActiveIndex] = useState(0);
   const [quickViewArtwork, setQuickViewArtwork] = useState<MockArtwork | null>(null);
 
-  const activeArtwork = showcaseWorks[activeIndex] || artworks[0];
-  const displayImage =
-    customHeroImage && activeIndex === 0
-      ? customHeroImage
-      : activeArtwork?.coverImageUrl ||
-        customHeroImage ||
-        "https://ik.imagekit.io/bpnsp30ni/artworks/gallery/1788717079935-kazuha__EB1yso0A.jpeg?updatedAt=1788717081490";
+  const safeIndex = activeIndex >= showcaseWorks.length ? 0 : activeIndex;
+  const activeArtwork = showcaseWorks[safeIndex] || artworks[0];
 
-  // Auto cycle slowly every 8 seconds if user hasn't interacted, with clean cleanup
+  const customImgForSlide =
+    heroImages?.[safeIndex] ||
+    (safeIndex === 0 ? customHeroImage : undefined);
+
+  const displayImage =
+    customImgForSlide ||
+    activeArtwork?.coverImageUrl ||
+    customHeroImage ||
+    "https://ik.imagekit.io/bpnsp30ni/artworks/gallery/1788717079935-kazuha__EB1yso0A.jpeg?updatedAt=1788717081490";
+
+  // Auto cycle slowly every 9 seconds if user hasn't interacted, with clean cleanup
   useEffect(() => {
     if (showcaseWorks.length <= 1) return;
     const timer = setInterval(() => {
@@ -220,10 +240,10 @@ export function HeroShowcaseClient({
                   <div className="flex items-center gap-1.5">
                     {showcaseWorks.map((work, idx) => (
                       <button
-                        key={work.id}
+                        key={`${work.id}-${idx}`}
                         onClick={() => setActiveIndex(idx)}
                         className={`transition-all rounded-full ${
-                          activeIndex === idx
+                          safeIndex === idx
                             ? "w-7 h-2 bg-[#d1a86e]"
                             : "w-2 h-2 bg-zinc-700 hover:bg-zinc-500"
                         }`}
@@ -246,7 +266,7 @@ export function HeroShowcaseClient({
                       <ChevronLeft className="w-4 h-4" />
                     </button>
                     <span className="text-[11px] font-mono text-zinc-500">
-                      0{activeIndex + 1} / 0{showcaseWorks.length}
+                      0{safeIndex + 1} / 0{showcaseWorks.length}
                     </span>
                     <button
                       onClick={() =>

@@ -210,6 +210,29 @@ function HomepageBuilderContent({
   const handleSelectMedia = (url: string) => {
     if (activeSectionForMedia === "about_portrait") {
       updateAboutConfig("artistImageUrl", url);
+    } else if (activeSectionForMedia?.startsWith("hero_slide:")) {
+      const slideIdx = parseInt(activeSectionForMedia.replace("hero_slide:", ""), 10);
+      const heroSec = sections.find((s) => s.sectionKey === "hero");
+      if (heroSec && !isNaN(slideIdx)) {
+        const existingHeroImages = Array.isArray(heroSec.contentJson?.heroImages)
+          ? [...heroSec.contentJson.heroImages]
+          : [];
+        existingHeroImages[slideIdx] = url;
+        setSections((prev) =>
+          prev.map((s) =>
+            s.id === heroSec.id
+              ? {
+                  ...s,
+                  contentJson: {
+                    ...(s.contentJson || {}),
+                    heroImages: existingHeroImages,
+                    ...(slideIdx === 0 ? { imageUrl: url } : {}),
+                  },
+                }
+              : s
+          )
+        );
+      }
     } else if (activeSectionForMedia) {
       updateSectionContent(activeSectionForMedia, "imageUrl", url);
     }
@@ -239,6 +262,29 @@ function HomepageBuilderContent({
         if (uploadedUrl) {
           if (targetId === "about_portrait") {
             updateAboutConfig("artistImageUrl", uploadedUrl);
+          } else if (targetId.startsWith("hero_slide:")) {
+            const slideIdx = parseInt(targetId.replace("hero_slide:", ""), 10);
+            const heroSec = sections.find((s) => s.sectionKey === "hero");
+            if (heroSec && !isNaN(slideIdx)) {
+              const existingHeroImages = Array.isArray(heroSec.contentJson?.heroImages)
+                ? [...heroSec.contentJson.heroImages]
+                : [];
+              existingHeroImages[slideIdx] = uploadedUrl;
+              setSections((prev) =>
+                prev.map((s) =>
+                  s.id === heroSec.id
+                    ? {
+                        ...s,
+                        contentJson: {
+                          ...(s.contentJson || {}),
+                          heroImages: existingHeroImages,
+                          ...(slideIdx === 0 ? { imageUrl: uploadedUrl } : {}),
+                        },
+                      }
+                    : s
+                )
+              );
+            }
           } else {
             updateSectionContent(targetId, "imageUrl", uploadedUrl);
           }
@@ -321,7 +367,7 @@ function HomepageBuilderContent({
     );
   };
 
-  const updateSectionContent = (id: string, field: string, val: string) => {
+  const updateSectionContent = (id: string, field: string, val: any) => {
     setSections((prev) =>
       prev.map((s) =>
         s.id === id
@@ -891,6 +937,7 @@ function HomepageBuilderContent({
             sections={sections}
             siteSettings={siteSettings}
             activePage={activePage}
+            artworks={artworks}
             onUpdateSectionText={updateSectionText}
             onUpdateSectionContent={updateSectionContent}
             onUpdateSiteSetting={updateSiteSetting}
@@ -924,6 +971,8 @@ function HomepageBuilderContent({
                   Select any verified image hosted on Cloudflare R2 / ImageKit for{" "}
                   {activeSectionForMedia === "about_portrait"
                     ? "the artist studio portrait"
+                    : activeSectionForMedia?.startsWith("hero_slide:")
+                    ? `Hero Carousel Slide 0${Number(activeSectionForMedia.replace("hero_slide:", "")) + 1}`
                     : "this editorial section"}
                   .
                 </p>

@@ -6,7 +6,9 @@ import { useStudioSelection, StudioSelectedElement } from "./StudioSelectionMana
 import {
   MockHomepageSection,
   SiteSettingsData,
+  MockArtwork,
 } from "@/db/mockData";
+import { formatCurrency } from "@/lib/utils";
 import {
   Type,
   Image as ImageIcon,
@@ -27,14 +29,16 @@ import {
   X,
   FileText,
   Maximize2,
+  RotateCcw,
 } from "lucide-react";
 
 interface StudioInspectorProps {
   sections: MockHomepageSection[];
   siteSettings: SiteSettingsData;
   activePage: string;
+  artworks?: MockArtwork[];
   onUpdateSectionText: (id: string, field: "title" | "subtitle", val: string) => void;
-  onUpdateSectionContent: (id: string, field: string, val: string) => void;
+  onUpdateSectionContent: (id: string, field: string, val: any) => void;
   onUpdateSiteSetting: <K extends keyof SiteSettingsData>(key: K, val: SiteSettingsData[K]) => void;
   onUpdateGalleryConfig: (field: string, val: any) => void;
   onUpdateCollectionsConfig: (field: string, val: any) => void;
@@ -47,10 +51,192 @@ interface StudioInspectorProps {
   onClose?: () => void;
 }
 
+function HeroSlidesManager({
+  currentSection,
+  artworks = [],
+  onUpdateSectionContent,
+  onOpenMediaPicker,
+}: {
+  currentSection: MockHomepageSection;
+  artworks?: MockArtwork[];
+  onUpdateSectionContent: (id: string, field: string, val: any) => void;
+  onOpenMediaPicker: (targetId: string) => void;
+}) {
+  const heroSlideCount = Math.max(
+    1,
+    Math.min(6, Number(currentSection.contentJson?.heroSlideCount) || 4)
+  );
+  const heroImages: string[] = Array.isArray(currentSection.contentJson?.heroImages)
+    ? [...currentSection.contentJson.heroImages]
+    : [];
+  const heroArtworkIds: string[] = Array.isArray(currentSection.contentJson?.heroArtworkIds)
+    ? [...currentSection.contentJson.heroArtworkIds]
+    : [];
+
+  const handleSetSlideCount = (count: number) => {
+    onUpdateSectionContent(currentSection.id, "heroSlideCount", count);
+  };
+
+  const handleSetArtworkForSlide = (slideIdx: number, artworkId: string) => {
+    const updatedIds = [...heroArtworkIds];
+    updatedIds[slideIdx] = artworkId;
+    onUpdateSectionContent(currentSection.id, "heroArtworkIds", updatedIds);
+  };
+
+  const handleResetSlideImage = (slideIdx: number) => {
+    const updatedImages = [...heroImages];
+    updatedImages[slideIdx] = "";
+    // If resetting slide 0, also clear imageUrl override
+    if (slideIdx === 0) {
+      onUpdateSectionContent(currentSection.id, "imageUrl", "");
+    }
+    onUpdateSectionContent(currentSection.id, "heroImages", updatedImages);
+  };
+
+  return (
+    <div className="space-y-4 pt-3 border-t border-white/5">
+      {/* 1. Slide Count Segmented Selector */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <label className="text-[10px] uppercase font-mono tracking-wider text-zinc-300 block font-semibold">
+            Carousel Slides ({heroSlideCount} of 6)
+          </label>
+          <span className="text-[10px] text-zinc-500 font-mono">
+            Auto-cycles 9s
+          </span>
+        </div>
+        <div className="grid grid-cols-6 gap-1 p-1 bg-[#14151c] rounded-xl border border-[#262834]">
+          {[1, 2, 3, 4, 5, 6].map((num) => (
+            <button
+              key={num}
+              type="button"
+              onClick={() => handleSetSlideCount(num)}
+              className={`py-1.5 rounded-lg text-xs font-mono font-medium transition-all cursor-pointer ${
+                heroSlideCount === num
+                  ? "bg-[#d1a86e] text-[#0d0e12] font-bold shadow-sm"
+                  : "text-zinc-400 hover:text-white hover:bg-white/5"
+              }`}
+            >
+              {num}
+            </button>
+          ))}
+        </div>
+        <p className="text-[10px] text-zinc-500">
+          Select number of artworks/images to switch through in the opening hero presentation.
+        </p>
+      </div>
+
+      {/* 2. Slide Cards List */}
+      <div className="space-y-3">
+        {Array.from({ length: heroSlideCount }).map((_, idx) => {
+          const linkedArtId = heroArtworkIds[idx];
+          const linkedArt = linkedArtId
+            ? artworks.find((a) => a.id === linkedArtId) || artworks[idx] || artworks[0]
+            : artworks[idx] || artworks[0];
+
+          const customImg = heroImages[idx] || (idx === 0 ? currentSection.contentJson?.imageUrl : undefined);
+          const currentSlideImg =
+            customImg ||
+            linkedArt?.coverImageUrl ||
+            "https://ik.imagekit.io/bpnsp30ni/artworks/gallery/1788717079935-kazuha__EB1yso0A.jpeg?updatedAt=1788717081490";
+
+          const isCustomImage = Boolean(customImg);
+
+          return (
+            <div
+              key={idx}
+              className="p-3 rounded-xl bg-[#14151d] border border-[#232532] space-y-2.5 shadow-sm"
+            >
+              {/* Card Header */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="px-2 py-0.5 rounded-full bg-[#1e202b] text-[10px] font-mono font-semibold text-[#d1a86e]">
+                    Slide 0{idx + 1}
+                  </span>
+                  {idx === 0 && (
+                    <span className="text-[9px] uppercase tracking-wider text-zinc-500 font-mono">
+                      (Initial Frame)
+                    </span>
+                  )}
+                </div>
+                {isCustomImage && (
+                  <button
+                    type="button"
+                    onClick={() => handleResetSlideImage(idx)}
+                    className="text-[10px] text-zinc-400 hover:text-rose-400 transition-colors cursor-pointer flex items-center gap-1"
+                    title="Reset to catalogue artwork default image"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    <span>Reset</span>
+                  </button>
+                )}
+              </div>
+
+              {/* Preview & Image Picker Action */}
+              <div className="flex gap-3 items-center">
+                <div className="relative w-20 h-14 rounded-lg overflow-hidden bg-black/50 border border-white/10 shrink-0">
+                  {currentSlideImg ? (
+                    <Image
+                      src={currentSlideImg}
+                      alt={`Slide 0${idx + 1}`}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-zinc-600 text-[10px]">
+                      No Image
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex-1 min-w-0 space-y-1">
+                  <button
+                    type="button"
+                    onClick={() => onOpenMediaPicker(`hero_slide:${idx}`)}
+                    className="w-full py-1.5 px-2.5 rounded-lg bg-[#1a1c25] hover:bg-[#252835] text-zinc-300 hover:text-white border border-[#2d3040] text-[11px] font-medium flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
+                  >
+                    <ImageIcon className="w-3 h-3 text-[#d1a86e]" />
+                    <span>Replace Image</span>
+                  </button>
+                  <p className="text-[9px] text-zinc-500 truncate">
+                    {isCustomImage ? "Custom override applied" : "Using catalogue artwork"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Linked Artwork Selector */}
+              <div className="space-y-1">
+                <label className="text-[9px] uppercase font-mono tracking-wider text-zinc-400 block">
+                  Assign Catalogue Artwork
+                </label>
+                <select
+                  value={linkedArtId || ""}
+                  onChange={(e) => handleSetArtworkForSlide(idx, e.target.value)}
+                  className="w-full bg-[#181922] border border-[#272937] rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#d1a86e] cursor-pointer truncate"
+                >
+                  <option value="">
+                    Default: {artworks[idx]?.title ? `${artworks[idx].title} (${formatCurrency(artworks[idx].price, artworks[idx].currency)})` : `Artwork Slot #${idx + 1}`}
+                  </option>
+                  {artworks.map((art) => (
+                    <option key={art.id} value={art.id}>
+                      {art.title} — {formatCurrency(art.price, art.currency)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export function StudioInspector({
   sections,
   siteSettings,
   activePage,
+  artworks = [],
   onUpdateSectionText,
   onUpdateSectionContent,
   onUpdateSiteSetting,
@@ -414,48 +600,67 @@ export function StudioInspector({
 
         {/* C. IMAGE / ASSET */}
         {selectedElement.type === "image" && currentSection && (
-          <div className="space-y-4">
-            <label className="text-[10px] uppercase font-mono tracking-wider text-zinc-400 block font-semibold">
-              Image Asset
-            </label>
-
-            {/* Thumbnail Preview */}
-            <div className="relative aspect-[4/3] rounded-xl overflow-hidden border border-[#262834] bg-[#0a0b0e] shadow-inner">
-              {currentImageUrl ? (
-                <Image
-                  src={currentImageUrl}
-                  alt={currentSection.title || "Section Asset"}
-                  fill
-                  className="object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-zinc-500 text-xs">
-                  Using default artwork cover
-                </div>
-              )}
+          currentSection.sectionKey === "hero" ? (
+            <div className="space-y-3">
+              <div className="p-3 rounded-xl bg-[#161720] border border-white/5 space-y-1">
+                <span className="text-[10px] uppercase font-mono tracking-wider text-[#d1a86e] block font-semibold">
+                  Hero Masterpiece Carousel
+                </span>
+                <p className="text-xs text-zinc-400 leading-relaxed">
+                  Configure the number of cycling canvases and choose custom imagery or assign catalogue artworks for each slide.
+                </p>
+              </div>
+              <HeroSlidesManager
+                currentSection={currentSection}
+                artworks={artworks}
+                onUpdateSectionContent={onUpdateSectionContent}
+                onOpenMediaPicker={onOpenMediaPicker}
+              />
             </div>
+          ) : (
+            <div className="space-y-4">
+              <label className="text-[10px] uppercase font-mono tracking-wider text-zinc-400 block font-semibold">
+                Image Asset
+              </label>
 
-            {/* Actions: Media Library & Direct Upload */}
-            <div className="flex items-center gap-2 pt-1">
-              <button
-                type="button"
-                onClick={() => onOpenMediaPicker(currentSection.id)}
-                className="flex-1 py-2 px-3 rounded-xl bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] font-semibold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer transition-colors shadow-sm"
-              >
-                <Layers className="w-3.5 h-3.5" />
-                <span>Media Library</span>
-              </button>
+              {/* Thumbnail Preview */}
+              <div className="relative aspect-[4/3] rounded-xl overflow-hidden border border-[#262834] bg-[#0a0b0e] shadow-inner">
+                {currentImageUrl ? (
+                  <Image
+                    src={currentImageUrl}
+                    alt={currentSection.title || "Section Asset"}
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-zinc-500 text-xs">
+                    Using default artwork cover
+                  </div>
+                )}
+              </div>
 
-              <button
-                type="button"
-                onClick={() => onOpenMediaPicker(currentSection.id)}
-                className="py-2 px-3 rounded-xl bg-[#181922] hover:bg-[#22242f] text-zinc-300 hover:text-white border border-[#272937] text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
-              >
-                <Upload className="w-3.5 h-3.5 text-[#d1a86e]" />
-                <span>Upload</span>
-              </button>
+              {/* Actions: Media Library & Direct Upload */}
+              <div className="flex items-center gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => onOpenMediaPicker(currentSection.id)}
+                  className="flex-1 py-2 px-3 rounded-xl bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] font-semibold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer transition-colors shadow-sm"
+                >
+                  <Layers className="w-3.5 h-3.5" />
+                  <span>Media Library</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => onOpenMediaPicker(currentSection.id)}
+                  className="py-2 px-3 rounded-xl bg-[#181922] hover:bg-[#22242f] text-zinc-300 hover:text-white border border-[#272937] text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
+                >
+                  <Upload className="w-3.5 h-3.5 text-[#d1a86e]" />
+                  <span>Upload</span>
+                </button>
+              </div>
             </div>
-          </div>
+          )
         )}
 
         {/* D. FULL SECTION */}
@@ -553,16 +758,12 @@ export function StudioInspector({
                   </div>
                 </div>
 
-                <div className="pt-1">
-                  <button
-                    type="button"
-                    onClick={() => onOpenMediaPicker(currentSection.id)}
-                    className="w-full py-2 px-3 rounded-xl bg-[#181922] hover:bg-[#222432] text-zinc-300 hover:text-white border border-[#272937] text-xs font-medium flex items-center justify-center gap-2 cursor-pointer transition-colors"
-                  >
-                    <ImageIcon className="w-3.5 h-3.5 text-[#d1a86e]" />
-                    <span>Change Featured Canvas Image</span>
-                  </button>
-                </div>
+                <HeroSlidesManager
+                  currentSection={currentSection}
+                  artworks={artworks}
+                  onUpdateSectionContent={onUpdateSectionContent}
+                  onOpenMediaPicker={onOpenMediaPicker}
+                />
               </div>
             )}
 

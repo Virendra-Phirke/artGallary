@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import {
   MockHomepageSection,
@@ -28,6 +28,8 @@ import {
   Award,
   Package,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Building2,
   MessageCircle,
 } from "lucide-react";
@@ -64,6 +66,22 @@ export function PageLivePreview({
 }: PageLivePreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { mode, hoverElement, selectElement } = useStudioSelection();
+
+  // Hero carousel preview state
+  const [activeHeroIndex, setActiveHeroIndex] = useState<number>(0);
+
+  useEffect(() => {
+    const heroSec = sections.find((s) => s.sectionKey === "hero");
+    const count = Math.max(
+      1,
+      Math.min(6, Number(heroSec?.contentJson?.heroSlideCount) || 4)
+    );
+    if (count <= 1) return;
+    const timer = setInterval(() => {
+      setActiveHeroIndex((prev) => (prev + 1) % count);
+    }, 9000);
+    return () => clearInterval(timer);
+  }, [sections]);
 
   const heroArtwork = artworks[0];
   const featuredCollection = collections[0];
@@ -316,10 +334,57 @@ export function PageLivePreview({
               .map((sec) => {
                 // 1. HERO SHOWCASE
                 if (sec.sectionKey === "hero") {
-                  const heroImage =
-                    sec.contentJson?.imageUrl ||
-                    heroArtwork?.coverImageUrl ||
-                    "https://ik.imagekit.io/bpnsp30ni/artworks/gallery/1788717079935-kazuha__EB1yso0A.jpeg?updatedAt=1788717081490";
+                  const heroSlideCount = Math.max(
+                    1,
+                    Math.min(6, Number(sec.contentJson?.heroSlideCount) || 4)
+                  );
+                  const heroImages: string[] = Array.isArray(sec.contentJson?.heroImages)
+                    ? sec.contentJson.heroImages
+                    : [];
+                  const heroArtworkIds: string[] = Array.isArray(sec.contentJson?.heroArtworkIds)
+                    ? sec.contentJson.heroArtworkIds
+                    : [];
+
+                  const heroSlides = Array.from({ length: heroSlideCount }).map((_, idx) => {
+                    const linkedArtId = heroArtworkIds[idx];
+                    const linkedArt = linkedArtId
+                      ? artworks.find((a) => a.id === linkedArtId) || artworks[idx] || artworks[0]
+                      : artworks[idx] || artworks[0];
+
+                    const customImg =
+                      heroImages[idx] ||
+                      (idx === 0 ? sec.contentJson?.imageUrl : undefined);
+                    const slideImage =
+                      customImg ||
+                      linkedArt?.coverImageUrl ||
+                      "https://ik.imagekit.io/bpnsp30ni/artworks/gallery/1788717079935-kazuha__EB1yso0A.jpeg?updatedAt=1788717081490";
+
+                    return {
+                      index: idx,
+                      artwork: linkedArt,
+                      image: slideImage,
+                      title: linkedArt?.title || (idx === 0 ? sec.title : `Showcase Piece 0${idx + 1}`),
+                      price: linkedArt?.price,
+                      currency: linkedArt?.currency || "USD",
+                    };
+                  });
+
+                  const safeHeroIndex = activeHeroIndex >= heroSlides.length ? 0 : activeHeroIndex;
+                  const currentSlide = heroSlides[safeHeroIndex] || heroSlides[0];
+                  const activeArt = currentSlide.artwork || {
+                    id: "art-1",
+                    title: currentSlide.title,
+                    year: 2026,
+                    medium: "Natural lapis lazuli & oil on Belgian linen",
+                    widthCm: 120,
+                    heightCm: 90,
+                    price: currentSlide.price ?? 12500,
+                    currency: currentSlide.currency,
+                    status: "published",
+                    coverImageUrl: currentSlide.image,
+                  };
+                  const heroImage = currentSlide.image;
+
                   const heroBadge =
                     sec.subtitle ||
                     sec.contentJson?.badge ||
@@ -331,18 +396,6 @@ export function PageLivePreview({
                     "Original fine artworks by Elena Vance. Exploring the threshold where lapis lazuli glazes, crushed mineral earth, and oceanic silence alter the atmospheric presence of space.";
                   const heroCtaText =
                     sec.contentJson?.ctaText || "Collector Portal";
-                  const activeArt = heroArtwork || {
-                    id: "art-1",
-                    title: "Atelier Study No. 1",
-                    year: 2026,
-                    medium: "Natural lapis lazuli & oil on Belgian linen",
-                    widthCm: 120,
-                    heightCm: 90,
-                    price: 12500,
-                    currency: "USD",
-                    status: "published",
-                    coverImageUrl: heroImage,
-                  };
 
                   return (
                     <section
@@ -498,6 +551,63 @@ export function PageLivePreview({
                                 </span>
                               </div>
                             </div>
+
+                            {/* Multi-piece Showcase Selectors (Carousel Dots & Chevrons) */}
+                            {heroSlides.length > 1 && (
+                              <div className="mt-3 flex items-center justify-between px-2 text-xs text-zinc-400 w-full min-w-0">
+                                <div className="flex items-center gap-1.5">
+                                  {heroSlides.map((slide, idx) => (
+                                    <button
+                                      key={idx}
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setActiveHeroIndex(idx);
+                                      }}
+                                      className={`transition-all rounded-full cursor-pointer ${
+                                        safeHeroIndex === idx
+                                          ? "w-7 h-2 bg-[#d1a86e]"
+                                          : "w-2 h-2 bg-zinc-700 hover:bg-zinc-500"
+                                      }`}
+                                      aria-label={`Select masterpiece slide ${idx + 1}`}
+                                    />
+                                  ))}
+                                </div>
+
+                                <div className="flex items-center gap-1">
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      setActiveHeroIndex(
+                                        (prev) => (prev - 1 + heroSlides.length) % heroSlides.length
+                                      );
+                                    }}
+                                    className="p-1 rounded-full hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                                    aria-label="Previous artwork"
+                                  >
+                                    <ChevronLeft className="w-4 h-4" />
+                                  </button>
+                                  <span className="text-[11px] font-mono text-zinc-500">
+                                    0{safeHeroIndex + 1} / 0{heroSlides.length}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      setActiveHeroIndex((prev) => (prev + 1) % heroSlides.length);
+                                    }}
+                                    className="p-1 rounded-full hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                                    aria-label="Next artwork"
+                                  >
+                                    <ChevronRight className="w-4 h-4" />
+                                  </button>
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
