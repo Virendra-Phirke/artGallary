@@ -7,6 +7,8 @@ import {
   MockHomepageSection,
   SiteSettingsData,
   MockArtwork,
+  MockCollection,
+  MockExhibition,
 } from "@/db/mockData";
 import { formatCurrency } from "@/lib/utils";
 import {
@@ -30,6 +32,12 @@ import {
   FileText,
   Maximize2,
   RotateCcw,
+  Sparkles,
+  Calendar,
+  MapPin,
+  Mail,
+  Phone,
+  Clock,
 } from "lucide-react";
 
 interface StudioInspectorProps {
@@ -37,6 +45,8 @@ interface StudioInspectorProps {
   siteSettings: SiteSettingsData;
   activePage: string;
   artworks?: MockArtwork[];
+  collections?: MockCollection[];
+  exhibitions?: MockExhibition[];
   onUpdateSectionText: (id: string, field: "title" | "subtitle", val: string) => void;
   onUpdateSectionContent: (id: string, field: string, val: any) => void;
   onUpdateSiteSetting: <K extends keyof SiteSettingsData>(key: K, val: SiteSettingsData[K]) => void;
@@ -237,6 +247,8 @@ export function StudioInspector({
   siteSettings,
   activePage,
   artworks = [],
+  collections = [],
+  exhibitions = [],
   onUpdateSectionText,
   onUpdateSectionContent,
   onUpdateSiteSetting,
@@ -639,7 +651,7 @@ export function StudioInspector({
                 )}
               </div>
 
-              {/* Actions: Media Library & Direct Upload */}
+              {/* Actions: Media Library & Direct Upload & Reset */}
               <div className="flex items-center gap-2 pt-1">
                 <button
                   type="button"
@@ -658,6 +670,17 @@ export function StudioInspector({
                   <Upload className="w-3.5 h-3.5 text-[#d1a86e]" />
                   <span>Upload</span>
                 </button>
+
+                {Boolean(currentSection.contentJson?.imageUrl) && (
+                  <button
+                    type="button"
+                    onClick={() => onUpdateSectionContent(currentSection.id, "imageUrl", "")}
+                    className="p-2 rounded-xl bg-[#181922] hover:bg-rose-950 text-zinc-400 hover:text-rose-300 border border-[#272937] text-xs transition-colors cursor-pointer"
+                    title="Reset to default asset"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                  </button>
+                )}
               </div>
             </div>
           )
@@ -769,24 +792,104 @@ export function StudioInspector({
 
             {/* 2. FEATURED ARTWORKS */}
             {currentSection.sectionKey === "featured_artworks" && (
-              <div className="space-y-3 pt-2 border-t border-white/5">
+              <div className="space-y-3.5 pt-2 border-t border-white/5">
                 <div className="space-y-1.5">
                   <label className="text-[10px] uppercase font-mono tracking-wider text-zinc-400 block font-semibold">
-                    Curatorial Intro
+                    Curatorial Intro Statement
                   </label>
                   <textarea
                     rows={3}
                     value={currentSection.contentJson?.description || ""}
                     onChange={(e) => onUpdateSectionContent(currentSection.id, "description", e.target.value)}
+                    placeholder="Brief curatorial monologue introducing the selected canvases..."
                     className="w-full bg-[#181922] border border-[#272937] rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-[#d1a86e] leading-relaxed"
                   />
+                </div>
+
+                {/* Display Count Selector */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] uppercase font-mono tracking-wider text-zinc-400 block font-semibold">
+                      Max Display Count
+                    </label>
+                    <span className="text-[10px] text-[#d1a86e] font-mono font-medium">
+                      {currentSection.contentJson?.maxDisplayCount || 6} Canvases
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-4 gap-1 p-1 bg-[#14151c] rounded-xl border border-[#262834]">
+                    {[3, 4, 6, 8].map((num) => (
+                      <button
+                        key={num}
+                        type="button"
+                        onClick={() => onUpdateSectionContent(currentSection.id, "maxDisplayCount", num)}
+                        className={`py-1.5 rounded-lg text-xs font-mono font-medium transition-all cursor-pointer ${
+                          (Number(currentSection.contentJson?.maxDisplayCount) || 6) === num
+                            ? "bg-[#d1a86e] text-[#0d0e12] font-bold shadow-sm"
+                            : "text-zinc-400 hover:text-white hover:bg-white/5"
+                        }`}
+                      >
+                        {num}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Filter Pills Toggle */}
+                <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#161720] border border-white/5">
+                  <div>
+                    <span className="text-xs text-white font-medium block">Category Filter Pills</span>
+                    <span className="text-[10px] text-zinc-400">All Works / Available / Monumental / Mineral</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      onUpdateSectionContent(
+                        currentSection.id,
+                        "showFilters",
+                        currentSection.contentJson?.showFilters === false ? true : false
+                      )
+                    }
+                    className={`px-2.5 py-1 rounded-full text-[10px] font-mono uppercase font-semibold cursor-pointer transition-colors ${
+                      currentSection.contentJson?.showFilters !== false
+                        ? "bg-emerald-950 text-emerald-300 border border-emerald-800/60 hover:bg-emerald-900"
+                        : "bg-zinc-800 text-zinc-400 hover:text-white"
+                    }`}
+                  >
+                    {currentSection.contentJson?.showFilters !== false ? "Visible" : "Hidden"}
+                  </button>
                 </div>
               </div>
             )}
 
             {/* 3. LATEST COLLECTION */}
             {currentSection.sectionKey === "latest_collection" && (
-              <div className="space-y-3 pt-2 border-t border-white/5">
+              <div className="space-y-3.5 pt-2 border-t border-white/5">
+                {/* Collection Selector */}
+                {collections.length > 0 && (
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] uppercase font-mono tracking-wider text-zinc-400 block font-semibold">
+                      Spotlight Series / Collection
+                    </label>
+                    <select
+                      value={currentSection.contentJson?.collectionId || collections[0]?.id || ""}
+                      onChange={(e) => {
+                        const col = collections.find((c) => c.id === e.target.value);
+                        onUpdateSectionContent(currentSection.id, "collectionId", e.target.value);
+                        if (col && (!currentSection.title || currentSection.title === "Series Spotlight")) {
+                          onUpdateSectionText(currentSection.id, "title", col.title);
+                        }
+                      }}
+                      className="w-full bg-[#181922] border border-[#272937] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#d1a86e] cursor-pointer truncate"
+                    >
+                      {collections.map((col) => (
+                        <option key={col.id} value={col.id}>
+                          {col.title} ({col.artworkSlugs?.length || 0} works)
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
                 <div className="space-y-1.5">
                   <label className="text-[10px] uppercase font-mono tracking-wider text-zinc-400 block font-semibold">
                     Series Curatorial Statement
@@ -798,14 +901,59 @@ export function StudioInspector({
                     className="w-full bg-[#181922] border border-[#272937] rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-[#d1a86e] leading-relaxed"
                   />
                 </div>
-                <button
-                  type="button"
-                  onClick={() => onOpenMediaPicker(currentSection.id)}
-                  className="w-full py-2 px-3 rounded-xl bg-[#181922] hover:bg-[#222432] text-zinc-300 hover:text-white border border-[#272937] text-xs font-medium flex items-center justify-center gap-2 cursor-pointer transition-colors"
-                >
-                  <ImageIcon className="w-3.5 h-3.5 text-[#d1a86e]" />
-                  <span>Update Panoramic Series Cover</span>
-                </button>
+
+                {/* Panoramic Cover Preview + Actions */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] uppercase font-mono tracking-wider text-zinc-400 block font-semibold">
+                      Panoramic Series Cover
+                    </label>
+                    {Boolean(currentSection.contentJson?.imageUrl) && (
+                      <button
+                        type="button"
+                        onClick={() => onUpdateSectionContent(currentSection.id, "imageUrl", "")}
+                        className="text-[10px] text-zinc-400 hover:text-rose-400 transition-colors cursor-pointer flex items-center gap-1"
+                        title="Reset to series default cover"
+                      >
+                        <RotateCcw className="w-3 h-3" />
+                        <span>Reset</span>
+                      </button>
+                    )}
+                  </div>
+                  <div className="relative aspect-[16/9] rounded-xl overflow-hidden bg-[#14151a] border border-[#262834]">
+                    <Image
+                      src={
+                        currentSection.contentJson?.imageUrl ||
+                        collections.find((c) => c.id === currentSection.contentJson?.collectionId)?.coverImageUrl ||
+                        collections[0]?.coverImageUrl ||
+                        "https://ik.imagekit.io/bpnsp30ni/artworks/gallery/1788717079935-kazuha__EB1yso0A.jpeg?updatedAt=1788717081490"
+                      }
+                      alt="Collection Cover"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => onOpenMediaPicker(currentSection.id)}
+                    className="w-full py-2 px-3 rounded-xl bg-[#181922] hover:bg-[#222432] text-zinc-300 hover:text-white border border-[#272937] text-xs font-medium flex items-center justify-center gap-2 cursor-pointer transition-colors"
+                  >
+                    <ImageIcon className="w-3.5 h-3.5 text-[#d1a86e]" />
+                    <span>Update Panoramic Series Cover</span>
+                  </button>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] uppercase font-mono tracking-wider text-zinc-400 block font-semibold">
+                    CTA Button Text
+                  </label>
+                  <input
+                    type="text"
+                    value={currentSection.contentJson?.ctaText || "Explore Series"}
+                    onChange={(e) => onUpdateSectionContent(currentSection.id, "ctaText", e.target.value)}
+                    className="w-full bg-[#181922] border border-[#272937] rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#d1a86e]"
+                  />
+                </div>
               </div>
             )}
 
@@ -839,6 +987,9 @@ export function StudioInspector({
                     onChange={(e) => onUpdateSectionContent(currentSection.id, "quote", e.target.value)}
                     className="w-full bg-[#181922] border border-[#272937] rounded-xl p-2.5 text-xs text-white italic font-serif focus:outline-none focus:border-[#d1a86e] leading-relaxed"
                   />
+                  <div className="p-2.5 rounded-lg bg-black/40 border border-white/5 font-serif italic text-xs text-zinc-300">
+                    &ldquo;{currentSection.contentJson?.quote || "A painting is not merely an image hanging upon a partition; it is an alteration of the atmospheric silence within a room."}&rdquo;
+                  </div>
                 </div>
 
                 <div className="space-y-1.5">
@@ -851,6 +1002,49 @@ export function StudioInspector({
                     onChange={(e) => onUpdateSectionContent(currentSection.id, "description", e.target.value)}
                     className="w-full bg-[#181922] border border-[#272937] rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-[#d1a86e] leading-relaxed"
                   />
+                </div>
+
+                {/* Portrait Preview + Action */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] uppercase font-mono tracking-wider text-zinc-400 block font-semibold">
+                      Artist Studio Portrait
+                    </label>
+                    {Boolean(currentSection.contentJson?.imageUrl || siteSettings.aboutPageConfig?.artistImageUrl) && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onUpdateSectionContent(currentSection.id, "imageUrl", "");
+                          onUpdateAboutConfig("artistImageUrl", "");
+                        }}
+                        className="text-[10px] text-zinc-400 hover:text-rose-400 transition-colors cursor-pointer flex items-center gap-1"
+                        title="Reset to default portrait"
+                      >
+                        <RotateCcw className="w-3 h-3" />
+                        <span>Reset</span>
+                      </button>
+                    )}
+                  </div>
+                  <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-[#14151a] border border-[#262834]">
+                    <Image
+                      src={
+                        currentSection.contentJson?.imageUrl ||
+                        siteSettings.aboutPageConfig?.artistImageUrl ||
+                        "https://ik.imagekit.io/bpnsp30ni/artworks/gallery/1788717079935-kazuha__EB1yso0A.jpeg?updatedAt=1788717081490"
+                      }
+                      alt="Artist Portrait"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => onOpenMediaPicker("about_portrait")}
+                    className="w-full py-2 px-3 rounded-xl bg-[#181922] hover:bg-[#222432] text-zinc-300 hover:text-white border border-[#272937] text-xs font-medium flex items-center justify-center gap-2 cursor-pointer transition-colors"
+                  >
+                    <ImageIcon className="w-3.5 h-3.5 text-[#d1a86e]" />
+                    <span>Change Artist Studio Portrait</span>
+                  </button>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
@@ -877,24 +1071,41 @@ export function StudioInspector({
                     />
                   </div>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={() => onOpenMediaPicker(currentSection.id)}
-                  className="w-full py-2 px-3 rounded-xl bg-[#181922] hover:bg-[#222432] text-zinc-300 hover:text-white border border-[#272937] text-xs font-medium flex items-center justify-center gap-2 cursor-pointer transition-colors"
-                >
-                  <ImageIcon className="w-3.5 h-3.5 text-[#d1a86e]" />
-                  <span>Change Artist Atelier Portrait</span>
-                </button>
               </div>
             )}
 
             {/* 6. FEATURED EXHIBITION */}
             {currentSection.sectionKey === "featured_exhibition" && (
-              <div className="space-y-3 pt-2 border-t border-white/5">
+              <div className="space-y-3.5 pt-2 border-t border-white/5">
+                {/* Exhibition Selector */}
+                {exhibitions.length > 0 && (
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] uppercase font-mono tracking-wider text-zinc-400 block font-semibold">
+                      Spotlight Exhibition
+                    </label>
+                    <select
+                      value={currentSection.contentJson?.exhibitionId || exhibitions[0]?.id || ""}
+                      onChange={(e) => {
+                        const exh = exhibitions.find((x) => x.id === e.target.value);
+                        onUpdateSectionContent(currentSection.id, "exhibitionId", e.target.value);
+                        if (exh && (!currentSection.title || currentSection.title === "Exhibition Note")) {
+                          onUpdateSectionText(currentSection.id, "title", exh.title);
+                        }
+                      }}
+                      className="w-full bg-[#181922] border border-[#272937] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#d1a86e] cursor-pointer truncate"
+                    >
+                      {exhibitions.map((exh) => (
+                        <option key={exh.id} value={exh.id}>
+                          {exh.title} ({exh.status === "current" ? "Open Now" : "Upcoming"})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
                 <div className="space-y-1.5">
                   <label className="text-[10px] uppercase font-mono tracking-wider text-zinc-400 block font-semibold">
-                    Exhibition Notes &amp; Dates
+                    Curator Note &amp; Statement
                   </label>
                   <textarea
                     rows={3}
@@ -903,14 +1114,74 @@ export function StudioInspector({
                     className="w-full bg-[#181922] border border-[#272937] rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-[#d1a86e] leading-relaxed"
                   />
                 </div>
-                <button
-                  type="button"
-                  onClick={() => onOpenMediaPicker(currentSection.id)}
-                  className="w-full py-2 px-3 rounded-xl bg-[#181922] hover:bg-[#222432] text-zinc-300 hover:text-white border border-[#272937] text-xs font-medium flex items-center justify-center gap-2 cursor-pointer transition-colors"
-                >
-                  <ImageIcon className="w-3.5 h-3.5 text-[#d1a86e]" />
-                  <span>Update Exhibition Poster</span>
-                </button>
+
+                {/* Exhibition Poster Preview + Action */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] uppercase font-mono tracking-wider text-zinc-400 block font-semibold">
+                      Exhibition Poster / Banner
+                    </label>
+                    {Boolean(currentSection.contentJson?.imageUrl) && (
+                      <button
+                        type="button"
+                        onClick={() => onUpdateSectionContent(currentSection.id, "imageUrl", "")}
+                        className="text-[10px] text-zinc-400 hover:text-rose-400 transition-colors cursor-pointer flex items-center gap-1"
+                        title="Reset to exhibition default cover"
+                      >
+                        <RotateCcw className="w-3 h-3" />
+                        <span>Reset</span>
+                      </button>
+                    )}
+                  </div>
+                  <div className="relative aspect-[16/9] rounded-xl overflow-hidden bg-[#14151a] border border-[#262834]">
+                    <Image
+                      src={
+                        currentSection.contentJson?.imageUrl ||
+                        exhibitions.find((x) => x.id === currentSection.contentJson?.exhibitionId)?.coverImageUrl ||
+                        exhibitions[0]?.coverImageUrl ||
+                        "https://ik.imagekit.io/bpnsp30ni/artworks/gallery/1788717079935-kazuha__EB1yso0A.jpeg?updatedAt=1788717081490"
+                      }
+                      alt="Exhibition Poster"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => onOpenMediaPicker(currentSection.id)}
+                    className="w-full py-2 px-3 rounded-xl bg-[#181922] hover:bg-[#222432] text-zinc-300 hover:text-white border border-[#272937] text-xs font-medium flex items-center justify-center gap-2 cursor-pointer transition-colors"
+                  >
+                    <ImageIcon className="w-3.5 h-3.5 text-[#d1a86e]" />
+                    <span>Update Exhibition Poster</span>
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] uppercase font-mono tracking-wider text-zinc-400 block font-semibold">
+                      Override Location
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Paris, France"
+                      value={currentSection.contentJson?.location || ""}
+                      onChange={(e) => onUpdateSectionContent(currentSection.id, "location", e.target.value)}
+                      className="w-full bg-[#181922] border border-[#272937] rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#d1a86e]"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] uppercase font-mono tracking-wider text-zinc-400 block font-semibold">
+                      Override Dates
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="March 12 — June 30, 2026"
+                      value={currentSection.contentJson?.dates || ""}
+                      onChange={(e) => onUpdateSectionContent(currentSection.id, "dates", e.target.value)}
+                      className="w-full bg-[#181922] border border-[#272937] rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#d1a86e]"
+                    />
+                  </div>
+                </div>
               </div>
             )}
 

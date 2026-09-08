@@ -33,6 +33,22 @@ import { ContactForm } from "@/components/public/ContactForm";
 
 export const revalidate = 3600; // ISR revalidation every 1 hour with instant write-invalidation
 
+function CuratorialSectionDivider() {
+  return (
+    <div className="w-full max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 my-8 sm:my-16 md:my-24 flex items-center justify-center pointer-events-none">
+      <div className="relative w-full flex items-center justify-center">
+        {/* Subtle hairline gradient with gold center flare */}
+        <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-[#d1a86e]/20 to-transparent" />
+        <div className="absolute px-3 bg-[#0a0b0e] flex items-center gap-1.5">
+          <span className="w-1 h-1 rotate-45 bg-[#d1a86e]/40" />
+          <span className="w-1.5 h-1.5 rotate-45 bg-[#d1a86e]/80" />
+          <span className="w-1 h-1 rotate-45 bg-[#d1a86e]/40" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default async function HomePage() {
   const [featuredArtworks, allArtworks, collections, exhibitions, sections, settings] =
     await Promise.all([
@@ -63,159 +79,244 @@ export default async function HomePage() {
     .filter((s) => s.isEnabled)
     .sort((a, b) => a.displayOrder - b.displayOrder);
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://latelier-lumineux.art";
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "ArtGallery",
+        "@id": `${siteUrl}/#gallery`,
+        "name": settings.siteTitle || "L'Atelier Lumineux — Elena Vance Studio",
+        "description":
+          settings.bioSummary ||
+          "Fine art studio and gallery of contemporary painter Elena Vance. Natural mineral lapis lazuli paintings, physical spatial AR calibrations, and curated acquisitions.",
+        "url": siteUrl,
+        "telephone": settings.phone || "+33 (0)1 42 68 55 00",
+        "email": settings.contactEmail || "curator@latelier-lumineux.art",
+        "priceRange": "€€€€",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": settings.address || "14 Rue de Beaune",
+          "addressLocality": "Paris",
+          "postalCode": "75007",
+          "addressCountry": "FR",
+        },
+        "founder": {
+          "@type": "Person",
+          "@id": `${siteUrl}/#artist`,
+          "name": settings.artistName || "Elena Vance",
+          "jobTitle": "Contemporary Fine Artist & Painter",
+          "nationality": "French",
+          "alumniOf": "École Nationale Supérieure des Beaux-Arts, Paris",
+          "award": "Prix Jean-François Millet pour la Peinture Contemporaine",
+          "memberOf": {
+            "@type": "Organization",
+            "name": "ADAGP France (Société des Auteurs dans les Arts Graphiques et Plastiques)",
+          },
+        },
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${siteUrl}/#website`,
+        "url": siteUrl,
+        "name": settings.siteTitle || "L'Atelier Lumineux",
+        "publisher": {
+          "@id": `${siteUrl}/#gallery`,
+        },
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": `${siteUrl}/gallery?q={search_term_string}`,
+          },
+          "query-input": "required name=search_term_string",
+        },
+      },
+    ],
+  };
+
   return (
-    <div className="space-y-12 sm:space-y-28 md:space-y-36 pb-20 w-full max-w-full overflow-x-hidden">
-      {sortedSections.map((sec) => {
+    <div className="relative pb-20 w-full max-w-full overflow-x-hidden">
+      {/* Schema.org Institutional JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
+      {sortedSections.map((sec, index) => {
+        const renderDivider = index > 0;
+
         // 1. HERO SHOWCASE
         if (sec.sectionKey === "hero") {
           return (
-            <HeroShowcaseClient
-              key={sec.id}
-              artworks={masterworks}
-              heroBadge={
-                sec.subtitle ||
-                sec.contentJson?.badge ||
-                "Spring 2026 Collection"
-              }
-              heroTitle={
-                sec.title || "The Architecture of Luminous Stillness"
-              }
-              heroDescription={
-                sec.contentJson?.description ||
-                "Original fine artworks by Elena Vance. Exploring the threshold where lapis lazuli glazes, crushed mineral earth, and oceanic silence alter the atmospheric presence of space."
-              }
-              primaryCtaText={sec.contentJson?.ctaText || "Explore Curated Catalog"}
-              primaryCtaUrl={sec.contentJson?.ctaUrl || "/gallery"}
-              customHeroImage={sec.contentJson?.imageUrl}
-              heroImages={sec.contentJson?.heroImages}
-              heroSlideCount={
-                sec.contentJson?.heroSlideCount
-                  ? Number(sec.contentJson.heroSlideCount)
-                  : undefined
-              }
-              heroArtworkIds={sec.contentJson?.heroArtworkIds}
-            />
+            <React.Fragment key={sec.id}>
+              {renderDivider && <CuratorialSectionDivider />}
+              <HeroShowcaseClient
+                artworks={masterworks}
+                heroBadge={
+                  sec.subtitle ||
+                  sec.contentJson?.badge ||
+                  "Spring 2026 Collection"
+                }
+                heroTitle={
+                  sec.title || "The Architecture of Luminous Stillness"
+                }
+                heroDescription={
+                  sec.contentJson?.description ||
+                  "Original fine artworks by Elena Vance. Exploring the threshold where lapis lazuli glazes, crushed mineral earth, and oceanic silence alter the atmospheric presence of space."
+                }
+                primaryCtaText={sec.contentJson?.ctaText || "Explore Curated Catalog"}
+                primaryCtaUrl={sec.contentJson?.ctaUrl || "/gallery"}
+                customHeroImage={sec.contentJson?.imageUrl}
+                heroImages={sec.contentJson?.heroImages}
+                heroSlideCount={
+                  sec.contentJson?.heroSlideCount
+                    ? Number(sec.contentJson.heroSlideCount)
+                    : undefined
+                }
+                heroArtworkIds={sec.contentJson?.heroArtworkIds}
+              />
+            </React.Fragment>
           );
         }
 
         // 2. CURATED MASTERWORKS (FEATURED ARTWORKS)
         if (sec.sectionKey === "featured_artworks") {
           return (
-            <FeaturedArtworksClient
-              key={sec.id}
-              artworks={masterworks}
-              sectionTitle={sec.title || "Selected Works"}
-              sectionSubtitle={sec.subtitle || "Curated Catalogue"}
-            />
+            <React.Fragment key={sec.id}>
+              {renderDivider && <CuratorialSectionDivider />}
+              <FeaturedArtworksClient
+                artworks={masterworks}
+                sectionTitle={sec.title || "Selected Works"}
+                sectionSubtitle={sec.subtitle || "Curated Catalogue"}
+                curatorialIntro={sec.contentJson?.description || sec.contentJson?.curatorialIntro}
+                maxDisplayCount={
+                  sec.contentJson?.maxDisplayCount
+                    ? Number(sec.contentJson.maxDisplayCount)
+                    : 6
+                }
+                showFilters={sec.contentJson?.showFilters !== false}
+              />
+            </React.Fragment>
           );
         }
 
         // 3. LATEST COLLECTION SPOTLIGHT
-        if (
-          sec.sectionKey === "latest_collection" &&
-          (featuredCollection || sec.contentJson?.imageUrl)
-        ) {
+        if (sec.sectionKey === "latest_collection") {
+          const spotlightCollection = sec.contentJson?.collectionId
+            ? collections.find((c) => c.id === sec.contentJson.collectionId) || featuredCollection
+            : featuredCollection;
+
+          if (!spotlightCollection && !sec.contentJson?.imageUrl) return null;
+
           const colImage =
-            sec.contentJson?.imageUrl || featuredCollection?.coverImageUrl;
+            sec.contentJson?.imageUrl || spotlightCollection?.coverImageUrl;
           return (
-            <section
-              key={sec.id}
-              className="bg-[#0e0f14] py-14 sm:py-24 w-full max-w-full overflow-hidden"
-            >
-              <div className="max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center w-full min-w-0">
-                <div className="lg:col-span-5 space-y-4 sm:space-y-6">
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#181924] text-[9px] sm:text-[10px] tracking-[0.22em] text-[#d1a86e] uppercase">
-                    <Layers className="w-3 h-3" />
-                    <span>{sec.subtitle || "Featured Series Spotlight"}</span>
+            <React.Fragment key={sec.id}>
+              {renderDivider && <CuratorialSectionDivider />}
+              <section
+                className="relative bg-[#0e0f14] py-14 sm:py-24 w-full max-w-full overflow-hidden border-y border-[#181924]"
+              >
+                {/* Subtle Curatorial Lighting */}
+                <div className="absolute top-0 right-1/4 w-[600px] h-[350px] bg-[radial-gradient(ellipse_at_center,rgba(209,168,110,0.03),transparent_70%)] pointer-events-none -z-10 blur-2xl" />
+
+                <div className="max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center w-full min-w-0">
+                  <div className="lg:col-span-5 space-y-4 sm:space-y-6">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#181924] text-[9px] sm:text-[10px] tracking-[0.22em] text-[#d1a86e] uppercase">
+                      <Layers className="w-3 h-3" />
+                      <span>{sec.subtitle || "Featured Series Spotlight"}</span>
+                    </div>
+
+                    <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl text-white font-medium">
+                      {sec.title || spotlightCollection?.title}
+                    </h2>
+
+                    <p className="text-xs sm:text-sm md:text-base text-[#a6aabf] leading-relaxed font-light">
+                      {sec.contentJson?.description ||
+                        spotlightCollection?.curatorialStatement ||
+                        spotlightCollection?.description}
+                    </p>
+
+                    {spotlightCollection && (
+                      <div className="pt-2 sm:pt-4 flex flex-wrap items-center gap-2 sm:gap-3">
+                        <Button
+                          asChild
+                          className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-[10px] sm:text-xs tracking-wider uppercase h-7.5 sm:h-9 px-3.5 sm:px-5 shadow-md shadow-[#d1a86e]/15 active:scale-[0.98] w-auto inline-flex"
+                        >
+                          <Link
+                            href={`/collections/${spotlightCollection.slug}`}
+                            className="flex items-center justify-center gap-1.5"
+                          >
+                            <span>{sec.contentJson?.ctaText || "Explore Series"}</span>
+                            <ArrowRight className="w-3 h-3 shrink-0" />
+                          </Link>
+                        </Button>
+
+                        <Button
+                          asChild
+                          className="rounded-full bg-[#161720] hover:bg-[#1f212c] text-zinc-300 hover:text-white text-[10px] sm:text-xs uppercase tracking-wider h-7.5 sm:h-9 px-3 sm:px-4 active:scale-[0.98] w-auto inline-flex"
+                        >
+                          <Link
+                            href="/account?tab=collections"
+                            className="flex items-center justify-center gap-1.5"
+                          >
+                            <Sparkles className="w-2.5 h-2.5 text-[#d1a86e] shrink-0" />
+                            <span>All Series</span>
+                          </Link>
+                        </Button>
+                      </div>
+                    )}
                   </div>
 
-                  <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl text-white font-medium">
-                    {sec.title || featuredCollection?.title}
-                  </h2>
-
-                  <p className="text-xs sm:text-sm md:text-base text-[#a6aabf] leading-relaxed font-light">
-                    {sec.contentJson?.description ||
-                      featuredCollection?.curatorialStatement ||
-                      featuredCollection?.description}
-                  </p>
-
-                  {featuredCollection && (
-                    <div className="pt-2 sm:pt-4 flex flex-wrap items-center gap-2 sm:gap-3">
-                      <Button
-                        asChild
-                        className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-[10px] sm:text-xs tracking-wider uppercase h-7.5 sm:h-9 px-3.5 sm:px-5 shadow-md shadow-[#d1a86e]/15 active:scale-[0.98] w-auto inline-flex"
-                      >
-                        <Link
-                          href={`/collections/${featuredCollection.slug}`}
-                          className="flex items-center justify-center gap-1.5"
-                        >
-                          <span>Explore Series</span>
-                          <ArrowRight className="w-3 h-3 shrink-0" />
-                        </Link>
-                      </Button>
-
-                      <Button
-                        asChild
-                        className="rounded-full bg-[#161720] hover:bg-[#1f212c] text-zinc-300 hover:text-white text-[10px] sm:text-xs uppercase tracking-wider h-7.5 sm:h-9 px-3 sm:px-4 active:scale-[0.98] w-auto inline-flex"
-                      >
-                        <Link
-                          href="/account?tab=collections"
-                          className="flex items-center justify-center gap-1.5"
-                        >
-                          <Sparkles className="w-2.5 h-2.5 text-[#d1a86e] shrink-0" />
-                          <span>All Series</span>
-                        </Link>
-                      </Button>
+                  {colImage && (
+                    <div className="lg:col-span-7 relative">
+                      <div className="relative aspect-[16/10] rounded-2xl overflow-hidden shadow-2xl bg-[#14151a]">
+                        <ProgressiveImage
+                          src={colImage}
+                          alt={
+                            sec.title ||
+                            spotlightCollection?.title ||
+                            "Featured Collection"
+                          }
+                          fill
+                          optimizeWidth={1200}
+                          optimizeQuality={85}
+                          sizes="(max-width: 1024px) 100vw, 60vw"
+                          className="object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-4 sm:p-6">
+                          <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-[#d1a86e]">
+                            {spotlightCollection?.title} Series
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
-
-                {colImage && (
-                  <div className="lg:col-span-7 relative">
-                    <div className="relative aspect-[16/10] rounded-2xl overflow-hidden shadow-2xl bg-[#14151a]">
-                      <ProgressiveImage
-                        src={colImage}
-                        alt={
-                          sec.title ||
-                          featuredCollection?.title ||
-                          "Featured Collection"
-                        }
-                        fill
-                        optimizeWidth={1200}
-                        optimizeQuality={85}
-                        sizes="(max-width: 1024px) 100vw, 60vw"
-                        className="object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-4 sm:p-6">
-                        <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-[#d1a86e]">
-                          {featuredCollection?.title} Series
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </section>
+              </section>
+            </React.Fragment>
           );
         }
 
         // 4. WEBAR SPATIAL STUDIO / INTERACTIVE ROOM PREVIEWER
         if (sec.sectionKey === "ar_experience") {
           return (
-            <InteractiveRoomPreviewer
-              key={sec.id}
-              artworks={masterworks}
-              sectionTitle={
-                sec.title || "View Original Works in Your Interior Space"
-              }
-              sectionSubtitle={sec.subtitle || "Spatial WebAR & Room Studio"}
-              sectionDescription={
-                sec.contentJson?.description ||
-                "Calibrate any painting to its physical centimeter scale against curated architectural walls and custom frames, or launch camera WebAR directly on your phone."
-              }
-              ctaText={sec.contentJson?.ctaText}
-              ctaUrl={sec.contentJson?.ctaUrl}
-            />
+            <React.Fragment key={sec.id}>
+              {renderDivider && <CuratorialSectionDivider />}
+              <InteractiveRoomPreviewer
+                artworks={masterworks}
+                sectionTitle={
+                  sec.title || "View Original Works in Your Interior Space"
+                }
+                sectionSubtitle={sec.subtitle || "Spatial WebAR & Room Studio"}
+                sectionDescription={
+                  sec.contentJson?.description ||
+                  "Calibrate any painting to its physical centimeter scale against curated architectural walls and custom frames, or launch camera WebAR directly on your phone."
+                }
+                ctaText={sec.contentJson?.ctaText}
+                ctaUrl={sec.contentJson?.ctaUrl}
+              />
+            </React.Fragment>
           );
         }
 
@@ -223,6 +324,7 @@ export default async function HomePage() {
         if (sec.sectionKey === "artist_story") {
           return (
             <React.Fragment key={sec.id}>
+              {renderDivider && <CuratorialSectionDivider />}
               <ArtistAtelierSection
                 title={sec.title || "The Alchemy of Natural Earth & Luminous Glazes"}
                 quote={
@@ -253,243 +355,268 @@ export default async function HomePage() {
         }
 
         // 6. CURRENT / FEATURED EXHIBITION
-        if (
-          sec.sectionKey === "featured_exhibition" &&
-          (currentExhibition || sec.contentJson?.imageUrl)
-        ) {
+        if (sec.sectionKey === "featured_exhibition") {
+          const spotlightExhibition = sec.contentJson?.exhibitionId
+            ? exhibitions.find((e) => e.id === sec.contentJson.exhibitionId) || currentExhibition
+            : currentExhibition;
+
+          if (!spotlightExhibition && !sec.contentJson?.imageUrl) return null;
+
           const exhImageUrl =
-            sec.contentJson?.imageUrl || currentExhibition?.coverImageUrl;
+            sec.contentJson?.imageUrl || spotlightExhibition?.coverImageUrl;
           return (
-            <section key={sec.id} className="max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 w-full max-w-full overflow-hidden">
-              <div className="pt-8 sm:pt-20 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center w-full min-w-0">
-                {exhImageUrl && (
-                  <div className="lg:col-span-7">
-                    <div className="relative aspect-[16/9] rounded-2xl overflow-hidden shadow-2xl bg-[#14151a]">
-                      <ProgressiveImage
-                        src={exhImageUrl}
-                        alt={
-                          sec.title ||
-                          currentExhibition?.title ||
-                          "Solo Exhibition"
-                        }
-                        fill
-                        optimizeWidth={1200}
-                        optimizeQuality={85}
-                        sizes="(max-width: 1024px) 100vw, 60vw"
-                        className="object-cover"
-                      />
-                      <div className="absolute top-3 left-3 sm:top-4 sm:left-4">
-                        <Badge
-                          variant="success"
-                          className="backdrop-blur-md bg-black/70 border-0 text-[10px] sm:text-xs"
-                        >
-                          {currentExhibition?.status === "current"
-                            ? "Currently Open"
-                            : "Upcoming Exhibition"}
-                        </Badge>
+            <React.Fragment key={sec.id}>
+              {renderDivider && <CuratorialSectionDivider />}
+              <section className="relative max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 w-full max-w-full overflow-hidden">
+                {/* Subtle Curatorial Glow */}
+                <div className="absolute top-1/2 left-1/3 -translate-y-1/2 w-[700px] h-[400px] bg-[radial-gradient(ellipse_at_center,rgba(209,168,110,0.03),transparent_70%)] pointer-events-none -z-10 blur-3xl" />
+
+                <div className="pt-4 sm:pt-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center w-full min-w-0">
+                  {exhImageUrl && (
+                    <div className="lg:col-span-7">
+                      <div className="relative aspect-[16/9] rounded-2xl overflow-hidden shadow-2xl bg-[#14151a] border border-[#232530]">
+                        <ProgressiveImage
+                          src={exhImageUrl}
+                          alt={
+                            sec.title ||
+                            spotlightExhibition?.title ||
+                            "Solo Exhibition"
+                          }
+                          fill
+                          optimizeWidth={1200}
+                          optimizeQuality={85}
+                          sizes="(max-width: 1024px) 100vw, 60vw"
+                          className="object-cover"
+                        />
+                        <div className="absolute top-3 left-3 sm:top-4 sm:left-4">
+                          <Badge
+                            variant="success"
+                            className="backdrop-blur-md bg-black/70 border-0 text-[10px] sm:text-xs"
+                          >
+                            {spotlightExhibition?.status === "current"
+                              ? "Currently Open"
+                              : "Upcoming Exhibition"}
+                          </Badge>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                <div className="lg:col-span-5 space-y-4 sm:space-y-5">
-                  <span className="text-[10px] sm:text-[11px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
-                    {sec.subtitle || "Current Solo Exhibition"}
-                  </span>
-                  <h3 className="font-serif text-2xl sm:text-4xl text-white font-medium">
-                    {sec.title || currentExhibition?.title}
-                  </h3>
-                  {currentExhibition?.subtitle && (
-                    <p className="text-xs text-zinc-400 font-medium">
-                      {currentExhibition.subtitle}
+                  <div className="lg:col-span-5 space-y-4 sm:space-y-5">
+                    <span className="text-[10px] sm:text-[11px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
+                      {sec.subtitle || "Current Solo Exhibition"}
+                    </span>
+                    <h3 className="font-serif text-2xl sm:text-4xl text-white font-medium">
+                      {sec.title || spotlightExhibition?.title}
+                    </h3>
+                    {spotlightExhibition?.subtitle && (
+                      <p className="text-xs text-zinc-400 font-medium">
+                        {spotlightExhibition.subtitle}
+                      </p>
+                    )}
+                    {(sec.contentJson?.location || spotlightExhibition?.location) && (
+                      <div className="flex items-center gap-2 text-xs text-zinc-300 pt-0.5">
+                        <MapPin className="w-3.5 h-3.5 text-[#d1a86e] shrink-0" />
+                        <span>{sec.contentJson?.location || spotlightExhibition?.location}</span>
+                      </div>
+                    )}
+                    {(sec.contentJson?.dates || spotlightExhibition?.startDate) && (
+                      <div className="flex items-center gap-2 text-xs text-zinc-400">
+                        <Calendar className="w-3.5 h-3.5 text-[#d1a86e] shrink-0" />
+                        <span>
+                          {sec.contentJson?.dates ||
+                            (spotlightExhibition?.startDate &&
+                              `${new Date(spotlightExhibition.startDate).toLocaleDateString(
+                                "en-US",
+                                { month: "long", day: "numeric", year: "numeric" }
+                              )}${
+                                spotlightExhibition.endDate
+                                  ? ` — ${new Date(
+                                      spotlightExhibition.endDate
+                                    ).toLocaleDateString("en-US", {
+                                      month: "long",
+                                      day: "numeric",
+                                      year: "numeric",
+                                    })}`
+                                  : ""
+                              }`)}
+                        </span>
+                      </div>
+                    )}
+                    <p className="text-xs sm:text-sm text-[#a6aabf] leading-relaxed pt-1 font-light">
+                      {sec.contentJson?.description ||
+                        spotlightExhibition?.description ||
+                        spotlightExhibition?.curatorNote}
                     </p>
-                  )}
-                  {currentExhibition?.location && (
-                    <div className="flex items-center gap-2 text-xs text-zinc-300 pt-0.5">
-                      <MapPin className="w-3.5 h-3.5 text-[#d1a86e] shrink-0" />
-                      <span>{currentExhibition.location}</span>
-                    </div>
-                  )}
-                  {currentExhibition?.startDate && (
-                    <div className="flex items-center gap-2 text-xs text-zinc-400">
-                      <Calendar className="w-3.5 h-3.5 text-[#d1a86e] shrink-0" />
-                      <span>
-                        {new Date(currentExhibition.startDate).toLocaleDateString(
-                          "en-US",
-                          { month: "long", day: "numeric", year: "numeric" }
-                        )}
-                        {currentExhibition.endDate
-                          ? ` — ${new Date(
-                              currentExhibition.endDate
-                            ).toLocaleDateString("en-US", {
-                              month: "long",
-                              day: "numeric",
-                              year: "numeric",
-                            })}`
-                          : ""}
-                      </span>
-                    </div>
-                  )}
-                  <p className="text-xs sm:text-sm text-[#a6aabf] leading-relaxed pt-1">
-                    {sec.contentJson?.description ||
-                      currentExhibition?.description ||
-                      currentExhibition?.curatorNote}
-                  </p>
-                  {currentExhibition && (
-                    <div className="pt-2 flex flex-wrap items-center gap-2 sm:gap-3">
-                      <Button
-                        asChild
-                        className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-[10px] sm:text-xs uppercase tracking-wider h-7.5 sm:h-9 px-3.5 sm:px-5 shadow-md shadow-[#d1a86e]/15 active:scale-[0.98] w-auto inline-flex"
-                      >
-                        <Link
-                          href="/account?tab=exhibitions"
-                          className="flex items-center justify-center gap-1.5"
+                    {spotlightExhibition && (
+                      <div className="pt-2 flex flex-wrap items-center gap-2 sm:gap-3">
+                        <Button
+                          asChild
+                          className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-[10px] sm:text-xs uppercase tracking-wider h-7.5 sm:h-9 px-3.5 sm:px-5 shadow-md shadow-[#d1a86e]/15 active:scale-[0.98] w-auto inline-flex"
                         >
-                          <Sparkles className="w-3 h-3 shrink-0" />
-                          <span>RSVP Exhibition</span>
-                        </Link>
-                      </Button>
-                      <Button
-                        asChild
-                        className="rounded-full bg-[#161720] hover:bg-[#1f212c] text-white text-[10px] sm:text-xs uppercase tracking-wider h-7.5 sm:h-9 px-3 sm:px-4 active:scale-[0.98] w-auto inline-flex"
-                      >
-                        <Link
-                          href={`/exhibitions/${currentExhibition.slug}`}
-                          className="flex items-center justify-center gap-1.5"
+                          <Link
+                            href="/account?tab=exhibitions"
+                            className="flex items-center justify-center gap-1.5"
+                          >
+                            <Sparkles className="w-3 h-3 shrink-0" />
+                            <span>RSVP Exhibition</span>
+                          </Link>
+                        </Button>
+                        <Button
+                          asChild
+                          className="rounded-full bg-[#161720] hover:bg-[#1f212c] text-white text-[10px] sm:text-xs uppercase tracking-wider h-7.5 sm:h-9 px-3 sm:px-4 active:scale-[0.98] w-auto inline-flex"
                         >
-                          <span>Dossier</span>
-                          <ArrowRight className="w-3 h-3 text-[#d1a86e] shrink-0" />
-                        </Link>
-                      </Button>
-                    </div>
-                  )}
+                          <Link
+                            href={`/exhibitions/${spotlightExhibition.slug}`}
+                            className="flex items-center justify-center gap-1.5"
+                          >
+                            <span>Dossier</span>
+                            <ArrowRight className="w-3 h-3 text-[#d1a86e] shrink-0" />
+                          </Link>
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </section>
+              </section>
+            </React.Fragment>
           );
         }
 
         // 7. PRIVATE INQUIRIES & ACQUISITIONS (MERGED CONTACT EXPERIENCE)
         if (sec.sectionKey === "contact_cta") {
           const cfg = settings.contactPageConfig;
-          const recipientEmail = cfg?.recipientEmail || settings.contactEmail || "curator@latelier-lumineux.art";
-          const phone = settings.phone || "+33 (0)1 42 68 55 00";
-          const address = settings.address || "14 Rue de Beaune, 7th Arrondissement, 75007 Paris, France";
-          const hours = settings.businessHours || "Tuesday – Saturday, 10:00 – 18:00 CET (By Appointment)";
+          const recipientEmail =
+            sec.contentJson?.recipientEmail ||
+            cfg?.recipientEmail ||
+            settings.contactEmail ||
+            "curator@latelier-lumineux.art";
+          const phone =
+            sec.contentJson?.phone || settings.phone || "+33 (0)1 42 68 55 00";
+          const address =
+            sec.contentJson?.address ||
+            settings.address ||
+            "14 Rue de Beaune, 7th Arrondissement, 75007 Paris, France";
+          const hours =
+            sec.contentJson?.businessHours ||
+            settings.businessHours ||
+            "Tuesday – Saturday, 10:00 – 18:00 CET (By Appointment)";
 
           return (
-            <section
-              id="contact"
-              key={sec.id}
-              className="max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 w-full max-w-full overflow-hidden scroll-mt-24 sm:scroll-mt-32 space-y-8 sm:space-y-12"
-            >
-              <div className="max-w-3xl space-y-3">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#181924] border border-[#262833] text-[9px] sm:text-[10px] tracking-[0.22em] text-[#d1a86e] uppercase font-semibold">
-                  <Mail className="w-3 h-3 text-[#d1a86e]" />
-                  <span>{sec.subtitle || "Curatorial Liaison & Private Acquisitions"}</span>
-                </div>
-                <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl text-white font-medium">
-                  {sec.title || "Contact & Studio Inquiries"}
-                </h2>
-                <p className="text-xs sm:text-sm md:text-base text-[#a6aabf] leading-relaxed font-light">
-                  {sec.contentJson?.description ||
-                    cfg?.description ||
-                    "For private acquisitions, curatorial exhibition loans, bespoke commissions, and private salon viewings, please correspond directly with Madame Vance's Paris liaison desk."}
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-                {/* Interactive Contact Form Column */}
-                <div className="lg:col-span-7">
-                  <ContactForm />
+            <React.Fragment key={sec.id}>
+              {renderDivider && <CuratorialSectionDivider />}
+              <section
+                id="contact"
+                className="max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 w-full max-w-full overflow-hidden scroll-mt-24 sm:scroll-mt-32 space-y-8 sm:space-y-12"
+              >
+                <div className="max-w-3xl space-y-3">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#181924] border border-[#262833] text-[9px] sm:text-[10px] tracking-[0.22em] text-[#d1a86e] uppercase font-semibold">
+                    <Mail className="w-3 h-3 text-[#d1a86e]" />
+                    <span>{sec.subtitle || "Curatorial Liaison & Private Acquisitions"}</span>
+                  </div>
+                  <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl text-white font-medium">
+                    {sec.title || "Contact & Studio Inquiries"}
+                  </h2>
+                  <p className="text-xs sm:text-sm md:text-base text-[#a6aabf] leading-relaxed font-light">
+                    {sec.contentJson?.description ||
+                      cfg?.description ||
+                      "For private acquisitions, curatorial exhibition loans, bespoke commissions, and private salon viewings, please correspond directly with Madame Vance's Paris liaison desk."}
+                  </p>
                 </div>
 
-                {/* Studio Dossier Info Column */}
-                <div className="lg:col-span-5 space-y-6 lg:pl-4">
-                  <div className="p-6 sm:p-8 bg-[#14151a] border border-[#262833] rounded-2xl space-y-6 shadow-xl">
-                    <h3 className="font-serif text-xl sm:text-2xl text-white">Direct Correspondence</h3>
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+                  {/* Interactive Contact Form Column */}
+                  <div className="lg:col-span-7">
+                    <ContactForm />
+                  </div>
 
-                    <div className="space-y-4 text-xs">
-                      <div className="flex items-start gap-3">
-                        <Mail className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5" />
-                        <div>
-                          <span className="text-zinc-500 uppercase tracking-wider block text-[10px]">
-                            Curatorial Email
-                          </span>
-                          <a
-                            href={`mailto:${recipientEmail}`}
-                            className="text-white hover:text-[#d1a86e] transition-colors font-medium text-xs sm:text-sm"
-                          >
-                            {recipientEmail}
-                          </a>
-                        </div>
-                      </div>
+                  {/* Studio Dossier Info Column */}
+                  <div className="lg:col-span-5 space-y-6 lg:pl-4">
+                    <div className="p-6 sm:p-8 bg-[#14151a] border border-[#262833] rounded-2xl space-y-6 shadow-xl">
+                      <h3 className="font-serif text-xl sm:text-2xl text-white">Direct Correspondence</h3>
 
-                      {phone && (
+                      <div className="space-y-4 text-xs">
                         <div className="flex items-start gap-3">
-                          <Phone className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5" />
+                          <Mail className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5" />
                           <div>
                             <span className="text-zinc-500 uppercase tracking-wider block text-[10px]">
-                              Studio Desk
+                              Curatorial Email
                             </span>
-                            <a href={`tel:${phone}`} className="text-white hover:text-[#d1a86e] transition-colors">
-                              {phone}
+                            <a
+                              href={`mailto:${recipientEmail}`}
+                              className="text-white hover:text-[#d1a86e] transition-colors font-medium text-xs sm:text-sm"
+                            >
+                              {recipientEmail}
                             </a>
                           </div>
                         </div>
-                      )}
 
-                      {settings.whatsapp && (
+                        {phone && (
+                          <div className="flex items-start gap-3">
+                            <Phone className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5" />
+                            <div>
+                              <span className="text-zinc-500 uppercase tracking-wider block text-[10px]">
+                                Studio Desk
+                              </span>
+                              <a href={`tel:${phone}`} className="text-white hover:text-[#d1a86e] transition-colors">
+                                {phone}
+                              </a>
+                            </div>
+                          </div>
+                        )}
+
+                        {settings.whatsapp && (
+                          <div className="flex items-start gap-3">
+                            <MessageCircle className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5" />
+                            <div>
+                              <span className="text-zinc-500 uppercase tracking-wider block text-[10px]">
+                                WhatsApp Liaison
+                              </span>
+                              <span className="text-white">{settings.whatsapp}</span>
+                            </div>
+                          </div>
+                        )}
+
                         <div className="flex items-start gap-3">
-                          <MessageCircle className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5" />
+                          <MapPin className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5" />
                           <div>
                             <span className="text-zinc-500 uppercase tracking-wider block text-[10px]">
-                              WhatsApp Liaison
+                              Atelier &amp; Private Gallery
                             </span>
-                            <span className="text-white">{settings.whatsapp}</span>
+                            <span className="text-white leading-relaxed">
+                              {address}
+                            </span>
                           </div>
                         </div>
-                      )}
 
-                      <div className="flex items-start gap-3">
-                        <MapPin className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5" />
-                        <div>
-                          <span className="text-zinc-500 uppercase tracking-wider block text-[10px]">
-                            Atelier &amp; Private Gallery
-                          </span>
-                          <span className="text-white leading-relaxed">
-                            {address}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-3">
-                        <Clock className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5" />
-                        <div>
-                          <span className="text-zinc-500 uppercase tracking-wider block text-[10px]">
-                            Studio Hours
-                          </span>
-                          <span className="text-white">
-                            {hours}
-                          </span>
+                        <div className="flex items-start gap-3">
+                          <Clock className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5" />
+                          <div>
+                            <span className="text-zinc-500 uppercase tracking-wider block text-[10px]">
+                              Studio Hours
+                            </span>
+                            <span className="text-white">
+                              {hours}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Privacy & Provenance Guarantee */}
-                  <div className="p-5 sm:p-6 bg-[#14151a]/70 border border-[#262833] rounded-2xl space-y-2.5 text-xs text-[#8e92a4]">
-                    <div className="flex items-center gap-2 text-white font-medium">
-                      <ShieldCheck className="w-4 h-4 text-[#d1a86e]" />
-                      <span className="text-xs uppercase tracking-wider text-[#d1a86e]">Confidentiality Protocol</span>
+                    {/* Privacy & Provenance Guarantee */}
+                    <div className="p-5 sm:p-6 bg-[#14151a]/70 border border-[#262833] rounded-2xl space-y-2.5 text-xs text-[#8e92a4]">
+                      <div className="flex items-center gap-2 text-white font-medium">
+                        <ShieldCheck className="w-4 h-4 text-[#d1a86e]" />
+                        <span className="text-xs uppercase tracking-wider text-[#d1a86e]">Confidentiality Protocol</span>
+                      </div>
+                      <p className="leading-relaxed text-[11px] sm:text-xs">
+                        All collector inquiries, institutional loans, and client identities are maintained under strict non-disclosure conventions. Authenticated certificates of provenance accompany all acquisitions.
+                      </p>
                     </div>
-                    <p className="leading-relaxed text-[11px] sm:text-xs">
-                      All collector inquiries, institutional loans, and client identities are maintained under strict non-disclosure conventions. Authenticated certificates of provenance accompany all acquisitions.
-                    </p>
                   </div>
                 </div>
-              </div>
-            </section>
+              </section>
+            </React.Fragment>
           );
         }
 

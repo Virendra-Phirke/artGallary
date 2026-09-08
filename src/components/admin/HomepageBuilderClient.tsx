@@ -210,6 +210,10 @@ function HomepageBuilderContent({
   const handleSelectMedia = (url: string) => {
     if (activeSectionForMedia === "about_portrait") {
       updateAboutConfig("artistImageUrl", url);
+      const artistSec = sections.find((s) => s.sectionKey === "artist_story");
+      if (artistSec) {
+        updateSectionContent(artistSec.id, "imageUrl", url);
+      }
     } else if (activeSectionForMedia?.startsWith("hero_slide:")) {
       const slideIdx = parseInt(activeSectionForMedia.replace("hero_slide:", ""), 10);
       const heroSec = sections.find((s) => s.sectionKey === "hero");
@@ -262,6 +266,10 @@ function HomepageBuilderContent({
         if (uploadedUrl) {
           if (targetId === "about_portrait") {
             updateAboutConfig("artistImageUrl", uploadedUrl);
+            const artistSec = sections.find((s) => s.sectionKey === "artist_story");
+            if (artistSec) {
+              updateSectionContent(artistSec.id, "imageUrl", uploadedUrl);
+            }
           } else if (targetId.startsWith("hero_slide:")) {
             const slideIdx = parseInt(targetId.replace("hero_slide:", ""), 10);
             const heroSec = sections.find((s) => s.sectionKey === "hero");
@@ -938,6 +946,8 @@ function HomepageBuilderContent({
             siteSettings={siteSettings}
             activePage={activePage}
             artworks={artworks}
+            collections={collections}
+            exhibitions={exhibitions}
             onUpdateSectionText={updateSectionText}
             onUpdateSectionContent={updateSectionContent}
             onUpdateSiteSetting={updateSiteSetting}

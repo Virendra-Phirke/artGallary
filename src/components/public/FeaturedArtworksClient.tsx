@@ -21,6 +21,9 @@ interface FeaturedArtworksClientProps {
   artworks: MockArtwork[];
   sectionTitle?: string;
   sectionSubtitle?: string;
+  curatorialIntro?: string;
+  maxDisplayCount?: number;
+  showFilters?: boolean;
 }
 
 type FilterCategory = "all" | "monumental" | "available" | "mineral";
@@ -29,6 +32,9 @@ export function FeaturedArtworksClient({
   artworks,
   sectionTitle = "Selected Works",
   sectionSubtitle = "Curated Catalogue",
+  curatorialIntro,
+  maxDisplayCount = 6,
+  showFilters = true,
 }: FeaturedArtworksClientProps) {
   const [activeCategory, setActiveCategory] = useState<FilterCategory>("all");
   const [inspectArtwork, setInspectArtwork] = useState<MockArtwork | null>(null);
@@ -59,68 +65,80 @@ export function FeaturedArtworksClient({
     }
   }, [artworks, activeCategory]);
 
+  const displayCount = Math.max(1, maxDisplayCount || 6);
+
   return (
     <>
-      <section className="max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 w-full max-w-full overflow-hidden">
+      <section className="relative max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 w-full max-w-full overflow-hidden">
+        {/* Curatorial Atmospheric Lighting Glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-[radial-gradient(ellipse_at_center,rgba(209,168,110,0.035),transparent_70%)] pointer-events-none -z-10 blur-3xl" />
+
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 sm:mb-8 pb-4 sm:pb-6 gap-4 sm:gap-6 w-full min-w-0 border-b border-[#1c1d25]">
-          <div>
+          <div className="max-w-2xl space-y-1.5">
             <span className="text-[10px] sm:text-xs tracking-[0.25em] text-[#d1a86e] uppercase font-medium">
               {sectionSubtitle}
             </span>
             <h2 className="font-serif text-2xl sm:text-3xl md:text-5xl text-white mt-1">
               {sectionTitle}
             </h2>
+            {curatorialIntro && (
+              <p className="text-xs sm:text-sm text-[#a6aabf] leading-relaxed pt-1 font-light">
+                {curatorialIntro}
+              </p>
+            )}
           </div>
 
-          {/* Quick Categories Filter */}
-          <div className="flex items-center space-x-1.5 sm:space-x-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none w-full max-w-full min-w-0">
-            <button
-              onClick={() => setActiveCategory("all")}
-              className={`px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[11px] sm:text-xs tracking-wider uppercase transition-colors cursor-pointer shrink-0 ${
-                activeCategory === "all"
-                  ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
-                  : "bg-[#14151a] text-zinc-400 hover:text-white"
-              }`}
-            >
-              All Works
-            </button>
-            <button
-              onClick={() => setActiveCategory("available")}
-              className={`px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[11px] sm:text-xs tracking-wider uppercase transition-colors cursor-pointer shrink-0 ${
-                activeCategory === "available"
-                  ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
-                  : "bg-[#14151a] text-zinc-400 hover:text-white"
-              }`}
-            >
-              Available
-            </button>
-            <button
-              onClick={() => setActiveCategory("monumental")}
-              className={`px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[11px] sm:text-xs tracking-wider uppercase transition-colors cursor-pointer shrink-0 ${
-                activeCategory === "monumental"
-                  ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
-                  : "bg-[#14151a] text-zinc-400 hover:text-white"
-              }`}
-            >
-              Monumental
-            </button>
-            <button
-              onClick={() => setActiveCategory("mineral")}
-              className={`px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[11px] sm:text-xs tracking-wider uppercase transition-colors cursor-pointer shrink-0 ${
-                activeCategory === "mineral"
-                  ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
-                  : "bg-[#14151a] text-zinc-400 hover:text-white"
-              }`}
-            >
-              Mineral &amp; Lapis
-            </button>
-          </div>
+          {/* Quick Categories Filter (Optionally toggled) */}
+          {showFilters && (
+            <div className="flex items-center space-x-1.5 sm:space-x-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none w-full max-w-full min-w-0">
+              <button
+                onClick={() => setActiveCategory("all")}
+                className={`px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[11px] sm:text-xs tracking-wider uppercase transition-colors cursor-pointer shrink-0 ${
+                  activeCategory === "all"
+                    ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
+                    : "bg-[#14151a] text-zinc-400 hover:text-white"
+                }`}
+              >
+                All Works
+              </button>
+              <button
+                onClick={() => setActiveCategory("available")}
+                className={`px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[11px] sm:text-xs tracking-wider uppercase transition-colors cursor-pointer shrink-0 ${
+                  activeCategory === "available"
+                    ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
+                    : "bg-[#14151a] text-zinc-400 hover:text-white"
+                }`}
+              >
+                Available
+              </button>
+              <button
+                onClick={() => setActiveCategory("monumental")}
+                className={`px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[11px] sm:text-xs tracking-wider uppercase transition-colors cursor-pointer shrink-0 ${
+                  activeCategory === "monumental"
+                    ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
+                    : "bg-[#14151a] text-zinc-400 hover:text-white"
+                }`}
+              >
+                Monumental
+              </button>
+              <button
+                onClick={() => setActiveCategory("mineral")}
+                className={`px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[11px] sm:text-xs tracking-wider uppercase transition-colors cursor-pointer shrink-0 ${
+                  activeCategory === "mineral"
+                    ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
+                    : "bg-[#14151a] text-zinc-400 hover:text-white"
+                }`}
+              >
+                Mineral &amp; Lapis
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Artwork Grid - 2 columns on mobile */}
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2.5 sm:gap-6 md:gap-8 w-full min-w-0">
-          {(filteredArtworks.length > 0 ? filteredArtworks.slice(0, 6) : artworks.slice(0, 6)).map(
+          {(filteredArtworks.length > 0 ? filteredArtworks.slice(0, displayCount) : artworks.slice(0, displayCount)).map(
             (art, idx) => (
               <div
                 key={art.id}

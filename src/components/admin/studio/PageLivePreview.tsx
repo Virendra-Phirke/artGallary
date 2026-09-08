@@ -51,6 +51,21 @@ interface PageLivePreviewProps {
   onOpenMediaPicker?: (sectionId: string) => void;
 }
 
+function CuratorialPreviewDivider() {
+  return (
+    <div className="w-full max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 my-8 sm:my-14 md:my-20 flex items-center justify-center pointer-events-none">
+      <div className="relative w-full flex items-center justify-center">
+        <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-[#d1a86e]/20 to-transparent" />
+        <div className="absolute px-3 bg-[#0a0b0e] flex items-center gap-1.5">
+          <span className="w-1 h-1 rotate-45 bg-[#d1a86e]/40" />
+          <span className="w-1.5 h-1.5 rotate-45 bg-[#d1a86e]/80" />
+          <span className="w-1 h-1 rotate-45 bg-[#d1a86e]/40" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function PageLivePreview({
   activePage,
   sections,
@@ -327,11 +342,13 @@ export function PageLivePreview({
 
         {/* === A. HOME PAGE PREVIEW === */}
         {activePage === "home" && (
-          <div className="space-y-16 sm:space-y-28 md:space-y-36 pb-20 w-full max-w-full overflow-x-hidden">
+          <div className="pb-20 w-full max-w-full overflow-x-hidden">
             {sections
               .filter((s) => s.isEnabled)
               .sort((a, b) => a.displayOrder - b.displayOrder)
-              .map((sec) => {
+              .map((sec, secIdx) => {
+                const renderDivider = secIdx > 0;
+
                 // 1. HERO SHOWCASE
                 if (sec.sectionKey === "hero") {
                   const heroSlideCount = Math.max(
@@ -398,14 +415,16 @@ export function PageLivePreview({
                     sec.contentJson?.ctaText || "Collector Portal";
 
                   return (
-                    <section
-                      key={sec.id}
-                      data-studio-id={`sec:${sec.id}`}
-                      data-studio-type="section"
-                      data-studio-label="Hero Showcase"
-                      data-studio-section={sec.id}
-                      className="scroll-mt-28 relative min-h-[85vh] flex items-center justify-center pt-20 sm:pt-24 pb-12 sm:pb-16 px-3.5 sm:px-10 md:px-14 lg:px-16 overflow-hidden w-full max-w-full"
-                    >
+                    <React.Fragment key={sec.id}>
+                      {renderDivider && <CuratorialPreviewDivider />}
+                      <section
+                        key={sec.id}
+                        data-studio-id={`sec:${sec.id}`}
+                        data-studio-type="section"
+                        data-studio-label="Hero Showcase"
+                        data-studio-section={sec.id}
+                        className="scroll-mt-28 relative min-h-[85vh] flex items-center justify-center pt-20 sm:pt-24 pb-12 sm:pb-16 px-3.5 sm:px-10 md:px-14 lg:px-16 overflow-hidden w-full max-w-full"
+                      >
                       {/* Ambient Golden Radial Light Glow */}
                       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[650px] h-[300px] sm:h-[650px] bg-[#d1a86e]/8 rounded-full blur-[140px] pointer-events-none" />
 
@@ -612,208 +631,231 @@ export function PageLivePreview({
                         </div>
                       </div>
                     </section>
-                  );
-                }
+                  </React.Fragment>
+                );
+              }
 
-                // 2. CURATED MASTERWORKS (FEATURED ARTWORKS)
-                if (sec.sectionKey === "featured_artworks") {
-                  const featuredOnlyList = artworks.filter((a) => a.isFeatured);
-                  const featuredIds = new Set(featuredOnlyList.map((a) => a.id));
-                  const remaining = artworks.filter(
-                    (a) => !featuredIds.has(a.id) && (a.status === "published" || !a.status)
-                  );
-                  const displayArtworks = [...featuredOnlyList, ...remaining].slice(0, 6);
+              // 2. FEATURED ARTWORKS CATALOGUE
+              if (sec.sectionKey === "featured_artworks") {
+                const maxCount = Number(sec.contentJson?.maxDisplayCount) || 4;
+                const showFilters = sec.contentJson?.showFilters !== false;
+                const curatorialIntro = sec.contentJson?.curatorialIntro;
+                const displayArtworks = artworks.slice(0, maxCount);
 
-                  return (
+                return (
+                  <React.Fragment key={sec.id}>
+                    {renderDivider && <CuratorialPreviewDivider />}
                     <section
                       key={sec.id}
                       data-studio-id={`sec:${sec.id}`}
                       data-studio-type="section"
-                      data-studio-label="Curated Masterworks Section"
+                      data-studio-label="Selected Artworks Catalogue"
                       data-studio-section={sec.id}
-                      className="scroll-mt-28 max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 w-full max-w-full overflow-hidden pt-4"
+                      className="scroll-mt-28 relative py-12 sm:py-20 md:py-24 px-3.5 sm:px-10 md:px-14 lg:px-16 border-t border-[#1c1d25] w-full max-w-full"
                     >
-                      {/* Section Header */}
-                      <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 sm:mb-8 pb-4 sm:pb-6 gap-4 sm:gap-6 w-full min-w-0 border-b border-[#1c1d25]">
-                        <div>
-                          <span
-                            data-studio-id={`sec:${sec.id}:subtitle`}
-                            data-studio-type="eyebrow"
-                            data-studio-label="Catalogue Eyebrow"
-                            data-studio-section={sec.id}
-                            data-studio-field="subtitle"
-                            className="text-[10px] sm:text-xs tracking-[0.25em] text-[#d1a86e] uppercase font-medium cursor-pointer hover:text-white transition-colors"
-                          >
-                            {sec.subtitle || "Curated Catalogue"}
-                          </span>
-                          <h2
-                            data-studio-id={`sec:${sec.id}:title`}
-                            data-studio-type="heading"
-                            data-studio-label="Catalogue Heading"
-                            data-studio-section={sec.id}
-                            data-studio-field="title"
-                            className="font-serif text-2xl sm:text-3xl md:text-5xl text-white mt-1 cursor-pointer hover:text-[#d1a86e] transition-colors"
-                          >
-                            {sec.title || "Selected Works"}
-                          </h2>
-                        </div>
+                      <div className="max-w-[1800px] mx-auto w-full min-w-0">
+                        {/* Section Header */}
+                        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12 gap-4">
+                          <div>
+                            <span
+                              data-studio-id={`sec:${sec.id}:subtitle`}
+                              data-studio-type="eyebrow"
+                              data-studio-label="Catalogue Subtitle"
+                              data-studio-section={sec.id}
+                              data-studio-field="subtitle"
+                              className="text-[10px] sm:text-xs tracking-[0.25em] text-[#d1a86e] uppercase font-medium cursor-pointer hover:text-white transition-colors"
+                            >
+                              {sec.subtitle || "Curated Catalogue"}
+                            </span>
+                            <h2
+                              data-studio-id={`sec:${sec.id}:title`}
+                              data-studio-type="heading"
+                              data-studio-label="Catalogue Heading"
+                              data-studio-section={sec.id}
+                              data-studio-field="title"
+                              className="font-serif text-2xl sm:text-3xl md:text-5xl text-white mt-1 cursor-pointer hover:text-[#d1a86e] transition-colors"
+                            >
+                              {sec.title || "Selected Works"}
+                            </h2>
+                            {curatorialIntro && (
+                              <p className="text-xs sm:text-sm text-zinc-400 max-w-xl mt-2 font-light">
+                                {curatorialIntro}
+                              </p>
+                            )}
+                          </div>
 
-                        {/* Quick Categories Filter */}
-                        <div className="flex items-center space-x-1.5 sm:space-x-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none w-full max-w-full min-w-0">
-                          <span className="px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[11px] sm:text-xs tracking-wider uppercase bg-[#d1a86e] text-[#0d0e12] font-semibold shrink-0">
-                            All Works
-                          </span>
-                          <span className="px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[11px] sm:text-xs tracking-wider uppercase bg-[#14151a] text-zinc-400 shrink-0">
-                            Available
-                          </span>
-                          <span className="px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[11px] sm:text-xs tracking-wider uppercase bg-[#14151a] text-zinc-400 shrink-0">
-                            Monumental
-                          </span>
-                          <span className="px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[11px] sm:text-xs tracking-wider uppercase bg-[#14151a] text-zinc-400 shrink-0">
-                            Mineral &amp; Lapis
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Artwork Grid */}
-                      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2.5 sm:gap-6 md:gap-8 w-full min-w-0">
-                        {displayArtworks.map((art) => (
-                          <div
-                            key={art.id}
-                            className="group flex flex-col space-y-2.5 sm:space-y-4 bg-[#14151a] border border-[#262833] p-2.5 sm:p-4 rounded-xl sm:rounded-2xl transition-all duration-300 shadow-xl shadow-black/40 hover:border-[#d1a86e]/40 hover:shadow-2xl"
-                          >
-                            <div className="relative aspect-[4/3] rounded-lg sm:rounded-xl overflow-hidden bg-[#101116]">
-                              <Image
-                                src={art.coverImageUrl}
-                                alt={art.altText || art.title}
-                                fill
-                                sizes="350px"
-                                className="object-cover transition-transform duration-700 group-hover:scale-105"
-                              />
+                          {/* Quick Categories Filter */}
+                          {showFilters && (
+                            <div className="flex items-center space-x-1.5 sm:space-x-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none w-full max-w-full min-w-0">
+                              <span className="px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[11px] sm:text-xs tracking-wider uppercase bg-[#d1a86e] text-[#0d0e12] font-semibold shrink-0">
+                                All Works
+                              </span>
+                              <span className="px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[11px] sm:text-xs tracking-wider uppercase bg-[#14151a] text-zinc-400 shrink-0">
+                                Available
+                              </span>
+                              <span className="px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[11px] sm:text-xs tracking-wider uppercase bg-[#14151a] text-zinc-400 shrink-0">
+                                Monumental
+                              </span>
+                              <span className="px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[11px] sm:text-xs tracking-wider uppercase bg-[#14151a] text-zinc-400 shrink-0">
+                                Mineral &amp; Lapis
+                              </span>
                             </div>
+                          )}
+                        </div>
 
-                            {/* Clean Metadata: Name & Price Only */}
-                            <div className="pt-0.5 px-0.5">
-                              <div className="flex items-baseline justify-between gap-1.5">
-                                <span className="font-serif text-xs sm:text-base text-white group-hover:text-[#d1a86e] transition-colors line-clamp-1 font-medium">
-                                  {art.title}
-                                </span>
-                                {art.price && (
-                                  <span className="text-xs sm:text-sm text-[#d1a86e] font-mono font-semibold shrink-0">
-                                    {formatCurrency(art.price, art.currency)}
+                        {/* Artwork Grid */}
+                        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2.5 sm:gap-6 md:gap-8 w-full min-w-0">
+                          {displayArtworks.map((art) => (
+                            <div
+                              key={art.id}
+                              className="group flex flex-col space-y-2.5 sm:space-y-4 bg-[#14151a] border border-[#262833] p-2.5 sm:p-4 rounded-xl sm:rounded-2xl transition-all duration-300 shadow-xl shadow-black/40 hover:border-[#d1a86e]/40 hover:shadow-2xl"
+                            >
+                              <div className="relative aspect-[4/3] rounded-lg sm:rounded-xl overflow-hidden bg-[#101116]">
+                                <Image
+                                  src={art.coverImageUrl}
+                                  alt={art.altText || art.title}
+                                  fill
+                                  sizes="350px"
+                                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                                />
+                              </div>
+
+                              {/* Clean Metadata: Name & Price Only */}
+                              <div className="pt-0.5 px-0.5">
+                                <div className="flex items-baseline justify-between gap-1.5">
+                                  <span className="font-serif text-xs sm:text-base text-white group-hover:text-[#d1a86e] transition-colors line-clamp-1 font-medium">
+                                    {art.title}
                                   </span>
-                                )}
+                                  {art.price && (
+                                    <span className="text-xs sm:text-sm text-[#d1a86e] font-mono font-semibold shrink-0">
+                                      {formatCurrency(art.price, art.currency)}
+                                    </span>
+                                  )}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        ))}
-                      </div>
+                          ))}
+                        </div>
 
-                      {/* View Complete Collection Footer CTA */}
-                      <div className="mt-8 sm:mt-12 text-center px-2">
-                        <div className="inline-flex items-center gap-2 rounded-full border border-[#262833] bg-[#14151a] hover:bg-[#1f212c] text-white hover:text-[#d1a86e] text-xs uppercase tracking-widest h-10 px-8 transition-colors cursor-pointer shadow-xl">
-                          <Sparkles className="w-3.5 h-3.5 text-[#d1a86e]" />
-                          <span>Explore Full Private Catalogue</span>
-                          <ArrowRight className="w-3.5 h-3.5" />
+                        {/* View Complete Collection Footer CTA */}
+                        <div className="mt-8 sm:mt-12 text-center px-2">
+                          <div className="inline-flex items-center gap-2 rounded-full border border-[#262833] bg-[#14151a] hover:bg-[#1f212c] text-white hover:text-[#d1a86e] text-xs uppercase tracking-widest h-10 px-8 transition-colors cursor-pointer shadow-xl">
+                            <Sparkles className="w-3.5 h-3.5 text-[#d1a86e]" />
+                            <span>Explore Full Private Catalogue</span>
+                            <ArrowRight className="w-3.5 h-3.5" />
+                          </div>
                         </div>
                       </div>
                     </section>
-                  );
-                }
+                  </React.Fragment>
+                );
+              }
 
                 // 3. LATEST COLLECTION SPOTLIGHT
                 if (sec.sectionKey === "latest_collection") {
+                  const targetCol = sec.contentJson?.collectionId
+                    ? collections.find((c) => c.id === sec.contentJson?.collectionId) || featuredCollection
+                    : featuredCollection;
                   const collectionImage =
                     sec.contentJson?.imageUrl ||
-                    featuredCollection?.coverImageUrl ||
+                    targetCol?.coverImageUrl ||
                     heroArtwork?.coverImageUrl;
+                  const collectionTitle = sec.title || targetCol?.title || "The Mineral Horizons Cycle";
+                  const collectionStatement =
+                    sec.contentJson?.curatorialStatement ||
+                    sec.contentJson?.description ||
+                    targetCol?.curatorialStatement ||
+                    targetCol?.description ||
+                    "Elena Vance groups her artistic inquiries into multi-year cycles exploring mineral glazes, crushed pigments, and Belgian linen.";
+                  const collectionCta = sec.contentJson?.ctaText || "Explore Series";
+
                   return (
-                    <section
-                      key={sec.id}
-                      data-studio-id={`sec:${sec.id}`}
-                      data-studio-type="section"
-                      data-studio-label="Latest Collection Spotlight"
-                      data-studio-section={sec.id}
-                      className="scroll-mt-28 bg-[#0e0f14] py-14 sm:py-24 w-full max-w-full overflow-hidden border-y border-[#181924]"
-                    >
-                      <div className="max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center w-full min-w-0">
-                        <div className="lg:col-span-5 space-y-4 sm:space-y-6">
-                          <div
-                            data-studio-id={`sec:${sec.id}:subtitle`}
-                            data-studio-type="eyebrow"
-                            data-studio-label="Collection Eyebrow"
-                            data-studio-section={sec.id}
-                            data-studio-field="subtitle"
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#181924] text-[9px] sm:text-[10px] tracking-[0.22em] text-[#d1a86e] uppercase cursor-pointer hover:text-white transition-colors"
-                          >
-                            <Layers className="w-3 h-3" />
-                            <span>{sec.subtitle || "Featured Series Spotlight"}</span>
-                          </div>
-
-                          <h2
-                            data-studio-id={`sec:${sec.id}:title`}
-                            data-studio-type="heading"
-                            data-studio-label="Collection Title"
-                            data-studio-section={sec.id}
-                            data-studio-field="title"
-                            className="font-serif text-2xl sm:text-4xl md:text-5xl text-white font-medium cursor-pointer hover:text-[#d1a86e] transition-colors"
-                          >
-                            {sec.title || featuredCollection?.title || "The Mineral Horizons Cycle"}
-                          </h2>
-
-                          <p
-                            data-studio-id={`sec:${sec.id}:description`}
-                            data-studio-type="paragraph"
-                            data-studio-label="Collection Description"
-                            data-studio-section={sec.id}
-                            data-studio-field="description"
-                            className="text-xs sm:text-sm md:text-base text-[#a6aabf] leading-relaxed font-light cursor-pointer hover:text-white transition-colors"
-                          >
-                            {sec.contentJson?.description ||
-                              featuredCollection?.curatorialStatement ||
-                              featuredCollection?.description ||
-                              "Elena Vance groups her artistic inquiries into multi-year cycles exploring mineral glazes, crushed pigments, and Belgian linen."}
-                          </p>
-
-                          <div className="pt-2 sm:pt-4 flex flex-wrap items-center gap-2 sm:gap-3">
-                            <span className="rounded-full bg-[#d1a86e] text-[#0d0e12] font-semibold text-[10px] sm:text-xs tracking-wider uppercase h-7.5 sm:h-9 px-3.5 sm:px-5 shadow-md inline-flex items-center gap-1.5">
-                              <span>Explore Series</span>
-                              <ArrowRight className="w-3 h-3" />
-                            </span>
-                            <span className="rounded-full bg-[#161720] text-zinc-300 text-[10px] sm:text-xs uppercase tracking-wider h-7.5 sm:h-9 px-3 sm:px-4 inline-flex items-center gap-1.5">
-                              <Sparkles className="w-2.5 h-2.5 text-[#d1a86e]" />
-                              <span>All Series</span>
-                            </span>
-                          </div>
-                        </div>
-
-                        {collectionImage && (
-                          <div className="lg:col-span-7 relative">
+                    <React.Fragment key={sec.id}>
+                      {renderDivider && <CuratorialPreviewDivider />}
+                      <section
+                        key={sec.id}
+                        data-studio-id={`sec:${sec.id}`}
+                        data-studio-type="section"
+                        data-studio-label="Latest Collection Spotlight"
+                        data-studio-section={sec.id}
+                        className="scroll-mt-28 bg-[#0e0f14] py-14 sm:py-24 w-full max-w-full overflow-hidden border-y border-[#181924]"
+                      >
+                        <div className="max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center w-full min-w-0">
+                          <div className="lg:col-span-5 space-y-4 sm:space-y-6">
                             <div
-                              data-studio-id={`sec:${sec.id}:image`}
-                              data-studio-type="image"
-                              data-studio-label="Collection Panoramic Cover"
+                              data-studio-id={`sec:${sec.id}:subtitle`}
+                              data-studio-type="eyebrow"
+                              data-studio-label="Collection Eyebrow"
                               data-studio-section={sec.id}
-                              data-studio-field="imageUrl"
-                              className="relative aspect-[16/10] rounded-2xl overflow-hidden shadow-2xl bg-[#14151a] border border-[#232530] cursor-pointer"
+                              data-studio-field="subtitle"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#181924] text-[9px] sm:text-[10px] tracking-[0.22em] text-[#d1a86e] uppercase cursor-pointer hover:text-white transition-colors"
                             >
-                              <Image
-                                src={collectionImage}
-                                alt={sec.title || "Featured Collection"}
-                                fill
-                                sizes="800px"
-                                className="object-cover"
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-4 sm:p-6 pointer-events-none">
-                                <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-[#d1a86e]">
-                                  {featuredCollection?.title || "Curated"} Series
-                                </span>
-                              </div>
+                              <Layers className="w-3 h-3" />
+                              <span>{sec.subtitle || "Featured Series Spotlight"}</span>
+                            </div>
+
+                            <h2
+                              data-studio-id={`sec:${sec.id}:title`}
+                              data-studio-type="heading"
+                              data-studio-label="Collection Title"
+                              data-studio-section={sec.id}
+                              data-studio-field="title"
+                              className="font-serif text-2xl sm:text-4xl md:text-5xl text-white font-medium cursor-pointer hover:text-[#d1a86e] transition-colors"
+                            >
+                              {collectionTitle}
+                            </h2>
+
+                            <p
+                              data-studio-id={`sec:${sec.id}:description`}
+                              data-studio-type="paragraph"
+                              data-studio-label="Collection Description"
+                              data-studio-section={sec.id}
+                              data-studio-field="description"
+                              className="text-xs sm:text-sm md:text-base text-[#a6aabf] leading-relaxed font-light cursor-pointer hover:text-white transition-colors"
+                            >
+                              {collectionStatement}
+                            </p>
+
+                            <div className="pt-2 sm:pt-4 flex flex-wrap items-center gap-2 sm:gap-3">
+                              <span className="rounded-full bg-[#d1a86e] text-[#0d0e12] font-semibold text-[10px] sm:text-xs tracking-wider uppercase h-7.5 sm:h-9 px-3.5 sm:px-5 shadow-md inline-flex items-center gap-1.5">
+                                <span>{collectionCta}</span>
+                                <ArrowRight className="w-3 h-3" />
+                              </span>
+                              <span className="rounded-full bg-[#161720] text-zinc-300 text-[10px] sm:text-xs uppercase tracking-wider h-7.5 sm:h-9 px-3 sm:px-4 inline-flex items-center gap-1.5">
+                                <Sparkles className="w-2.5 h-2.5 text-[#d1a86e]" />
+                                <span>All Series</span>
+                              </span>
                             </div>
                           </div>
-                        )}
-                      </div>
-                    </section>
+
+                          {collectionImage && (
+                            <div className="lg:col-span-7 relative">
+                              <div
+                                data-studio-id={`sec:${sec.id}:image`}
+                                data-studio-type="image"
+                                data-studio-label="Collection Panoramic Cover"
+                                data-studio-section={sec.id}
+                                data-studio-field="imageUrl"
+                                className="relative aspect-[16/10] rounded-2xl overflow-hidden shadow-2xl bg-[#14151a] border border-[#232530] cursor-pointer"
+                              >
+                                <Image
+                                  src={collectionImage}
+                                  alt={collectionTitle}
+                                  fill
+                                  sizes="800px"
+                                  className="object-cover"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-4 sm:p-6 pointer-events-none">
+                                  <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-[#d1a86e]">
+                                    {targetCol?.title || "Curated"} Series
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </section>
+                    </React.Fragment>
                   );
                 }
 
@@ -821,82 +863,85 @@ export function PageLivePreview({
                 if (sec.sectionKey === "ar_experience") {
                   const arPreviewArt = heroArtwork || artworks[0];
                   return (
-                    <section
-                      key={sec.id}
-                      data-studio-id={`sec:${sec.id}`}
-                      data-studio-type="section"
-                      data-studio-label="Spatial WebAR Studio Section"
-                      data-studio-section={sec.id}
-                      className="scroll-mt-28 max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 w-full max-w-full overflow-hidden space-y-6 sm:space-y-8"
-                    >
-                      <div className="max-w-3xl mx-auto text-center space-y-3">
-                        <span
-                          data-studio-id={`sec:${sec.id}:subtitle`}
-                          data-studio-type="eyebrow"
-                          data-studio-label="AR Studio Eyebrow"
-                          data-studio-section={sec.id}
-                          data-studio-field="subtitle"
-                          className="text-[10px] sm:text-xs tracking-[0.25em] text-[#d1a86e] uppercase font-semibold cursor-pointer hover:text-white transition-colors"
-                        >
-                          {sec.subtitle || "Spatial WebAR & Room Studio"}
-                        </span>
-                        <h2
-                          data-studio-id={`sec:${sec.id}:title`}
-                          data-studio-type="heading"
-                          data-studio-label="AR Studio Title"
-                          data-studio-section={sec.id}
-                          data-studio-field="title"
-                          className="font-serif text-2xl sm:text-4xl md:text-5xl text-white font-medium cursor-pointer hover:text-[#d1a86e] transition-colors"
-                        >
-                          {sec.title || "View Original Works in Your Interior Space"}
-                        </h2>
-                        <p
-                          data-studio-id={`sec:${sec.id}:description`}
-                          data-studio-type="paragraph"
-                          data-studio-label="AR Studio Description"
-                          data-studio-section={sec.id}
-                          data-studio-field="description"
-                          className="text-xs sm:text-sm text-[#a6aabf] leading-relaxed cursor-pointer hover:text-white transition-colors"
-                        >
-                          {sec.contentJson?.description ||
-                            "Calibrate any painting to its physical centimeter scale against curated architectural walls and custom frames, or launch camera WebAR directly on your phone."}
-                        </p>
-                      </div>
-
-                      {/* Simulated Room Studio Canvas */}
-                      <div className="rounded-3xl border border-[#2a2c3a] bg-[#12131a] p-5 sm:p-8 space-y-6">
-                        {/* Wall Texture Selector */}
-                        <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#20222e]">
-                          <div className="flex items-center gap-1.5 text-xs text-zinc-400">
-                            <span className="text-zinc-500 uppercase tracking-wider text-[10px]">Architectural Wall:</span>
-                            <span className="px-2.5 py-1 rounded-full bg-[#1e202c] text-white text-[10px] uppercase font-medium">Parisian White</span>
-                            <span className="px-2.5 py-1 rounded-full text-zinc-400 text-[10px] uppercase">Loft Brick</span>
-                            <span className="px-2.5 py-1 rounded-full text-zinc-400 text-[10px] uppercase">Nordic Oak</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-[10px] uppercase tracking-wider text-[#d1a86e] font-mono">1:1 True Centimeter Scale</span>
-                          </div>
+                    <React.Fragment key={sec.id}>
+                      {renderDivider && <CuratorialPreviewDivider />}
+                      <section
+                        key={sec.id}
+                        data-studio-id={`sec:${sec.id}`}
+                        data-studio-type="section"
+                        data-studio-label="Spatial WebAR Studio Section"
+                        data-studio-section={sec.id}
+                        className="scroll-mt-28 max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 w-full max-w-full overflow-hidden space-y-6 sm:space-y-8"
+                      >
+                        <div className="max-w-3xl mx-auto text-center space-y-3">
+                          <span
+                            data-studio-id={`sec:${sec.id}:subtitle`}
+                            data-studio-type="eyebrow"
+                            data-studio-label="AR Studio Eyebrow"
+                            data-studio-section={sec.id}
+                            data-studio-field="subtitle"
+                            className="text-[10px] sm:text-xs tracking-[0.25em] text-[#d1a86e] uppercase font-semibold cursor-pointer hover:text-white transition-colors"
+                          >
+                            {sec.subtitle || "Spatial WebAR & Room Studio"}
+                          </span>
+                          <h2
+                            data-studio-id={`sec:${sec.id}:title`}
+                            data-studio-type="heading"
+                            data-studio-label="AR Studio Title"
+                            data-studio-section={sec.id}
+                            data-studio-field="title"
+                            className="font-serif text-2xl sm:text-4xl md:text-5xl text-white font-medium cursor-pointer hover:text-[#d1a86e] transition-colors"
+                          >
+                            {sec.title || "View Original Works in Your Interior Space"}
+                          </h2>
+                          <p
+                            data-studio-id={`sec:${sec.id}:description`}
+                            data-studio-type="paragraph"
+                            data-studio-label="AR Studio Description"
+                            data-studio-section={sec.id}
+                            data-studio-field="description"
+                            className="text-xs sm:text-sm text-[#a6aabf] leading-relaxed cursor-pointer hover:text-white transition-colors"
+                          >
+                            {sec.contentJson?.description ||
+                              "Calibrate any painting to its physical centimeter scale against curated architectural walls and custom frames, or launch camera WebAR directly on your phone."}
+                          </p>
                         </div>
 
-                        {/* Room Interior Wall Display */}
-                        <div className="relative min-h-[300px] sm:min-h-[420px] rounded-2xl bg-gradient-to-b from-[#25262f] via-[#1c1d25] to-[#12131a] flex items-center justify-center p-6 shadow-inner border border-white/5">
-                          {arPreviewArt && (
-                            <div className="relative aspect-[4/3] w-64 sm:w-80 shadow-[0_25px_50px_rgba(0,0,0,0.8)] border-4 border-[#d1a86e]/60 rounded-sm overflow-hidden">
-                              <Image
-                                src={arPreviewArt.coverImageUrl}
-                                alt={arPreviewArt.title}
-                                fill
-                                sizes="400px"
-                                className="object-cover"
-                              />
+                        {/* Simulated Room Studio Canvas */}
+                        <div className="rounded-3xl border border-[#2a2c3a] bg-[#12131a] p-5 sm:p-8 space-y-6">
+                          {/* Wall Texture Selector */}
+                          <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#20222e]">
+                            <div className="flex items-center gap-1.5 text-xs text-zinc-400">
+                              <span className="text-zinc-500 uppercase tracking-wider text-[10px]">Architectural Wall:</span>
+                              <span className="px-2.5 py-1 rounded-full bg-[#1e202c] text-white text-[10px] uppercase font-medium">Parisian White</span>
+                              <span className="px-2.5 py-1 rounded-full text-zinc-400 text-[10px] uppercase">Loft Brick</span>
+                              <span className="px-2.5 py-1 rounded-full text-zinc-400 text-[10px] uppercase">Nordic Oak</span>
                             </div>
-                          )}
-                          <div className="absolute bottom-4 left-4 text-[10px] font-mono text-zinc-400 bg-black/60 backdrop-blur px-3 py-1 rounded-full">
-                            Physical: {arPreviewArt?.widthCm || 120} cm × {arPreviewArt?.heightCm || 90} cm
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] uppercase tracking-wider text-[#d1a86e] font-mono">1:1 True Centimeter Scale</span>
+                            </div>
+                          </div>
+
+                          {/* Room Interior Wall Display */}
+                          <div className="relative min-h-[300px] sm:min-h-[420px] rounded-2xl bg-gradient-to-b from-[#25262f] via-[#1c1d25] to-[#12131a] flex items-center justify-center p-6 shadow-inner border border-white/5">
+                            {arPreviewArt && (
+                              <div className="relative aspect-[4/3] w-64 sm:w-80 shadow-[0_25px_50px_rgba(0,0,0,0.8)] border-4 border-[#d1a86e]/60 rounded-sm overflow-hidden">
+                                <Image
+                                  src={arPreviewArt.coverImageUrl}
+                                  alt={arPreviewArt.title}
+                                  fill
+                                  sizes="400px"
+                                  className="object-cover"
+                                />
+                              </div>
+                            )}
+                            <div className="absolute bottom-4 left-4 text-[10px] font-mono text-zinc-400 bg-black/60 backdrop-blur px-3 py-1 rounded-full">
+                              Physical: {arPreviewArt?.widthCm || 120} cm × {arPreviewArt?.heightCm || 90} cm
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </section>
+                      </section>
+                    </React.Fragment>
                   );
                 }
 
@@ -904,562 +949,606 @@ export function PageLivePreview({
                 if (sec.sectionKey === "artist_story") {
                   const atelierImg =
                     sec.contentJson?.imageUrl ||
+                    siteSettings.aboutPageConfig?.artistImageUrl ||
                     "https://ik.imagekit.io/bpnsp30ni/artworks/gallery/1788717079935-kazuha__EB1yso0A.jpeg?updatedAt=1788717081490";
-                  return (
-                    <section
-                      key={sec.id}
-                      data-studio-id={`sec:${sec.id}`}
-                      data-studio-type="section"
-                      data-studio-label="Artist Atelier & Statement"
-                      data-studio-section={sec.id}
-                      className="scroll-mt-28 max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 w-full max-w-full overflow-hidden space-y-16 sm:space-y-24"
-                    >
-                      {/* Curatorial Quote Banner */}
-                      <div className="max-w-4xl mx-auto text-center space-y-4 sm:space-y-6">
-                        <span
-                          data-studio-id={`sec:${sec.id}:subtitle`}
-                          data-studio-type="eyebrow"
-                          data-studio-label="Monologue Eyebrow"
-                          data-studio-section={sec.id}
-                          data-studio-field="subtitle"
-                          className="text-[10px] sm:text-xs tracking-[0.25em] text-[#d1a86e] uppercase font-semibold cursor-pointer hover:text-white transition-colors"
-                        >
-                          {sec.subtitle || "Studio Monologue & Philosophy"}
-                        </span>
-                        <blockquote
-                          data-studio-id={`sec:${sec.id}:quote`}
-                          data-studio-type="heading"
-                          data-studio-label="Philosophy Quote"
-                          data-studio-section={sec.id}
-                          data-studio-field="quote"
-                          className="font-serif text-xl sm:text-3xl md:text-4xl text-white font-light italic leading-snug cursor-pointer hover:text-[#e2c18d] transition-colors"
-                        >
-                          &ldquo;{sec.contentJson?.quote || "A painting is not merely an image hanging upon a partition; it is an alteration of the atmospheric silence within a room."}&rdquo;
-                        </blockquote>
-                        <div className="flex items-center justify-center gap-2.5 text-[10px] sm:text-xs tracking-widest text-zinc-400 uppercase font-mono">
-                          <span className="w-6 sm:w-8 h-[1px] bg-[#d1a86e]" />
-                          <span>{artistName} — Atelier Paris</span>
-                          <span className="w-6 sm:w-8 h-[1px] bg-[#d1a86e]" />
-                        </div>
-                      </div>
+                  const bioEssay =
+                    sec.contentJson?.biography ||
+                    sec.contentJson?.description ||
+                    siteSettings.aboutPageConfig?.bio ||
+                    "Elena Vance (b. 1986) divides her studio practice between Paris and the wind-sculpted granite coast of Brittany. Her monumental canvases investigate the physical threshold where lapis lazuli glazes, crushed mineral earth, and oceanic silence transform architectural interiors.";
+                  const quoteText =
+                    sec.contentJson?.quote ||
+                    "A painting is not merely an image hanging upon a partition; it is an alteration of the atmospheric silence within a room.";
+                  const locationText =
+                    sec.contentJson?.location || "Studio 04 • Rue Vivienne, Paris";
+                  const monologueTagline =
+                    sec.subtitle || "Studio Monologue & Philosophy";
+                  const atelierHeadline =
+                    sec.title || "The Alchemy of Natural Earth & Luminous Glazes";
 
-                      {/* 2-Column Editorial Spread */}
-                      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center w-full min-w-0">
-                        <div className="lg:col-span-6 relative">
-                          <div
-                            data-studio-id={`sec:${sec.id}:image`}
-                            data-studio-type="image"
-                            data-studio-label="Atelier Photo"
+                  return (
+                    <React.Fragment key={sec.id}>
+                      {renderDivider && <CuratorialPreviewDivider />}
+                      <section
+                        key={sec.id}
+                        data-studio-id={`sec:${sec.id}`}
+                        data-studio-type="section"
+                        data-studio-label="Artist Atelier & Statement"
+                        data-studio-section={sec.id}
+                        className="scroll-mt-28 max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 w-full max-w-full overflow-hidden space-y-16 sm:space-y-24"
+                      >
+                        {/* Curatorial Quote Banner */}
+                        <div className="max-w-4xl mx-auto text-center space-y-4 sm:space-y-6">
+                          <span
+                            data-studio-id={`sec:${sec.id}:subtitle`}
+                            data-studio-type="eyebrow"
+                            data-studio-label="Monologue Eyebrow"
                             data-studio-section={sec.id}
-                            data-studio-field="imageUrl"
-                            className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-[#14151a] shadow-2xl border border-[#232530] cursor-pointer"
+                            data-studio-field="subtitle"
+                            className="text-[10px] sm:text-xs tracking-[0.25em] text-[#d1a86e] uppercase font-semibold cursor-pointer hover:text-white transition-colors"
                           >
-                            <Image
-                              src={atelierImg}
-                              alt="Atelier Studio"
-                              fill
-                              sizes="600px"
-                              className="object-cover"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-4 sm:p-6 pointer-events-none">
-                              <p className="text-[10px] sm:text-xs text-zinc-300 font-mono tracking-wider uppercase">
-                                Studio 04 • Rue Vivienne, Paris
+                            {monologueTagline}
+                          </span>
+                          <blockquote
+                            data-studio-id={`sec:${sec.id}:quote`}
+                            data-studio-type="heading"
+                            data-studio-label="Philosophy Quote"
+                            data-studio-section={sec.id}
+                            data-studio-field="quote"
+                            className="font-serif text-xl sm:text-3xl md:text-4xl text-white font-light italic leading-snug cursor-pointer hover:text-[#e2c18d] transition-colors"
+                          >
+                            &ldquo;{quoteText}&rdquo;
+                          </blockquote>
+                          <div className="flex items-center justify-center gap-2.5 text-[10px] sm:text-xs tracking-widest text-zinc-400 uppercase font-mono">
+                            <span className="w-6 sm:w-8 h-[1px] bg-[#d1a86e]" />
+                            <span>{artistName} — {locationText}</span>
+                            <span className="w-6 sm:w-8 h-[1px] bg-[#d1a86e]" />
+                          </div>
+                        </div>
+
+                        {/* 2-Column Editorial Spread */}
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center w-full min-w-0">
+                          <div className="lg:col-span-6 relative">
+                            <div
+                              data-studio-id={`sec:${sec.id}:image`}
+                              data-studio-type="image"
+                              data-studio-label="Atelier Photo"
+                              data-studio-section={sec.id}
+                              data-studio-field="imageUrl"
+                              className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-[#14151a] shadow-2xl border border-[#232530] cursor-pointer"
+                            >
+                              <Image
+                                src={atelierImg}
+                                alt="Atelier Studio"
+                                fill
+                                sizes="600px"
+                                className="object-cover"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-4 sm:p-6 pointer-events-none">
+                                <p className="text-[10px] sm:text-xs text-zinc-300 font-mono tracking-wider uppercase">
+                                  {locationText}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="lg:col-span-6 space-y-6 sm:space-y-8">
+                            <div className="space-y-3 sm:space-y-4">
+                              <h3
+                                data-studio-id={`sec:${sec.id}:title`}
+                                data-studio-type="heading"
+                                data-studio-label="Atelier Headline"
+                                data-studio-section={sec.id}
+                                data-studio-field="title"
+                                className="font-serif text-2xl sm:text-4xl text-white font-medium cursor-pointer hover:text-[#d1a86e] transition-colors"
+                              >
+                                {atelierHeadline}
+                              </h3>
+                              <p
+                                data-studio-id={`sec:${sec.id}:description`}
+                                data-studio-type="paragraph"
+                                data-studio-label="Atelier Curatorial Essay"
+                                data-studio-section={sec.id}
+                                data-studio-field="description"
+                                className="text-xs sm:text-sm md:text-base text-[#a6aabf] leading-relaxed font-light cursor-pointer hover:text-white transition-colors"
+                              >
+                                {bioEssay}
                               </p>
+                            </div>
+
+                            {/* 4 Pillars of Studio Craftsmanship */}
+                            <div className="grid grid-cols-2 gap-2 sm:gap-4 pt-1">
+                              <div className="space-y-1 p-3 sm:p-4 rounded-xl bg-[#14151a] border border-[#232530]">
+                                <span className="text-[10px] sm:text-xs uppercase tracking-wider text-[#d1a86e] font-semibold block">
+                                  01 / Lapis Lazuli
+                                </span>
+                                <p className="text-[10px] sm:text-xs text-zinc-400 font-light">
+                                  Hand-ground mineral stone with pure walnut oil.
+                                </p>
+                              </div>
+                              <div className="space-y-1 p-3 sm:p-4 rounded-xl bg-[#14151a] border border-[#232530]">
+                                <span className="text-[10px] sm:text-xs uppercase tracking-wider text-[#d1a86e] font-semibold block">
+                                  02 / Belgian Linen
+                                </span>
+                                <p className="text-[10px] sm:text-xs text-zinc-400 font-light">
+                                  Triple-primed Claessens linen on tulipwood.
+                                </p>
+                              </div>
+                              <div className="space-y-1 p-3 sm:p-4 rounded-xl bg-[#14151a] border border-[#232530]">
+                                <span className="text-[10px] sm:text-xs uppercase tracking-wider text-[#d1a86e] font-semibold block">
+                                  03 / Glaze Optics
+                                </span>
+                                <p className="text-[10px] sm:text-xs text-zinc-400 font-light">
+                                  20+ translucent layers shifting in natural daylight.
+                                </p>
+                              </div>
+                              <div className="space-y-1 p-3 sm:p-4 rounded-xl bg-[#14151a] border border-[#232530]">
+                                <span className="text-[10px] sm:text-xs uppercase tracking-wider text-[#d1a86e] font-semibold block">
+                                  04 / Archival
+                                </span>
+                                <p className="text-[10px] sm:text-xs text-zinc-400 font-light">
+                                  Museum archival longevity for centuries.
+                                </p>
+                              </div>
                             </div>
                           </div>
                         </div>
 
-                        <div className="lg:col-span-6 space-y-6 sm:space-y-8">
-                          <div className="space-y-3 sm:space-y-4">
-                            <h3
-                              data-studio-id={`sec:${sec.id}:title`}
-                              data-studio-type="heading"
-                              data-studio-label="Atelier Headline"
-                              data-studio-section={sec.id}
-                              data-studio-field="title"
-                              className="font-serif text-2xl sm:text-4xl text-white font-medium cursor-pointer hover:text-[#d1a86e] transition-colors"
-                            >
-                              {sec.title || "The Alchemy of Natural Earth & Luminous Glazes"}
+                        {/* Collector Concierge & Provenance Standards */}
+                        <div className="rounded-3xl bg-[#101116] border border-[#232530] p-5 sm:p-10 md:p-14 space-y-8 shadow-2xl">
+                          <div className="max-w-2xl space-y-2">
+                            <span className="text-[10px] sm:text-xs tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
+                              Private Acquisition Standards
+                            </span>
+                            <h3 className="font-serif text-2xl sm:text-4xl text-white font-medium">
+                              Museum-Grade Handling for Distinguished Collectors
                             </h3>
-                            <p
-                              data-studio-id={`sec:${sec.id}:description`}
-                              data-studio-type="paragraph"
-                              data-studio-label="Atelier Curatorial Essay"
-                              data-studio-section={sec.id}
-                              data-studio-field="description"
-                              className="text-xs sm:text-sm md:text-base text-[#a6aabf] leading-relaxed font-light cursor-pointer hover:text-white transition-colors"
-                            >
-                              {sec.contentJson?.description ||
-                                "Elena Vance (b. 1986) divides her studio practice between Paris and the wind-sculpted granite coast of Brittany. Her monumental canvases investigate the physical threshold where lapis lazuli glazes, crushed mineral earth, and oceanic silence transform architectural interiors."}
+                          </div>
+
+                          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6">
+                            <div className="space-y-2 p-3.5 sm:p-5 rounded-2xl bg-[#14151a] border border-[#232530]">
+                              <Award className="w-5 h-5 text-[#d1a86e]" />
+                              <h4 className="font-serif text-xs sm:text-base text-white font-medium">Signed Certificate</h4>
+                              <p className="text-[10px] sm:text-xs text-zinc-400 font-light">Embossed provenance paper.</p>
+                            </div>
+                            <div className="space-y-2 p-3.5 sm:p-5 rounded-2xl bg-[#14151a] border border-[#232530]">
+                              <Package className="w-5 h-5 text-[#d1a86e]" />
+                              <h4 className="font-serif text-xs sm:text-base text-white font-medium">Thermal Crate</h4>
+                              <p className="text-[10px] sm:text-xs text-zinc-400 font-light">Multi-ply insulated packaging.</p>
+                            </div>
+                            <div className="space-y-2 p-3.5 sm:p-5 rounded-2xl bg-[#14151a] border border-[#232530]">
+                              <ShieldCheck className="w-5 h-5 text-[#d1a86e]" />
+                              <h4 className="font-serif text-xs sm:text-base text-white font-medium">White-Glove Air</h4>
+                              <p className="text-[10px] sm:text-xs text-zinc-400 font-light">Insured door-to-door courier.</p>
+                            </div>
+                            <div className="space-y-2 p-3.5 sm:p-5 rounded-2xl bg-[#14151a] border border-[#232530]">
+                              <Sparkles className="w-5 h-5 text-[#d1a86e]" />
+                              <h4 className="font-serif text-xs sm:text-base text-white font-medium">Spatial AR</h4>
+                              <p className="text-[10px] sm:text-xs text-zinc-400 font-light">Lighting calibrated preview.</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Curriculum Vitae (CV) & Provenance Ledger */}
+                        <div className="border-t border-[#1c1d25] pt-12 sm:pt-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+                          <div className="lg:col-span-4 space-y-2">
+                            <span className="text-[10px] sm:text-xs tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
+                              Curriculum Vitae
+                            </span>
+                            <h4 className="font-serif text-2xl sm:text-3xl text-white">
+                              Exhibitions &amp; Provenance
+                            </h4>
+                            <p className="text-xs text-zinc-400 font-light leading-relaxed max-w-sm pt-1">
+                              Institutional record, solo museum presentations, and permanent foundation collections.
                             </p>
                           </div>
 
-                          {/* 4 Pillars of Studio Craftsmanship */}
-                          <div className="grid grid-cols-2 gap-2 sm:gap-4 pt-1">
-                            <div className="space-y-1 p-3 sm:p-4 rounded-xl bg-[#14151a] border border-[#232530]">
-                              <span className="text-[10px] sm:text-xs uppercase tracking-wider text-[#d1a86e] font-semibold block">
-                                01 / Lapis Lazuli
-                              </span>
-                              <p className="text-[10px] sm:text-xs text-zinc-400 font-light">
-                                Hand-ground mineral stone with pure walnut oil.
-                              </p>
+                          <div className="lg:col-span-8 space-y-8">
+                            <div className="space-y-3">
+                              <div className="text-[11px] uppercase tracking-[0.2em] text-zinc-400 font-semibold flex items-center gap-2">
+                                <Building2 className="w-4 h-4 text-[#d1a86e]" />
+                                <span>Selected Exhibitions</span>
+                              </div>
+                              <div className="space-y-2.5 text-xs sm:text-sm">
+                                {[
+                                  { year: "2026", title: "Luminescence at Twilight — Galerie Vivienne", location: "Paris, France" },
+                                  { year: "2024", title: "The Mineral Horizon — Marlborough Fine Art", location: "London, UK" },
+                                  { year: "2023", title: "Subterranean Glazes — Ginza Contemporary", location: "Tokyo, Japan" },
+                                ].map((ex, idx) => (
+                                  <div
+                                    key={idx}
+                                    className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline border-b border-[#1f212b] pb-2.5 gap-1 sm:gap-4"
+                                  >
+                                    <span className="text-white font-medium">{ex.title} — {ex.location}</span>
+                                    <span className="text-zinc-500 font-mono text-[11px] sm:text-xs">{ex.year}</span>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
-                            <div className="space-y-1 p-3 sm:p-4 rounded-xl bg-[#14151a] border border-[#232530]">
-                              <span className="text-[10px] sm:text-xs uppercase tracking-wider text-[#d1a86e] font-semibold block">
-                                02 / Belgian Linen
-                              </span>
-                              <p className="text-[10px] sm:text-xs text-zinc-400 font-light">
-                                Triple-primed Claessens linen on tulipwood.
-                              </p>
-                            </div>
-                            <div className="space-y-1 p-3 sm:p-4 rounded-xl bg-[#14151a] border border-[#232530]">
-                              <span className="text-[10px] sm:text-xs uppercase tracking-wider text-[#d1a86e] font-semibold block">
-                                03 / Glaze Optics
-                              </span>
-                              <p className="text-[10px] sm:text-xs text-zinc-400 font-light">
-                                20+ translucent layers shifting in natural daylight.
-                              </p>
-                            </div>
-                            <div className="space-y-1 p-3 sm:p-4 rounded-xl bg-[#14151a] border border-[#232530]">
-                              <span className="text-[10px] sm:text-xs uppercase tracking-wider text-[#d1a86e] font-semibold block">
-                                04 / Archival
-                              </span>
-                              <p className="text-[10px] sm:text-xs text-zinc-400 font-light">
-                                Museum archival longevity for centuries.
-                              </p>
+
+                            <div className="space-y-3">
+                              <div className="text-[11px] uppercase tracking-[0.2em] text-zinc-400 font-semibold flex items-center gap-2">
+                                <Award className="w-4 h-4 text-[#d1a86e]" />
+                                <span>Honors &amp; Museum Acquisitions</span>
+                              </div>
+                              <div className="space-y-2.5 text-xs sm:text-sm">
+                                {[
+                                  "Prix Jean-François Millet pour la Peinture Contemporaine",
+                                  "Permanent Collection Acquisition, Geneva Heritage Trust",
+                                  "ADAGP France Registered Contemporary Master",
+                                ].map((ach, idx) => (
+                                  <div
+                                    key={idx}
+                                    className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline border-b border-[#1f212b] pb-2.5 gap-1 sm:gap-4"
+                                  >
+                                    <span className="text-white font-medium">{ach}</span>
+                                    <span className="text-[#d1a86e] text-[10px] sm:text-xs font-mono uppercase tracking-wider shrink-0 flex items-center gap-1">
+                                      <Sparkles className="w-2.5 h-2.5" />
+                                      <span>Verified Provenance</span>
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-
-                      {/* Collector Concierge & Provenance Standards */}
-                      <div className="rounded-3xl bg-[#101116] border border-[#232530] p-5 sm:p-10 md:p-14 space-y-8 shadow-2xl">
-                        <div className="max-w-2xl space-y-2">
-                          <span className="text-[10px] sm:text-xs tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
-                            Private Acquisition Standards
-                          </span>
-                          <h3 className="font-serif text-2xl sm:text-4xl text-white font-medium">
-                            Museum-Grade Handling for Distinguished Collectors
-                          </h3>
-                        </div>
-
-                        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6">
-                          <div className="space-y-2 p-3.5 sm:p-5 rounded-2xl bg-[#14151a] border border-[#232530]">
-                            <Award className="w-5 h-5 text-[#d1a86e]" />
-                            <h4 className="font-serif text-xs sm:text-base text-white font-medium">Signed Certificate</h4>
-                            <p className="text-[10px] sm:text-xs text-zinc-400 font-light">Embossed provenance paper.</p>
-                          </div>
-                          <div className="space-y-2 p-3.5 sm:p-5 rounded-2xl bg-[#14151a] border border-[#232530]">
-                            <Package className="w-5 h-5 text-[#d1a86e]" />
-                            <h4 className="font-serif text-xs sm:text-base text-white font-medium">Thermal Crate</h4>
-                            <p className="text-[10px] sm:text-xs text-zinc-400 font-light">Multi-ply insulated packaging.</p>
-                          </div>
-                          <div className="space-y-2 p-3.5 sm:p-5 rounded-2xl bg-[#14151a] border border-[#232530]">
-                            <ShieldCheck className="w-5 h-5 text-[#d1a86e]" />
-                            <h4 className="font-serif text-xs sm:text-base text-white font-medium">White-Glove Air</h4>
-                            <p className="text-[10px] sm:text-xs text-zinc-400 font-light">Insured door-to-door courier.</p>
-                          </div>
-                          <div className="space-y-2 p-3.5 sm:p-5 rounded-2xl bg-[#14151a] border border-[#232530]">
-                            <Sparkles className="w-5 h-5 text-[#d1a86e]" />
-                            <h4 className="font-serif text-xs sm:text-base text-white font-medium">Spatial AR</h4>
-                            <p className="text-[10px] sm:text-xs text-zinc-400 font-light">Lighting calibrated preview.</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Curriculum Vitae (CV) & Provenance Ledger */}
-                      <div className="border-t border-[#1c1d25] pt-12 sm:pt-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
-                        <div className="lg:col-span-4 space-y-2">
-                          <span className="text-[10px] sm:text-xs tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
-                            Curriculum Vitae
-                          </span>
-                          <h4 className="font-serif text-2xl sm:text-3xl text-white">
-                            Exhibitions &amp; Provenance
-                          </h4>
-                          <p className="text-xs text-zinc-400 font-light leading-relaxed max-w-sm pt-1">
-                            Institutional record, solo museum presentations, and permanent foundation collections.
-                          </p>
-                        </div>
-
-                        <div className="lg:col-span-8 space-y-8">
-                          <div className="space-y-3">
-                            <div className="text-[11px] uppercase tracking-[0.2em] text-zinc-400 font-semibold flex items-center gap-2">
-                              <Building2 className="w-4 h-4 text-[#d1a86e]" />
-                              <span>Selected Exhibitions</span>
-                            </div>
-                            <div className="space-y-2.5 text-xs sm:text-sm">
-                              {[
-                                { year: "2026", title: "Luminescence at Twilight — Galerie Vivienne", location: "Paris, France" },
-                                { year: "2024", title: "The Mineral Horizon — Marlborough Fine Art", location: "London, UK" },
-                                { year: "2023", title: "Subterranean Glazes — Ginza Contemporary", location: "Tokyo, Japan" },
-                              ].map((ex, idx) => (
-                                <div
-                                  key={idx}
-                                  className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline border-b border-[#1f212b] pb-2.5 gap-1 sm:gap-4"
-                                >
-                                  <span className="text-white font-medium">{ex.title} — {ex.location}</span>
-                                  <span className="text-zinc-500 font-mono text-[11px] sm:text-xs">{ex.year}</span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-
-                          <div className="space-y-3">
-                            <div className="text-[11px] uppercase tracking-[0.2em] text-zinc-400 font-semibold flex items-center gap-2">
-                              <Award className="w-4 h-4 text-[#d1a86e]" />
-                              <span>Honors &amp; Museum Acquisitions</span>
-                            </div>
-                            <div className="space-y-2.5 text-xs sm:text-sm">
-                              {[
-                                "Prix Jean-François Millet pour la Peinture Contemporaine",
-                                "Permanent Collection Acquisition, Geneva Heritage Trust",
-                                "ADAGP France Registered Contemporary Master",
-                              ].map((ach, idx) => (
-                                <div
-                                  key={idx}
-                                  className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline border-b border-[#1f212b] pb-2.5 gap-1 sm:gap-4"
-                                >
-                                  <span className="text-white font-medium">{ach}</span>
-                                  <span className="text-[#d1a86e] text-[10px] sm:text-xs font-mono uppercase tracking-wider shrink-0 flex items-center gap-1">
-                                    <Sparkles className="w-2.5 h-2.5" />
-                                    <span>Verified Provenance</span>
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </section>
+                      </section>
+                    </React.Fragment>
                   );
                 }
 
                 // 6. CURRENT / FEATURED EXHIBITION
                 if (sec.sectionKey === "featured_exhibition") {
+                  const targetExh = sec.contentJson?.exhibitionId
+                    ? exhibitions.find((e) => e.id === sec.contentJson?.exhibitionId) || currentExhibition
+                    : currentExhibition;
                   const exhImageUrl =
                     sec.contentJson?.imageUrl ||
-                    currentExhibition?.coverImageUrl ||
+                    targetExh?.coverImageUrl ||
                     heroArtwork?.coverImageUrl;
+                  const exhTitle = sec.title || targetExh?.title || "Silence & Sediment: The Paris Cycle";
+                  const exhLocation =
+                    sec.contentJson?.location || targetExh?.location || "Galerie Vivienne • Paris, France";
+                  const exhDates =
+                    sec.contentJson?.dates || "April 15 — June 28, 2026";
+                  const exhDesc =
+                    sec.contentJson?.curatorNote ||
+                    sec.contentJson?.description ||
+                    targetExh?.description ||
+                    "A comprehensive showcase of monumental lapis lazuli compositions exploring architectural quietude and pigment geology.";
+
                   return (
-                    <section
-                      key={sec.id}
-                      data-studio-id={`sec:${sec.id}`}
-                      data-studio-type="section"
-                      data-studio-label="Solo Exhibition Section"
-                      data-studio-section={sec.id}
-                      className="scroll-mt-28 max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 w-full max-w-full overflow-hidden"
-                    >
-                      <div className="pt-8 sm:pt-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center w-full min-w-0">
-                        {exhImageUrl && (
-                          <div className="lg:col-span-7">
-                            <div
-                              data-studio-id={`sec:${sec.id}:image`}
-                              data-studio-type="image"
-                              data-studio-label="Exhibition Poster"
-                              data-studio-section={sec.id}
-                              data-studio-field="imageUrl"
-                              className="relative aspect-[16/9] rounded-2xl overflow-hidden shadow-2xl bg-[#14151a] border border-[#232530] cursor-pointer"
-                            >
-                              <Image
-                                src={exhImageUrl}
-                                alt={sec.title || "Solo Exhibition"}
-                                fill
-                                sizes="800px"
-                                className="object-cover"
-                              />
-                              <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10">
-                                <span className="backdrop-blur-md bg-emerald-950/80 text-emerald-300 border border-emerald-800/80 px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-medium tracking-wide uppercase">
-                                  Currently Open
-                                </span>
+                    <React.Fragment key={sec.id}>
+                      {renderDivider && <CuratorialPreviewDivider />}
+                      <section
+                        key={sec.id}
+                        data-studio-id={`sec:${sec.id}`}
+                        data-studio-type="section"
+                        data-studio-label="Solo Exhibition Section"
+                        data-studio-section={sec.id}
+                        className="scroll-mt-28 max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 w-full max-w-full overflow-hidden"
+                      >
+                        <div className="pt-8 sm:pt-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center w-full min-w-0">
+                          {exhImageUrl && (
+                            <div className="lg:col-span-7">
+                              <div
+                                data-studio-id={`sec:${sec.id}:image`}
+                                data-studio-type="image"
+                                data-studio-label="Exhibition Poster"
+                                data-studio-section={sec.id}
+                                data-studio-field="imageUrl"
+                                className="relative aspect-[16/9] rounded-2xl overflow-hidden shadow-2xl bg-[#14151a] border border-[#232530] cursor-pointer"
+                              >
+                                <Image
+                                  src={exhImageUrl}
+                                  alt={exhTitle}
+                                  fill
+                                  sizes="800px"
+                                  className="object-cover"
+                                />
+                                <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10">
+                                  <span className="backdrop-blur-md bg-emerald-950/80 text-emerald-300 border border-emerald-800/80 px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-medium tracking-wide uppercase">
+                                    Currently Open
+                                  </span>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        )}
+                          )}
 
-                        <div className="lg:col-span-5 space-y-4 sm:space-y-5">
-                          <span
-                            data-studio-id={`sec:${sec.id}:subtitle`}
-                            data-studio-type="eyebrow"
-                            data-studio-label="Exhibition Eyebrow"
-                            data-studio-section={sec.id}
-                            data-studio-field="subtitle"
-                            className="text-[10px] sm:text-[11px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold cursor-pointer hover:text-white transition-colors"
-                          >
-                            {sec.subtitle || "Current Solo Exhibition"}
-                          </span>
-
-                          <h3
-                            data-studio-id={`sec:${sec.id}:title`}
-                            data-studio-type="heading"
-                            data-studio-label="Exhibition Title"
-                            data-studio-section={sec.id}
-                            data-studio-field="title"
-                            className="font-serif text-2xl sm:text-4xl text-white font-medium cursor-pointer hover:text-[#d1a86e] transition-colors"
-                          >
-                            {sec.title || currentExhibition?.title || "Silence & Sediment: The Paris Cycle"}
-                          </h3>
-
-                          <div className="flex items-center gap-2 text-xs text-zinc-300 pt-0.5">
-                            <MapPin className="w-3.5 h-3.5 text-[#d1a86e] shrink-0" />
-                            <span>{currentExhibition?.location || "Galerie Vivienne • Paris, France"}</span>
-                          </div>
-
-                          <div className="flex items-center gap-2 text-xs text-zinc-400">
-                            <Calendar className="w-3.5 h-3.5 text-[#d1a86e] shrink-0" />
-                            <span>April 15 — June 28, 2026</span>
-                          </div>
-
-                          <p
-                            data-studio-id={`sec:${sec.id}:description`}
-                            data-studio-type="paragraph"
-                            data-studio-label="Exhibition Description"
-                            data-studio-section={sec.id}
-                            data-studio-field="description"
-                            className="text-xs sm:text-sm text-[#a6aabf] leading-relaxed pt-1 cursor-pointer hover:text-white transition-colors"
-                          >
-                            {sec.contentJson?.description ||
-                              currentExhibition?.description ||
-                              "A comprehensive showcase of monumental lapis lazuli compositions exploring architectural quietude and pigment geology."}
-                          </p>
-
-                          <div className="pt-2 flex flex-wrap items-center gap-2 sm:gap-3">
-                            <span className="rounded-full bg-[#d1a86e] text-[#0d0e12] font-semibold text-[10px] sm:text-xs uppercase tracking-wider h-7.5 sm:h-9 px-3.5 sm:px-5 shadow-md inline-flex items-center gap-1.5">
-                              <Sparkles className="w-3 h-3" />
-                              <span>RSVP Exhibition</span>
+                          <div className="lg:col-span-5 space-y-4 sm:space-y-5">
+                            <span
+                              data-studio-id={`sec:${sec.id}:subtitle`}
+                              data-studio-type="eyebrow"
+                              data-studio-label="Exhibition Eyebrow"
+                              data-studio-section={sec.id}
+                              data-studio-field="subtitle"
+                              className="text-[10px] sm:text-[11px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold cursor-pointer hover:text-white transition-colors"
+                            >
+                              {sec.subtitle || "Current Solo Exhibition"}
                             </span>
-                            <span className="rounded-full bg-[#161720] text-white text-[10px] sm:text-xs uppercase tracking-wider h-7.5 sm:h-9 px-3 sm:px-4 inline-flex items-center gap-1.5">
-                              <span>Dossier</span>
-                              <ArrowRight className="w-3 h-3 text-[#d1a86e]" />
-                            </span>
+
+                            <h3
+                              data-studio-id={`sec:${sec.id}:title`}
+                              data-studio-type="heading"
+                              data-studio-label="Exhibition Title"
+                              data-studio-section={sec.id}
+                              data-studio-field="title"
+                              className="font-serif text-2xl sm:text-4xl text-white font-medium cursor-pointer hover:text-[#d1a86e] transition-colors"
+                            >
+                              {exhTitle}
+                            </h3>
+
+                            <div className="flex items-center gap-2 text-xs text-zinc-300 pt-0.5">
+                              <MapPin className="w-3.5 h-3.5 text-[#d1a86e] shrink-0" />
+                              <span>{exhLocation}</span>
+                            </div>
+
+                            <div className="flex items-center gap-2 text-xs text-zinc-400">
+                              <Calendar className="w-3.5 h-3.5 text-[#d1a86e] shrink-0" />
+                              <span>{exhDates}</span>
+                            </div>
+
+                            <p
+                              data-studio-id={`sec:${sec.id}:description`}
+                              data-studio-type="paragraph"
+                              data-studio-label="Exhibition Description"
+                              data-studio-section={sec.id}
+                              data-studio-field="description"
+                              className="text-xs sm:text-sm text-[#a6aabf] leading-relaxed pt-1 cursor-pointer hover:text-white transition-colors"
+                            >
+                              {exhDesc}
+                            </p>
+
+                            <div className="pt-2 flex flex-wrap items-center gap-2 sm:gap-3">
+                              <span className="rounded-full bg-[#d1a86e] text-[#0d0e12] font-semibold text-[10px] sm:text-xs uppercase tracking-wider h-7.5 sm:h-9 px-3.5 sm:px-5 shadow-md inline-flex items-center gap-1.5">
+                                <Sparkles className="w-3 h-3" />
+                                <span>RSVP Exhibition</span>
+                              </span>
+                              <span className="rounded-full bg-[#161720] text-white text-[10px] sm:text-xs uppercase tracking-wider h-7.5 sm:h-9 px-3 sm:px-4 inline-flex items-center gap-1.5">
+                                <span>Dossier</span>
+                                <ArrowRight className="w-3 h-3 text-[#d1a86e]" />
+                              </span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </section>
+                      </section>
+                    </React.Fragment>
                   );
                 }
 
                 // 7. PRIVATE INQUIRIES & ACQUISITIONS (MERGED CONTACT EXPERIENCE)
                 if (sec.sectionKey === "contact_cta") {
-                  const recipientEmail = siteSettings.contactEmail || "curator@latelier-lumineux.art";
-                  const phone = siteSettings.phone || "+33 (0)1 42 68 55 00";
-                  const address = siteSettings.address || "14 Rue de Beaune, 7th Arrondissement, 75007 Paris, France";
-                  const hours = siteSettings.businessHours || "Tuesday – Saturday, 10:00 – 18:00 CET (By Appointment)";
+                  const recipientEmail =
+                    sec.contentJson?.email || siteSettings.contactEmail || "curator@latelier-lumineux.art";
+                  const phone =
+                    sec.contentJson?.phone || siteSettings.phone || "+33 (0)1 42 68 55 00";
+                  const whatsapp =
+                    sec.contentJson?.whatsapp || siteSettings.whatsapp || "+33 6 12 34 56 78";
+                  const address =
+                    sec.contentJson?.address || siteSettings.address || "14 Rue de Beaune, 7th Arrondissement, 75007 Paris, France";
+                  const hours =
+                    sec.contentJson?.businessHours || siteSettings.businessHours || "Tuesday – Saturday, 10:00 – 18:00 CET (By Appointment)";
+                  const contactDesc =
+                    sec.contentJson?.description ||
+                    "For private acquisitions, curatorial exhibition loans, bespoke commissions, and private salon viewings, please correspond directly with Madame Vance's Paris liaison desk.";
 
                   return (
-                    <section
-                      id="contact"
-                      key={sec.id}
-                      data-studio-id={`sec:${sec.id}`}
-                      data-studio-type="section"
-                      data-studio-label="Contact & Studio Inquiries Section"
-                      data-studio-section={sec.id}
-                      className="scroll-mt-28 max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 w-full max-w-full overflow-hidden space-y-8 sm:space-y-12"
-                    >
-                      <div className="max-w-3xl space-y-3">
-                        <div
-                          data-studio-id={`sec:${sec.id}:subtitle`}
-                          data-studio-type="eyebrow"
-                          data-studio-label="Liaison Eyebrow"
-                          data-studio-section={sec.id}
-                          data-studio-field="subtitle"
-                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#181924] border border-[#262833] text-[9px] sm:text-[10px] tracking-[0.22em] text-[#d1a86e] uppercase font-semibold cursor-pointer hover:text-white transition-colors"
-                        >
-                          <Mail className="w-3 h-3 text-[#d1a86e]" />
-                          <span>{sec.subtitle || "Curatorial Liaison & Private Acquisitions"}</span>
-                        </div>
-
-                        <h2
-                          data-studio-id={`sec:${sec.id}:title`}
-                          data-studio-type="heading"
-                          data-studio-label="Contact Section Title"
-                          data-studio-section={sec.id}
-                          data-studio-field="title"
-                          className="font-serif text-2xl sm:text-4xl md:text-5xl text-white font-medium cursor-pointer hover:text-[#d1a86e] transition-colors"
-                        >
-                          {sec.title || "Contact & Studio Inquiries"}
-                        </h2>
-
-                        <p
-                          data-studio-id={`sec:${sec.id}:description`}
-                          data-studio-type="paragraph"
-                          data-studio-label="Contact Description"
-                          data-studio-section={sec.id}
-                          data-studio-field="description"
-                          className="text-xs sm:text-sm md:text-base text-[#a6aabf] leading-relaxed font-light cursor-pointer hover:text-white transition-colors"
-                        >
-                          {sec.contentJson?.description ||
-                            "For private acquisitions, curatorial exhibition loans, bespoke commissions, and private salon viewings, please correspond directly with Madame Vance's Paris liaison desk."}
-                        </p>
-                      </div>
-
-                      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-                        {/* Interactive Form Mockup Column */}
-                        <div className="lg:col-span-7 bg-[#14151a] border border-[#262833] rounded-2xl p-6 sm:p-8 space-y-5 shadow-2xl">
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div className="space-y-1.5">
-                              <span className="block text-[11px] uppercase tracking-wider text-zinc-400 font-medium">
-                                Collector Name *
-                              </span>
-                              <div className="h-10 px-3.5 rounded-lg bg-[#1a1c23] border border-[#262833] text-xs text-zinc-400 flex items-center">
-                                e.g. Genevieve Laurent
-                              </div>
-                            </div>
-                            <div className="space-y-1.5">
-                              <span className="block text-[11px] uppercase tracking-wider text-zinc-400 font-medium">
-                                Email Address *
-                              </span>
-                              <div className="h-10 px-3.5 rounded-lg bg-[#1a1c23] border border-[#262833] text-xs text-zinc-400 flex items-center">
-                                e.g. g.laurent@fondation.fr
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div className="space-y-1.5">
-                              <span className="block text-[11px] uppercase tracking-wider text-zinc-400 font-medium">
-                                Direct Phone
-                              </span>
-                              <div className="h-10 px-3.5 rounded-lg bg-[#1a1c23] border border-[#262833] text-xs text-zinc-400 flex items-center">
-                                +33 1 42 00 00 00
-                              </div>
-                            </div>
-                            <div className="space-y-1.5">
-                              <span className="block text-[11px] uppercase tracking-wider text-zinc-400 font-medium">
-                                Inquiry Nature
-                              </span>
-                              <div className="h-10 px-3.5 rounded-lg bg-[#1a1c23] border border-[#262833] text-xs text-white flex items-center justify-between">
-                                <span>Private Acquisition Inquiry</span>
-                                <ChevronDown className="w-3.5 h-3.5 text-zinc-400" />
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="space-y-1.5">
-                            <span className="block text-[11px] uppercase tracking-wider text-zinc-400 font-medium">
-                              Your Inquiry Message *
-                            </span>
-                            <div className="h-24 p-3.5 rounded-lg bg-[#1a1c23] border border-[#262833] text-xs text-zinc-500">
-                              Please describe your acquisition or curatorial inquiry in detail...
-                            </div>
-                          </div>
-
-                          <button
-                            data-studio-id={`sec:${sec.id}:cta`}
-                            data-studio-type="button"
-                            data-studio-label="Inquiry Transmit Button"
+                    <React.Fragment key={sec.id}>
+                      {renderDivider && <CuratorialPreviewDivider />}
+                      <section
+                        id="contact"
+                        key={sec.id}
+                        data-studio-id={`sec:${sec.id}`}
+                        data-studio-type="section"
+                        data-studio-label="Contact & Studio Inquiries Section"
+                        data-studio-section={sec.id}
+                        className="scroll-mt-28 max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 w-full max-w-full overflow-hidden space-y-8 sm:space-y-12"
+                      >
+                        <div className="max-w-3xl space-y-3">
+                          <div
+                            data-studio-id={`sec:${sec.id}:subtitle`}
+                            data-studio-type="eyebrow"
+                            data-studio-label="Liaison Eyebrow"
                             data-studio-section={sec.id}
-                            data-studio-field="ctaText"
-                            className="w-full h-11 rounded-lg bg-[#d1a86e] text-[#0d0e12] text-xs font-semibold uppercase tracking-[0.2em] shadow-lg shadow-[#d1a86e]/10 flex items-center justify-center gap-2 cursor-pointer"
+                            data-studio-field="subtitle"
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#181924] border border-[#262833] text-[9px] sm:text-[10px] tracking-[0.22em] text-[#d1a86e] uppercase font-semibold cursor-pointer hover:text-white transition-colors"
                           >
-                            <Send className="w-3.5 h-3.5" />
-                            <span>{sec.contentJson?.ctaText || "Transmit Inquiry to Studio"}</span>
-                          </button>
+                            <Mail className="w-3 h-3 text-[#d1a86e]" />
+                            <span>{sec.subtitle || "Curatorial Liaison & Private Acquisitions"}</span>
+                          </div>
+
+                          <h2
+                            data-studio-id={`sec:${sec.id}:title`}
+                            data-studio-type="heading"
+                            data-studio-label="Contact Section Title"
+                            data-studio-section={sec.id}
+                            data-studio-field="title"
+                            className="font-serif text-2xl sm:text-4xl md:text-5xl text-white font-medium cursor-pointer hover:text-[#d1a86e] transition-colors"
+                          >
+                            {sec.title || "Contact & Studio Inquiries"}
+                          </h2>
+
+                          <p
+                            data-studio-id={`sec:${sec.id}:description`}
+                            data-studio-type="paragraph"
+                            data-studio-label="Contact Description"
+                            data-studio-section={sec.id}
+                            data-studio-field="description"
+                            className="text-xs sm:text-sm md:text-base text-[#a6aabf] leading-relaxed font-light cursor-pointer hover:text-white transition-colors"
+                          >
+                            {contactDesc}
+                          </p>
                         </div>
 
-                        {/* Studio Dossier Info Column */}
-                        <div className="lg:col-span-5 space-y-6 lg:pl-4">
-                          <div className="p-6 sm:p-8 bg-[#14151a] border border-[#262833] rounded-2xl space-y-6 shadow-xl">
-                            <h3 className="font-serif text-xl sm:text-2xl text-white">Direct Correspondence</h3>
-
-                            <div className="space-y-4 text-xs">
-                              <div
-                                data-studio-id="contact:email"
-                                data-studio-type="paragraph"
-                                data-studio-label="Curatorial Email"
-                                className="flex items-start gap-3 cursor-pointer"
-                              >
-                                <Mail className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5" />
-                                <div>
-                                  <span className="text-zinc-500 uppercase tracking-wider block text-[10px]">
-                                    Curatorial Email
-                                  </span>
-                                  <span className="text-white hover:text-[#d1a86e] transition-colors font-medium text-xs sm:text-sm">
-                                    {recipientEmail}
-                                  </span>
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+                          {/* Interactive Form Mockup Column */}
+                          <div className="lg:col-span-7 bg-[#14151a] border border-[#262833] rounded-2xl p-6 sm:p-8 space-y-5 shadow-2xl">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              <div className="space-y-1.5">
+                                <span className="block text-[11px] uppercase tracking-wider text-zinc-400 font-medium">
+                                  Collector Name *
+                                </span>
+                                <div className="h-10 px-3.5 rounded-lg bg-[#1a1c23] border border-[#262833] text-xs text-zinc-400 flex items-center">
+                                  e.g. Genevieve Laurent
                                 </div>
                               </div>
-
-                              <div
-                                data-studio-id="contact:phone"
-                                data-studio-type="paragraph"
-                                data-studio-label="Studio Desk Phone"
-                                className="flex items-start gap-3 cursor-pointer"
-                              >
-                                <Phone className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5" />
-                                <div>
-                                  <span className="text-zinc-500 uppercase tracking-wider block text-[10px]">
-                                    Studio Desk
-                                  </span>
-                                  <span className="text-white">
-                                    {phone}
-                                  </span>
-                                </div>
-                              </div>
-
-                              <div
-                                data-studio-id="contact:whatsapp"
-                                data-studio-type="paragraph"
-                                data-studio-label="WhatsApp Liaison"
-                                className="flex items-start gap-3 cursor-pointer"
-                              >
-                                <MessageCircle className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5" />
-                                <div>
-                                  <span className="text-zinc-500 uppercase tracking-wider block text-[10px]">
-                                    WhatsApp Liaison
-                                  </span>
-                                  <span className="text-white">{siteSettings.whatsapp || "+33 6 12 34 56 78"}</span>
-                                </div>
-                              </div>
-
-                              <div
-                                data-studio-id="contact:address"
-                                data-studio-type="paragraph"
-                                data-studio-label="Atelier Address"
-                                className="flex items-start gap-3 cursor-pointer"
-                              >
-                                <MapPin className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5" />
-                                <div>
-                                  <span className="text-zinc-500 uppercase tracking-wider block text-[10px]">
-                                    Atelier &amp; Private Gallery
-                                  </span>
-                                  <span className="text-white leading-relaxed">
-                                    {address}
-                                  </span>
-                                </div>
-                              </div>
-
-                              <div
-                                data-studio-id="contact:hours"
-                                data-studio-type="paragraph"
-                                data-studio-label="Studio Hours"
-                                className="flex items-start gap-3 cursor-pointer"
-                              >
-                                <Clock className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5" />
-                                <div>
-                                  <span className="text-zinc-500 uppercase tracking-wider block text-[10px]">
-                                    Studio Hours
-                                  </span>
-                                  <span className="text-white">
-                                    {hours}
-                                  </span>
+                              <div className="space-y-1.5">
+                                <span className="block text-[11px] uppercase tracking-wider text-zinc-400 font-medium">
+                                  Email Address *
+                                </span>
+                                <div className="h-10 px-3.5 rounded-lg bg-[#1a1c23] border border-[#262833] text-xs text-zinc-400 flex items-center">
+                                  e.g. g.laurent@fondation.fr
                                 </div>
                               </div>
                             </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              <div className="space-y-1.5">
+                                <span className="block text-[11px] uppercase tracking-wider text-zinc-400 font-medium">
+                                  Direct Phone
+                                </span>
+                                <div className="h-10 px-3.5 rounded-lg bg-[#1a1c23] border border-[#262833] text-xs text-zinc-400 flex items-center">
+                                  {phone}
+                                </div>
+                              </div>
+                              <div className="space-y-1.5">
+                                <span className="block text-[11px] uppercase tracking-wider text-zinc-400 font-medium">
+                                  Inquiry Nature
+                                </span>
+                                <div className="h-10 px-3.5 rounded-lg bg-[#1a1c23] border border-[#262833] text-xs text-white flex items-center justify-between">
+                                  <span>Private Acquisition Inquiry</span>
+                                  <ChevronDown className="w-3.5 h-3.5 text-zinc-400" />
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="space-y-1.5">
+                              <span className="block text-[11px] uppercase tracking-wider text-zinc-400 font-medium">
+                                Your Inquiry Message *
+                              </span>
+                              <div className="h-24 p-3.5 rounded-lg bg-[#1a1c23] border border-[#262833] text-xs text-zinc-500">
+                                Please describe your acquisition or curatorial inquiry in detail...
+                              </div>
+                            </div>
+
+                            <button
+                              data-studio-id={`sec:${sec.id}:cta`}
+                              data-studio-type="button"
+                              data-studio-label="Inquiry Transmit Button"
+                              data-studio-section={sec.id}
+                              data-studio-field="ctaText"
+                              className="w-full h-11 rounded-lg bg-[#d1a86e] text-[#0d0e12] text-xs font-semibold uppercase tracking-[0.2em] shadow-lg shadow-[#d1a86e]/10 flex items-center justify-center gap-2 cursor-pointer"
+                            >
+                              <Send className="w-3.5 h-3.5" />
+                              <span>{sec.contentJson?.ctaText || "Transmit Inquiry to Studio"}</span>
+                            </button>
                           </div>
 
-                          {/* Privacy & Provenance Guarantee */}
-                          <div className="p-5 sm:p-6 bg-[#14151a]/70 border border-[#262833] rounded-2xl space-y-2.5 text-xs text-[#8e92a4]">
-                            <div className="flex items-center gap-2 text-white font-medium">
-                              <ShieldCheck className="w-4 h-4 text-[#d1a86e]" />
-                              <span className="text-xs uppercase tracking-wider text-[#d1a86e]">Confidentiality Protocol</span>
+                          {/* Studio Dossier Info Column */}
+                          <div className="lg:col-span-5 space-y-6 lg:pl-4">
+                            <div className="p-6 sm:p-8 bg-[#14151a] border border-[#262833] rounded-2xl space-y-6 shadow-xl">
+                              <h3 className="font-serif text-xl sm:text-2xl text-white">Direct Correspondence</h3>
+
+                              <div className="space-y-4 text-xs">
+                                <div
+                                  data-studio-id="contact:email"
+                                  data-studio-type="paragraph"
+                                  data-studio-label="Curatorial Email"
+                                  className="flex items-start gap-3 cursor-pointer"
+                                >
+                                  <Mail className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5" />
+                                  <div>
+                                    <span className="text-zinc-500 uppercase tracking-wider block text-[10px]">
+                                      Curatorial Email
+                                    </span>
+                                    <span className="text-white hover:text-[#d1a86e] transition-colors font-medium text-xs sm:text-sm">
+                                      {recipientEmail}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div
+                                  data-studio-id="contact:phone"
+                                  data-studio-type="paragraph"
+                                  data-studio-label="Studio Desk Phone"
+                                  className="flex items-start gap-3 cursor-pointer"
+                                >
+                                  <Phone className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5" />
+                                  <div>
+                                    <span className="text-zinc-500 uppercase tracking-wider block text-[10px]">
+                                      Studio Desk
+                                    </span>
+                                    <span className="text-white">
+                                      {phone}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div
+                                  data-studio-id="contact:whatsapp"
+                                  data-studio-type="paragraph"
+                                  data-studio-label="WhatsApp Liaison"
+                                  className="flex items-start gap-3 cursor-pointer"
+                                >
+                                  <MessageCircle className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5" />
+                                  <div>
+                                    <span className="text-zinc-500 uppercase tracking-wider block text-[10px]">
+                                      WhatsApp Liaison
+                                    </span>
+                                    <span className="text-white">{whatsapp}</span>
+                                  </div>
+                                </div>
+
+                                <div
+                                  data-studio-id="contact:address"
+                                  data-studio-type="paragraph"
+                                  data-studio-label="Atelier Address"
+                                  className="flex items-start gap-3 cursor-pointer"
+                                >
+                                  <MapPin className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5" />
+                                  <div>
+                                    <span className="text-zinc-500 uppercase tracking-wider block text-[10px]">
+                                      Atelier &amp; Private Gallery
+                                    </span>
+                                    <span className="text-white leading-relaxed">
+                                      {address}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div
+                                  data-studio-id="contact:hours"
+                                  data-studio-type="paragraph"
+                                  data-studio-label="Studio Hours"
+                                  className="flex items-start gap-3 cursor-pointer"
+                                >
+                                  <Clock className="w-4 h-4 text-[#d1a86e] shrink-0 mt-0.5" />
+                                  <div>
+                                    <span className="text-zinc-500 uppercase tracking-wider block text-[10px]">
+                                      Studio Hours
+                                    </span>
+                                    <span className="text-white">
+                                      {hours}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
-                            <p className="leading-relaxed text-[11px] sm:text-xs">
-                              All collector inquiries, institutional loans, and client identities are maintained under strict non-disclosure conventions. Authenticated certificates of provenance accompany all acquisitions.
-                            </p>
+
+                            {/* Privacy & Provenance Guarantee */}
+                            <div className="p-5 sm:p-6 bg-[#14151a]/70 border border-[#262833] rounded-2xl space-y-2.5 text-xs text-[#8e92a4]">
+                              <div className="flex items-center gap-2 text-white font-medium">
+                                <ShieldCheck className="w-4 h-4 text-[#d1a86e]" />
+                                <span className="text-xs uppercase tracking-wider text-[#d1a86e]">Confidentiality Protocol</span>
+                              </div>
+                              <p className="leading-relaxed text-[11px] sm:text-xs">
+                                All collector inquiries, institutional loans, and client identities are maintained under strict non-disclosure conventions. Authenticated certificates of provenance accompany all acquisitions.
+                              </p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </section>
+                      </section>
+                    </React.Fragment>
                   );
                 }
 

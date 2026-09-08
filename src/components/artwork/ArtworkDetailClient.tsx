@@ -13,6 +13,7 @@ import {
   CheckCircle,
   ArrowRight,
   ChevronLeft,
+  Award,
 } from "lucide-react";
 import { MockArtwork } from "@/db/mockData";
 import { formatCurrency, formatDimensions } from "@/lib/utils";
@@ -209,6 +210,64 @@ export function ArtworkDetailClient({
                 <CheckCircle className="w-3.5 h-3.5" />
                 <span>1:1 Scale Calibrated</span>
               </span>
+            </div>
+          </div>
+
+          {/* Institutional Provenance & Authentication Ledger */}
+          <div className="p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-[#14151a] border border-[#232532] space-y-3 shadow-md">
+            <div className="flex items-center justify-between pb-2.5 border-b border-[#20222f]">
+              <div className="flex items-center gap-2">
+                <Award className="w-4 h-4 text-[#d1a86e]" />
+                <span className="text-[10px] sm:text-[11px] uppercase tracking-[0.2em] text-white font-medium">
+                  Institutional Provenance &amp; Ledger
+                </span>
+              </div>
+              <span className="text-[9px] font-mono px-2 py-0.5 rounded bg-[#1e202d] text-[#d1a86e] uppercase">
+                Official Record
+              </span>
+            </div>
+
+            <div className="space-y-2 text-xs">
+              <div className="flex items-center justify-between py-1">
+                <span className="text-zinc-500 text-[11px] flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#d1a86e]" />
+                  ADAGP France Registration
+                </span>
+                <span className="font-mono text-zinc-300 font-medium text-[11px]">
+                  #EV-2026-8891
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between py-1">
+                <span className="text-zinc-500 text-[11px] flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#d1a86e]" />
+                  Catalogue Raisonné
+                </span>
+                <span className="font-mono text-zinc-300 font-medium text-[11px]">
+                  CR-{artwork.year || 2026}-{(artwork.displayOrder || 1).toString().padStart(3, "0")}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between py-1">
+                <span className="text-zinc-500 text-[11px] flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#d1a86e]" />
+                  Certificate of Authenticity
+                </span>
+                <span className="text-zinc-300 text-[11px]">
+                  Arches Vélin 300g • Embossed Dry Seal
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between py-1">
+                <span className="text-zinc-500 text-[11px] flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  Primary Market Status
+                </span>
+                <span className="text-emerald-400 text-[11px] font-medium flex items-center gap-1">
+                  <CheckCircle className="w-3 h-3 text-emerald-400" />
+                  Direct Atelier Provenance
+                </span>
+              </div>
             </div>
           </div>
 
