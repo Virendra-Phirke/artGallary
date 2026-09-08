@@ -11,14 +11,10 @@ export default async function AdminActivityPage() {
 
   return (
     <div className="space-y-8 w-full">
-      <div className="border-b border-[#1c1d25] pb-6">
+      <div className="border-b border-[#1c1d25] pb-4">
         <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
           Immutable Audit Trail
         </span>
-        <h1 className="font-serif text-3xl text-white mt-1">Activity Log</h1>
-        <p className="text-xs text-zinc-400 mt-1">
-          Historical chronicle of curatorial changes, media uploads, AR calibrations, and publication actions.
-        </p>
       </div>
 
       <div className="bg-[#14151a] border border-[#262833] rounded-2xl overflow-hidden shadow-xl">

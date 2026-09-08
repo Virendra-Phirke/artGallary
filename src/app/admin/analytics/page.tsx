@@ -16,16 +16,10 @@ export default async function AdminAnalyticsPage() {
 
   return (
     <div className="space-y-8 w-full">
-      <div className="border-b border-[#1c1d25] pb-6">
+      <div className="border-b border-[#1c1d25] pb-4">
         <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
           Curatorial Engagement
         </span>
-        <h1 className="font-serif text-3xl text-white mt-1">
-          Privacy-First Analytics
-        </h1>
-        <p className="text-xs text-zinc-400 mt-1">
-          Telemetry without intrusive tracking or cookie consent banners. Designed for Vercel Analytics and PostHog.
-        </p>
       </div>
 
       {/* Metrics Row */}

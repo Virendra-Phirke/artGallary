@@ -302,36 +302,39 @@ export function InquiriesManagerClient({
             </Card>
           </div>
 
-          {/* Search & Compact Filter Bar */}
-          <div className="p-2 sm:p-2.5 bg-[#121319] rounded-2xl shadow-md flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500" />
+          {/* Search & Compact Filter Bar - 2 cols 1 row on mobile */}
+          <div className="p-2 sm:p-2.5 bg-[#121319] rounded-2xl shadow-md grid grid-cols-2 sm:flex sm:flex-row items-center sm:justify-between gap-2 sm:gap-2.5">
+            <div className="relative w-full sm:max-w-md sm:flex-1">
+              <Search className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500 pointer-events-none" />
               <input
                 type="text"
                 value={inquirySearchQuery}
                 onChange={(e) => setInquirySearchQuery(e.target.value)}
-                placeholder="Search collector inquiries by name, email, canvas..."
-                className="w-full pl-9 pr-3 h-8 sm:h-9 bg-[#1a1b26] text-xs text-white placeholder:text-zinc-500 rounded-xl border-none focus:ring-1 focus:ring-[#d1a86e] focus:outline-none"
+                placeholder="Search inquiries..."
+                className="w-full pl-8 sm:pl-9 pr-3 h-8 sm:h-9 bg-[#1a1b26] text-xs text-white placeholder:text-zinc-500 rounded-xl border-none focus:ring-1 focus:ring-[#d1a86e] focus:outline-none"
               />
             </div>
 
             {/* Dropdown Filter for Inquiries */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-2 h-8 sm:h-9 px-3 rounded-xl bg-[#1a1b26] hover:bg-[#222432] text-xs font-medium text-zinc-200 border border-white/5 transition-colors cursor-pointer self-start sm:self-auto shrink-0"
-                >
-                  <Filter className="w-3.5 h-3.5 text-[#d1a86e]" />
-                  <span>
-                    Status:{" "}
-                    <strong className="font-semibold text-white capitalize">
-                      {selectedStatus === "all" ? "All" : selectedStatus}
-                    </strong>
-                  </span>
-                  <ChevronDown className="w-3 h-3 text-zinc-400 ml-0.5" />
-                </button>
-              </DropdownMenuTrigger>
+            <div className="w-full sm:w-auto flex items-center justify-end shrink-0">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    className="w-full sm:w-auto inline-flex items-center justify-between sm:justify-start gap-1.5 sm:gap-2 h-8 sm:h-9 px-2.5 sm:px-3 rounded-xl bg-[#1a1b26] hover:bg-[#222432] text-xs font-medium text-zinc-200 border border-white/5 transition-colors cursor-pointer"
+                  >
+                    <span className="inline-flex items-center gap-1.5 truncate">
+                      <Filter className="w-3.5 h-3.5 text-[#d1a86e] shrink-0" />
+                      <span className="truncate">
+                        Status:{" "}
+                        <strong className="font-semibold text-white capitalize">
+                          {selectedStatus === "all" ? "All" : selectedStatus}
+                        </strong>
+                      </span>
+                    </span>
+                    <ChevronDown className="w-3 h-3 text-zinc-400 ml-0.5 shrink-0" />
+                  </button>
+                </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="end"
                 className="w-48 p-1.5 bg-[#121319] border border-[#262833] rounded-xl shadow-2xl text-xs text-white z-[110]"
@@ -364,6 +367,7 @@ export function InquiriesManagerClient({
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
+            </div>
           </div>
 
           {/* Inquiries List - 2 columns on desktop, 1 on mobile */}
@@ -559,17 +563,17 @@ export function InquiriesManagerClient({
             </Card>
           </div>
 
-          {/* Search & Filter Controls - Compact Dropdown Bar */}
-          <div className="p-2.5 sm:p-3 bg-[#121319] rounded-xl sm:rounded-2xl shadow-md border border-white/5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+          {/* Search & Filter Controls - 2 cols 1 row on mobile */}
+          <div className="p-2.5 sm:p-3 bg-[#121319] rounded-xl sm:rounded-2xl shadow-md border border-white/5 grid grid-cols-2 sm:flex sm:flex-row items-center sm:justify-between gap-2 sm:gap-2.5">
             {/* Search input */}
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500" />
+            <div className="relative w-full sm:max-w-md sm:flex-1">
+              <Search className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500 pointer-events-none" />
               <input
                 type="text"
-                placeholder="Filter dispatches by recipient, subject, or ID..."
+                placeholder="Filter dispatches..."
                 value={emailSearchQuery}
                 onChange={(e) => setEmailSearchQuery(e.target.value)}
-                className="w-full bg-[#1a1b26] rounded-xl pl-9 pr-8 h-8 sm:h-9 text-xs text-white placeholder-zinc-500 border-none focus:ring-1 focus:ring-[#d1a86e] focus:outline-none"
+                className="w-full bg-[#1a1b26] rounded-xl pl-8 sm:pl-9 pr-8 h-8 sm:h-9 text-xs text-white placeholder-zinc-500 border-none focus:ring-1 focus:ring-[#d1a86e] focus:outline-none"
               />
               {emailSearchQuery && (
                 <button
@@ -581,28 +585,30 @@ export function InquiriesManagerClient({
               )}
             </div>
 
-            <div className="flex items-center gap-2 self-start sm:self-auto shrink-0 flex-wrap">
+            <div className="w-full sm:w-auto flex items-center justify-end gap-1.5 sm:gap-2 shrink-0">
               {/* Delivery Status Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
                     type="button"
-                    className="inline-flex items-center gap-2 h-8 sm:h-9 px-3 rounded-xl bg-[#1a1b26] hover:bg-[#222432] text-xs font-medium text-zinc-200 border border-white/5 transition-colors cursor-pointer"
+                    className="w-full sm:w-auto inline-flex items-center justify-between sm:justify-start gap-1.5 sm:gap-2 h-8 sm:h-9 px-2.5 sm:px-3 rounded-xl bg-[#1a1b26] hover:bg-[#222432] text-xs font-medium text-zinc-200 border border-white/5 transition-colors cursor-pointer"
                   >
-                    <Filter className="w-3.5 h-3.5 text-[#d1a86e]" />
-                    <span>
-                      Delivery:{" "}
-                      <strong className="font-semibold text-white capitalize">
-                        {selectedDeliveryStatus === "all"
-                          ? "All"
-                          : selectedDeliveryStatus === "delivered"
-                          ? "Delivered"
-                          : selectedDeliveryStatus === "sandbox_restricted"
-                          ? "Sandbox Held"
-                          : "Failed"}
-                      </strong>
+                    <span className="inline-flex items-center gap-1.5 truncate">
+                      <Filter className="w-3.5 h-3.5 text-[#d1a86e] shrink-0" />
+                      <span className="truncate">
+                        <span className="hidden sm:inline">Delivery: </span>
+                        <strong className="font-semibold text-white capitalize">
+                          {selectedDeliveryStatus === "all"
+                            ? "All"
+                            : selectedDeliveryStatus === "delivered"
+                            ? "Delivered"
+                            : selectedDeliveryStatus === "sandbox_restricted"
+                            ? "Sandbox"
+                            : "Failed"}
+                        </strong>
+                      </span>
                     </span>
-                    <ChevronDown className="w-3 h-3 text-zinc-400 ml-0.5" />
+                    <ChevronDown className="w-3 h-3 text-zinc-400 ml-0.5 shrink-0" />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
@@ -637,12 +643,12 @@ export function InquiriesManagerClient({
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Email Type Dropdown */}
+              {/* Email Type Dropdown - Shown on desktop/tablet */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
                     type="button"
-                    className="inline-flex items-center gap-2 h-8 sm:h-9 px-3 rounded-xl bg-[#1a1b26] hover:bg-[#222432] text-xs font-medium text-zinc-200 border border-white/5 transition-colors cursor-pointer"
+                    className="hidden sm:inline-flex items-center gap-2 h-8 sm:h-9 px-3 rounded-xl bg-[#1a1b26] hover:bg-[#222432] text-xs font-medium text-zinc-200 border border-white/5 transition-colors cursor-pointer"
                   >
                     <span>
                       Type:{" "}

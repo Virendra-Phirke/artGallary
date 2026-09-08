@@ -139,23 +139,15 @@ export function ProfileClient({ initialUser }: ProfileClientProps) {
 
   return (
     <div className="w-full space-y-8 pb-16">
-      {/* Editorial Header */}
-      <div className="p-6 sm:p-8 bg-[#121319] rounded-3xl shadow-xl shadow-black/40 flex flex-col md:flex-row md:items-center justify-between gap-4 border-none">
+      {/* Editorial Header - Clean floating */}
+      <div className="flex flex-wrap items-center justify-between gap-3 w-full">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
-              Personal Credentials &amp; Access
-            </span>
+            <span className="text-xs text-zinc-400 font-mono">Role:</span>
             <Badge variant="warning" className="text-[9px] font-mono font-bold border-none">
               {initialUser.role}
             </Badge>
           </div>
-          <h1 className="font-serif text-3xl sm:text-4xl text-white font-normal tracking-wide mt-1">
-            Admin Profile &amp; Security
-          </h1>
-          <p className="text-xs text-zinc-400 mt-1 max-w-2xl">
-            Manage your personal login credentials, identity identifier, and authentication master password.
-          </p>
         </div>
 
         <div className="flex items-center gap-3">

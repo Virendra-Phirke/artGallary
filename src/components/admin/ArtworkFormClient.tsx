@@ -357,19 +357,16 @@ export function ArtworkFormClient({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-10 w-full">
-      {/* Top Breadcrumb & Action Header - Solid Tier 1 Master Block */}
-      <div className="bg-[#121319] p-6 sm:p-8 rounded-3xl shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="space-y-1">
+      {/* Top Breadcrumb & Action Header - Clean floating */}
+      <div className="flex flex-wrap items-center justify-between gap-3 w-full">
+        <div>
           <Link
             href="/admin/artworks"
-            className="inline-flex items-center gap-1.5 text-xs uppercase tracking-widest text-zinc-400 hover:text-white transition-colors mb-2 bg-[#1a1b26] px-3 py-1 rounded-full"
+            className="inline-flex items-center gap-1.5 text-xs uppercase tracking-widest text-zinc-400 hover:text-white transition-colors bg-[#1a1b26] px-3 py-1.5 rounded-xl shadow-sm"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Back to Artworks</span>
           </Link>
-          <h1 className="font-serif text-3xl text-white">
-            {isNew ? "Create New Artwork" : `Edit: ${initialArtwork?.title}`}
-          </h1>
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">

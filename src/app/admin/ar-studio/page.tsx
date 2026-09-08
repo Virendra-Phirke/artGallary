@@ -23,17 +23,11 @@ export default async function AdminArStudioPage() {
 
   return (
     <div className="space-y-8 w-full">
-      <div className="border-b border-[#1c1d25] pb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
         <div>
           <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
             Spatial Computing &amp; Physical Gallery Experience
           </span>
-          <h1 className="font-serif text-3xl text-white mt-1">
-            Spatial &amp; QR Studio
-          </h1>
-          <p className="text-xs text-zinc-400 mt-1">
-            Monitor true-scale 1:1 physical dimensions, virtual frame extrusions, and generate museum wall QR plaques.
-          </p>
         </div>
 
         {/* Physical Space Sub-Navigation */}

@@ -37,16 +37,10 @@ export default async function AdminAccessibilityPage() {
 
   return (
     <div className="space-y-8 w-full">
-      <div className="border-b border-[#1c1d25] pb-6">
+      <div className="border-b border-[#1c1d25] pb-4">
         <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
           Inclusivity &amp; Standards
         </span>
-        <h1 className="font-serif text-3xl text-white mt-1">
-          Accessibility Dashboard (WCAG 2.2 AA)
-        </h1>
-        <p className="text-xs text-zinc-400 mt-1">
-          Real-time compliance monitoring for screen readers, keyboard navigation, and high-contrast perception.
-        </p>
       </div>
 
       {/* Compliance Score Card */}

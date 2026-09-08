@@ -181,66 +181,56 @@ export function ArtworksManagerClient({
 
   return (
     <div className="space-y-6">
-      {/* Header Plaque - Compact Solid Master Block */}
-      <div className="bg-[#121319] p-3.5 sm:p-5 rounded-2xl shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <span className="text-[9px] sm:text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
-            Catalog Inventory
-          </span>
-          <h1 className="font-serif text-xl sm:text-2xl text-white mt-0.5">Artworks CMS</h1>
-          <p className="text-[11px] sm:text-xs text-zinc-400 mt-0.5 line-clamp-1 sm:line-clamp-none">
-            Manage your masterworks, calibrate 1:1 physical spatial dimensions, and publish canvases.
-          </p>
-        </div>
+      {/* Top Actions - Clean floating right */}
+      <div className="flex items-center justify-end gap-2 flex-wrap w-full">
+        <Link
+          href="/admin/media"
+          className="bg-[#1a1b26] hover:bg-[#222432] text-xs text-zinc-300 hover:text-white px-3 py-1.5 rounded-xl shadow-sm transition-colors flex items-center gap-1.5"
+        >
+          <Layers className="w-3.5 h-3.5 text-[#d1a86e]" />
+          <span>Media</span>
+        </Link>
 
-        <div className="flex items-center gap-2 self-start sm:self-auto shrink-0 flex-wrap">
-          <Link
-            href="/admin/media"
-            className="bg-[#1a1b26] hover:bg-[#222432] text-xs text-zinc-300 hover:text-white px-3 py-1.5 rounded-xl shadow-sm transition-colors flex items-center gap-1.5"
-          >
-            <Layers className="w-3.5 h-3.5 text-[#d1a86e]" />
-            <span>Media</span>
-          </Link>
-
-          <Link
-            href="/admin/artworks/new"
-            className="bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-xs px-3.5 py-1.5 rounded-xl shadow-md shadow-[#d1a86e]/20 transition-colors flex items-center gap-1.5"
-          >
-            <Plus className="w-4 h-4" />
-            <span>New Artwork</span>
-          </Link>
-        </div>
+        <Link
+          href="/admin/artworks/new"
+          className="bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-xs px-3.5 py-1.5 rounded-xl shadow-md shadow-[#d1a86e]/20 transition-colors flex items-center gap-1.5"
+        >
+          <Plus className="w-4 h-4" />
+          <span>New Artwork</span>
+        </Link>
       </div>
 
-      {/* Filter and Search Bar with Compact Dropdown & View Mode Toggle */}
-      <div className="bg-[#121319] rounded-2xl p-2.5 sm:p-3 shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500" />
+      {/* Filter and Search Bar - 2 cols 1 row on mobile, flex on desktop */}
+      <div className="bg-[#121319] rounded-2xl p-2.5 sm:p-3 shadow-xl shadow-black/40 grid grid-cols-2 sm:flex sm:items-center sm:justify-between gap-2 sm:gap-2.5">
+        <div className="relative w-full sm:max-w-sm sm:flex-1">
+          <Search className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500 pointer-events-none" />
           <Input
             type="text"
-            placeholder="Filter by title, slug, or medium..."
+            placeholder="Filter artworks..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 h-8 sm:h-9 text-xs bg-[#1a1b26] rounded-xl border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
+            className="pl-8 sm:pl-9 h-8 sm:h-9 text-xs bg-[#1a1b26] rounded-xl border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e] w-full"
           />
         </div>
 
-        <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
+        <div className="w-full sm:w-auto flex items-center justify-end gap-1.5 sm:gap-2 shrink-0">
           {/* Status Filter Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
                 type="button"
-                className="inline-flex items-center gap-2 h-8 sm:h-9 px-3 rounded-xl bg-[#1a1b26] hover:bg-[#222432] text-xs font-medium text-zinc-200 border border-white/5 transition-colors cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-between sm:justify-start gap-1.5 sm:gap-2 h-8 sm:h-9 px-2.5 sm:px-3 rounded-xl bg-[#1a1b26] hover:bg-[#222432] text-xs font-medium text-zinc-200 border border-white/5 transition-colors cursor-pointer"
               >
-                <Filter className="w-3.5 h-3.5 text-[#d1a86e]" />
-                <span>
-                  Status:{" "}
-                  <strong className="font-semibold text-white capitalize">
-                    {statusFilter === "all" ? "All" : statusFilter}
-                  </strong>
+                <span className="inline-flex items-center gap-1.5 truncate">
+                  <Filter className="w-3.5 h-3.5 text-[#d1a86e] shrink-0" />
+                  <span className="truncate">
+                    Status:{" "}
+                    <strong className="font-semibold text-white capitalize">
+                      {statusFilter === "all" ? "All" : statusFilter}
+                    </strong>
+                  </span>
                 </span>
-                <ChevronDown className="w-3 h-3 text-zinc-400 ml-0.5" />
+                <ChevronDown className="w-3 h-3 text-zinc-400 ml-0.5 shrink-0" />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
@@ -277,8 +267,8 @@ export function ArtworksManagerClient({
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Table vs Grid View Toggle */}
-          <div className="flex items-center p-0.5 bg-[#1a1b26] rounded-xl border border-white/5">
+          {/* Table vs Grid View Toggle - shown on tablet/desktop */}
+          <div className="hidden sm:flex items-center p-0.5 bg-[#1a1b26] rounded-xl border border-white/5">
             <button
               type="button"
               onClick={() => setViewLayout("table")}

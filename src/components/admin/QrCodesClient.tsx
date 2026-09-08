@@ -41,18 +41,8 @@ export function QrCodesClient({ artworks }: QrCodesClientProps) {
 
   return (
     <div className="space-y-8 w-full">
-      {/* Header Block */}
-      <div className="bg-[#121319] rounded-3xl p-6 sm:p-8 shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
-            Spatial Computing &amp; Physical Gallery Experience
-          </span>
-          <h1 className="font-serif text-3xl text-white mt-1">Museum Wall QR Tags</h1>
-          <p className="text-xs text-zinc-400 mt-1">
-            Generate high-resolution QR tags for physical gallery labels, museum catalogues, and direct AR wall-viewing invitations.
-          </p>
-        </div>
-
+      {/* Header Actions - Clean floating right */}
+      <div className="flex items-center justify-end gap-2 flex-wrap w-full">
         {/* Physical Space Sub-Navigation */}
         <div className="flex items-center gap-2">
           <Button asChild size="sm" className="gap-2 bg-[#1a1b26] hover:bg-[#222432] text-zinc-300 rounded-xl border-none">

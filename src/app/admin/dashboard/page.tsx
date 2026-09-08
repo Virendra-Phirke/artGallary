@@ -58,16 +58,12 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="space-y-4 sm:space-y-5 w-full max-w-full">
-      {/* Page Title & Quick Actions - Compact Solid Master Block */}
-      <div className="bg-[#121319] p-3.5 sm:p-5 rounded-2xl shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      {/* Page Title & Quick Actions - Clean floating */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
         <div>
           <span className="text-[9px] sm:text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
             Studio Command Center
           </span>
-          <h1 className="font-serif text-xl sm:text-2xl text-white mt-0.5">Curator Dashboard</h1>
-          <p className="text-[11px] sm:text-xs text-zinc-400 mt-0.5 line-clamp-1 sm:line-clamp-none">
-            Real-time catalog readiness, collector inquiries ledger, and studio operational telemetry.
-          </p>
         </div>
 
         <div className="grid grid-cols-3 sm:flex items-center gap-1.5 sm:gap-2">

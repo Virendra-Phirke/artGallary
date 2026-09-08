@@ -116,37 +116,38 @@ export function CatalogueTab() {
 
   return (
     <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-200">
-      {/* Top Filter & Search Bar */}
-      <div className="bg-[#121319] rounded-2xl sm:rounded-3xl p-3 sm:p-4 shadow-xl shadow-black/40">
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-4">
+      {/* Top Filter & Search Bar - 2 cols 1 row on mobile */}
+      <div className="bg-[#121319] rounded-2xl sm:rounded-3xl p-2.5 sm:p-4 shadow-xl shadow-black/40">
+        <div className="grid grid-cols-2 sm:flex sm:flex-row items-center justify-between gap-2 sm:gap-4">
           {/* Search Input */}
-          <div className="relative flex-1 min-w-0 sm:max-w-md">
-            <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-zinc-500 absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                placeholder="Search artworks..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full h-8.5 sm:h-9.5 bg-[#1c1d28] rounded-full pl-8 sm:pl-9 pr-7 text-xs text-white placeholder:text-zinc-500 focus:outline-none transition-colors shadow-inner"
-              />
-              {search && (
-                <button
-                  onClick={() => setSearch("")}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white p-0.5 cursor-pointer"
-                  title="Clear search"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              )}
-            </div>
+          <div className="relative w-full min-w-0 sm:max-w-md sm:flex-1">
+            <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-zinc-500 absolute left-2.5 sm:left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Search artworks..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full h-8.5 sm:h-9.5 bg-[#1c1d28] rounded-full pl-7.5 sm:pl-9 pr-6 sm:pr-7 text-xs text-white placeholder:text-zinc-500 focus:outline-none transition-colors shadow-inner"
+            />
+            {search && (
+              <button
+                onClick={() => setSearch("")}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white p-0.5 cursor-pointer"
+                title="Clear search"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
 
-            {/* Filter & Sort Dropdown */}
+          {/* Filter & Sort Dropdown */}
+          <div className="w-full sm:w-auto flex items-center justify-end shrink-0">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
                   type="button"
                   className={cn(
-                    "inline-flex items-center justify-center gap-1.5 h-8.5 sm:h-9.5 px-3 sm:px-4 rounded-full text-[10px] sm:text-xs uppercase tracking-wider font-semibold cursor-pointer transition-all shadow-sm shrink-0 border",
+                    "w-full sm:w-auto inline-flex items-center justify-between sm:justify-center gap-1 sm:gap-1.5 h-8.5 sm:h-9.5 px-2.5 sm:px-4 rounded-full text-[10px] sm:text-xs uppercase tracking-wider font-semibold cursor-pointer transition-all shadow-sm shrink-0 border",
                     category !== "all" || sortBy !== "featured"
                       ? "bg-[#222432] text-[#d1a86e] border-[#d1a86e]/40 shadow-md shadow-[#d1a86e]/10"
                       : "bg-[#1c1d28] hover:bg-[#252736] text-zinc-200 hover:text-white border-transparent"
@@ -154,7 +155,7 @@ export function CatalogueTab() {
                   aria-label="Filter and Sort options"
                 >
                   <SlidersHorizontal className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#d1a86e] shrink-0" />
-                  <span className="truncate max-w-[85px] xs:max-w-[120px] sm:max-w-[150px]">
+                  <span className="truncate max-w-[70px] xs:max-w-[120px] sm:max-w-[150px]">
                     {CATEGORY_OPTIONS.find((c) => c.id === category)?.label || "Filter"}
                   </span>
                   <span className="text-[9px] sm:text-[10px] font-mono px-1 sm:px-1.5 py-0.2 rounded-full bg-[#121319] text-[#d1a86e] shrink-0">
@@ -265,6 +266,7 @@ export function CatalogueTab() {
                 </div>
               </DropdownMenuContent>
             </DropdownMenu>
+          </div>
         </div>
       </div>
 

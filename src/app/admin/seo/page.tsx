@@ -32,14 +32,10 @@ export default function AdminSeoPage() {
 
   return (
     <div className="space-y-8 w-full">
-      <div className="border-b border-[#1c1d25] pb-6">
+      <div className="border-b border-[#1c1d25] pb-4">
         <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
           Search Discovery &amp; Metadata
         </span>
-        <h1 className="font-serif text-3xl text-white mt-1">SEO &amp; Indexing</h1>
-        <p className="text-xs text-zinc-400 mt-1">
-          Structured Schema.org microdata, OpenGraph social cards, and sitemap generation.
-        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">

@@ -309,26 +309,17 @@ export function MediaLibraryClient() {
 
   return (
     <div className="space-y-8 w-full">
-      {/* Header & Storage Status */}
-      <div className="p-6 sm:p-8 bg-[#121319] rounded-3xl shadow-xl shadow-black/40 flex flex-col md:flex-row md:items-center justify-between gap-4 border-none">
-        <div>
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
-              Media Infrastructure Layer
-            </span>
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium bg-emerald-500/10 text-emerald-400 border-none">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Real Neon DB Synced
-            </span>
-          </div>
-          <h1 className="font-serif text-3xl text-white">Media &amp; CDN Assets</h1>
-          <p className="text-xs text-zinc-400 mt-1">
-            Authoritative media records from Neon PostgreSQL. Permanent deletion removes files from <span className="text-cyan-400 font-medium">ImageKit</span> and <span className="text-amber-400 font-medium">Cloudflare R2</span> source storage.
-          </p>
+      {/* Header & Storage Status - Clean floating actions */}
+      <div className="flex flex-wrap items-center justify-between gap-3 w-full">
+        <div className="flex items-center gap-3">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[10px] font-mono font-medium bg-[#121319] text-emerald-400 border border-white/5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            Storage Synced
+          </span>
         </div>
 
         {/* Upload Action Group */}
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
           <button
             onClick={fetchMedia}
             title="Refresh from Database"

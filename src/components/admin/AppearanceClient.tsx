@@ -43,22 +43,12 @@ export function AppearanceClient({ initialTheme }: AppearanceClientProps) {
 
   return (
     <div className="space-y-8 w-full">
-      {/* Header Block */}
-      <div className="bg-[#121319] rounded-3xl p-6 sm:p-8 shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
-            Design Tokens &amp; Styling
-          </span>
-          <h1 className="font-serif text-3xl text-white mt-1">Appearance &amp; Theme</h1>
-          <p className="text-xs text-zinc-400 mt-1">
-            Configure gallery typography tokens, luxury accent hues, corner radius, and motion animation intensity.
-          </p>
-        </div>
-
+      {/* Header Actions - Clean floating right */}
+      <div className="flex items-center justify-end gap-2 flex-wrap w-full">
         <button
           onClick={handleSave}
           disabled={isSaving}
-          className="flex items-center gap-2 bg-[#d1a86e] hover:bg-[#c49a5f] text-black px-6 py-3 rounded-xl text-xs font-semibold uppercase tracking-wider transition-colors shadow-lg shadow-black/40 self-start sm:self-auto disabled:opacity-50 border-none"
+          className="flex items-center gap-2 bg-[#d1a86e] hover:bg-[#c49a5f] text-black px-5 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-colors shadow-lg shadow-black/40 self-start sm:self-auto disabled:opacity-50 border-none cursor-pointer"
         >
           {isSaving ? (
             <Loader2 className="w-4 h-4 animate-spin text-black" />

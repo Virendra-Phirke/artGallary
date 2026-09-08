@@ -247,72 +247,62 @@ export function ExhibitionsManagerClient({
 
   return (
     <div className="space-y-8 w-full">
-      {/* Header - Solid Tier 1 Master Block */}
-      <div className="bg-[#121319] p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-        <div>
-          <span className="text-[9px] sm:text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
-            Institutional Presence
-          </span>
-          <h1 className="font-serif text-2xl sm:text-3xl text-white mt-0.5 sm:mt-1">Exhibitions CMS</h1>
-          <p className="text-[11px] sm:text-xs text-zinc-400 mt-0.5 sm:mt-1">
-            Curate solo and group exhibitions, manage dates, locations, and exhibited artwork sets.
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <Link
-            href="/admin/settings?tab=exhibitions"
-            className="bg-[#1a1b26] hover:bg-[#222432] text-[11px] sm:text-xs text-[#d1a86e] px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl shadow-sm transition-colors flex items-center gap-1.5"
-          >
-            <Calendar className="w-3.5 h-3.5" />
-            <span className="truncate">Page Intro</span>
-          </Link>
-          <Link
-            href="/exhibitions"
-            target="_blank"
-            className="bg-[#1a1b26] hover:bg-[#222432] text-[11px] sm:text-xs text-zinc-300 hover:text-white px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl shadow-sm transition-colors flex items-center gap-1.5"
-          >
-            <ExternalLink className="w-3.5 h-3.5" />
-            <span className="truncate">Live View</span>
-          </Link>
-          <button
-            onClick={openNew}
-            className="bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-[11px] sm:text-xs px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl shadow-md shadow-[#d1a86e]/20 transition-colors flex items-center gap-1.5 cursor-pointer"
-          >
-            <Plus className="w-4 h-4" />
-            <span className="truncate">New Exhibition</span>
-          </button>
-        </div>
+      {/* Header Actions - Clean floating right */}
+      <div className="flex flex-wrap items-center justify-end gap-2 w-full">
+        <Link
+          href="/admin/settings?tab=exhibitions"
+          className="bg-[#1a1b26] hover:bg-[#222432] text-[11px] sm:text-xs text-[#d1a86e] px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl shadow-sm transition-colors flex items-center gap-1.5"
+        >
+          <Calendar className="w-3.5 h-3.5" />
+          <span className="truncate">Page Intro</span>
+        </Link>
+        <Link
+          href="/exhibitions"
+          target="_blank"
+          className="bg-[#1a1b26] hover:bg-[#222432] text-[11px] sm:text-xs text-zinc-300 hover:text-white px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl shadow-sm transition-colors flex items-center gap-1.5"
+        >
+          <ExternalLink className="w-3.5 h-3.5" />
+          <span className="truncate">Live View</span>
+        </Link>
+        <button
+          onClick={openNew}
+          className="bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-[11px] sm:text-xs px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl shadow-md shadow-[#d1a86e]/20 transition-colors flex items-center gap-1.5 cursor-pointer"
+        >
+          <Plus className="w-4 h-4" />
+          <span className="truncate">New Exhibition</span>
+        </button>
       </div>
 
-      {/* Search & Filter Bar - Compact Dropdown Bar */}
-      <div className="bg-[#121319] rounded-2xl p-2.5 sm:p-3 shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500" />
+      {/* Search & Filter Bar - 2 cols 1 row on mobile, flex on desktop */}
+      <div className="bg-[#121319] rounded-2xl p-2.5 sm:p-3 shadow-xl shadow-black/40 grid grid-cols-2 sm:flex sm:items-center sm:justify-between gap-2 sm:gap-2.5">
+        <div className="relative w-full sm:max-w-md sm:flex-1">
+          <Search className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500 pointer-events-none" />
           <Input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search exhibitions by title, location, curator note..."
-            className="pl-9 h-8 sm:h-9 bg-[#1a1b26] text-xs text-white placeholder:text-zinc-500 rounded-xl border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
+            placeholder="Search exhibitions..."
+            className="pl-8 sm:pl-9 h-8 sm:h-9 bg-[#1a1b26] text-xs text-white placeholder:text-zinc-500 rounded-xl border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e] w-full"
           />
         </div>
 
-        <div className="flex items-center gap-2 self-start sm:self-auto shrink-0 flex-wrap">
+        <div className="w-full sm:w-auto flex items-center justify-end gap-1.5 shrink-0">
           {/* Status Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
                 type="button"
-                className="inline-flex items-center gap-2 h-8 sm:h-9 px-3 rounded-xl bg-[#1a1b26] hover:bg-[#222432] text-xs font-medium text-zinc-200 border border-white/5 transition-colors cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-between sm:justify-start gap-1.5 sm:gap-2 h-8 sm:h-9 px-2.5 sm:px-3 rounded-xl bg-[#1a1b26] hover:bg-[#222432] text-xs font-medium text-zinc-200 border border-white/5 transition-colors cursor-pointer"
               >
-                <Filter className="w-3.5 h-3.5 text-[#d1a86e]" />
-                <span>
-                  Timeline:{" "}
-                  <strong className="font-semibold text-white capitalize">
-                    {statusFilter === "all" ? "All" : statusFilter}
-                  </strong>
+                <span className="inline-flex items-center gap-1.5 truncate">
+                  <Filter className="w-3.5 h-3.5 text-[#d1a86e] shrink-0" />
+                  <span className="truncate">
+                    <span className="hidden sm:inline">Timeline: </span>
+                    <strong className="font-semibold text-white capitalize">
+                      {statusFilter === "all" ? "All" : statusFilter}
+                    </strong>
+                  </span>
                 </span>
-                <ChevronDown className="w-3 h-3 text-zinc-400 ml-0.5" />
+                <ChevronDown className="w-3 h-3 text-zinc-400 ml-0.5 shrink-0" />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
@@ -343,12 +333,12 @@ export function ExhibitionsManagerClient({
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Published/Draft Dropdown */}
+          {/* Published/Draft Dropdown - Shown on desktop/tablet */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
                 type="button"
-                className="inline-flex items-center gap-2 h-8 sm:h-9 px-3 rounded-xl bg-[#1a1b26] hover:bg-[#222432] text-xs font-medium text-zinc-200 border border-white/5 transition-colors cursor-pointer"
+                className="hidden sm:inline-flex items-center gap-2 h-8 sm:h-9 px-3 rounded-xl bg-[#1a1b26] hover:bg-[#222432] text-xs font-medium text-zinc-200 border border-white/5 transition-colors cursor-pointer"
               >
                 <span>
                   State:{" "}

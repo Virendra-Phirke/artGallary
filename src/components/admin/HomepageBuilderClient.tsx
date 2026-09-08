@@ -424,9 +424,6 @@ export function HomepageBuilderClient({
                   100% Canvas Mode
                 </span>
               </div>
-              <h1 className="font-serif text-lg sm:text-xl text-white font-medium">
-                {getPageTitle()}
-              </h1>
             </div>
           </div>
 

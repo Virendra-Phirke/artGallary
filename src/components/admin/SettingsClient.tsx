@@ -161,11 +161,11 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
 
   return (
     <div className="space-y-8 pb-10 w-full">
-      {/* Executive Header Bar */}
-      <div className="p-6 sm:p-8 bg-[#121319] rounded-3xl shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-none">
+      {/* Executive Header Bar - Clean floating actions */}
+      <div className="flex flex-wrap items-center justify-between gap-3 w-full">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-[#d1a86e] bg-[#222432] font-mono text-xs px-2.5 py-1 rounded-xl border-none">
+          <div className="flex items-center gap-2">
+            <span className="text-[#d1a86e] bg-[#121319] font-mono text-xs px-2.5 py-1 rounded-xl border border-white/5">
               STORE PROFILE &amp; BRAND
             </span>
             <span className="text-zinc-500 text-xs flex items-center gap-1">
@@ -173,12 +173,6 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
               Direct Neon Database Sync
             </span>
           </div>
-          <h1 className="font-serif text-2xl sm:text-3xl text-white font-medium">
-            Gallery &amp; Store Settings
-          </h1>
-          <p className="text-sm text-zinc-400 mt-1">
-            Manage your fine art gallery name, owner credentials, and physical store liaison coordinates.
-          </p>
         </div>
 
         <div className="flex items-center gap-3 shrink-0 flex-wrap">
