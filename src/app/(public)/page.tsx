@@ -106,7 +106,7 @@ export default async function HomePage() {
               key={sec.id}
               className="bg-[#101116] border-y border-[#1c1d25] py-20 sm:py-28"
             >
-              <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+              <div className="max-w-[1800px] mx-auto px-6 sm:px-10 md:px-14 lg:px-16 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
                 <div className="lg:col-span-5 space-y-6">
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#18191e] border border-[#262833] text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase">
                     <Layers className="w-3 h-3" />
@@ -230,7 +230,7 @@ export default async function HomePage() {
           const exhImageUrl =
             sec.contentJson?.imageUrl || currentExhibition?.coverImageUrl;
           return (
-            <section key={sec.id} className="max-w-7xl mx-auto px-6 md:px-12">
+            <section key={sec.id} className="max-w-[1800px] mx-auto px-6 sm:px-10 md:px-14 lg:px-16">
               <div className="border-t border-[#1c1d25] pt-16 sm:pt-24 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
                 {exhImageUrl && (
                   <div className="lg:col-span-7">

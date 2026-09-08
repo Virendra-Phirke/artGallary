@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
+  Home,
   ArrowLeft,
   Sparkles,
   Shield,
@@ -84,8 +85,8 @@ export function CollectorNav({ user, inquiriesCount = 0 }: CollectorNavProps) {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-[#0d0e12]/95 backdrop-blur-xl border-b border-[#22242f] px-4 sm:px-6 md:pl-20 md:pr-8 lg:pl-24 lg:pr-10 xl:pl-28 xl:pr-12 py-3.5 shadow-lg shadow-black/40">
-      <div className="w-full flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-40 bg-[#0d0e12]/90 backdrop-blur-2xl border-b border-[#1f212c] px-4 sm:px-6 md:px-10 lg:px-12 xl:px-16 py-3.5 shadow-xl shadow-black/50">
+      <div className="w-full max-w-[1850px] mx-auto flex items-center justify-between gap-4">
         {/* Left: Brand Identity & Portal Pill */}
         <div className="flex items-center gap-3.5">
           <Link
@@ -114,22 +115,18 @@ export function CollectorNav({ user, inquiriesCount = 0 }: CollectorNavProps) {
           </div>
         </div>
 
-        {/* Center / Link to Public Showcase & Left Dock Hint */}
-        <div className="hidden md:flex items-center gap-4">
+        {/* Center / Return Home Link */}
+        <div className="flex items-center gap-3">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#14151c] border border-[#262833] hover:border-[#3d4052] text-xs text-zinc-300 hover:text-white transition-all shadow-sm group"
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#14151c] border border-[#262833] hover:border-[#d1a86e]/60 hover:bg-[#1b1d26] text-xs text-zinc-300 hover:text-white transition-all shadow-sm group"
+            title="Return to Public Homepage"
           >
-            <ArrowLeft className="w-3.5 h-3.5 text-[#d1a86e] transition-transform group-hover:-translate-x-1" />
+            <Home className="w-3.5 h-3.5 text-[#d1a86e] transition-transform group-hover:scale-110" />
             <span className="text-[11px] uppercase tracking-wider font-medium">
-              Exit to Public Gallery &amp; Landing
+              Home
             </span>
           </Link>
-
-          <div className="hidden xl:flex items-center gap-1.5 text-[11px] text-zinc-500 font-mono">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#d1a86e]/60 animate-pulse" />
-            <span>Hover left edge for dock</span>
-          </div>
         </div>
 
         {/* Right Actions & User Menu */}

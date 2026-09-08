@@ -46,7 +46,7 @@ export default async function ArtworkPage({ params }: ArtworkPageProps) {
     .slice(0, 3);
 
   return (
-    <div className="max-w-7xl mx-auto px-6 md:px-12 pt-32 pb-24">
+    <div className="max-w-[1800px] mx-auto px-6 sm:px-10 md:px-14 lg:px-16 pt-32 pb-24">
       <ArtworkDetailClient artwork={artwork} relatedArtworks={related} />
     </div>
   );

@@ -2,7 +2,18 @@
 
 import React from "react";
 import Link from "next/link";
-import { Sparkles, ArrowRight, Shield } from "lucide-react";
+import {
+  Sparkles,
+  ArrowRight,
+  Shield,
+  LayoutDashboard,
+  Palette,
+  Layers,
+  Calendar,
+  Mail,
+  User as UserIcon,
+  ShoppingBag,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   MockArtwork,
@@ -81,6 +92,8 @@ function CollectorDashboardContent() {
   const {
     user,
     artworks,
+    collections,
+    exhibitions,
     userInquiries,
     activeTab,
     setActiveTab,
@@ -98,10 +111,25 @@ function CollectorDashboardContent() {
 
   const currentMeta = TAB_METADATA[activeTab] || TAB_METADATA.overview;
 
+  const tabOptions: {
+    id: CollectorTab;
+    label: string;
+    icon: React.ComponentType<{ className?: string }>;
+    count?: number;
+  }[] = [
+    { id: "overview", label: "Overview", icon: LayoutDashboard },
+    { id: "gallery", label: "Catalogue", icon: Palette, count: artworks.length },
+    { id: "collections", label: "Series", icon: Layers, count: collections.length },
+    { id: "exhibitions", label: "Exhibitions", icon: Calendar, count: exhibitions.length },
+    { id: "ar", label: "AR Showroom", icon: Sparkles },
+    { id: "inquiries", label: "Inquiries", icon: Mail, count: userInquiries.length },
+    { id: "profile", label: "Profile", icon: UserIcon },
+  ];
+
   return (
     <div className="w-full space-y-8 animate-in fade-in duration-300">
-      {/* 1. HERO TAB BANNER */}
-      <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#181920] via-[#121318] to-[#0d0e12] border border-[#262833] p-6 sm:p-10 shadow-2xl">
+      {/* 1. HERO TAB BANNER WITH INTEGRATED NAVIGATION & SALON CHIPS */}
+      <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#181920] via-[#121318] to-[#0d0e12] border border-[#262833] p-6 sm:p-8 lg:p-10 shadow-2xl space-y-6">
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#d1a86e]/5 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -147,6 +175,64 @@ function CollectorDashboardContent() {
                 </Link>
               </Button>
             )}
+          </div>
+        </div>
+
+        {/* Curatorial Status Bar & Interactive Tab Switcher */}
+        <div className="relative z-10 pt-5 border-t border-[#22242f] flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#14151a] border border-[#262833] text-xs text-zinc-300">
+              <span className="text-[#d1a86e] font-semibold">{artworks.length}</span> Originals
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#14151a] border border-[#262833] text-xs text-zinc-300">
+              <span className="text-[#d1a86e] font-semibold">{collections.length}</span> Curatorial Series
+            </span>
+            <button
+              onClick={() => setIsCartOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#14151a] hover:bg-[#1a1b22] border border-[#262833] hover:border-[#d1a86e]/40 text-xs text-zinc-300 transition-colors cursor-pointer"
+            >
+              <ShoppingBag className="w-3 h-3 text-[#d1a86e]" />
+              <span className="text-[#d1a86e] font-semibold">{cartArtworkIds.length}</span> in Dossier
+            </button>
+            <button
+              onClick={() => setActiveTab("inquiries")}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#14151a] hover:bg-[#1a1b22] border border-[#262833] hover:border-[#d1a86e]/40 text-xs text-zinc-300 transition-colors cursor-pointer"
+            >
+              <span className="text-[#d1a86e] font-semibold">{userInquiries.length}</span> Ledger Inquiries
+            </button>
+          </div>
+
+          {/* Tab navigation segmented bar */}
+          <div className="flex items-center overflow-x-auto no-scrollbar py-1 gap-1 bg-[#101116] border border-[#262833] p-1.5 rounded-2xl">
+            {tabOptions.map((t) => {
+              const isActive = activeTab === t.id;
+              const Icon = t.icon;
+              return (
+                <button
+                  key={t.id}
+                  onClick={() => setActiveTab(t.id)}
+                  className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all cursor-pointer ${
+                    isActive
+                      ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-md shadow-[#d1a86e]/20"
+                      : "text-zinc-400 hover:text-white hover:bg-[#181920]"
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  <span>{t.label}</span>
+                  {t.count !== undefined && (
+                    <span
+                      className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono leading-none ${
+                        isActive
+                          ? "bg-[#0d0e12]/20 text-[#0d0e12] font-bold"
+                          : "bg-[#20222c] text-zinc-400"
+                      }`}
+                    >
+                      {t.count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>

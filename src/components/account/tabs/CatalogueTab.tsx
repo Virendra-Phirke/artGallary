@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { Search, Heart, ShoppingBag, Palette } from "lucide-react";
+import { Search, Heart, ShoppingBag, Palette, X, SlidersHorizontal, ArrowUpDown } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArtworkCard } from "@/components/account/shared/ArtworkCard";
@@ -17,21 +17,38 @@ export function CatalogueTab() {
     addAllLikedToCart,
   } = useCollector();
 
-  // Search & Filter State
+  // Search, Filter & Sort State
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<"all" | "available" | "monumental" | "mineral" | "saved">("all");
+  const [sortBy, setSortBy] = useState<"featured" | "price-desc" | "price-asc" | "year-desc">("featured");
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(6);
 
-  // Filter artworks
-  const filteredArtworks = useMemo(() => {
-    return artworks.filter((art) => {
+  // Category counts
+  const counts = useMemo(() => {
+    return {
+      all: artworks.length,
+      available: artworks.filter((a) => a.status === "published").length,
+      monumental: artworks.filter((a) => (a.widthCm && a.widthCm >= 100) || (a.heightCm && a.heightCm >= 100)).length,
+      mineral: artworks.filter((a) => {
+        const m = (a.medium || "").toLowerCase();
+        const d = (a.description || "").toLowerCase();
+        return m.includes("lapis") || m.includes("mineral") || d.includes("lapis") || d.includes("mineral");
+      }).length,
+      saved: savedArtworkIds.length,
+    };
+  }, [artworks, savedArtworkIds]);
+
+  // Filter and sort artworks
+  const processedArtworks = useMemo(() => {
+    let result = artworks.filter((art) => {
       const matchesSearch =
         !search ||
         art.title.toLowerCase().includes(search.toLowerCase()) ||
-        (art.medium && art.medium.toLowerCase().includes(search.toLowerCase()));
+        (art.medium && art.medium.toLowerCase().includes(search.toLowerCase())) ||
+        (art.collectionName && art.collectionName.toLowerCase().includes(search.toLowerCase()));
 
       if (!matchesSearch) return false;
 
@@ -49,133 +66,193 @@ export function CatalogueTab() {
       }
       return true;
     });
-  }, [artworks, search, category, savedArtworkIds]);
 
-  // Reset page upon filter / search changes
+    if (sortBy === "price-desc") {
+      result.sort((a, b) => (b.price || 0) - (a.price || 0));
+    } else if (sortBy === "price-asc") {
+      result.sort((a, b) => (a.price || 0) - (b.price || 0));
+    } else if (sortBy === "year-desc") {
+      result.sort((a, b) => (b.year || 0) - (a.year || 0));
+    } else {
+      result.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+    }
+
+    return result;
+  }, [artworks, search, category, savedArtworkIds, sortBy]);
+
+  // Reset page upon filter / search / sort changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [search, category, pageSize]);
+  }, [search, category, sortBy, pageSize]);
 
-  const totalPages = Math.max(1, Math.ceil(filteredArtworks.length / pageSize));
+  const totalPages = Math.max(1, Math.ceil(processedArtworks.length / pageSize));
   const paginatedArtworks = useMemo(() => {
-    return filteredArtworks.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-  }, [filteredArtworks, currentPage, pageSize]);
+    return processedArtworks.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  }, [processedArtworks, currentPage, pageSize]);
 
-  const startItem = filteredArtworks.length === 0 ? 0 : (currentPage - 1) * pageSize + 1;
-  const endItem = Math.min(currentPage * pageSize, filteredArtworks.length);
+  const startItem = processedArtworks.length === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+  const endItem = Math.min(currentPage * pageSize, processedArtworks.length);
 
   return (
     <div className="space-y-8 animate-in fade-in duration-200">
-      {/* Header & Search Bar */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[#262833] pb-6">
-        <div>
-          <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-bold">
-            Private Viewing Room
-          </span>
-          <h2 className="font-serif text-3xl text-white mt-1">
-            Studio Artwork Catalog
-          </h2>
-          <p className="text-xs text-zinc-400 mt-1">
-            Browse original works with true dimensions, provenance notes, and 1:1 WebAR preview.
-          </p>
+      {/* Top Filter & Search Bar */}
+      <div className="bg-[#121318] border border-[#242633] rounded-3xl p-5 sm:p-6 shadow-xl space-y-5">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-bold">
+                Catalogue Filter &amp; Search
+              </span>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#d1a86e]" />
+              <span className="text-[10px] text-zinc-400 font-mono">
+                {processedArtworks.length} of {artworks.length} Artworks Match
+              </span>
+            </div>
+            <h2 className="font-serif text-2xl sm:text-3xl text-white mt-1">
+              Private Curated Collection
+            </h2>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            {/* Search Input */}
+            <div className="relative flex-1 sm:w-72">
+              <Search className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Search title, medium, series..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full bg-[#181922] border border-[#2b2e3c] rounded-full pl-10 pr-9 py-2 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-[#d1a86e]/70 transition-colors"
+              />
+              {search && (
+                <button
+                  onClick={() => setSearch("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white p-0.5 cursor-pointer"
+                  title="Clear search"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+
+            {/* Sort Dropdown */}
+            <div className="relative">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as any)}
+                className="w-full sm:w-auto appearance-none bg-[#181922] border border-[#2b2e3c] rounded-full px-4 py-2 pr-9 text-xs text-zinc-200 focus:outline-none focus:border-[#d1a86e]/70 cursor-pointer font-mono"
+              >
+                <option value="featured">Curatorial Sequence</option>
+                <option value="price-desc">Valuation: High to Low</option>
+                <option value="price-asc">Valuation: Low to High</option>
+                <option value="year-desc">Year: Newest Originals</option>
+              </select>
+              <ArrowUpDown className="w-3.5 h-3.5 text-zinc-500 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            </div>
+          </div>
         </div>
 
-        {/* Search Input */}
-        <div className="relative w-full md:w-72">
-          <Search className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            placeholder="Search by title or medium..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-[#14151a] border border-[#262833] rounded-full pl-10 pr-4 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#d1a86e]/70"
-          />
+        {/* Category Filter Pills */}
+        <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-[#1c1d25]">
+          {[
+            { id: "all", label: "All Works", count: counts.all },
+            { id: "available", label: "Available for Acquisition", count: counts.available },
+            { id: "monumental", label: "Monumental Canvases", count: counts.monumental },
+            { id: "mineral", label: "Mineral & Lapis Series", count: counts.mineral },
+            { id: "saved", label: "Saved Wishlist", count: counts.saved },
+          ].map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setCategory(cat.id as any)}
+              className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs transition-all uppercase tracking-wider font-medium cursor-pointer ${
+                category === cat.id
+                  ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-md shadow-[#d1a86e]/20"
+                  : "bg-[#181922] text-zinc-400 hover:text-white border border-[#282b38] hover:border-zinc-700"
+              }`}
+            >
+              <span>{cat.label}</span>
+              <span
+                className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
+                  category === cat.id
+                    ? "bg-[#0d0e12] text-[#d1a86e]"
+                    : "bg-[#101116] text-zinc-500"
+                }`}
+              >
+                {cat.count}
+              </span>
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Filter Category Pills */}
-      <div className="flex flex-wrap items-center gap-2">
-        {[
-          { id: "all", label: "All Works" },
-          { id: "available", label: "Available for Acquisition" },
-          { id: "monumental", label: "Monumental Canvases" },
-          { id: "mineral", label: "Mineral & Lapis Series" },
-          { id: "saved", label: `Saved Wishlist (${savedArtworkIds.length})` },
-        ].map((cat) => (
-          <button
-            key={cat.id}
-            onClick={() => setCategory(cat.id as any)}
-            className={`px-4 py-1.5 rounded-full text-xs transition-all uppercase tracking-wider font-medium cursor-pointer ${
-              category === cat.id
-                ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-md shadow-[#d1a86e]/20"
-                : "bg-[#14151a] text-zinc-400 hover:text-white border border-[#262833]"
-            }`}
-          >
-            {cat.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Shortlist Action Bar */}
+      {/* Shortlist Action Bar when viewing Saved works */}
       {category === "saved" && (
-        <div className="bg-[#15161f] border border-[#2b2e3c] rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
-              <Heart className="w-4 h-4 fill-rose-400" />
+        <div className="bg-[#15161f] border border-[#2b2e3c] rounded-3xl p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
+          <div className="flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 shrink-0">
+              <Heart className="w-5 h-5 fill-rose-400" />
             </div>
             <div>
-              <h3 className="font-serif text-base text-white">
+              <h3 className="font-serif text-lg text-white font-medium">
                 Private Shortlist ({savedArtworkIds.length} Liked Paintings)
               </h3>
               <p className="text-xs text-zinc-400">
-                Paintings you have shortlisted. Add them to your Acquisition Dossier to inquire in a single consolidated submission.
+                Shortlisted pieces can be transferred directly into your Acquisition Dossier to formulate a consolidated inquiry.
               </p>
             </div>
           </div>
 
           {savedArtworkIds.length > 0 && (
-            <div className="flex items-center gap-2.5 w-full sm:w-auto">
-              <Button
-                onClick={addAllLikedToCart}
-                className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-xs tracking-wider uppercase px-4 h-9 shadow-md shadow-[#d1a86e]/15 flex items-center gap-1.5 cursor-pointer"
-              >
-                <ShoppingBag className="w-3.5 h-3.5" />
-                <span>Add All to Acquisition Dossier</span>
-              </Button>
-            </div>
+            <Button
+              onClick={addAllLikedToCart}
+              className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-xs tracking-wider uppercase px-5 h-10 shadow-md shadow-[#d1a86e]/15 flex items-center gap-2 cursor-pointer shrink-0"
+            >
+              <ShoppingBag className="w-4 h-4" />
+              <span>Add All to Acquisition Dossier</span>
+            </Button>
           )}
         </div>
       )}
 
       {/* Artworks Grid */}
-      {filteredArtworks.length === 0 ? (
-        <Card className="p-12 text-center bg-[#14151a]/50 border-[#262833] rounded-2xl space-y-3">
+      {processedArtworks.length === 0 ? (
+        <Card className="p-16 text-center bg-[#13141a]/50 border-[#242633] rounded-3xl space-y-4">
           {category === "saved" ? (
             <>
-              <Heart className="w-8 h-8 text-rose-500/50 mx-auto" />
-              <p className="font-serif text-lg text-white">Your shortlist is currently empty</p>
-              <p className="text-xs text-zinc-500 max-w-sm mx-auto">
-                Click the heart icon on any artwork while exploring the catalogue to save paintings to your personal portfolio.
+              <Heart className="w-10 h-10 text-rose-500/40 mx-auto" />
+              <h3 className="font-serif text-2xl text-white">Your shortlist is currently empty</h3>
+              <p className="text-xs sm:text-sm text-zinc-400 max-w-md mx-auto leading-relaxed">
+                Click the heart icon on any artwork while exploring the catalogue to save paintings to your personal shortlist.
               </p>
               <Button
                 onClick={() => setCategory("all")}
-                className="mt-2 rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] text-xs font-semibold uppercase tracking-wider px-5 cursor-pointer"
+                className="mt-2 rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] text-xs font-semibold uppercase tracking-wider px-6 cursor-pointer"
               >
                 Explore Catalogue
               </Button>
             </>
           ) : (
             <>
-              <Palette className="w-8 h-8 text-zinc-600 mx-auto" />
-              <p className="font-serif text-lg text-white">No matching paintings found</p>
-              <p className="text-xs text-zinc-500">
-                Try adjusting your search query or filter selection.
+              <Palette className="w-10 h-10 text-zinc-600 mx-auto" />
+              <h3 className="font-serif text-2xl text-white">No matching paintings found</h3>
+              <p className="text-xs sm:text-sm text-zinc-400 max-w-md mx-auto leading-relaxed">
+                Try adjusting your search keywords or resetting the category filter.
               </p>
+              <Button
+                onClick={() => {
+                  setSearch("");
+                  setCategory("all");
+                }}
+                variant="outline"
+                className="mt-2 rounded-full border-[#2b2e3c] bg-[#181922] text-zinc-300 text-xs uppercase tracking-wider px-6 cursor-pointer"
+              >
+                Reset All Filters
+              </Button>
             </>
           )}
         </Card>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-5 sm:gap-6">
           {paginatedArtworks.map((art) => (
             <ArtworkCard key={art.id} artwork={art} />
           ))}
@@ -186,7 +263,7 @@ export function CatalogueTab() {
       <CollectorPaginationBar
         currentPage={currentPage}
         totalPages={totalPages}
-        totalItems={filteredArtworks.length}
+        totalItems={processedArtworks.length}
         startItem={startItem}
         endItem={endItem}
         itemName="artworks"

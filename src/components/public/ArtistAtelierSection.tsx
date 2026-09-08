@@ -25,7 +25,7 @@ export function ArtistAtelierSection({
     "https://ik.imagekit.io/bpnsp30ni/artworks/gallery/1788717079935-kazuha__EB1yso0A.jpeg?updatedAt=1788717081490";
 
   return (
-    <section className="max-w-7xl mx-auto px-6 md:px-12">
+    <section className="max-w-[1800px] mx-auto px-6 sm:px-10 md:px-14 lg:px-16">
       <div className="border-t border-[#1c1d25] pt-20 sm:pt-28">
         {/* Curatorial Quote Banner */}
         <div className="max-w-4xl mx-auto text-center space-y-8 mb-20">

@@ -22,6 +22,7 @@ export function OverviewTab() {
   const {
     user,
     artworks,
+    collections,
     userInquiries,
     marketingSubscribed,
     setActiveTab,
@@ -198,6 +199,64 @@ export function OverviewTab() {
           )}
         </div>
       </div>
+
+      {/* Curatorial Cycles & Series Preview */}
+      {collections.length > 0 && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between border-b border-[#262833] pb-3">
+            <div>
+              <span className="text-[10px] tracking-[0.2em] text-[#d1a86e] uppercase font-bold">
+                Atelier Suites
+              </span>
+              <h2 className="font-serif text-xl text-white">Curatorial Cycles &amp; Series</h2>
+            </div>
+            <button
+              onClick={() => setActiveTab("collections")}
+              className="text-xs text-[#d1a86e] hover:underline uppercase tracking-wider flex items-center gap-1 cursor-pointer"
+            >
+              <span>Explore All Series ({collections.length})</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {collections.slice(0, 3).map((col) => (
+              <div
+                key={col.id}
+                onClick={() => setActiveTab("collections")}
+                className="group p-5 rounded-2xl bg-[#14151a] border border-[#262833] hover:border-[#d1a86e]/40 transition-all duration-300 space-y-4 cursor-pointer flex flex-col justify-between shadow-lg"
+              >
+                {col.coverImageUrl && (
+                  <div className="relative aspect-[16/10] w-full rounded-xl overflow-hidden bg-[#0d0e12]">
+                    <ProgressiveImage
+                      src={col.coverImageUrl}
+                      alt={col.title}
+                      fill
+                      optimizeWidth={500}
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  </div>
+                )}
+                <div className="space-y-1.5">
+                  <h4 className="font-serif text-lg text-white group-hover:text-[#d1a86e] transition-colors">
+                    {col.title}
+                  </h4>
+                  <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
+                    {col.curatorialStatement || col.description}
+                  </p>
+                </div>
+                <div className="pt-2 border-t border-[#1e202a] flex items-center justify-between text-xs text-zinc-500">
+                  <span className="font-mono text-[11px]">{col.artworkSlugs?.length || 1} Works</span>
+                  <span className="text-[#d1a86e] group-hover:translate-x-0.5 transition-transform flex items-center gap-1 text-[11px] font-medium uppercase tracking-wider">
+                    View Suite &rarr;
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Recent Inquiries Preview */}
       <div className="space-y-4">

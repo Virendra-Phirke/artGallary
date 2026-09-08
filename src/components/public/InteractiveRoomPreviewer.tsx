@@ -113,7 +113,7 @@ export function InteractiveRoomPreviewer({
 
   return (
     <>
-      <section className="max-w-7xl mx-auto px-6 md:px-12">
+      <section className="max-w-[1800px] mx-auto px-6 sm:px-10 md:px-14 lg:px-16">
         <div className="rounded-3xl bg-[#14151a] border border-[#262833] p-6 sm:p-10 md:p-14 shadow-2xl space-y-10">
           {/* Header Row */}
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-6 border-b border-[#1c1d25]">

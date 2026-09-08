@@ -39,7 +39,7 @@ export function Footer({ settings }: FooterProps) {
 
   return (
     <footer className="bg-[#0a0b0d] border-t border-[#1c1d25] pt-20 pb-12 text-[#8e92a4]">
-      <div className="max-w-7xl mx-auto px-6 md:px-12">
+      <div className="max-w-[1800px] mx-auto px-6 sm:px-10 md:px-14 lg:px-16">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
           {/* Col 1: Studio Monologue */}
           <div className="md:col-span-4 space-y-4">

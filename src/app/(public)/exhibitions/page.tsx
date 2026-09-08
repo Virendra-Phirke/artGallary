@@ -32,7 +32,7 @@ export default async function ExhibitionsPage() {
     "Chronological record of curated solo exhibitions, biennale participations, and institutional showcases across Paris, New York, London, and Tokyo.";
 
   return (
-    <div className="max-w-7xl mx-auto px-6 md:px-12 pt-32 pb-24 space-y-16">
+    <div className="max-w-[1800px] mx-auto px-6 sm:px-10 md:px-14 lg:px-16 pt-32 pb-24 space-y-16">
       <div className="max-w-2xl space-y-3">
         <span className="text-xs tracking-[0.25em] text-[#d1a86e] uppercase font-medium">
           {eyebrow}

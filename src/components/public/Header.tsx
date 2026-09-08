@@ -107,7 +107,7 @@ export function Header({ settings }: HeaderProps) {
           : "bg-gradient-to-b from-[#0d0e12]/85 to-transparent py-5 md:py-6"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-5 sm:px-8 md:px-12 flex items-center justify-between">
+      <div className="max-w-[1800px] mx-auto px-5 sm:px-8 md:px-12 lg:px-16 flex items-center justify-between">
         {/* Gallery Brand Title */}
         <Link
           href="/"
@@ -153,22 +153,13 @@ export function Header({ settings }: HeaderProps) {
         </nav>
 
         {/* Right Desktop CTA & Auth Dropdown */}
-        <div className="hidden md:flex items-center space-x-4">
-          {settings?.headerConfig?.showCta ? (
-            <Button asChild variant="outline" size="sm" className="rounded-full h-8 px-3.5 border-[#d1a86e]/40 hover:border-[#d1a86e] hover:bg-[#d1a86e]/10 text-[#d1a86e]">
-              <Link href={settings.headerConfig.ctaUrl || "/contact"}>
-                <Sparkles className="w-3.5 h-3.5 mr-1" />
-                <span>{settings.headerConfig.ctaLabel || "Inquire"}</span>
-              </Link>
-            </Button>
-          ) : (
-            <Button asChild variant="outline" size="sm" className="rounded-full h-8 px-3.5 border-[#d1a86e]/40 hover:border-[#d1a86e] hover:bg-[#d1a86e]/10 text-[#d1a86e]">
-              <Link href="/gallery">
-                <Sparkles className="w-3.5 h-3.5 mr-1" />
-                <span>AR Preview</span>
-              </Link>
-            </Button>
-          )}
+        <div className="hidden md:flex items-center space-x-3">
+          <Button asChild variant="outline" size="sm" className="rounded-full h-8 px-3.5 border-[#d1a86e]/40 hover:border-[#d1a86e] hover:bg-[#d1a86e]/10 text-[#d1a86e] text-xs uppercase tracking-wider">
+            <Link href="/account" className="flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Collector Salon</span>
+            </Link>
+          </Button>
 
           {user ? (
             <div className="flex items-center gap-2.5">
@@ -272,9 +263,9 @@ export function Header({ settings }: HeaderProps) {
         {/* Mobile Navigation Trigger with shadcn Sheet */}
         <div className="flex items-center gap-2 md:hidden">
           <Button asChild variant="outline" size="sm" className="h-7 px-2.5 text-[10px] rounded-full border-[#d1a86e]/40 text-[#d1a86e]">
-            <Link href="/gallery">
+            <Link href="/account">
               <Sparkles className="w-3 h-3 mr-1" />
-              <span>AR</span>
+              <span>Salon</span>
             </Link>
           </Button>
 

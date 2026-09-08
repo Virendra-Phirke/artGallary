@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { Heart, Eye, Sparkles, ShoppingBag, Ruler } from "lucide-react";
+import { Heart, Eye, Sparkles, ShoppingBag, Ruler, Check } from "lucide-react";
 import { MockArtwork } from "@/db/mockData";
 import { formatCurrency, formatDimensions, cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -29,12 +29,12 @@ export function ArtworkCard({ artwork, className = "" }: ArtworkCardProps) {
   return (
     <div
       className={cn(
-        "group bg-[#14151a] border border-[#262833] rounded-2xl overflow-hidden p-4 space-y-4 hover:border-[#d1a86e]/40 transition-all duration-300 shadow-xl flex flex-col justify-between",
+        "group relative bg-[#13141a] border border-[#242633] rounded-3xl overflow-hidden p-4 space-y-4 hover:border-[#d1a86e]/50 hover:shadow-2xl hover:shadow-[#d1a86e]/5 transition-all duration-300 flex flex-col justify-between",
         className
       )}
     >
       <div>
-        <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-[#0d0e12]">
+        <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-[#0a0b0e]">
           <ProgressiveImage
             src={artwork.coverImageUrl}
             alt={artwork.title}
@@ -42,11 +42,11 @@ export function ArtworkCard({ artwork, className = "" }: ArtworkCardProps) {
             optimizeWidth={650}
             optimizeQuality={85}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
           />
 
-          {/* Status Badge */}
-          <div className="absolute top-3 left-3 z-10">
+          {/* Top Floating Badges */}
+          <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5">
             <Badge
               variant={
                 artwork.status === "published"
@@ -55,33 +55,39 @@ export function ArtworkCard({ artwork, className = "" }: ArtworkCardProps) {
                   ? "warning"
                   : "secondary"
               }
-              className="backdrop-blur-md bg-black/60 border border-white/10"
+              className="backdrop-blur-md bg-black/70 border border-white/10 text-[10px] uppercase font-mono tracking-wider px-2 py-0.5"
             >
               {artwork.status === "published" ? "Available" : artwork.status}
             </Badge>
+
+            {artwork.collectionName && (
+              <span className="hidden sm:inline-block px-2 py-0.5 rounded-full backdrop-blur-md bg-black/60 border border-white/10 text-[9px] text-zinc-300 font-medium truncate max-w-[110px]">
+                {artwork.collectionName}
+              </span>
+            )}
           </div>
 
-          {/* Save / Bookmark Button */}
+          {/* Bookmark / Like Button */}
           <button
             onClick={() => toggleSaveArtwork(artwork.id)}
             className={cn(
-              "absolute top-3 right-3 z-10 p-2 rounded-full backdrop-blur-md border transition-all cursor-pointer",
+              "absolute top-3 right-3 z-10 p-2 rounded-full backdrop-blur-md border transition-all cursor-pointer shadow-lg",
               isSaved
-                ? "bg-[#d1a86e] text-[#0d0e12] border-[#d1a86e]"
-                : "bg-black/60 text-zinc-400 hover:text-white border-white/10"
+                ? "bg-[#d1a86e] text-[#0d0e12] border-[#d1a86e] shadow-[#d1a86e]/30 scale-105"
+                : "bg-black/60 text-zinc-400 hover:text-white border-white/10 hover:bg-black/80"
             )}
-            title={isSaved ? "Remove from Saved Shortlist" : "Save to Private Portfolio"}
+            title={isSaved ? "Shortlisted in Private Portfolio" : "Save to Private Shortlist"}
             aria-label="Bookmark artwork"
           >
-            <Heart className={cn("w-3.5 h-3.5", isSaved && "fill-[#0d0e12]")} />
+            <Heart className={cn("w-3.5 h-3.5", isSaved ? "fill-[#0d0e12] text-[#0d0e12]" : "text-zinc-300")} />
           </button>
 
-          {/* Hover Overlay Buttons */}
-          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+          {/* Hover Overlay with Inspect & AR Buttons */}
+          <div className="absolute inset-0 bg-black/65 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
             <button
               onClick={() => setInspectArtwork(artwork)}
-              className="p-3 bg-white text-black rounded-full hover:bg-zinc-200 transition-colors shadow-lg cursor-pointer"
-              title="Inspect Details"
+              className="p-3 bg-white text-[#0d0e12] rounded-full hover:bg-zinc-200 transition-colors shadow-xl cursor-pointer transform group-hover:scale-100 scale-90 transition-transform duration-200"
+              title="Inspect 4K Details"
               aria-label="Inspect artwork"
             >
               <Eye className="w-4 h-4" />
@@ -89,8 +95,8 @@ export function ArtworkCard({ artwork, className = "" }: ArtworkCardProps) {
 
             <Link
               href={`/ar/${artwork.slug}`}
-              className="p-3 bg-[#d1a86e] text-[#0d0e12] rounded-full hover:bg-[#e2c18d] transition-colors shadow-lg"
-              title="View in Your Space (AR)"
+              className="p-3 bg-gradient-to-r from-[#d1a86e] to-[#b98e54] text-[#0d0e12] rounded-full hover:brightness-110 transition-all shadow-xl shadow-[#d1a86e]/30 transform group-hover:scale-100 scale-90 transition-transform duration-200"
+              title="View in Your Space (1:1 WebAR)"
               aria-label="View in AR"
             >
               <Sparkles className="w-4 h-4" />
@@ -98,31 +104,32 @@ export function ArtworkCard({ artwork, className = "" }: ArtworkCardProps) {
           </div>
         </div>
 
-        <div className="space-y-1.5 pt-3">
+        {/* Artwork Meta */}
+        <div className="space-y-2 pt-3.5 px-0.5">
           <div className="flex items-baseline justify-between gap-2">
             <h4 className="font-serif text-lg text-white group-hover:text-[#d1a86e] transition-colors line-clamp-1">
               {artwork.title}
             </h4>
             {artwork.price && (
-              <span className="text-sm font-mono text-[#d1a86e] shrink-0">
+              <span className="text-sm font-mono text-[#d1a86e] font-semibold shrink-0">
                 {formatCurrency(artwork.price, artwork.currency)}
               </span>
             )}
           </div>
 
-          <p className="text-xs text-zinc-400 line-clamp-1">{artwork.medium}</p>
+          <p className="text-xs text-zinc-400 line-clamp-1 font-light">{artwork.medium}</p>
 
-          <div className="pt-2 border-t border-[#1c1d25] flex items-center justify-between text-[11px] text-zinc-400">
-            <span className="flex items-center gap-1">
+          <div className="pt-2.5 border-t border-[#1e202b] flex items-center justify-between text-[11px] text-zinc-400">
+            <span className="flex items-center gap-1.5 font-mono text-zinc-400">
               <Ruler className="w-3 h-3 text-[#d1a86e]" />
               {formatDimensions(artwork.widthCm, artwork.heightCm)}
             </span>
 
             <button
               onClick={() => setInspectArtwork(artwork)}
-              className="text-[#d1a86e] hover:underline uppercase tracking-wider text-[10px] cursor-pointer"
+              className="text-[#d1a86e] hover:text-[#e2c18d] uppercase tracking-wider text-[10px] font-semibold cursor-pointer transition-colors"
             >
-              Details &rarr;
+              Examine &rarr;
             </button>
           </div>
         </div>
@@ -132,16 +139,23 @@ export function ArtworkCard({ artwork, className = "" }: ArtworkCardProps) {
       <button
         onClick={() => toggleCartArtwork(artwork.id)}
         className={cn(
-          "w-full py-2 px-3 rounded-xl text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all mt-3 border cursor-pointer",
+          "w-full py-2.5 px-3 rounded-xl text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-2 transition-all mt-2 border cursor-pointer",
           isInCart
-            ? "bg-[#1f2230] text-[#d1a86e] border-[#d1a86e]/60 shadow-sm"
-            : "bg-[#181920] hover:bg-[#20222d] text-zinc-300 hover:text-white border-[#262833] hover:border-[#d1a86e]/30"
+            ? "bg-[#1f2230] text-[#d1a86e] border-[#d1a86e]/60 shadow-md shadow-[#d1a86e]/10"
+            : "bg-[#161720] hover:bg-[#1d1f2b] text-zinc-300 hover:text-white border-[#282a38] hover:border-[#d1a86e]/40"
         )}
       >
-        <ShoppingBag className="w-3.5 h-3.5 text-[#d1a86e]" />
-        <span>
-          {isInCart ? "In Dossier" : "+ Add to Acquisition Dossier"}
-        </span>
+        {isInCart ? (
+          <>
+            <Check className="w-3.5 h-3.5 text-[#d1a86e]" />
+            <span>In Acquisition Dossier</span>
+          </>
+        ) : (
+          <>
+            <ShoppingBag className="w-3.5 h-3.5 text-[#d1a86e]" />
+            <span>+ Add to Dossier</span>
+          </>
+        )}
       </button>
     </div>
   );

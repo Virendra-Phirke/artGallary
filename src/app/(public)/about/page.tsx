@@ -32,7 +32,7 @@ export default async function AboutPage() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-6 md:px-12 pt-32 pb-24 space-y-20">
+    <div className="max-w-[1800px] mx-auto px-6 sm:px-10 md:px-14 lg:px-16 pt-32 pb-24 space-y-20">
       {/* Hero Biography Section */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
         <div className="lg:col-span-5 relative">

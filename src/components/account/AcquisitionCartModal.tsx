@@ -140,7 +140,7 @@ ${notes || "Please advise on availability, crating protocol, and private viewing
       onClick={handleResetAndClose}
     >
       <div
-        className="relative w-full max-w-4xl max-h-[92vh] bg-[#121319] border border-[#2b2e3c] rounded-3xl shadow-2xl overflow-hidden flex flex-col text-[#f4f4f6]"
+        className="relative w-full max-w-5xl xl:max-w-6xl max-h-[92vh] bg-[#121319] border border-[#2b2e3c] rounded-3xl shadow-2xl overflow-hidden flex flex-col text-[#f4f4f6]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Header */}
@@ -239,242 +239,246 @@ ${notes || "Please advise on availability, crating protocol, and private viewing
               </div>
             </div>
           ) : (
-            /* ACTIVE CART LIST & CHECKOUT FORM */
-            <div className="space-y-8">
-              {/* Selected Paintings List */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs uppercase tracking-wider text-zinc-400 font-medium">
-                    Selected Originals ({cartArtworks.length})
-                  </span>
-                  <button
-                    onClick={onClearCart}
-                    className="text-[11px] text-zinc-500 hover:text-rose-400 transition-colors uppercase tracking-wider"
-                  >
-                    Clear All
-                  </button>
-                </div>
-
-                <div className="space-y-3 max-h-[360px] overflow-y-auto pr-1">
-                  {cartArtworks.map((art) => (
-                    <div
-                      key={art.id}
-                      className="p-3.5 sm:p-4 rounded-2xl bg-[#161720] border border-[#2b2e3c] flex items-center justify-between gap-4 group hover:border-[#3f4357] transition-colors"
-                    >
-                      <div className="flex items-center gap-3.5 min-w-0">
-                        <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-[#0d0e12] shrink-0 border border-[#2b2e3c]">
-                          <ProgressiveImage
-                            src={art.coverImageUrl}
-                            alt={art.title}
-                            fill
-                            optimizeWidth={200}
-                            className="object-cover"
-                          />
-                        </div>
-                        <div className="space-y-0.5 min-w-0">
-                          <h4 className="font-serif text-base text-white truncate group-hover:text-[#d1a86e] transition-colors">
-                            {art.title}
-                          </h4>
-                          <p className="text-[11px] text-zinc-400 truncate">
-                            {art.year} • {formatDimensions(art.widthCm, art.heightCm)} • {art.medium}
-                          </p>
-                          <span className="text-xs font-mono text-[#d1a86e] font-semibold block">
-                            {art.price ? formatCurrency(art.price, art.currency) : "Price on Inquiry"}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2 shrink-0">
-                        <button
-                          onClick={() => onRemoveItem(art.id)}
-                          aria-label={`Remove ${art.title} from dossier`}
-                          className="p-2 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors"
-                          title="Remove artwork"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Total Investment Summary */}
-              <div className="p-5 rounded-2xl bg-[#171822] border border-[#2b2e3c] space-y-3">
-                <div className="flex items-center justify-between text-xs text-zinc-400">
-                  <span>Selected Paintings Subtotal:</span>
-                  <span className="font-serif text-lg text-white font-medium">
-                    {formatCurrency(totalValue, currency)}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between text-xs text-zinc-400">
-                  <span className="flex items-center gap-1.5">
-                    <Package className="w-3.5 h-3.5 text-[#d1a86e]" />
-                    <span>Museum Archival Crating:</span>
-                  </span>
-                  <span className="text-emerald-400 font-mono text-[11px]">Included (Complimentary)</span>
-                </div>
-                <div className="flex items-center justify-between text-xs text-zinc-400">
-                  <span className="flex items-center gap-1.5">
-                    <ShieldCheck className="w-3.5 h-3.5 text-[#d1a86e]" />
-                    <span>Global White-Glove Insurance:</span>
-                  </span>
-                  <span className="text-zinc-300 font-mono text-[11px]">Coordinated with Courier</span>
-                </div>
-              </div>
-
-              {/* Inquiry Dispatch Form or Guest Sign In Prompt */}
-              {user ? (
-                <form onSubmit={handleSubmitAcquisition} className="space-y-4 pt-2 border-t border-[#22242f]">
-                  <div className="space-y-1">
-                    <span className="text-[10px] tracking-[0.2em] text-[#d1a86e] uppercase font-bold">
-                      Acquisition Dispatch
+            /* ACTIVE CART LIST & CHECKOUT FORM - 2-COLUMN LUXURY GRID ON DESKTOP */
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              {/* Left Column: Selected Originals & Financial Summary */}
+              <div className="lg:col-span-6 space-y-6">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs uppercase tracking-wider text-zinc-400 font-medium">
+                      Selected Originals ({cartArtworks.length})
                     </span>
-                    <h3 className="font-serif text-xl text-white font-medium">
-                      Submit Purchase &amp; Acquisition Inquiry
-                    </h3>
-                    <p className="text-xs text-zinc-400">
-                      The studio will review your selected pieces, calculate bespoke shipping crates, and coordinate private acquisition terms.
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="text-[11px] uppercase tracking-wider text-zinc-400">
-                        Collector Name
-                      </label>
-                      <input
-                        type="text"
-                        value={user.name}
-                        disabled
-                        className="w-full bg-[#161720] border border-[#2b2e3c] rounded-xl px-3.5 py-2 text-xs text-zinc-400 cursor-not-allowed"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-[11px] uppercase tracking-wider text-zinc-400">
-                        Email Address
-                      </label>
-                      <input
-                        type="email"
-                        value={user.email}
-                        disabled
-                        className="w-full bg-[#161720] border border-[#2b2e3c] rounded-xl px-3.5 py-2 text-xs text-zinc-400 cursor-not-allowed"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="text-[11px] uppercase tracking-wider text-zinc-400 flex items-center gap-1">
-                        <Phone className="w-3 h-3 text-[#d1a86e]" />
-                        <span>Direct Telephone (Optional)</span>
-                      </label>
-                      <input
-                        type="tel"
-                        placeholder="+1 (555) 000-0000"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        className="w-full bg-[#161720] border border-[#2b2e3c] rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#d1a86e]"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-[11px] uppercase tracking-wider text-zinc-400 flex items-center gap-1">
-                        <MapPin className="w-3 h-3 text-[#d1a86e]" />
-                        <span>Delivery Destination (City, Country)</span>
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Zurich, Switzerland / New York, USA"
-                        value={destination}
-                        onChange={(e) => setDestination(e.target.value)}
-                        className="w-full bg-[#161720] border border-[#2b2e3c] rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#d1a86e]"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-[11px] uppercase tracking-wider text-zinc-400">
-                      Acquisition Questions &amp; Notes
-                    </label>
-                    <textarea
-                      rows={3}
-                      placeholder="Provide any custom framing requirements, installation questions, or foundation collection details..."
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                      className="w-full bg-[#161720] border border-[#2b2e3c] rounded-xl p-3 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#d1a86e]"
-                    />
-                  </div>
-
-                  {error && (
-                    <div className="p-3 rounded-xl bg-rose-950/40 border border-rose-800 text-rose-300 text-xs">
-                      {error}
-                    </div>
-                  )}
-
-                  <div className="pt-2 flex items-center justify-between gap-4">
-                    <div className="text-[11px] text-zinc-500 font-mono">
-                      Direct studio acquisition • ADAGP Registered
-                    </div>
-
-                    <Button
-                      type="submit"
-                      disabled={submitting}
-                      className="rounded-full bg-gradient-to-r from-[#d1a86e] via-[#e2c18d] to-[#b98e54] text-[#0d0e12] font-semibold text-xs uppercase tracking-wider px-8 py-3 shadow-xl shadow-[#d1a86e]/20 hover:opacity-95"
+                    <button
+                      onClick={onClearCart}
+                      className="text-[11px] text-zinc-500 hover:text-rose-400 transition-colors uppercase tracking-wider"
                     >
-                      {submitting ? (
-                        <span>Transmitting Dossier...</span>
-                      ) : (
-                        <span className="flex items-center gap-2">
-                          <Sparkles className="w-3.5 h-3.5" />
-                          <span>Send Acquisition Inquiry</span>
-                          <ArrowRight className="w-3.5 h-3.5" />
-                        </span>
-                      )}
-                    </Button>
+                      Clear All
+                    </button>
                   </div>
-                </form>
-              ) : (
-                <div className="p-6 rounded-2xl bg-[#171822] border border-[#d1a86e]/40 space-y-4 pt-4 border-t border-[#22242f]">
-                  <div className="flex items-start gap-3.5">
-                    <div className="w-10 h-10 rounded-2xl bg-[#d1a86e]/15 border border-[#d1a86e]/30 flex items-center justify-center text-[#d1a86e] shrink-0 mt-0.5">
-                      <ShieldCheck className="w-5 h-5" />
-                    </div>
+
+                  <div className="space-y-3 max-h-[400px] overflow-y-auto pr-1">
+                    {cartArtworks.map((art) => (
+                      <div
+                        key={art.id}
+                        className="p-3.5 sm:p-4 rounded-2xl bg-[#161720] border border-[#2b2e3c] flex items-center justify-between gap-4 group hover:border-[#3f4357] transition-colors"
+                      >
+                        <div className="flex items-center gap-3.5 min-w-0">
+                          <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-[#0d0e12] shrink-0 border border-[#2b2e3c]">
+                            <ProgressiveImage
+                              src={art.coverImageUrl}
+                              alt={art.title}
+                              fill
+                              optimizeWidth={200}
+                              className="object-cover"
+                            />
+                          </div>
+                          <div className="space-y-0.5 min-w-0">
+                            <h4 className="font-serif text-base text-white truncate group-hover:text-[#d1a86e] transition-colors">
+                              {art.title}
+                            </h4>
+                            <p className="text-[11px] text-zinc-400 truncate">
+                              {art.year} • {formatDimensions(art.widthCm, art.heightCm)} • {art.medium}
+                            </p>
+                            <span className="text-xs font-mono text-[#d1a86e] font-semibold block">
+                              {art.price ? formatCurrency(art.price, art.currency) : "Price on Inquiry"}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0">
+                          <button
+                            onClick={() => onRemoveItem(art.id)}
+                            aria-label={`Remove ${art.title} from dossier`}
+                            className="p-2 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors"
+                            title="Remove artwork"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Total Investment Summary */}
+                <div className="p-5 rounded-2xl bg-[#171822] border border-[#2b2e3c] space-y-3">
+                  <div className="flex items-center justify-between text-xs text-zinc-400">
+                    <span>Selected Paintings Subtotal:</span>
+                    <span className="font-serif text-lg text-white font-medium">
+                      {formatCurrency(totalValue, currency)}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-zinc-400">
+                    <span className="flex items-center gap-1.5">
+                      <Package className="w-3.5 h-3.5 text-[#d1a86e]" />
+                      <span>Museum Archival Crating:</span>
+                    </span>
+                    <span className="text-emerald-400 font-mono text-[11px]">Included (Complimentary)</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-zinc-400">
+                    <span className="flex items-center gap-1.5">
+                      <ShieldCheck className="w-3.5 h-3.5 text-[#d1a86e]" />
+                      <span>Global White-Glove Insurance:</span>
+                    </span>
+                    <span className="text-zinc-300 font-mono text-[11px]">Coordinated with Courier</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: Inquiry Dispatch Form or Guest Sign In Prompt */}
+              <div className="lg:col-span-6 space-y-6">
+                {user ? (
+                  <form onSubmit={handleSubmitAcquisition} className="space-y-4 bg-[#14151e] p-6 rounded-3xl border border-[#262835]">
                     <div className="space-y-1">
-                      <h3 className="font-serif text-lg text-white font-medium">
-                        Collector Sign In Required to Transmit Inquiry
+                      <span className="text-[10px] tracking-[0.2em] text-[#d1a86e] uppercase font-bold">
+                        Acquisition Dispatch
+                      </span>
+                      <h3 className="font-serif text-xl text-white font-medium">
+                        Submit Purchase &amp; Acquisition Inquiry
                       </h3>
-                      <p className="text-xs text-zinc-400 leading-relaxed">
-                        To submit your multi-artwork acquisition dossier to Elena Vance&apos;s studio and receive authenticated courier and viewing dispatch, please sign in. Your selected paintings will remain saved in your dossier.
+                      <p className="text-xs text-zinc-400">
+                        The studio will review your selected pieces, calculate bespoke shipping crates, and coordinate private acquisition terms.
                       </p>
                     </div>
-                  </div>
 
-                  <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                    <Button
-                      asChild
-                      className="flex-1 rounded-full bg-gradient-to-r from-[#d1a86e] via-[#e2c18d] to-[#b98e54] text-[#0d0e12] font-semibold text-xs tracking-wider uppercase h-10 shadow-lg shadow-[#d1a86e]/20"
-                    >
-                      <Link href="/login?redirect=/account">
-                        <span className="flex items-center justify-center gap-2">
-                          <span>Sign In with Email &amp; Password</span>
-                          <ArrowRight className="w-3.5 h-3.5" />
-                        </span>
-                      </Link>
-                    </Button>
-                    <Button
-                      asChild
-                      variant="outline"
-                      className="flex-1 rounded-full border-[#2b2e3c] bg-[#14151a] hover:bg-[#20222d] text-zinc-200 text-xs tracking-wider uppercase h-10"
-                    >
-                      <Link href="/register?redirect=/account">
-                        <span>Register Free Collector Account</span>
-                      </Link>
-                    </Button>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <label className="text-[11px] uppercase tracking-wider text-zinc-400">
+                          Collector Name
+                        </label>
+                        <input
+                          type="text"
+                          value={user.name}
+                          disabled
+                          className="w-full bg-[#161720] border border-[#2b2e3c] rounded-xl px-3.5 py-2 text-xs text-zinc-400 cursor-not-allowed"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-[11px] uppercase tracking-wider text-zinc-400">
+                          Email Address
+                        </label>
+                        <input
+                          type="email"
+                          value={user.email}
+                          disabled
+                          className="w-full bg-[#161720] border border-[#2b2e3c] rounded-xl px-3.5 py-2 text-xs text-zinc-400 cursor-not-allowed"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <label className="text-[11px] uppercase tracking-wider text-zinc-400 flex items-center gap-1">
+                          <Phone className="w-3 h-3 text-[#d1a86e]" />
+                          <span>Direct Telephone (Optional)</span>
+                        </label>
+                        <input
+                          type="tel"
+                          placeholder="+1 (555) 000-0000"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          className="w-full bg-[#161720] border border-[#2b2e3c] rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#d1a86e]"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-[11px] uppercase tracking-wider text-zinc-400 flex items-center gap-1">
+                          <MapPin className="w-3 h-3 text-[#d1a86e]" />
+                          <span>Delivery Destination (City, Country)</span>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Zurich, Switzerland / New York, USA"
+                          value={destination}
+                          onChange={(e) => setDestination(e.target.value)}
+                          className="w-full bg-[#161720] border border-[#2b2e3c] rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#d1a86e]"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-[11px] uppercase tracking-wider text-zinc-400">
+                        Acquisition Questions &amp; Notes
+                      </label>
+                      <textarea
+                        rows={3}
+                        placeholder="Provide any custom framing requirements, installation questions, or foundation collection details..."
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value)}
+                        className="w-full bg-[#161720] border border-[#2b2e3c] rounded-xl p-3 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#d1a86e]"
+                      />
+                    </div>
+
+                    {error && (
+                      <div className="p-3 rounded-xl bg-rose-950/40 border border-rose-800 text-rose-300 text-xs">
+                        {error}
+                      </div>
+                    )}
+
+                    <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="text-[11px] text-zinc-500 font-mono">
+                        Direct studio acquisition • ADAGP Registered
+                      </div>
+
+                      <Button
+                        type="submit"
+                        disabled={submitting}
+                        className="rounded-full bg-gradient-to-r from-[#d1a86e] via-[#e2c18d] to-[#b98e54] text-[#0d0e12] font-semibold text-xs uppercase tracking-wider px-8 py-3 shadow-xl shadow-[#d1a86e]/20 hover:opacity-95 cursor-pointer"
+                      >
+                        {submitting ? (
+                          <span>Transmitting Dossier...</span>
+                        ) : (
+                          <span className="flex items-center gap-2">
+                            <Sparkles className="w-3.5 h-3.5" />
+                            <span>Send Acquisition Inquiry</span>
+                            <ArrowRight className="w-3.5 h-3.5" />
+                          </span>
+                        )}
+                      </Button>
+                    </div>
+                  </form>
+                ) : (
+                  <div className="p-6 sm:p-8 rounded-3xl bg-[#14151e] border border-[#d1a86e]/40 space-y-5 shadow-2xl">
+                    <div className="flex items-start gap-3.5">
+                      <div className="w-11 h-11 rounded-2xl bg-[#d1a86e]/15 border border-[#d1a86e]/30 flex items-center justify-center text-[#d1a86e] shrink-0 mt-0.5">
+                        <ShieldCheck className="w-6 h-6" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <h3 className="font-serif text-xl text-white font-medium">
+                          Collector Sign In Required to Transmit Inquiry
+                        </h3>
+                        <p className="text-xs text-zinc-400 leading-relaxed">
+                          To submit your multi-artwork acquisition dossier to Elena Vance&apos;s studio and receive authenticated courier and viewing dispatch, please sign in. Your selected paintings will remain saved in your dossier.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                      <Button
+                        asChild
+                        className="flex-1 rounded-full bg-gradient-to-r from-[#d1a86e] via-[#e2c18d] to-[#b98e54] text-[#0d0e12] font-semibold text-xs tracking-wider uppercase h-11 shadow-lg shadow-[#d1a86e]/20"
+                      >
+                        <Link href="/login?redirect=/account">
+                          <span className="flex items-center justify-center gap-2">
+                            <span>Sign In with Email</span>
+                            <ArrowRight className="w-3.5 h-3.5" />
+                          </span>
+                        </Link>
+                      </Button>
+                      <Button
+                        asChild
+                        variant="outline"
+                        className="flex-1 rounded-full border-[#2b2e3c] bg-[#181922] hover:bg-[#222430] text-zinc-200 text-xs tracking-wider uppercase h-11"
+                      >
+                        <Link href="/register?redirect=/account">
+                          <span>Register Collector Account</span>
+                        </Link>
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           )}
         </div>

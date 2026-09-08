@@ -87,6 +87,40 @@ export function InquiriesTab() {
         </Card>
       ) : (
         <div className="space-y-6">
+          {/* Curatorial Ledger Summary Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="p-5 rounded-2xl bg-[#14151a] border border-[#262833] space-y-1">
+              <span className="text-[10px] uppercase font-mono tracking-widest text-zinc-500">
+                Total Inquiries
+              </span>
+              <div className="font-serif text-2xl sm:text-3xl text-white font-medium">
+                {userInquiries.length}
+              </div>
+              <p className="text-[11px] text-zinc-500">Logged studio transmissions</p>
+            </div>
+
+            <div className="p-5 rounded-2xl bg-[#14151a] border border-[#262833] space-y-1">
+              <span className="text-[10px] uppercase font-mono tracking-widest text-zinc-500">
+                Studio Responses
+              </span>
+              <div className="font-serif text-2xl sm:text-3xl text-emerald-400 font-medium">
+                {userInquiries.filter((i) => i.status === "replied").length}
+              </div>
+              <p className="text-[11px] text-zinc-500">Curatorial replies received</p>
+            </div>
+
+            <div className="p-5 rounded-2xl bg-[#14151a] border border-[#262833] space-y-1">
+              <span className="text-[10px] uppercase font-mono tracking-widest text-zinc-500">
+                Liaison Status
+              </span>
+              <div className="font-serif text-2xl sm:text-3xl text-[#d1a86e] font-medium flex items-center gap-2">
+                <span>Active</span>
+                <span className="w-2 h-2 rounded-full bg-[#d1a86e] animate-ping" />
+              </div>
+              <p className="text-[11px] text-zinc-500">Guaranteed 24hr response</p>
+            </div>
+          </div>
+
           <div className="space-y-4">
             {paginatedInquiries.map((inq) => (
               <Card

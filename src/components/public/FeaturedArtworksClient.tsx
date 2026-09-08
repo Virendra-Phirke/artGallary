@@ -61,7 +61,7 @@ export function FeaturedArtworksClient({
 
   return (
     <>
-      <section className="max-w-7xl mx-auto px-6 md:px-12">
+      <section className="max-w-[1800px] mx-auto px-6 sm:px-10 md:px-14 lg:px-16">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 border-b border-[#1c1d25] pb-6 gap-6">
           <div>
@@ -73,44 +73,44 @@ export function FeaturedArtworksClient({
             </h2>
           </div>
 
-          {/* Curatorial Filter Tabs */}
-          <div className="flex flex-wrap items-center gap-2">
+          {/* Quick Categories Filter */}
+          <div className="flex items-center space-x-2 overflow-x-auto pb-2 md:pb-0">
             <button
               onClick={() => setActiveCategory("all")}
-              className={`px-4 py-2 rounded-full text-xs uppercase tracking-wider font-medium transition-all ${
+              className={`px-3.5 py-1.5 rounded-full text-xs tracking-wider uppercase transition-colors cursor-pointer ${
                 activeCategory === "all"
-                  ? "bg-[#d1a86e] text-[#0d0e12] shadow-md shadow-[#d1a86e]/15 font-semibold"
-                  : "bg-[#14151a] hover:bg-[#1f2129] text-zinc-400 hover:text-white border border-[#262833]"
+                  ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
+                  : "bg-[#14151a] text-zinc-400 hover:text-white border border-[#262833]"
               }`}
             >
-              All Masterworks
+              All Works
             </button>
             <button
               onClick={() => setActiveCategory("available")}
-              className={`px-4 py-2 rounded-full text-xs uppercase tracking-wider font-medium transition-all ${
+              className={`px-3.5 py-1.5 rounded-full text-xs tracking-wider uppercase transition-colors cursor-pointer ${
                 activeCategory === "available"
-                  ? "bg-[#d1a86e] text-[#0d0e12] shadow-md shadow-[#d1a86e]/15 font-semibold"
-                  : "bg-[#14151a] hover:bg-[#1f2129] text-zinc-400 hover:text-white border border-[#262833]"
+                  ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
+                  : "bg-[#14151a] text-zinc-400 hover:text-white border border-[#262833]"
               }`}
             >
-              Available for Acquisition
+              Available
             </button>
             <button
               onClick={() => setActiveCategory("monumental")}
-              className={`px-4 py-2 rounded-full text-xs uppercase tracking-wider font-medium transition-all ${
+              className={`px-3.5 py-1.5 rounded-full text-xs tracking-wider uppercase transition-colors cursor-pointer ${
                 activeCategory === "monumental"
-                  ? "bg-[#d1a86e] text-[#0d0e12] shadow-md shadow-[#d1a86e]/15 font-semibold"
-                  : "bg-[#14151a] hover:bg-[#1f2129] text-zinc-400 hover:text-white border border-[#262833]"
+                  ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
+                  : "bg-[#14151a] text-zinc-400 hover:text-white border border-[#262833]"
               }`}
             >
-              Monumental Scale
+              Monumental
             </button>
             <button
               onClick={() => setActiveCategory("mineral")}
-              className={`px-4 py-2 rounded-full text-xs uppercase tracking-wider font-medium transition-all ${
+              className={`px-3.5 py-1.5 rounded-full text-xs tracking-wider uppercase transition-colors cursor-pointer ${
                 activeCategory === "mineral"
-                  ? "bg-[#d1a86e] text-[#0d0e12] shadow-md shadow-[#d1a86e]/15 font-semibold"
-                  : "bg-[#14151a] hover:bg-[#1f2129] text-zinc-400 hover:text-white border border-[#262833]"
+                  ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
+                  : "bg-[#14151a] text-zinc-400 hover:text-white border border-[#262833]"
               }`}
             >
               Mineral &amp; Lapis
@@ -119,7 +119,7 @@ export function FeaturedArtworksClient({
         </div>
 
         {/* Artwork Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8 md:gap-8">
           {(filteredArtworks.length > 0 ? filteredArtworks.slice(0, 6) : artworks.slice(0, 6)).map(
             (art, idx) => (
               <div

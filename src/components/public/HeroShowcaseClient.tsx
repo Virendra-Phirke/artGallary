@@ -62,11 +62,11 @@ export function HeroShowcaseClient({
 
   return (
     <>
-      <section className="relative min-h-[92vh] flex items-center justify-center pt-28 pb-16 px-6 md:px-12 overflow-hidden">
+      <section className="relative min-h-[92vh] flex items-center justify-center pt-28 pb-16 px-6 sm:px-10 md:px-14 lg:px-16 overflow-hidden">
         {/* Subtle Ambient Light Glow */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#d1a86e]/8 rounded-full blur-[160px] pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+        <div className="max-w-[1800px] mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-12 items-center">
           {/* Left Hero Narrative */}
           <div className="lg:col-span-6 space-y-6 md:space-y-8 z-10">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#18191e] border border-[#262833] text-[11px] tracking-[0.25em] text-[#d1a86e] uppercase">

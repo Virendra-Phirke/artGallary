@@ -49,7 +49,7 @@ export default async function GalleryPage({ searchParams }: GalleryPageProps) {
     "Each painting is an original piece created using natural mineral pigments, French lapis lazuli glazes, and raw Belgian linen. Inquire for provenance or launch the 1:1 scale WebAR viewer.";
 
   return (
-    <div className="max-w-7xl mx-auto px-6 md:px-12 pt-32 pb-24">
+    <div className="max-w-[1800px] mx-auto px-6 sm:px-10 md:px-14 lg:px-16 pt-32 pb-24">
       {/* Header Plaque */}
       <div className="max-w-2xl mb-12 space-y-3">
         <span className="text-xs tracking-[0.25em] text-[#d1a86e] uppercase font-medium">

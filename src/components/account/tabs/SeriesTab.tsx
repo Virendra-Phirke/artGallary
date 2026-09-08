@@ -43,10 +43,10 @@ export function SeriesTab() {
         {paginatedCollections.map((col) => (
           <div
             key={col.id}
-            className="bg-[#14151a] border border-[#262833] rounded-3xl overflow-hidden shadow-2xl flex flex-col justify-between hover:border-[#d1a86e]/30 transition-all duration-300"
+            className="group bg-[#14151a] border border-[#262833] hover:border-[#d1a86e]/50 hover:shadow-2xl hover:shadow-[#d1a86e]/5 rounded-3xl overflow-hidden flex flex-col justify-between transition-all duration-500"
           >
             {col.coverImageUrl && (
-              <div className="relative aspect-[16/9] w-full bg-[#0d0e12]">
+              <div className="relative aspect-[16/10] w-full bg-[#0d0e12] overflow-hidden">
                 <ProgressiveImage
                   src={col.coverImageUrl}
                   alt={col.title}
@@ -54,35 +54,36 @@ export function SeriesTab() {
                   optimizeWidth={800}
                   optimizeQuality={85}
                   sizes="(max-width: 768px) 100vw, 50vw"
-                  className="object-cover"
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#14151a] via-transparent to-transparent" />
+                <div className="absolute top-4 left-4">
+                  <span className="px-3 py-1 rounded-full bg-[#0d0e12]/80 backdrop-blur-md border border-[#262833] text-[10px] tracking-[0.2em] text-[#d1a86e] uppercase font-mono font-semibold">
+                    Cycle Suite
+                  </span>
+                </div>
               </div>
             )}
 
-            <div className="p-6 sm:p-8 space-y-4">
-              <div className="space-y-1">
-                <span className="text-[10px] tracking-[0.2em] text-[#d1a86e] uppercase font-semibold">
-                  Featured Series
-                </span>
-                <h3 className="font-serif text-2xl text-white font-medium">
+            <div className="p-6 sm:p-8 space-y-4 flex-1 flex flex-col justify-between">
+              <div className="space-y-2">
+                <h3 className="font-serif text-2xl text-white font-medium group-hover:text-[#d1a86e] transition-colors">
                   {col.title}
                 </h3>
+
+                <p className="text-xs sm:text-sm text-[#a6aabf] leading-relaxed line-clamp-3 italic font-serif">
+                  &ldquo;{col.curatorialStatement || col.description}&rdquo;
+                </p>
               </div>
 
-              <p className="text-xs sm:text-sm text-[#a6aabf] leading-relaxed line-clamp-3">
-                {col.curatorialStatement || col.description}
-              </p>
-
-              <div className="pt-2 flex items-center justify-between border-t border-[#1c1d25]">
-                <span className="text-xs text-zinc-500 font-mono">
+              <div className="pt-4 flex items-center justify-between border-t border-[#1c1d25]">
+                <span className="text-xs text-zinc-400 font-mono">
                   {col.artworkSlugs?.length || 1} Documented Canvases
                 </span>
 
                 <Button
                   asChild
-                  variant="outline"
-                  className="rounded-full border-[#262833] bg-[#181920] hover:bg-[#22242e] text-[#d1a86e] hover:text-white text-xs uppercase tracking-wider"
+                  className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] text-xs font-semibold uppercase tracking-wider px-5 shadow-md shadow-[#d1a86e]/15 cursor-pointer"
                 >
                   <Link href={`/collections/${col.slug}`} className="flex items-center gap-1.5">
                     <span>Explore Series</span>

@@ -40,7 +40,7 @@ export function AnnouncementBar({ announcement }: AnnouncementBarProps) {
         color: announcement.textColor || "#d1a86e",
       }}
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-center gap-3 text-center px-6">
+      <div className="max-w-[1800px] mx-auto flex items-center justify-center gap-3 text-center px-6">
         <span className="font-medium tracking-wide">
           {announcement.message}
         </span>

@@ -344,7 +344,7 @@ export function GalleryCatalog({
           </Button>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 animate-in fade-in-50 duration-300">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6 md:gap-8 animate-in fade-in-50 duration-300">
           {artworks.map((art, index) => (
             <Card
               key={art.id}
