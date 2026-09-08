@@ -22,7 +22,7 @@ import {
   Maximize2,
   Compass,
 } from "lucide-react";
-import { formatCurrency, cn } from "@/lib/utils";
+import { formatCurrency, formatDimensions, cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ProgressiveImage } from "@/components/ui/progressive-image";
@@ -72,25 +72,32 @@ export function OverviewTab() {
   const curatedSuggestions = useMemo(() => artworks.slice(0, 3), [artworks]);
 
   return (
-    <div className="max-w-5xl xl:max-w-6xl mx-auto w-full space-y-4 sm:space-y-6 animate-in fade-in duration-200">
-      {/* 1. EXECUTIVE KPI MATRIX (4 COMPACT TILES) */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+    <div className="w-full max-w-[1720px] mx-auto space-y-5 sm:space-y-7 lg:space-y-8 animate-in fade-in duration-300">
+      {/* 1. EXECUTIVE KPI MATRIX (4 PROMINENT CARDS) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-5 lg:gap-6">
         {/* Card 1: Portfolio Holdings */}
         <button
           type="button"
           onClick={() => (cartArtworkIds.length > 0 ? setIsCartOpen(true) : setActiveTab("gallery"))}
-          className="bg-[#121319] hover:bg-[#161722] transition-colors rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-white/5 shadow-md flex flex-col justify-between text-left cursor-pointer group"
+          className="bg-[#121319] hover:bg-[#161824] transition-all duration-300 rounded-2xl sm:rounded-3xl p-4 sm:p-5 lg:p-6 border border-white/8 hover:border-[#d1a86e]/30 shadow-lg shadow-black/50 flex flex-col justify-between text-left cursor-pointer group"
         >
           <div className="flex items-center justify-between w-full">
-            <span className="text-[9px] sm:text-[10px] tracking-wider text-[#d1a86e] uppercase font-mono font-semibold truncate">
-              Holdings
+            <span className="text-[10px] sm:text-xs tracking-[0.2em] text-[#d1a86e] uppercase font-mono font-semibold truncate">
+              Portfolio Holdings
             </span>
-            <ShoppingBag className="w-3 h-3 text-zinc-500 group-hover:text-[#d1a86e] transition-colors shrink-0" />
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#1a1c27] group-hover:bg-[#202334] flex items-center justify-center text-zinc-400 group-hover:text-[#d1a86e] transition-colors shadow-inner shrink-0">
+              <ShoppingBag className="w-4 h-4 sm:w-4.5 sm:h-4.5 transition-colors" />
+            </div>
           </div>
-          <div className="font-mono text-sm sm:text-base font-bold text-white tracking-tight mt-1">
-            {totalHoldingsValuation > 0
-              ? formatCurrency(totalHoldingsValuation, preferredCurrency)
-              : "Active"}
+          <div className="mt-2 sm:mt-3">
+            <div className="font-serif text-xl sm:text-2xl lg:text-3xl font-medium text-white tracking-tight">
+              {totalHoldingsValuation > 0
+                ? formatCurrency(totalHoldingsValuation, preferredCurrency)
+                : "Active Suite"}
+            </div>
+            <p className="text-[11px] sm:text-xs text-zinc-400 font-light mt-1.5 truncate">
+              {cartArtworkIds.length} in Dossier &bull; {savedArtworkIds.length} Shortlisted
+            </p>
           </div>
         </button>
 
@@ -98,29 +105,43 @@ export function OverviewTab() {
         <button
           type="button"
           onClick={() => setActiveTab("gallery")}
-          className="bg-[#121319] hover:bg-[#161722] transition-colors rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-white/5 shadow-md flex flex-col justify-between text-left cursor-pointer group"
+          className="bg-[#121319] hover:bg-[#161824] transition-all duration-300 rounded-2xl sm:rounded-3xl p-4 sm:p-5 lg:p-6 border border-white/8 hover:border-[#d1a86e]/30 shadow-lg shadow-black/50 flex flex-col justify-between text-left cursor-pointer group"
         >
           <div className="flex items-center justify-between w-full">
-            <span className="text-[9px] sm:text-[10px] tracking-wider text-[#d1a86e] uppercase font-mono font-semibold truncate">
-              Inventory
+            <span className="text-[10px] sm:text-xs tracking-[0.2em] text-[#d1a86e] uppercase font-mono font-semibold truncate">
+              Studio Inventory
             </span>
-            <Palette className="w-3 h-3 text-zinc-500 group-hover:text-amber-400 transition-colors shrink-0" />
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#1a1c27] group-hover:bg-[#202334] flex items-center justify-center text-zinc-400 group-hover:text-amber-400 transition-colors shadow-inner shrink-0">
+              <Palette className="w-4 h-4 sm:w-4.5 sm:h-4.5 transition-colors" />
+            </div>
           </div>
-          <div className="font-mono text-sm sm:text-base font-bold text-white tracking-tight mt-1">
-            {artworks.length} Originals
+          <div className="mt-2 sm:mt-3">
+            <div className="font-serif text-xl sm:text-2xl lg:text-3xl font-medium text-white tracking-tight">
+              {artworks.length} Originals
+            </div>
+            <p className="text-[11px] sm:text-xs text-zinc-400 font-light mt-1.5 truncate">
+              Available Elena Vance Masterworks
+            </p>
           </div>
         </button>
 
         {/* Card 3: Provenance */}
-        <div className="bg-[#121319] rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-white/5 shadow-md flex flex-col justify-between text-left">
+        <div className="bg-[#121319] rounded-2xl sm:rounded-3xl p-4 sm:p-5 lg:p-6 border border-white/8 shadow-lg shadow-black/50 flex flex-col justify-between text-left">
           <div className="flex items-center justify-between w-full">
-            <span className="text-[9px] sm:text-[10px] tracking-wider text-[#d1a86e] uppercase font-mono font-semibold truncate">
+            <span className="text-[10px] sm:text-xs tracking-[0.2em] text-[#d1a86e] uppercase font-mono font-semibold truncate">
               Provenance
             </span>
-            <ShieldCheck className="w-3 h-3 text-emerald-400 shrink-0" />
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#1a1c27] flex items-center justify-center text-emerald-400 shadow-inner shrink-0">
+              <ShieldCheck className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+            </div>
           </div>
-          <div className="text-sm sm:text-base font-serif font-medium text-white tracking-tight mt-1">
-            100% Certified
+          <div className="mt-2 sm:mt-3">
+            <div className="font-serif text-xl sm:text-2xl lg:text-3xl font-medium text-white tracking-tight">
+              100% Certified
+            </div>
+            <p className="text-[11px] sm:text-xs text-zinc-400 font-light mt-1.5 truncate">
+              Signed Certificate &bull; ADAGP Registered
+            </p>
           </div>
         </div>
 
@@ -128,89 +149,114 @@ export function OverviewTab() {
         <button
           type="button"
           onClick={() => triggerContact()}
-          className="bg-[#121319] hover:bg-[#161722] transition-colors rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-white/5 shadow-md flex flex-col justify-between text-left group cursor-pointer"
+          className="bg-[#121319] hover:bg-[#161824] transition-all duration-300 rounded-2xl sm:rounded-3xl p-4 sm:p-5 lg:p-6 border border-white/8 hover:border-[#d1a86e]/30 shadow-lg shadow-black/50 flex flex-col justify-between text-left group cursor-pointer"
         >
           <div className="flex items-center justify-between w-full">
-            <span className="text-[9px] sm:text-[10px] tracking-wider text-[#d1a86e] uppercase font-mono font-semibold truncate">
-              Liaison
+            <span className="text-[10px] sm:text-xs tracking-[0.2em] text-[#d1a86e] uppercase font-mono font-semibold truncate">
+              Studio Liaison
             </span>
-            <Clock className="w-3 h-3 text-zinc-500 group-hover:text-rose-400 transition-colors shrink-0" />
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#1a1c27] group-hover:bg-[#202334] flex items-center justify-center text-zinc-400 group-hover:text-rose-400 transition-colors shadow-inner shrink-0">
+              <Clock className="w-4 h-4 sm:w-4.5 sm:h-4.5 transition-colors" />
+            </div>
           </div>
-          <div className="text-sm sm:text-base font-serif font-medium text-white tracking-tight flex items-center gap-1.5 mt-1">
-            <span>&lt; 2h Response</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+          <div className="mt-2 sm:mt-3">
+            <div className="font-serif text-xl sm:text-2xl lg:text-3xl font-medium text-white tracking-tight flex items-center gap-2">
+              <span>&lt; 2h Response</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+            </div>
+            <p className="text-[11px] sm:text-xs text-emerald-400/90 font-light mt-1.5 truncate">
+              Paris Atelier Concierge Active
+            </p>
           </div>
         </button>
       </div>
 
       {/* 2. CURATORIAL DOSSIER & CONCIERGE LIAISON (2 COLUMNS) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 sm:gap-4 items-start">
-        {/* Left: Interactive Acquisition Dossier Manager (7 cols) */}
-        <div className="lg:col-span-7 bg-[#121319] rounded-xl sm:rounded-2xl p-3.5 sm:p-5 space-y-3.5 shadow-md border border-white/5">
-          <div className="flex items-center justify-between border-b border-white/5 pb-2.5">
+      <div className="grid grid-cols-1 lg:grid-cols-12 xl:grid-cols-12 gap-5 sm:gap-6 lg:gap-8 items-start">
+        {/* Left: Interactive Acquisition Dossier Manager (7 cols lg, 8 cols xl) */}
+        <div className="lg:col-span-7 xl:col-span-8 bg-[#121319] rounded-2xl sm:rounded-3xl p-5 sm:p-7 lg:p-8 space-y-5 shadow-xl border border-white/8">
+          <div className="flex items-center justify-between border-b border-white/8 pb-4">
             <div>
-              <span className="text-[9px] sm:text-[10px] uppercase font-mono tracking-wider text-zinc-500 block">
+              <span className="text-[10px] sm:text-xs uppercase font-mono tracking-[0.22em] text-[#d1a86e] block font-semibold">
                 Acquisition Dossier
               </span>
-              <h2 className="font-serif text-sm sm:text-base text-white font-medium">
+              <h2 className="font-serif text-lg sm:text-xl lg:text-2xl text-white font-medium mt-0.5">
                 Portfolio Selections
               </h2>
             </div>
-            <Badge variant="gold" className="text-[9px] font-mono uppercase px-2 py-0.5 border-0">
-              {cartArtworkIds.length} {cartArtworkIds.length === 1 ? "Canvas" : "Canvases"}
+            <Badge variant="gold" className="text-xs font-mono uppercase px-3 py-1 border-0">
+              {cartArtworkIds.length} {cartArtworkIds.length === 1 ? "Canvas" : "Canvases"} Selected
             </Badge>
           </div>
 
           {cartArtworks.length > 0 ? (
             /* ACTIVE DOSSIER ITEMS LIST */
-            <div className="space-y-3">
-              <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
+            <div className="space-y-4">
+              <div className="space-y-3 max-h-[460px] overflow-y-auto pr-2 scrollbar-thin">
                 {cartArtworks.map((art) => (
                   <div
                     key={art.id}
-                    className="p-2.5 sm:p-3 rounded-xl bg-[#171822] hover:bg-[#1c1e2b] transition-colors flex items-center justify-between gap-2.5 border border-white/5"
+                    className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-[#171822] hover:bg-[#1c1e2b] transition-colors flex items-center justify-between gap-3 sm:gap-4 border border-white/5 group"
                   >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-lg overflow-hidden bg-[#0d0e12] shrink-0 relative shadow-inner">
+                    <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                      <div
+                        onClick={() => setInspectArtwork(art)}
+                        className="w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-xl overflow-hidden bg-[#0d0e12] shrink-0 relative shadow-inner cursor-pointer"
+                      >
                         <ProgressiveImage
                           src={art.coverImageUrl}
                           alt={art.title}
                           fill
-                          optimizeWidth={100}
-                          className="object-cover"
+                          optimizeWidth={160}
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                       </div>
-                      <div className="min-w-0 space-y-0.5">
-                        <h4 className="font-serif text-xs sm:text-sm text-white truncate font-medium">
+                      <div className="min-w-0 space-y-1">
+                        <h4
+                          onClick={() => setInspectArtwork(art)}
+                          className="font-serif text-sm sm:text-base lg:text-lg text-white group-hover:text-[#d1a86e] transition-colors truncate font-medium cursor-pointer"
+                        >
                           {art.title}
                         </h4>
-                        <p className="text-[10px] text-zinc-400 truncate">
-                          {art.medium} &bull; {art.year}
+                        <p className="text-xs text-zinc-400 font-light truncate flex items-center gap-2">
+                          <span>{art.medium}</span>
+                          <span>&bull;</span>
+                          <span>{art.year}</span>
+                          {art.widthCm && art.heightCm && (
+                            <>
+                              <span>&bull;</span>
+                              <span className="font-mono">{formatDimensions(art.widthCm, art.heightCm)}</span>
+                            </>
+                          )}
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2.5 shrink-0 text-right">
+                    <div className="flex items-center gap-3 sm:gap-4 shrink-0 text-right">
                       <div>
-                        <span className="font-mono text-xs font-semibold text-white block">
+                        <span className="font-mono text-sm sm:text-base lg:text-lg font-semibold text-white block">
                           {formatCurrency(art.price, art.currency)}
                         </span>
-                        <span className="text-[9px] text-zinc-500 uppercase font-mono">Available</span>
+                        <span className="text-[10px] text-[#d1a86e] uppercase font-mono bg-[#d1a86e]/10 px-2 py-0.5 rounded-full inline-block mt-0.5">
+                          Available
+                        </span>
                       </div>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1.5">
                         <button
                           onClick={() => setInspectArtwork(art)}
-                          className="p-1 rounded-lg bg-[#222432] hover:bg-[#2c2f42] text-zinc-300 hover:text-white transition-colors cursor-pointer"
-                          title="Inspect artwork"
+                          className="p-2 sm:p-2.5 rounded-xl bg-[#222432] hover:bg-[#2c2f42] text-zinc-300 hover:text-white transition-colors cursor-pointer shadow-sm"
+                          title="Inspect 4K Details"
+                          aria-label="Inspect artwork"
                         >
-                          <Eye className="w-3 h-3" />
+                          <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                         </button>
                         <button
                           onClick={() => removeFromCart(art.id)}
-                          className="p-1 rounded-lg bg-[#222432] hover:bg-rose-950/40 text-zinc-400 hover:text-rose-400 transition-colors cursor-pointer"
+                          className="p-2 sm:p-2.5 rounded-xl bg-[#222432] hover:bg-rose-950/50 text-zinc-400 hover:text-rose-400 transition-colors cursor-pointer shadow-sm"
                           title="Remove from dossier"
+                          aria-label="Remove from dossier"
                         >
-                          <Trash2 className="w-3 h-3" />
+                          <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                         </button>
                       </div>
                     </div>
@@ -219,85 +265,113 @@ export function OverviewTab() {
               </div>
 
               {/* Summary Bar */}
-              <div className="p-3 rounded-xl bg-[#171822] flex items-center justify-between border border-white/5">
+              <div className="p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-[#171822] border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <span className="text-[9px] uppercase font-mono text-zinc-500 block">Dossier Valuation</span>
-                  <span className="font-mono text-sm sm:text-base font-bold text-[#d1a86e]">
+                  <span className="text-[10px] uppercase font-mono text-zinc-500 tracking-wider block">
+                    Estimated Dossier Investment
+                  </span>
+                  <span className="font-mono text-base sm:text-xl lg:text-2xl font-bold text-[#d1a86e]">
                     {formatCurrency(totalDossierValuation, preferredCurrency)}
                   </span>
                 </div>
                 <Button
                   onClick={() => setIsCartOpen(true)}
-                  className="rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] font-semibold text-xs uppercase tracking-wider px-3.5 h-8 shadow-md cursor-pointer active:scale-[0.98]"
+                  className="rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] font-semibold text-xs uppercase tracking-wider px-6 h-10 shadow-md shadow-[#d1a86e]/20 cursor-pointer active:scale-[0.98]"
                 >
-                  <span>Review Dossier</span>
-                  <ArrowRight className="w-3 h-3 ml-1" />
+                  <span>Review &amp; Inquire Dossier</span>
+                  <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
                 </Button>
               </div>
             </div>
           ) : (
             /* EMPTY DOSSIER STATE WITH CURATORIAL SUGGESTIONS */
-            <div className="space-y-3">
-              <p className="text-xs text-zinc-400 leading-relaxed font-light">
-                Assemble a private dossier of Elena Vance’s original canvases to request fine-art transit, framing quotes, or private viewing reservations.
+            <div className="space-y-5">
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed font-light">
+                Assemble a private dossier of Elena Vance’s original canvases to request fine-art transit, framing quotes, or private salon viewing reservations.
               </p>
 
               {/* Curatorial Quick-Picks */}
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-[10px] uppercase font-mono tracking-wider text-zinc-500">
-                    Recommended Works:
+              <div className="space-y-3">
+                <div className="flex items-center justify-between text-xs sm:text-sm">
+                  <span className="text-[10px] sm:text-xs uppercase font-mono tracking-[0.2em] text-[#d1a86e] font-semibold">
+                    Curated Works from Current Series:
                   </span>
                   <button
                     onClick={() => setActiveTab("gallery")}
-                    className="text-[10px] text-[#d1a86e] hover:underline uppercase tracking-wider cursor-pointer"
+                    className="text-xs text-[#d1a86e] hover:underline uppercase tracking-wider cursor-pointer font-medium"
                   >
                     Full Catalogue &rarr;
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3.5 sm:gap-4">
                   {curatedSuggestions.map((art) => (
                     <div
                       key={art.id}
-                      className="p-2.5 rounded-xl bg-[#171822] hover:bg-[#1e202c] transition-colors border border-white/5 space-y-1.5 flex flex-col justify-between"
+                      className="p-3 sm:p-3.5 rounded-2xl bg-[#171822] hover:bg-[#1d1f2d] transition-all border border-white/5 space-y-3 flex flex-col justify-between group shadow-md"
                     >
-                      <div className="flex items-center gap-2">
-                        <div className="w-9 h-9 rounded-lg overflow-hidden bg-[#0d0e12] shrink-0 relative shadow-inner">
-                          <ProgressiveImage
-                            src={art.coverImageUrl}
-                            alt={art.title}
-                            fill
-                            optimizeWidth={90}
-                            className="object-cover"
-                          />
+                      <div
+                        onClick={() => setInspectArtwork(art)}
+                        className="relative aspect-[16/11] rounded-xl overflow-hidden bg-[#0d0e12] shadow-inner cursor-pointer"
+                      >
+                        <ProgressiveImage
+                          src={art.coverImageUrl}
+                          alt={art.title}
+                          fill
+                          optimizeWidth={320}
+                          className="object-cover group-hover:scale-105 transition-transform duration-700"
+                        />
+                        <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                          <div className="w-8 h-8 rounded-full bg-white text-[#0d0e12] flex items-center justify-center shadow-lg">
+                            <Eye className="w-3.5 h-3.5" />
+                          </div>
+                          <Link
+                            href={`/ar/${art.slug}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="w-8 h-8 rounded-full bg-[#d1a86e] text-[#0d0e12] flex items-center justify-center shadow-lg"
+                            title="View in AR"
+                          >
+                            <Sparkles className="w-3.5 h-3.5" />
+                          </Link>
                         </div>
-                        <div className="min-w-0">
-                          <h4 className="font-serif text-xs text-white truncate font-medium">{art.title}</h4>
-                          <span className="text-[10px] font-mono text-[#d1a86e] font-semibold block">
+                      </div>
+
+                      <div className="space-y-1">
+                        <div className="flex items-baseline justify-between gap-1.5">
+                          <h4
+                            onClick={() => setInspectArtwork(art)}
+                            className="font-serif text-sm sm:text-base text-white group-hover:text-[#d1a86e] transition-colors truncate font-medium cursor-pointer"
+                          >
+                            {art.title}
+                          </h4>
+                          <span className="text-xs sm:text-sm font-mono text-[#d1a86e] font-semibold shrink-0">
                             {formatCurrency(art.price, art.currency)}
                           </span>
                         </div>
+                        <p className="text-[11px] text-zinc-400 font-light truncate">
+                          {art.medium} &bull; {art.year}
+                        </p>
                       </div>
-                      <div className="flex items-center gap-1 pt-1 border-t border-white/5">
+
+                      <div className="pt-2 border-t border-white/5 flex items-center gap-2">
                         <Button
                           onClick={() => toggleCartArtwork(art.id)}
                           className={cn(
-                            "w-full h-6 rounded-lg text-[9px] uppercase tracking-wider font-semibold cursor-pointer transition-all",
+                            "flex-1 h-8 sm:h-8.5 rounded-xl text-xs uppercase tracking-wider font-semibold cursor-pointer transition-all shadow-sm",
                             cartArtworkIds.includes(art.id)
-                              ? "bg-[#252838] text-[#d1a86e]"
+                              ? "bg-[#252838] text-[#d1a86e] border border-[#d1a86e]/30"
                               : "bg-[#222432] hover:bg-[#2c2f42] text-zinc-200 hover:text-white"
                           )}
                         >
-                          <Plus className="w-2.5 h-2.5 mr-1" />
+                          <Plus className="w-3 h-3 mr-1" />
                           <span>{cartArtworkIds.includes(art.id) ? "In Dossier" : "+ Dossier"}</span>
                         </Button>
                         <button
                           onClick={() => setInspectArtwork(art)}
-                          className="p-1 rounded-lg bg-[#222432] hover:bg-[#2c2f42] text-zinc-300 hover:text-white shrink-0 cursor-pointer"
+                          className="p-2 rounded-xl bg-[#222432] hover:bg-[#2c2f42] text-zinc-300 hover:text-white shrink-0 cursor-pointer shadow-sm"
                           title="Inspect details"
                         >
-                          <Eye className="w-3 h-3" />
+                          <Eye className="w-3.5 h-3.5" />
                         </button>
                       </div>
                     </div>
@@ -306,14 +380,23 @@ export function OverviewTab() {
               </div>
 
               {savedArtworkIds.length > 0 && (
-                <div className="p-2.5 rounded-xl bg-[#1c1b26] border border-[#2e2630] flex items-center justify-between gap-2.5">
-                  <div className="flex items-center gap-2 text-xs text-rose-300">
-                    <Heart className="w-3.5 h-3.5 fill-rose-400 text-rose-400 shrink-0" />
-                    <span>{savedArtworkIds.length} shortlisted works</span>
+                <div className="p-4 sm:p-5 rounded-2xl bg-[#1c1b26] border border-[#2e2630] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md">
+                  <div className="flex items-center gap-3 text-xs sm:text-sm text-rose-300">
+                    <div className="w-8 h-8 rounded-xl bg-rose-950/60 flex items-center justify-center shrink-0">
+                      <Heart className="w-4 h-4 fill-rose-400 text-rose-400" />
+                    </div>
+                    <div>
+                      <span className="font-serif text-white font-medium block">
+                        {savedArtworkIds.length} Shortlisted Original Canvases
+                      </span>
+                      <span className="text-zinc-400 text-xs font-light">
+                        Transfer directly into your Acquisition Dossier to request private viewing or transit.
+                      </span>
+                    </div>
                   </div>
                   <Button
                     onClick={addAllLikedToCart}
-                    className="h-6 px-2.5 rounded-lg bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] font-semibold text-[9px] uppercase tracking-wider cursor-pointer shadow-sm shrink-0"
+                    className="h-8.5 sm:h-9 px-4 sm:px-5 rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] font-semibold text-xs uppercase tracking-wider cursor-pointer shadow-sm shrink-0 active:scale-[0.98]"
                   >
                     Add All to Dossier
                   </Button>
@@ -323,78 +406,80 @@ export function OverviewTab() {
           )}
         </div>
 
-        {/* Right: Studio Concierge & Dispatches (5 cols) */}
-        <div className="lg:col-span-5 space-y-3.5">
-          <div className="bg-[#121319] rounded-xl sm:rounded-2xl p-3.5 sm:p-5 space-y-3.5 shadow-md border border-white/5">
-            <div className="flex items-center justify-between border-b border-white/5 pb-2.5">
+        {/* Right: Studio Concierge & Dispatches (5 cols lg, 4 cols xl) */}
+        <div className="lg:col-span-5 xl:col-span-4 space-y-5 sm:space-y-6">
+          <div className="bg-[#121319] rounded-2xl sm:rounded-3xl p-5 sm:p-7 space-y-5 shadow-xl border border-white/8">
+            <div className="flex items-center justify-between border-b border-white/8 pb-4">
               <div>
-                <span className="text-[9px] sm:text-[10px] uppercase font-mono tracking-wider text-zinc-500 block">
+                <span className="text-[10px] sm:text-xs uppercase font-mono tracking-[0.22em] text-[#d1a86e] block font-semibold">
                   Curatorial Liaison
                 </span>
-                <h3 className="font-serif text-sm sm:text-base text-white font-medium">
+                <h3 className="font-serif text-lg sm:text-xl lg:text-2xl text-white font-medium mt-0.5">
                   Studio Concierge
                 </h3>
               </div>
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#1b2b22] text-[9px] font-mono text-emerald-400 font-semibold uppercase">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1b2b22] text-[10px] font-mono text-emerald-400 font-semibold uppercase border border-emerald-900/40">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 Active Desk
               </span>
             </div>
 
-            <p className="text-xs text-zinc-400 leading-relaxed font-light">
-              Direct priority correspondence for private Paris viewing appointments, bespoke float framing, and insured courier delivery.
+            <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed font-light">
+              Direct priority correspondence for private Paris viewing appointments, bespoke float framing, and insured international courier delivery.
             </p>
 
-            <div className="p-2.5 sm:p-3 rounded-xl bg-[#171822] space-y-1.5 border border-white/5 text-xs">
+            <div className="p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-[#171822] space-y-3 border border-white/5 text-xs sm:text-sm">
               <div className="flex items-center justify-between">
-                <span className="text-zinc-500 text-[11px]">Hours:</span>
-                <span className="font-mono text-zinc-200 text-[11px]">Mon–Sat 10:00–19:00 CET</span>
+                <span className="text-zinc-500">Concierge Hours:</span>
+                <span className="font-mono text-zinc-200">Mon–Sat 10:00–19:00 CET</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-zinc-500 text-[11px]">Location:</span>
-                <span className="text-zinc-200 text-[11px]">1st Arr., Paris, France</span>
+                <span className="text-zinc-500">Atelier Location:</span>
+                <span className="text-zinc-200">1st Arr., Paris, France</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-zinc-500 text-[11px]">Response:</span>
-                <span className="text-emerald-400 font-mono text-[11px]">Under 2 Hours</span>
+                <span className="text-zinc-500">Response Speed:</span>
+                <span className="text-emerald-400 font-mono font-medium">Under 2 Hours</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-zinc-500">Transit Protocol:</span>
+                <span className="text-zinc-200">Insured Fine-Art Courier</span>
               </div>
             </div>
 
-            <div className="flex justify-center sm:block">
-              <Button
-                type="button"
-                onClick={() => triggerContact()}
-                className="w-auto sm:w-full h-7 sm:h-7.5 px-3.5 sm:px-4 rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold shadow-sm cursor-pointer transition-all active:scale-[0.98] mx-auto sm:mx-0"
-              >
-                <span className="flex items-center justify-center gap-1.5">
-                  <Mail className="w-3 h-3" />
-                  <span>Contact Curatorial Team</span>
-                </span>
-              </Button>
-            </div>
+            <Button
+              type="button"
+              onClick={() => triggerContact()}
+              className="w-full h-10 sm:h-11 rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-xs uppercase tracking-[0.16em] font-semibold shadow-md shadow-[#d1a86e]/20 cursor-pointer transition-all active:scale-[0.98]"
+            >
+              <span className="flex items-center justify-center gap-2">
+                <Mail className="w-4 h-4" />
+                <span>Contact Curatorial Team</span>
+              </span>
+            </Button>
           </div>
 
           {/* Studio Dispatches & Preferences Block */}
           {user ? (
             <MarketingPreferenceToggle initialSubscribed={marketingSubscribed} />
           ) : (
-            <div className="p-3.5 sm:p-5 bg-[#121319] rounded-xl sm:rounded-2xl space-y-3 shadow-md border border-white/5">
-              <div className="space-y-1">
-                <h4 className="font-serif text-xs sm:text-sm text-white font-medium">VIP Studio Dispatches</h4>
-                <p className="text-xs text-zinc-400 leading-relaxed font-light">
-                  Sign in to receive private VIP invitations to solo retrospectives and vernissage releases.
+            <div className="p-5 sm:p-7 bg-[#121319] rounded-2xl sm:rounded-3xl space-y-4 shadow-xl border border-white/8">
+              <div className="space-y-1.5">
+                <h4 className="font-serif text-base sm:text-lg text-white font-medium">
+                  VIP Studio Dispatches
+                </h4>
+                <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed font-light">
+                  Sign in to receive private invitations to solo retrospectives, vernissage releases, and private acquisition previews.
                 </p>
               </div>
-              <div className="flex justify-center sm:block">
-                <Button
-                  asChild
-                  className="w-auto sm:w-full h-7 sm:h-7.5 px-3.5 sm:px-4 rounded-full bg-[#1c1d28] hover:bg-[#252736] text-zinc-200 hover:text-white text-[10px] sm:text-[11px] uppercase tracking-wider font-semibold shadow-sm transition-all active:scale-[0.98] mx-auto sm:mx-0"
-                >
-                  <Link href="/login?redirect=/account">
-                    <span>Sign In for VIP Dispatches</span>
-                  </Link>
-                </Button>
-              </div>
+              <Button
+                asChild
+                className="w-full h-10 rounded-full bg-[#1c1d28] hover:bg-[#252736] text-zinc-200 hover:text-white text-xs uppercase tracking-wider font-semibold shadow-sm transition-all active:scale-[0.98]"
+              >
+                <Link href="/login?redirect=/account">
+                  <span>Sign In for VIP Dispatches</span>
+                </Link>
+              </Button>
             </div>
           )}
         </div>
@@ -402,55 +487,56 @@ export function OverviewTab() {
 
       {/* 3. RECENT CORRESPONDENCE PREVIEW IF ANY */}
       {userInquiries.length > 0 && (
-        <div className="p-3.5 sm:p-5 rounded-xl sm:rounded-2xl bg-[#121319] border border-white/5 space-y-3 shadow-md">
-          <div className="flex items-center justify-between border-b border-white/5 pb-2">
+        <div className="p-5 sm:p-7 lg:p-8 rounded-2xl sm:rounded-3xl bg-[#121319] border border-white/8 space-y-4 sm:space-y-5 shadow-xl">
+          <div className="flex items-center justify-between border-b border-white/8 pb-3 sm:pb-4">
             <div>
-              <span className="text-[9px] sm:text-[10px] uppercase font-mono tracking-wider text-zinc-500 block">
+              <span className="text-[10px] sm:text-xs uppercase font-mono tracking-[0.22em] text-zinc-500 block font-semibold">
                 Direct Ledger
               </span>
-              <h3 className="font-serif text-xs sm:text-sm text-white font-medium">
+              <h3 className="font-serif text-lg sm:text-xl lg:text-2xl text-white font-medium mt-0.5">
                 Recent Correspondence
               </h3>
             </div>
             <button
               onClick={() => setActiveTab("inquiries")}
-              className="text-[11px] text-[#d1a86e] hover:underline uppercase tracking-wider flex items-center gap-1 cursor-pointer font-medium"
+              className="text-xs sm:text-sm text-[#d1a86e] hover:underline uppercase tracking-wider flex items-center gap-1.5 cursor-pointer font-medium"
             >
-              <span>View All ({userInquiries.length})</span>
-              <ArrowRight className="w-3 h-3" />
+              <span>View Full Ledger ({userInquiries.length})</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-            {userInquiries.slice(0, 2).map((inq) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
+            {userInquiries.slice(0, 3).map((inq) => (
               <div
                 key={inq.id}
                 onClick={() => setActiveTab("inquiries")}
-                className="p-3 rounded-xl bg-[#171822] hover:bg-[#1a1c28] transition-colors space-y-2 border border-white/5 cursor-pointer group"
+                className="p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-[#171822] hover:bg-[#1a1c28] transition-all duration-200 space-y-2.5 border border-white/5 cursor-pointer group"
               >
-                <div className="flex items-center justify-between gap-1.5">
+                <div className="flex items-center justify-between gap-2">
                   <span
-                    className={`px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wider font-mono ${
+                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider font-mono ${
                       inq.status === "replied"
-                        ? "bg-emerald-950/80 text-emerald-300"
+                        ? "bg-emerald-950/80 text-emerald-300 border border-emerald-800/40"
                         : inq.status === "read"
-                        ? "bg-blue-950/80 text-blue-300"
-                        : "bg-amber-950/80 text-amber-300"
+                        ? "bg-blue-950/80 text-blue-300 border border-blue-800/40"
+                        : "bg-amber-950/80 text-amber-300 border border-amber-800/40"
                     }`}
                   >
                     {inq.status}
                   </span>
-                  <span className="text-[10px] text-zinc-500 font-mono">
+                  <span className="text-[10px] sm:text-xs text-zinc-500 font-mono">
                     {new Date(inq.createdAt).toLocaleDateString(undefined, {
                       month: "short",
                       day: "numeric",
+                      year: "numeric",
                     })}
                   </span>
                 </div>
-                <h4 className="font-serif text-xs text-white group-hover:text-[#d1a86e] transition-colors truncate font-medium">
+                <h4 className="font-serif text-sm sm:text-base text-white group-hover:text-[#d1a86e] transition-colors truncate font-medium">
                   {inq.subject || "Artwork Inquiry"}
                 </h4>
-                <p className="text-xs text-zinc-400 line-clamp-1 font-light">
+                <p className="text-xs text-zinc-400 line-clamp-2 font-light leading-relaxed">
                   {inq.message}
                 </p>
               </div>

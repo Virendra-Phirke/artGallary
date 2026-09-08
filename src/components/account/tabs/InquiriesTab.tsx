@@ -28,7 +28,7 @@ export function InquiriesTab() {
   const endItem = Math.min(currentPage * pageSize, userInquiries.length);
 
   return (
-    <div className="max-w-5xl xl:max-w-6xl mx-auto w-full space-y-3 sm:space-y-4 animate-in fade-in duration-200">
+    <div className="w-full max-w-[1720px] mx-auto space-y-4 sm:space-y-6 animate-in fade-in duration-200">
       {!user ? (
         <div className="p-5 sm:p-7 text-center bg-[#121319] rounded-2xl sm:rounded-3xl space-y-3 max-w-md mx-auto my-3 shadow-xl border border-white/5">
           <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-[#1c1e2b] flex items-center justify-center text-[#d1a86e] mx-auto shadow-inner">

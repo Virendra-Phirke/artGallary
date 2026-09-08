@@ -36,7 +36,7 @@ export function ProfileTab() {
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 max-w-4xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-7 max-w-5xl">
           <div className="bg-[#121319] rounded-2xl sm:rounded-3xl p-4 sm:p-7 space-y-4 sm:space-y-6 shadow-xl shadow-black/40">
             <h3 className="font-serif text-lg sm:text-xl text-white">Personal Information</h3>
 

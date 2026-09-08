@@ -49,8 +49,8 @@ export function MarketingPreferenceToggle({ initialSubscribed }: MarketingPrefer
   };
 
   return (
-    <div className="p-6 sm:p-7 bg-[#121319] rounded-3xl space-y-4 shadow-xl shadow-black/40">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="p-5 sm:p-7 bg-[#121319] rounded-2xl sm:rounded-3xl space-y-4 shadow-xl border border-white/8">
+      <div className="flex flex-col sm:flex-row lg:flex-col min-[1380px]:flex-row lg:items-start min-[1380px]:items-center justify-between gap-4">
         <div className="flex items-start gap-3.5">
           <div className="w-10 h-10 rounded-2xl bg-[#1c1e2b] flex items-center justify-center text-[#d1a86e] shrink-0 shadow-inner">
             <Mail className="w-5 h-5" />
