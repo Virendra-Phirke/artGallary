@@ -18,6 +18,8 @@ import {
   AlertCircle,
   MoreVertical,
   Search,
+  Filter,
+  ChevronDown,
 } from "lucide-react";
 import { MockCollection, MockArtwork } from "@/db/mockData";
 import { slugify } from "@/lib/utils";
@@ -251,38 +253,61 @@ export function CollectionsManagerClient({
         </div>
       </div>
 
-      {/* Search & Filter Bar - Solid Tier 2 Block */}
-      <div className="bg-[#121319] rounded-2xl p-4 sm:p-5 shadow-xl shadow-black/40 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+      {/* Search & Filter Bar - Compact Dropdown Bar */}
+      <div className="bg-[#121319] rounded-2xl p-2.5 sm:p-3 shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500" />
           <Input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search series by title, slug, or theme..."
-            className="pl-10 bg-[#1a1b26] text-xs text-white placeholder:text-zinc-500 rounded-xl border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
+            className="pl-9 h-8 sm:h-9 bg-[#1a1b26] text-xs text-white placeholder:text-zinc-500 rounded-xl border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
           />
         </div>
 
-        <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
-          {(
-            [
-              { id: "all", label: "All Series" },
-              { id: "published", label: "Published" },
-              { id: "draft", label: "Drafts" },
-            ] as const
-          ).map((filter) => (
-            <button
-              key={filter.id}
-              onClick={() => setStatusFilter(filter.id)}
-              className={`text-xs h-8 px-3.5 rounded-xl transition-colors cursor-pointer ${
-                statusFilter === filter.id
-                  ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-sm"
-                  : "bg-[#1a1b26] text-zinc-400 hover:text-white"
-              }`}
+        <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="inline-flex items-center gap-2 h-8 sm:h-9 px-3 rounded-xl bg-[#1a1b26] hover:bg-[#222432] text-xs font-medium text-zinc-200 border border-white/5 transition-colors cursor-pointer"
+              >
+                <Filter className="w-3.5 h-3.5 text-[#d1a86e]" />
+                <span>
+                  Status:{" "}
+                  <strong className="font-semibold text-white capitalize">
+                    {statusFilter === "all" ? "All Series" : statusFilter}
+                  </strong>
+                </span>
+                <ChevronDown className="w-3 h-3 text-zinc-400 ml-0.5" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              className="w-44 p-1.5 bg-[#121319] border border-[#262833] rounded-xl shadow-2xl text-xs text-white z-[110]"
             >
-              {filter.label}
-            </button>
-          ))}
+              {[
+                { id: "all", label: "All Series" },
+                { id: "published", label: "Published" },
+                { id: "draft", label: "Drafts" },
+              ].map((filter) => (
+                <DropdownMenuItem
+                  key={filter.id}
+                  onClick={() => setStatusFilter(filter.id as any)}
+                  className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs cursor-pointer transition-colors ${
+                    statusFilter === filter.id
+                      ? "bg-[#251e16] text-[#d1a86e] font-semibold"
+                      : "text-zinc-300 hover:bg-white/5 hover:text-white"
+                  }`}
+                >
+                  <span>{filter.label}</span>
+                  {statusFilter === filter.id && (
+                    <Check className="w-3.5 h-3.5 text-[#d1a86e]" />
+                  )}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
@@ -462,16 +487,16 @@ export function CollectionsManagerClient({
 
           <div className="flex items-center gap-2">
             <span className="text-zinc-500 font-mono text-[11px] uppercase tracking-wider">Per Page:</span>
-            <div className="flex items-center rounded-xl bg-[#1a1b26] p-1">
+            <div className="flex items-center rounded-xl bg-transparent border border-white/10 p-0.5">
               {PAGE_SIZE_OPTIONS.map((size) => (
                 <button
                   key={size}
                   type="button"
                   onClick={() => setPageSize(size)}
-                  className={`px-3 py-1 text-xs font-mono rounded-lg transition-colors cursor-pointer ${
+                  className={`px-2.5 py-1 text-xs font-mono rounded-lg transition-colors cursor-pointer ${
                     pageSize === size
                       ? "bg-[#d1a86e] text-black font-semibold shadow-sm"
-                      : "text-zinc-400 hover:text-white"
+                      : "text-zinc-400 hover:text-white hover:bg-white/5"
                   }`}
                 >
                   {size}

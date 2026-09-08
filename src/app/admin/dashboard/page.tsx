@@ -57,38 +57,38 @@ export default async function AdminDashboardPage() {
     newInquiries;
 
   return (
-    <div className="space-y-4 sm:space-y-6 lg:space-y-8 w-full max-w-full">
-      {/* Page Title & Quick Actions - Solid Master Block */}
-      <div className="bg-[#121319] p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+    <div className="space-y-4 sm:space-y-5 w-full max-w-full">
+      {/* Page Title & Quick Actions - Compact Solid Master Block */}
+      <div className="bg-[#121319] p-3.5 sm:p-5 rounded-2xl shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <span className="text-[9px] sm:text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
             Studio Command Center
           </span>
-          <h1 className="font-serif text-2xl sm:text-3xl text-white mt-0.5 sm:mt-1">Curator Dashboard</h1>
-          <p className="text-[11px] sm:text-xs text-zinc-400 mt-0.5 sm:mt-1">
+          <h1 className="font-serif text-xl sm:text-2xl text-white mt-0.5">Curator Dashboard</h1>
+          <p className="text-[11px] sm:text-xs text-zinc-400 mt-0.5 line-clamp-1 sm:line-clamp-none">
             Real-time catalog readiness, collector inquiries ledger, and studio operational telemetry.
           </p>
         </div>
 
-        <div className="grid grid-cols-3 sm:flex items-center gap-1.5 sm:gap-3">
+        <div className="grid grid-cols-3 sm:flex items-center gap-1.5 sm:gap-2">
           <Link
             href="/gallery"
             target="_blank"
-            className="flex items-center justify-center gap-1.5 bg-[#1a1b26] hover:bg-[#222432] text-[11px] sm:text-xs text-zinc-300 hover:text-white px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl shadow-sm transition-colors text-center"
+            className="flex items-center justify-center gap-1.5 bg-[#1a1b26] hover:bg-[#222432] text-xs text-zinc-300 hover:text-white px-2.5 sm:px-3 py-1.5 rounded-xl shadow-sm transition-colors text-center"
           >
             <ExternalLink className="w-3.5 h-3.5 text-[#d1a86e]" />
             <span className="truncate">Live Store</span>
           </Link>
           <Link
             href="/admin/artworks/new"
-            className="flex items-center justify-center gap-1.5 bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-[11px] sm:text-xs px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl shadow-md shadow-[#d1a86e]/20 transition-colors text-center"
+            className="flex items-center justify-center gap-1.5 bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-xs px-2.5 sm:px-3.5 py-1.5 rounded-xl shadow-md shadow-[#d1a86e]/20 transition-colors text-center"
           >
             <Palette className="w-3.5 h-3.5" />
             <span className="truncate">New Art</span>
           </Link>
           <Link
             href="/admin/ar-studio"
-            className="flex items-center justify-center gap-1.5 bg-[#1a1b26] hover:bg-[#222432] text-[11px] sm:text-xs text-zinc-300 hover:text-white px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl shadow-sm transition-colors text-center"
+            className="flex items-center justify-center gap-1.5 bg-[#1a1b26] hover:bg-[#222432] text-xs text-zinc-300 hover:text-white px-2.5 sm:px-3 py-1.5 rounded-xl shadow-sm transition-colors text-center"
           >
             <Sparkles className="w-3.5 h-3.5 text-[#d1a86e]" />
             <span className="truncate">AR Studio</span>
@@ -97,61 +97,61 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Metrics Row: 2 Columns on Mobile, 4 Columns on Desktop */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 lg:gap-5 w-full">
-        <div className="p-3.5 sm:p-5 lg:p-6 rounded-2xl sm:rounded-3xl bg-[#121319] shadow-xl shadow-black/40 space-y-1 sm:space-y-2 hover:bg-[#161722] transition-colors">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3.5 w-full">
+        <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-[#121319] shadow-xl shadow-black/40 space-y-1 hover:bg-[#161722] transition-colors">
           <div className="flex items-center justify-between">
             <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-zinc-500 font-medium truncate">
               Total Artworks
             </span>
-            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-[#1a1b26] flex items-center justify-center shrink-0">
-              <Palette className="w-3 h-3 sm:w-4 sm:h-4 text-zinc-400" />
+            <div className="w-6 h-6 rounded-full bg-[#1a1b26] flex items-center justify-center shrink-0">
+              <Palette className="w-3 h-3 text-zinc-400" />
             </div>
           </div>
-          <div className="font-serif text-2xl sm:text-3xl text-white font-medium">{totalArtworks}</div>
-          <span className="text-[10px] sm:text-xs text-zinc-400 block pt-0.5 truncate">
+          <div className="font-serif text-xl sm:text-2xl text-white font-medium">{totalArtworks}</div>
+          <span className="text-[10px] sm:text-[11px] text-zinc-400 block truncate">
             {publishedArtworks} pub • {draftArtworks} drafts
           </span>
         </div>
 
-        <div className="p-3.5 sm:p-5 lg:p-6 rounded-2xl sm:rounded-3xl bg-[#121319] shadow-xl shadow-black/40 space-y-1 sm:space-y-2 hover:bg-[#161722] transition-colors">
+        <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-[#121319] shadow-xl shadow-black/40 space-y-1 hover:bg-[#161722] transition-colors">
           <div className="flex items-center justify-between">
             <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-zinc-500 font-medium truncate">
               Collector Inquiries
             </span>
-            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-[#251e16] flex items-center justify-center shrink-0">
-              <Mail className="w-3 h-3 sm:w-4 sm:h-4 text-[#d1a86e]" />
+            <div className="w-6 h-6 rounded-full bg-[#251e16] flex items-center justify-center shrink-0">
+              <Mail className="w-3 h-3 text-[#d1a86e]" />
             </div>
           </div>
-          <div className="font-serif text-2xl sm:text-3xl text-[#d1a86e] font-medium">{inquiries.length}</div>
-          <span className="text-[10px] sm:text-xs text-emerald-400 font-medium block pt-0.5 truncate">
+          <div className="font-serif text-xl sm:text-2xl text-[#d1a86e] font-medium">{inquiries.length}</div>
+          <span className="text-[10px] sm:text-[11px] text-emerald-400 font-medium block truncate">
             {newInquiries} pending replies
           </span>
         </div>
 
-        <div className="p-3.5 sm:p-5 lg:p-6 rounded-2xl sm:rounded-3xl bg-[#121319] shadow-xl shadow-black/40 space-y-1 sm:space-y-2 hover:bg-[#161722] transition-colors">
+        <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-[#121319] shadow-xl shadow-black/40 space-y-1 hover:bg-[#161722] transition-colors">
           <div className="flex items-center justify-between">
             <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-zinc-500 font-medium truncate">
               Spatial AR
             </span>
-            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-[#16252b] flex items-center justify-center shrink-0">
-              <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-cyan-400" />
+            <div className="w-6 h-6 rounded-full bg-[#16252b] flex items-center justify-center shrink-0">
+              <Sparkles className="w-3 h-3 text-cyan-400" />
             </div>
           </div>
-          <div className="font-serif text-2xl sm:text-3xl text-white font-medium">1:1 Scale</div>
-          <span className="text-[10px] sm:text-xs text-zinc-400 block pt-0.5 truncate">WebXR & Three.js</span>
+          <div className="font-serif text-xl sm:text-2xl text-white font-medium">1:1 Scale</div>
+          <span className="text-[10px] sm:text-[11px] text-zinc-400 block truncate">WebXR & Three.js</span>
         </div>
 
-        <div className="p-3.5 sm:p-5 lg:p-6 rounded-2xl sm:rounded-3xl bg-[#121319] shadow-xl shadow-black/40 space-y-1 sm:space-y-2 hover:bg-[#161722] transition-colors">
+        <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-[#121319] shadow-xl shadow-black/40 space-y-1 hover:bg-[#161722] transition-colors">
           <div className="flex items-center justify-between">
             <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-zinc-500 font-medium truncate">
               Acquisitions
             </span>
-            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-[#262016] flex items-center justify-center shrink-0">
-              <ShieldCheck className="w-3 h-3 sm:w-4 sm:h-4 text-amber-500" />
+            <div className="w-6 h-6 rounded-full bg-[#262016] flex items-center justify-center shrink-0">
+              <ShieldCheck className="w-3 h-3 text-amber-500" />
             </div>
           </div>
-          <div className="font-serif text-2xl sm:text-3xl text-white font-medium">{soldArtworks}</div>
-          <span className="text-[10px] sm:text-xs text-zinc-400 block pt-0.5 truncate">Private collections</span>
+          <div className="font-serif text-xl sm:text-2xl text-white font-medium">{soldArtworks}</div>
+          <span className="text-[10px] sm:text-[11px] text-zinc-400 block truncate">Canvases acquired</span>
         </div>
       </div>
 

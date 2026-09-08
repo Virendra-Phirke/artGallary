@@ -32,11 +32,22 @@ import {
   Layers,
   Globe,
   Radio,
+  Filter,
+  ChevronDown,
+  Palette,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+} from "@/components/ui/dropdown-menu";
 import {
   Pagination,
   PaginationContent,
@@ -433,78 +444,113 @@ export function InquiriesManagerClient({
       {/* TAB 1: INQUIRIES LEDGER                                              */}
       {/* ==================================================================== */}
       {activeTab === "inquiries" && (
-        <div className="space-y-4 sm:space-y-6">
-          {/* Telemetry Row - 2 Columns on Mobile, 4 Columns on Desktop */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 w-full">
-            <Card className="p-3.5 sm:p-5 lg:p-6 bg-[#121319] rounded-2xl sm:rounded-3xl shadow-xl shadow-black/40 space-y-0.5 sm:space-y-1 border-none">
+        <div className="space-y-4">
+          {/* Telemetry Row - Compact 2 Columns on Mobile, 4 Columns on Desktop */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3.5 w-full">
+            <Card className="p-3 sm:p-4 bg-[#121319] rounded-xl sm:rounded-2xl shadow-xl shadow-black/40 space-y-0.5 border-none">
               <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-zinc-500 font-medium truncate block">Total</span>
-              <div className="font-serif text-xl sm:text-2xl text-white">{inquiries.length}</div>
+              <div className="font-serif text-lg sm:text-xl text-white">{inquiries.length}</div>
               <span className="text-[10px] sm:text-[11px] text-zinc-400 truncate block">All correspondence</span>
             </Card>
-            <Card className="p-3.5 sm:p-5 lg:p-6 bg-[#121319] rounded-2xl sm:rounded-3xl shadow-xl shadow-black/40 space-y-0.5 sm:space-y-1 border-none">
+            <Card className="p-3 sm:p-4 bg-[#121319] rounded-xl sm:rounded-2xl shadow-xl shadow-black/40 space-y-0.5 border-none">
               <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-zinc-500 font-medium truncate block">New</span>
-              <div className="font-serif text-xl sm:text-2xl text-amber-400">{countNew}</div>
+              <div className="font-serif text-lg sm:text-xl text-amber-400">{countNew}</div>
               <span className="text-[10px] sm:text-[11px] text-amber-400/80 font-medium truncate block">Action required</span>
             </Card>
-            <Card className="p-3.5 sm:p-5 lg:p-6 bg-[#121319] rounded-2xl sm:rounded-3xl shadow-xl shadow-black/40 space-y-0.5 sm:space-y-1 border-none">
+            <Card className="p-3 sm:p-4 bg-[#121319] rounded-xl sm:rounded-2xl shadow-xl shadow-black/40 space-y-0.5 border-none">
               <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-zinc-500 font-medium truncate block">In Review</span>
-              <div className="font-serif text-xl sm:text-2xl text-blue-400">{countRead}</div>
+              <div className="font-serif text-lg sm:text-xl text-blue-400">{countRead}</div>
               <span className="text-[10px] sm:text-[11px] text-zinc-400 truncate block">Dossier inspected</span>
             </Card>
-            <Card className="p-3.5 sm:p-5 lg:p-6 bg-[#121319] rounded-2xl sm:rounded-3xl shadow-xl shadow-black/40 space-y-0.5 sm:space-y-1 border-none">
+            <Card className="p-3 sm:p-4 bg-[#121319] rounded-xl sm:rounded-2xl shadow-xl shadow-black/40 space-y-0.5 border-none">
               <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-zinc-500 font-medium truncate block">Processed</span>
-              <div className="font-serif text-xl sm:text-2xl text-emerald-400">{countReplied + countClosed}</div>
+              <div className="font-serif text-lg sm:text-xl text-emerald-400">{countReplied + countClosed}</div>
               <span className="text-[10px] sm:text-[11px] text-emerald-400/80 font-medium truncate block">Acquisitions closed</span>
             </Card>
           </div>
 
-          {/* Search & Filter Bar */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+          {/* Search & Compact Filter Bar */}
+          <div className="p-2 sm:p-2.5 bg-[#121319] rounded-2xl shadow-md flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500" />
               <Input
                 value={inquirySearchQuery}
                 onChange={(e) => setInquirySearchQuery(e.target.value)}
-                placeholder="Search inquiries by collector, email, canvas, message..."
-                className="pl-10 bg-[#121319] text-xs text-white placeholder:text-zinc-500 rounded-2xl border-none shadow-md focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
+                placeholder="Search collector inquiries by name, email, canvas..."
+                className="pl-9 h-8 sm:h-9 bg-[#1a1b26] text-xs text-white placeholder:text-zinc-500 rounded-xl border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
               />
             </div>
 
-            <div className="p-1.5 bg-[#121319] rounded-2xl shadow-md flex items-center gap-1.5 overflow-x-auto scrollbar-none">
-              {["all", "new", "read", "replied", "closed"].map((st) => (
+            {/* Dropdown Filter for Inquiries */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
                 <button
-                  key={st}
-                  onClick={() => setSelectedStatus(st)}
-                  className={`text-[11px] uppercase tracking-wider h-8 px-3.5 rounded-xl transition-colors cursor-pointer border-none ${
-                    selectedStatus === st
-                      ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-sm"
-                      : "text-zinc-400 hover:text-white hover:bg-[#1a1b26]"
-                  }`}
+                  type="button"
+                  className="inline-flex items-center gap-2 h-8 sm:h-9 px-3 rounded-xl bg-[#1a1b26] hover:bg-[#222432] text-xs font-medium text-zinc-200 border border-white/5 transition-colors cursor-pointer self-start sm:self-auto shrink-0"
                 >
-                  {st}
+                  <Filter className="w-3.5 h-3.5 text-[#d1a86e]" />
+                  <span>
+                    Status:{" "}
+                    <strong className="font-semibold text-white capitalize">
+                      {selectedStatus === "all" ? "All" : selectedStatus}
+                    </strong>
+                  </span>
+                  <ChevronDown className="w-3 h-3 text-zinc-400 ml-0.5" />
                 </button>
-              ))}
-            </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className="w-48 p-1.5 bg-[#121319] border border-[#262833] rounded-xl shadow-2xl text-xs text-white z-[110]"
+              >
+                <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-zinc-500 px-2 py-1">
+                  Filter by Status
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-white/10 my-1" />
+                {[
+                  { id: "all", label: "All Inquiries" },
+                  { id: "new", label: "New (Action Required)" },
+                  { id: "read", label: "In Review" },
+                  { id: "replied", label: "Replied" },
+                  { id: "closed", label: "Closed / Archived" },
+                ].map((item) => (
+                  <DropdownMenuItem
+                    key={item.id}
+                    onClick={() => setSelectedStatus(item.id)}
+                    className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs cursor-pointer transition-colors ${
+                      selectedStatus === item.id
+                        ? "bg-[#251e16] text-[#d1a86e] font-semibold"
+                        : "text-zinc-300 hover:bg-white/5 hover:text-white"
+                    }`}
+                  >
+                    <span>{item.label}</span>
+                    {selectedStatus === item.id && (
+                      <Check className="w-3.5 h-3.5 text-[#d1a86e]" />
+                    )}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
-          {/* Inquiries Cards */}
-          <div className="space-y-4">
+          {/* Inquiries Cards - 2 Column Layout with Compact Mobile Blocks */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-3.5">
             {filteredInquiries.length === 0 ? (
-              <div className="p-12 text-center bg-[#121319] rounded-3xl text-xs text-zinc-500 shadow-md">
+              <div className="col-span-full p-8 text-center bg-[#121319] rounded-2xl text-xs text-zinc-500 border border-white/5">
                 No inquiries matching criteria.
               </div>
             ) : (
               paginatedInquiries.map((inq) => (
                 <Card
                   key={inq.id}
-                  className="p-6 bg-[#1a1b26] rounded-3xl space-y-4 shadow-xl shadow-black/30 border-none"
+                  className="p-3.5 sm:p-4 bg-[#14151e] rounded-xl sm:rounded-2xl border border-[#222432] hover:border-[#d1a86e]/30 transition-all flex flex-col justify-between gap-2.5 shadow-lg shadow-black/20"
                 >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
+                  <div className="space-y-2">
+                    {/* Status Select Badge + Date */}
+                    <div className="flex items-center justify-between gap-2">
                       <select
                         value={inq.status}
                         onChange={(e) => handleStatusChange(inq.id, e.target.value)}
-                        className={`text-[10px] uppercase tracking-widest px-3 py-1.5 rounded-xl font-bold cursor-pointer border-none focus:outline-none focus:ring-1 focus:ring-[#d1a86e] ${
+                        className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-lg font-semibold cursor-pointer border-none focus:outline-none focus:ring-1 focus:ring-[#d1a86e] ${
                           inq.status === "new"
                             ? "bg-amber-950/80 text-amber-300"
                             : inq.status === "read"
@@ -520,46 +566,69 @@ export function InquiriesManagerClient({
                         <option value="closed">Closed</option>
                       </select>
 
-                      <h3 className="font-serif text-lg text-white">{inq.name}</h3>
+                      <span className="font-mono text-[10px] text-zinc-500">
+                        {new Date(inq.createdAt).toLocaleDateString(undefined, {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </span>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs text-zinc-500">
-                      <div className="flex items-center gap-1.5 font-mono text-zinc-400">
-                        <Mail className="w-3.5 h-3.5 text-zinc-400" />
-                        <a
-                          href={`mailto:${inq.email}`}
-                          className="hover:text-white transition-colors"
-                        >
-                          {inq.email}
-                        </a>
-                      </div>
-                      {inq.phone && (
-                        <div className="flex items-center gap-1.5 font-mono text-zinc-400">
-                          <Phone className="w-3.5 h-3.5 text-zinc-400" />
-                          <span>{inq.phone}</span>
+                    {/* Collector Name & Contact Details */}
+                    <div>
+                      <h3 className="font-serif text-sm sm:text-base text-white font-medium truncate">
+                        {inq.name}
+                      </h3>
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-0.5 text-[11px] text-zinc-400">
+                        <div className="flex items-center gap-1 font-mono">
+                          <Mail className="w-3 h-3 text-zinc-500 shrink-0" />
+                          <a
+                            href={`mailto:${inq.email}`}
+                            className="hover:text-white transition-colors truncate max-w-[170px] sm:max-w-none"
+                          >
+                            {inq.email}
+                          </a>
                         </div>
-                      )}
-                      <span className="font-mono text-zinc-500">{new Date(inq.createdAt).toLocaleDateString()}</span>
+                        {inq.phone && (
+                          <div className="flex items-center gap-1 font-mono text-zinc-400">
+                            <Phone className="w-3 h-3 text-zinc-500 shrink-0" />
+                            <span>{inq.phone}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Associated Canvas Pill */}
+                    {inq.artworkTitle && (
+                      <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#d1a86e]/10 text-[#d1a86e] text-[10px] font-medium max-w-full truncate">
+                        <Palette className="w-3 h-3 shrink-0" />
+                        <span className="truncate">Canvas: {inq.artworkTitle}</span>
+                      </div>
+                    )}
+
+                    {/* Message Box - Compact Clamp */}
+                    <div className="p-2.5 bg-[#0d0e12] rounded-xl text-xs text-zinc-300 leading-relaxed border border-white/5 line-clamp-3 sm:line-clamp-4">
+                      {inq.message}
                     </div>
                   </div>
 
-                  {inq.artworkTitle && (
-                    <div className="text-xs text-[#d1a86e] font-medium">
-                      Associated Canvas: {inq.artworkTitle}
-                    </div>
-                  )}
-
-                  <div className="p-5 bg-[#121319] rounded-2xl text-xs text-zinc-300 leading-relaxed shadow-inner border-none">
-                    {inq.message}
-                  </div>
-
-                  <div className="pt-2 flex justify-end">
-                    <Button asChild size="sm" variant="ghost" className="bg-[#121319] hover:bg-[#222432] text-white text-xs font-medium uppercase tracking-wider rounded-xl px-4 py-2 border-none shadow-sm">
+                  {/* Footer with ID & Compact Email Reply */}
+                  <div className="pt-1 flex items-center justify-between border-t border-white/5">
+                    <span className="text-[10px] font-mono text-zinc-600 truncate">
+                      ID: {inq.id.slice(0, 8)}...
+                    </span>
+                    <Button
+                      asChild
+                      size="sm"
+                      variant="ghost"
+                      className="h-7 px-2.5 bg-[#1a1b26] hover:bg-[#222432] text-white text-[11px] font-medium rounded-lg border-none transition-colors"
+                    >
                       <a
-                        href={`mailto:${inq.email}?subject=Re: ${encodeURIComponent(inq.subject)}`}
-                        className="inline-flex items-center gap-2"
+                        href={`mailto:${inq.email}?subject=Re: ${encodeURIComponent(inq.subject || "Artwork Inquiry")}`}
+                        className="inline-flex items-center gap-1.5"
                       >
-                        <Mail className="w-3.5 h-3.5 text-[#d1a86e]" />
+                        <Mail className="w-3 h-3 text-[#d1a86e]" />
                         <span>Reply via Email</span>
                       </a>
                     </Button>
@@ -569,9 +638,9 @@ export function InquiriesManagerClient({
             )}
           </div>
 
-          {/* Inquiries Pagination and Per-Page Control Bar */}
+          {/* Inquiries Pagination and Per-Page Control Bar - Transparent */}
           {filteredInquiries.length > 0 && (
-            <div className="p-5 bg-transparent rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="p-3 sm:p-4 bg-transparent rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="text-xs text-zinc-400 font-mono">
                 Showing <span className="text-white font-semibold">{inquiryStartItem}–{inquiryEndItem}</span> of{" "}
                 <span className="text-[#d1a86e] font-semibold">{filteredInquiries.length}</span> inquiries
@@ -623,16 +692,16 @@ export function InquiriesManagerClient({
 
               <div className="flex items-center gap-2">
                 <span className="text-zinc-500 font-mono text-[11px] uppercase tracking-wider">Per Page:</span>
-                <div className="flex items-center rounded-xl bg-[#1a1b26] p-1 border-none">
+                <div className="flex items-center rounded-xl bg-transparent border border-white/10 p-0.5">
                   {PAGE_SIZE_OPTIONS.map((size) => (
                     <button
                       key={size}
                       type="button"
                       onClick={() => setInquiryPageSize(size)}
-                      className={`px-3 py-1 text-xs font-mono rounded-lg transition-colors cursor-pointer border-none ${
+                      className={`px-2.5 py-1 text-xs font-mono rounded-lg transition-colors cursor-pointer border-none ${
                         inquiryPageSize === size
                           ? "bg-[#d1a86e] text-black font-semibold shadow-sm"
-                          : "text-zinc-400 hover:text-white"
+                          : "text-zinc-400 hover:text-white hover:bg-white/5"
                       }`}
                     >
                       {size}
@@ -1005,73 +1074,132 @@ export function InquiriesManagerClient({
             </Card>
           </div>
 
-          {/* Search & Filter Controls */}
-          <div className="space-y-4 bg-[#121319] p-6 rounded-3xl shadow-xl shadow-black/40 border-none">
-            <div className="flex flex-col sm:flex-row gap-3">
-              {/* Search input */}
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-2.5 w-4 h-4 text-zinc-500" />
-                <input
-                  type="text"
-                  placeholder="Filter email history by recipient, subject, or message ID..."
-                  value={emailSearchQuery}
-                  onChange={(e) => setEmailSearchQuery(e.target.value)}
-                  className="w-full bg-[#1a1b26] rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-zinc-500 border-none focus:ring-1 focus:ring-[#d1a86e] focus:outline-none"
-                />
-                {emailSearchQuery && (
-                  <button
-                    onClick={() => setEmailSearchQuery("")}
-                    className="absolute right-3 top-2.5 text-zinc-500 hover:text-white border-none"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
-              </div>
-
-              {/* Status Filter Buttons */}
-              <div className="p-1 bg-[#1a1b26] rounded-xl flex items-center gap-1 overflow-x-auto scrollbar-none border-none">
-                {[
-                  { id: "all", label: "All Statuses" },
-                  { id: "delivered", label: "Delivered" },
-                  { id: "sandbox_restricted", label: "Sandbox Held" },
-                  { id: "failed", label: "Failed" },
-                ].map((s) => (
-                  <button
-                    key={s.id}
-                    onClick={() => setSelectedDeliveryStatus(s.id)}
-                    className={`text-[10px] uppercase tracking-wider h-8 px-3 rounded-lg cursor-pointer border-none transition-colors ${
-                      selectedDeliveryStatus === s.id
-                        ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-sm"
-                        : "text-zinc-400 hover:text-white"
-                    }`}
-                  >
-                    {s.label}
-                  </button>
-                ))}
-              </div>
+          {/* Search & Filter Controls - Compact Dropdown Bar */}
+          <div className="p-3 sm:p-4 bg-[#121319] rounded-2xl shadow-xl shadow-black/40 border-none flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+            {/* Search input */}
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500" />
+              <input
+                type="text"
+                placeholder="Filter dispatches by recipient, subject, or ID..."
+                value={emailSearchQuery}
+                onChange={(e) => setEmailSearchQuery(e.target.value)}
+                className="w-full bg-[#1a1b26] rounded-xl pl-9 pr-8 h-8 sm:h-9 text-xs text-white placeholder-zinc-500 border-none focus:ring-1 focus:ring-[#d1a86e] focus:outline-none"
+              />
+              {emailSearchQuery && (
+                <button
+                  onClick={() => setEmailSearchQuery("")}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white border-none cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
 
-            {/* Email Type Filter Pills */}
-            <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pt-1">
-              {[
-                { id: "all", label: "All Dispatches" },
-                { id: "artwork_announcement", label: "Artwork Announcements" },
-                { id: "artwork_announcement_preview", label: "Curator Previews" },
-                { id: "inquiry_confirmation", label: "Inquiry Receipts" },
-                { id: "curator_alert", label: "Curator Alerts" },
-              ].map((f) => (
-                <button
-                  key={f.id}
-                  onClick={() => setSelectedEmailType(f.id)}
-                  className={`text-[10px] uppercase tracking-wider h-7 px-3 rounded-lg transition-colors cursor-pointer border-none ${
-                    selectedEmailType === f.id
-                      ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-sm"
-                      : "bg-[#1a1b26] text-zinc-400 hover:text-white"
-                  }`}
+            <div className="flex items-center gap-2 self-start sm:self-auto shrink-0 flex-wrap">
+              {/* Delivery Status Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    className="inline-flex items-center gap-2 h-8 sm:h-9 px-3 rounded-xl bg-[#1a1b26] hover:bg-[#222432] text-xs font-medium text-zinc-200 border border-white/5 transition-colors cursor-pointer"
+                  >
+                    <Filter className="w-3.5 h-3.5 text-[#d1a86e]" />
+                    <span>
+                      Delivery:{" "}
+                      <strong className="font-semibold text-white capitalize">
+                        {selectedDeliveryStatus === "all"
+                          ? "All"
+                          : selectedDeliveryStatus === "delivered"
+                          ? "Delivered"
+                          : selectedDeliveryStatus === "sandbox_restricted"
+                          ? "Sandbox Held"
+                          : "Failed"}
+                      </strong>
+                    </span>
+                    <ChevronDown className="w-3 h-3 text-zinc-400 ml-0.5" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  className="w-48 p-1.5 bg-[#121319] border border-[#262833] rounded-xl shadow-2xl text-xs text-white z-[110]"
                 >
-                  {f.label}
-                </button>
-              ))}
+                  <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-zinc-500 px-2 py-1">
+                    Delivery Status
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator className="bg-white/10 my-1" />
+                  {[
+                    { id: "all", label: "All Statuses" },
+                    { id: "delivered", label: "Delivered to Inbox" },
+                    { id: "sandbox_restricted", label: "Sandbox Held" },
+                    { id: "failed", label: "Delivery Failed" },
+                  ].map((s) => (
+                    <DropdownMenuItem
+                      key={s.id}
+                      onClick={() => setSelectedDeliveryStatus(s.id)}
+                      className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs cursor-pointer transition-colors ${
+                        selectedDeliveryStatus === s.id
+                          ? "bg-[#251e16] text-[#d1a86e] font-semibold"
+                          : "text-zinc-300 hover:bg-white/5 hover:text-white"
+                      }`}
+                    >
+                      <span>{s.label}</span>
+                      {selectedDeliveryStatus === s.id && (
+                        <Check className="w-3.5 h-3.5 text-[#d1a86e]" />
+                      )}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Email Type Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    className="inline-flex items-center gap-2 h-8 sm:h-9 px-3 rounded-xl bg-[#1a1b26] hover:bg-[#222432] text-xs font-medium text-zinc-200 border border-white/5 transition-colors cursor-pointer"
+                  >
+                    <span>
+                      Type:{" "}
+                      <strong className="font-semibold text-white capitalize">
+                        {selectedEmailType === "all" ? "All" : selectedEmailType.replace(/_/g, " ")}
+                      </strong>
+                    </span>
+                    <ChevronDown className="w-3 h-3 text-zinc-400 ml-0.5" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  className="w-52 p-1.5 bg-[#121319] border border-[#262833] rounded-xl shadow-2xl text-xs text-white z-[110]"
+                >
+                  <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-zinc-500 px-2 py-1">
+                    Dispatch Type
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator className="bg-white/10 my-1" />
+                  {[
+                    { id: "all", label: "All Dispatches" },
+                    { id: "artwork_announcement", label: "Artwork Announcements" },
+                    { id: "artwork_announcement_preview", label: "Curator Previews" },
+                    { id: "inquiry_confirmation", label: "Inquiry Receipts" },
+                    { id: "curator_alert", label: "Curator Alerts" },
+                  ].map((f) => (
+                    <DropdownMenuItem
+                      key={f.id}
+                      onClick={() => setSelectedEmailType(f.id)}
+                      className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs cursor-pointer transition-colors ${
+                        selectedEmailType === f.id
+                          ? "bg-[#251e16] text-[#d1a86e] font-semibold"
+                          : "text-zinc-300 hover:bg-white/5 hover:text-white"
+                      }`}
+                    >
+                      <span className="truncate">{f.label}</span>
+                      {selectedEmailType === f.id && (
+                        <Check className="w-3.5 h-3.5 text-[#d1a86e]" />
+                      )}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
 
@@ -1173,9 +1301,9 @@ export function InquiriesManagerClient({
             )}
           </div>
 
-          {/* Sent Emails Pagination and Per-Page Control Bar */}
+          {/* Sent Emails Pagination and Per-Page Control Bar - Transparent */}
           {filteredEmails.length > 0 && (
-            <div className="p-5 bg-transparent rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="p-3 sm:p-4 bg-transparent rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="text-xs text-zinc-400 font-mono">
                 Showing <span className="text-white font-semibold">{emailStartItem}–{emailEndItem}</span> of{" "}
                 <span className="text-[#d1a86e] font-semibold">{filteredEmails.length}</span> dispatches
@@ -1227,16 +1355,16 @@ export function InquiriesManagerClient({
 
               <div className="flex items-center gap-2">
                 <span className="text-zinc-500 font-mono text-[11px] uppercase tracking-wider">Per Page:</span>
-                <div className="flex items-center rounded-xl bg-[#1a1b26] p-1 border-none">
+                <div className="flex items-center rounded-xl bg-transparent border border-white/10 p-0.5">
                   {PAGE_SIZE_OPTIONS.map((size) => (
                     <button
                       key={size}
                       type="button"
                       onClick={() => setEmailPageSize(size)}
-                      className={`px-3 py-1 text-xs font-mono rounded-lg transition-colors cursor-pointer border-none ${
+                      className={`px-2.5 py-1 text-xs font-mono rounded-lg transition-colors cursor-pointer border-none ${
                         emailPageSize === size
                           ? "bg-[#d1a86e] text-black font-semibold shadow-sm"
-                          : "text-zinc-400 hover:text-white"
+                          : "text-zinc-400 hover:text-white hover:bg-white/5"
                       }`}
                     >
                       {size}

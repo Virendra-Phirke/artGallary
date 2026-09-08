@@ -21,6 +21,8 @@ import {
   AlertTriangle,
   Loader2,
   Layers,
+  Filter,
+  Check,
 } from "lucide-react";
 import { MockArtwork } from "@/db/mockData";
 import { formatCurrency, formatDimensions } from "@/lib/utils";
@@ -178,22 +180,22 @@ export function ArtworksManagerClient({
 
   return (
     <div className="space-y-6">
-      {/* Header Plaque - Solid Tier 1 Master Block */}
-      <div className="bg-[#121319] p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+      {/* Header Plaque - Compact Solid Master Block */}
+      <div className="bg-[#121319] p-3.5 sm:p-5 rounded-2xl shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <span className="text-[9px] sm:text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
             Catalog Inventory
           </span>
-          <h1 className="font-serif text-2xl sm:text-3xl text-white mt-0.5 sm:mt-1">Artworks CMS</h1>
-          <p className="text-[11px] sm:text-xs text-zinc-400 mt-0.5 sm:mt-1">
+          <h1 className="font-serif text-xl sm:text-2xl text-white mt-0.5">Artworks CMS</h1>
+          <p className="text-[11px] sm:text-xs text-zinc-400 mt-0.5 line-clamp-1 sm:line-clamp-none">
             Manage your masterworks, calibrate 1:1 physical spatial dimensions, and publish canvases.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 self-start sm:self-auto flex-wrap">
+        <div className="flex items-center gap-2 self-start sm:self-auto shrink-0 flex-wrap">
           <Link
             href="/admin/media"
-            className="bg-[#1a1b26] hover:bg-[#222432] text-[11px] sm:text-xs text-zinc-300 hover:text-white px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl shadow-sm transition-colors flex items-center gap-1.5"
+            className="bg-[#1a1b26] hover:bg-[#222432] text-xs text-zinc-300 hover:text-white px-3 py-1.5 rounded-xl shadow-sm transition-colors flex items-center gap-1.5"
           >
             <Layers className="w-3.5 h-3.5 text-[#d1a86e]" />
             <span>Media</span>
@@ -201,7 +203,7 @@ export function ArtworksManagerClient({
 
           <Link
             href="/admin/artworks/new"
-            className="bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-[11px] sm:text-xs px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl shadow-md shadow-[#d1a86e]/20 transition-colors flex items-center gap-1.5"
+            className="bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-xs px-3.5 py-1.5 rounded-xl shadow-md shadow-[#d1a86e]/20 transition-colors flex items-center gap-1.5"
           >
             <Plus className="w-4 h-4" />
             <span>New Artwork</span>
@@ -209,49 +211,77 @@ export function ArtworksManagerClient({
         </div>
       </div>
 
-      {/* Filter and Search Bar with View Mode Toggle - Solid Tier 2 Block */}
-      <div className="bg-[#121319] rounded-2xl p-4 sm:p-5 shadow-xl shadow-black/40 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+      {/* Filter and Search Bar with Compact Dropdown & View Mode Toggle */}
+      <div className="bg-[#121319] rounded-2xl p-2.5 sm:p-3 shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500" />
           <Input
             type="text"
             placeholder="Filter by title, slug, or medium..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 h-10 bg-[#1a1b26] rounded-xl border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
+            className="pl-9 h-8 sm:h-9 text-xs bg-[#1a1b26] rounded-xl border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
           />
         </div>
 
-        <div className="flex items-center gap-3 flex-wrap">
-          {/* Status Filter Pills */}
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-[10px] uppercase tracking-wider text-zinc-500 mr-1">
-              Status:
-            </span>
-            {["all", "published", "draft", "reserved", "sold", "archived"].map(
-              (st) => (
-                <button
-                  key={st}
-                  type="button"
-                  onClick={() => setStatusFilter(st)}
-                  className={`text-[11px] h-7 px-3 rounded-full transition-colors ${
-                    statusFilter === st
-                      ? "bg-[#251e16] text-[#d1a86e] font-semibold shadow-sm"
-                      : "bg-[#1a1b26] text-zinc-400 hover:text-white"
+        <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
+          {/* Status Filter Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="inline-flex items-center gap-2 h-8 sm:h-9 px-3 rounded-xl bg-[#1a1b26] hover:bg-[#222432] text-xs font-medium text-zinc-200 border border-white/5 transition-colors cursor-pointer"
+              >
+                <Filter className="w-3.5 h-3.5 text-[#d1a86e]" />
+                <span>
+                  Status:{" "}
+                  <strong className="font-semibold text-white capitalize">
+                    {statusFilter === "all" ? "All" : statusFilter}
+                  </strong>
+                </span>
+                <ChevronDown className="w-3 h-3 text-zinc-400 ml-0.5" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              className="w-44 p-1.5 bg-[#121319] border border-[#262833] rounded-xl shadow-2xl text-xs text-white z-[110]"
+            >
+              <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-zinc-500 px-2 py-1">
+                Filter by Status
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator className="bg-white/10 my-1" />
+              {[
+                { id: "all", label: "All Statuses" },
+                { id: "published", label: "Published" },
+                { id: "draft", label: "Draft" },
+                { id: "reserved", label: "Reserved" },
+                { id: "sold", label: "Sold" },
+                { id: "archived", label: "Archived" },
+              ].map((item) => (
+                <DropdownMenuItem
+                  key={item.id}
+                  onClick={() => setStatusFilter(item.id)}
+                  className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs cursor-pointer transition-colors ${
+                    statusFilter === item.id
+                      ? "bg-[#251e16] text-[#d1a86e] font-semibold"
+                      : "text-zinc-300 hover:bg-white/5 hover:text-white"
                   }`}
                 >
-                  {st}
-                </button>
-              )
-            )}
-          </div>
+                  <span>{item.label}</span>
+                  {statusFilter === item.id && (
+                    <Check className="w-3.5 h-3.5 text-[#d1a86e]" />
+                  )}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           {/* Table vs Grid View Toggle */}
-          <div className="flex items-center p-1 bg-[#1a1b26] rounded-xl ml-auto md:ml-0">
+          <div className="flex items-center p-0.5 bg-[#1a1b26] rounded-xl border border-white/5">
             <button
               type="button"
               onClick={() => setViewLayout("table")}
-              className={`p-1.5 px-3 rounded-lg text-xs transition-colors flex items-center gap-1.5 ${
+              className={`h-7 px-2.5 rounded-lg text-xs transition-colors flex items-center gap-1.5 cursor-pointer ${
                 viewLayout === "table"
                   ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-sm"
                   : "text-zinc-400 hover:text-white"
@@ -259,12 +289,12 @@ export function ArtworksManagerClient({
               title="Table View"
             >
               <List className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Table</span>
+              <span className="hidden sm:inline text-[11px]">Table</span>
             </button>
             <button
               type="button"
               onClick={() => setViewLayout("grid")}
-              className={`p-1.5 px-3 rounded-lg text-xs transition-colors flex items-center gap-1.5 ${
+              className={`h-7 px-2.5 rounded-lg text-xs transition-colors flex items-center gap-1.5 cursor-pointer ${
                 viewLayout === "grid"
                   ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-sm"
                   : "text-zinc-400 hover:text-white"
@@ -272,7 +302,7 @@ export function ArtworksManagerClient({
               title="Visual Image Grid View"
             >
               <LayoutGrid className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Image Grid</span>
+              <span className="hidden sm:inline text-[11px]">Grid</span>
             </button>
           </div>
         </div>
@@ -827,7 +857,7 @@ export function ArtworksManagerClient({
 
           <div className="flex items-center gap-2">
             <span className="text-zinc-500 font-mono text-[11px] uppercase tracking-wider">Per Page:</span>
-            <div className="flex items-center rounded-xl bg-[#1a1b26] p-1">
+            <div className="flex items-center rounded-xl bg-transparent border border-white/10 p-0.5">
               {PAGE_SIZE_OPTIONS.map((size) => (
                 <button
                   key={size}
@@ -836,7 +866,7 @@ export function ArtworksManagerClient({
                   className={`px-3 py-1 text-xs font-mono rounded-lg transition-colors cursor-pointer ${
                     pageSize === size
                       ? "bg-[#d1a86e] text-black font-semibold shadow-sm"
-                      : "text-zinc-400 hover:text-white"
+                      : "text-zinc-400 hover:text-white hover:bg-white/5"
                   }`}
                 >
                   {size}
