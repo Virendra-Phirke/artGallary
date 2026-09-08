@@ -366,10 +366,10 @@ export function InquiriesManagerClient({
             </DropdownMenu>
           </div>
 
-          {/* Inquiries List - Sleek Compact View Matching Sent Emails */}
-          <div className="bg-[#121319] rounded-xl sm:rounded-2xl border border-white/5 divide-y divide-white/5 overflow-hidden shadow-xl">
+          {/* Inquiries List - 2 columns on desktop, 1 on mobile */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3">
             {filteredInquiries.length === 0 ? (
-              <div className="p-8 text-center text-xs text-zinc-500">
+              <div className="col-span-full p-8 text-center text-xs text-zinc-500 bg-[#121319] rounded-xl border border-white/5">
                 No inquiries matching criteria.
               </div>
             ) : (
@@ -377,7 +377,7 @@ export function InquiriesManagerClient({
                 <div
                   key={inq.id}
                   onClick={() => setPreviewInquiry(inq)}
-                  className="p-3 sm:p-3.5 hover:bg-white/[0.04] transition-all flex items-center justify-between gap-3 cursor-pointer group"
+                  className="bg-[#121319] p-3 sm:p-3.5 rounded-xl sm:rounded-2xl border border-white/5 hover:border-white/10 hover:bg-white/[0.04] transition-all flex items-center justify-between gap-3 cursor-pointer group shadow-md"
                 >
                   <div className="space-y-1 min-w-0 flex-1">
                     {/* Status Badge + Canvas + Date */}
@@ -400,7 +400,7 @@ export function InquiriesManagerClient({
                       </span>
 
                       {inq.artworkTitle && (
-                        <span className="text-[10px] text-[#d1a86e] bg-[#d1a86e]/10 px-2 py-0.5 rounded-md font-medium truncate max-w-[150px] sm:max-w-xs">
+                        <span className="text-[10px] text-[#d1a86e] bg-[#d1a86e]/10 px-2 py-0.5 rounded-md font-medium truncate max-w-[130px] sm:max-w-[180px]">
                           Canvas: {inq.artworkTitle}
                         </span>
                       )}
@@ -432,9 +432,8 @@ export function InquiriesManagerClient({
                   </div>
 
                   {/* Hover indicator */}
-                  <div className="shrink-0 flex items-center gap-1.5 text-zinc-500 group-hover:text-[#d1a86e] transition-colors pl-2">
-                    <Eye className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity hidden sm:block" />
-                    <ChevronRight className="w-4 h-4" />
+                  <div className="shrink-0 flex items-center gap-1.5 text-zinc-500 group-hover:text-[#d1a86e] transition-colors pl-1">
+                    <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                   </div>
                 </div>
               ))
@@ -687,10 +686,10 @@ export function InquiriesManagerClient({
             </div>
           </div>
 
-          {/* Sent Emails List - Proper Small List */}
-          <div className="bg-[#121319] rounded-xl sm:rounded-2xl border border-white/5 divide-y divide-white/5 overflow-hidden shadow-xl">
+          {/* Sent Emails List - 2 columns on desktop, 1 on mobile */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3">
             {filteredEmails.length === 0 ? (
-              <div className="p-8 text-center text-xs text-zinc-500">
+              <div className="col-span-full p-8 text-center text-xs text-zinc-500 bg-[#121319] rounded-xl border border-white/5">
                 No email dispatch records matching your criteria.
               </div>
             ) : (
@@ -698,7 +697,7 @@ export function InquiriesManagerClient({
                 <div
                   key={email.id}
                   onClick={() => setPreviewEmail(email)}
-                  className="p-3 sm:p-3.5 hover:bg-white/[0.04] transition-all flex items-center justify-between gap-3 cursor-pointer group"
+                  className="bg-[#121319] p-3 sm:p-3.5 rounded-xl sm:rounded-2xl border border-white/5 hover:border-white/10 hover:bg-white/[0.04] transition-all flex items-center justify-between gap-3 cursor-pointer group shadow-md"
                 >
                   <div className="space-y-1 min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
@@ -760,9 +759,8 @@ export function InquiriesManagerClient({
                     )}
                   </div>
 
-                  <div className="shrink-0 flex items-center gap-1.5 text-zinc-500 group-hover:text-[#d1a86e] transition-colors pl-2">
-                    <Eye className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity hidden sm:block" />
-                    <ChevronRight className="w-4 h-4" />
+                  <div className="shrink-0 flex items-center gap-1.5 text-zinc-500 group-hover:text-[#d1a86e] transition-colors pl-1">
+                    <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                   </div>
                 </div>
               ))
