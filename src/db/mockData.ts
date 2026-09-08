@@ -486,11 +486,8 @@ export interface SiteSettingsData {
 }
 
 export const DEFAULT_NAVIGATION_ITEMS = [
-  { id: "nav-gallery", label: "Gallery", href: "/gallery", isEnabled: true, order: 1 },
-  { id: "nav-collections", label: "Collections", href: "/collections", isEnabled: true, order: 2 },
-  { id: "nav-exhibitions", label: "Exhibitions", href: "/exhibitions", isEnabled: true, order: 3 },
-  { id: "nav-about", label: "About", href: "/about", isEnabled: true, order: 4 },
-  { id: "nav-contact", label: "Contact", href: "/contact", isEnabled: true, order: 5 },
+  { id: "nav-about", label: "About", href: "/about", isEnabled: true, order: 1 },
+  { id: "nav-contact", label: "Contact", href: "/contact", isEnabled: true, order: 2 },
 ];
 
 export const DEFAULT_SITE_SETTINGS: SiteSettingsData = {

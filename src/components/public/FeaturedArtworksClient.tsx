@@ -223,15 +223,16 @@ export function FeaturedArtworksClient({
         </div>
 
         {/* View Complete Collection Footer CTA */}
-        <div className="mt-12 text-center">
+        <div className="mt-14 text-center">
           <Button
             asChild
             variant="outline"
             size="lg"
-            className="rounded-full border-[#262833] bg-[#14151a] hover:bg-[#1a1c23] hover:border-[#d1a86e]/40 text-white px-8 py-3.5 text-xs uppercase tracking-[0.2em]"
+            className="rounded-full border-[#383a48] bg-gradient-to-b from-[#181920] to-[#121318] hover:border-[#d1a86e] hover:bg-[#1a1c24] text-white px-9 py-4 text-xs uppercase tracking-[0.22em] shadow-2xl shadow-black/80 hover:shadow-[#d1a86e]/10 transition-all hover:scale-[1.02]"
           >
-            <Link href="/gallery" className="inline-flex items-center gap-2">
-              <span>View All Artworks &amp; Archives</span>
+            <Link href="/account?tab=gallery" className="inline-flex items-center gap-2.5">
+              <Sparkles className="w-4 h-4 text-[#d1a86e]" />
+              <span>Enter Collector Salon for Complete Catalogue</span>
               <ArrowRight className="w-4 h-4 text-[#d1a86e]" />
             </Link>
           </Button>

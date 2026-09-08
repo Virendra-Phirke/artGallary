@@ -543,7 +543,7 @@ export function CollectorDashboardClient({
               </p>
             </Card>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
               {filteredArtworks.map((art) => {
                 const isSaved = savedArtworkIds.includes(art.id);
 
@@ -668,7 +668,7 @@ export function CollectorDashboardClient({
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
             {collections.map((col) => (
               <div
                 key={col.id}
@@ -965,7 +965,7 @@ export function CollectorDashboardClient({
           TAB 7: COLLECTOR PROFILE & SETTINGS
       ========================================================================= */}
       {activeTab === "profile" && (
-        <div className="space-y-8 animate-in fade-in duration-200 max-w-4xl">
+        <div className="space-y-8 animate-in fade-in duration-200">
           <div className="border-b border-[#262833] pb-6">
             <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-bold">
               Account Dossier
@@ -978,61 +978,74 @@ export function CollectorDashboardClient({
             </p>
           </div>
 
-          {/* Profile Card */}
-          <div className="bg-[#14151a] border border-[#262833] rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-[#1c1d25] border border-[#262833] flex items-center justify-center font-serif text-2xl text-[#d1a86e]">
-                {user.name.charAt(0).toUpperCase()}
-              </div>
-              <div>
-                <h3 className="font-serif text-2xl text-white">{user.name}</h3>
-                <p className="text-xs text-zinc-400 font-mono">{user.email}</p>
-                <div className="flex items-center gap-2 mt-2">
-                  <Badge variant="success">Verified Collector</Badge>
-                  <span className="text-[10px] text-zinc-500 font-mono">Role: {user.role}</span>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Left Column: Profile Card & White-Glove Shipping */}
+            <div className="lg:col-span-7 space-y-6">
+              {/* Profile Card */}
+              <div className="bg-[#14151a] border border-[#262833] rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-full bg-[#1c1d25] border border-[#262833] flex items-center justify-center font-serif text-2xl text-[#d1a86e]">
+                    {user.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <h3 className="font-serif text-2xl text-white">{user.name}</h3>
+                    <p className="text-xs text-zinc-400 font-mono">{user.email}</p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Badge variant="success">Verified Collector</Badge>
+                      <span className="text-[10px] text-zinc-500 font-mono">Role: {user.role}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-[#1c1d25] text-xs">
+                  <div className="space-y-1">
+                    <span className="text-zinc-500 uppercase tracking-wider text-[10px]">Collector ID</span>
+                    <p className="font-mono text-zinc-300 truncate">{user.id}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-zinc-500 uppercase tracking-wider text-[10px]">Membership Tier</span>
+                    <p className="text-zinc-300">Private Studio Client (Elena Vance Paris)</p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-[#1c1d25] text-xs">
-              <div className="space-y-1">
-                <span className="text-zinc-500 uppercase tracking-wider text-[10px]">Collector ID</span>
-                <p className="font-mono text-zinc-300 truncate">{user.id}</p>
+              {/* White-Glove Shipping & Delivery Info */}
+              <div className="bg-[#14151a] border border-[#262833] rounded-3xl p-6 sm:p-8 space-y-4 shadow-xl">
+                <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-[#d1a86e] font-semibold">
+                  <Package className="w-4 h-4" />
+                  <span>Fine Art Delivery &amp; Crate Protocol</span>
+                </div>
+                <h4 className="font-serif text-lg text-white">
+                  Insured International Transit Standards
+                </h4>
+                <p className="text-xs text-zinc-400 leading-relaxed">
+                  All acquired canvases are encased in custom thermal-insulated wooden crates with hygrometric shock buffering. When you confirm an acquisition inquiry, your dedicated fine art courier details will appear here.
+                </p>
               </div>
-              <div className="space-y-1">
-                <span className="text-zinc-500 uppercase tracking-wider text-[10px]">Membership Tier</span>
-                <p className="text-zinc-300">Private Studio Client (Elena Vance Paris)</p>
+            </div>
+
+            {/* Right Column: Preferences & Sign Out */}
+            <div className="lg:col-span-5 space-y-6">
+              {/* Marketing & Vernissage Dispatch Toggle */}
+              <MarketingPreferenceToggle initialSubscribed={marketingSubscribed} />
+
+              <div className="p-6 rounded-3xl bg-[#14151a] border border-[#262833] space-y-4 shadow-xl">
+                <div className="space-y-1">
+                  <h4 className="font-serif text-lg text-white">Session Management</h4>
+                  <p className="text-xs text-zinc-400">
+                    Sign out of your active private collector salon session.
+                  </p>
+                </div>
+                <Button
+                  onClick={handleSignOut}
+                  variant="outline"
+                  className="w-full rounded-full border-[#262833] bg-[#181920] hover:bg-rose-950/40 hover:text-rose-400 text-zinc-300 text-xs uppercase tracking-wider h-10"
+                >
+                  <LogOut className="w-3.5 h-3.5 mr-2" />
+                  <span>Sign Out of Collector Salon</span>
+                </Button>
               </div>
             </div>
-          </div>
-
-          {/* Marketing & Vernissage Dispatch Toggle */}
-          <MarketingPreferenceToggle initialSubscribed={marketingSubscribed} />
-
-          {/* White-Glove Shipping & Delivery Info */}
-          <div className="bg-[#14151a] border border-[#262833] rounded-3xl p-6 sm:p-8 space-y-4 shadow-xl">
-            <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-[#d1a86e] font-semibold">
-              <Package className="w-4 h-4" />
-              <span>Fine Art Delivery &amp; Crate Protocol</span>
-            </div>
-            <h4 className="font-serif text-lg text-white">
-              Insured International Transit Standards
-            </h4>
-            <p className="text-xs text-zinc-400 leading-relaxed">
-              All acquired canvases are encased in custom thermal-insulated wooden crates with hygrometric shock buffering. When you confirm an acquisition inquiry, your dedicated fine art courier details will appear here.
-            </p>
-          </div>
-
-          {/* Sign Out */}
-          <div className="pt-4 flex justify-end">
-            <Button
-              onClick={handleSignOut}
-              variant="outline"
-              className="rounded-full border-[#262833] bg-[#14151a] hover:bg-rose-950/40 hover:text-rose-400 text-zinc-300 text-xs uppercase tracking-wider"
-            >
-              <LogOut className="w-3.5 h-3.5 mr-2" />
-              <span>Sign Out of Collector Salon</span>
-            </Button>
           </div>
         </div>
       )}

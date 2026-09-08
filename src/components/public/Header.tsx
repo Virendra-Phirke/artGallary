@@ -74,15 +74,23 @@ export function Header({ settings }: HeaderProps) {
     window.location.reload();
   };
 
-  const navLinks = settings?.navigationItems
+  // Public navbar displays exclusively About and Contact (all curation, catalog, series, and exhibitions are housed in the Collector Portal)
+  const excludedNavPatterns = ["/gallery", "/collections", "/exhibitions"];
+  const rawLinks = settings?.navigationItems
     ? settings.navigationItems.filter((i) => i.isEnabled).sort((a, b) => a.order - b.order)
     : [
-        { label: "Gallery", href: "/gallery" },
-        { label: "Collections", href: "/collections" },
-        { label: "Exhibitions", href: "/exhibitions" },
         { label: "About", href: "/about" },
         { label: "Contact", href: "/contact" },
       ];
+  const filteredLinks = rawLinks.filter(
+    (l) =>
+      !excludedNavPatterns.some((p) => l.href.startsWith(p)) &&
+      !["gallery", "collection", "exhibition"].some((k) => l.label.toLowerCase().includes(k))
+  );
+  const navLinks = filteredLinks.length > 0 ? filteredLinks : [
+    { label: "About", href: "/about" },
+    { label: "Contact", href: "/contact" },
+  ];
 
   const brandTitle = settings?.siteTitle || "L'Atelier Lumineux";
   const brandSubtitle = settings?.shortBrandName

@@ -20,13 +20,11 @@ export function Footer({ settings }: FooterProps) {
     ? settings.footerConfig.columns
     : [
         {
-          title: "Explore",
+          title: "Studio",
           links: [
-            { label: "All Artworks", href: "/gallery" },
-            { label: "Curated Series", href: "/collections" },
-            { label: "Exhibitions", href: "/exhibitions" },
             { label: "Artist Monologue & CV", href: "/about" },
-            { label: "Acquisitions & Press", href: "/contact" },
+            { label: "Studio Inquiries & Press", href: "/contact" },
+            { label: "Private Collector Salon", href: "/account" },
           ],
         },
         {

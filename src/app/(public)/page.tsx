@@ -139,10 +139,11 @@ export default async function HomePage() {
                       </Button>
 
                       <Link
-                        href="/collections"
-                        className="text-xs uppercase tracking-[0.18em] text-zinc-400 hover:text-white transition-colors"
+                        href="/account?tab=collections"
+                        className="text-xs uppercase tracking-[0.18em] text-zinc-400 hover:text-[#d1a86e] transition-colors inline-flex items-center gap-1.5"
                       >
-                        All Curated Series &rarr;
+                        <Sparkles className="w-3 h-3 text-[#d1a86e]" />
+                        <span>All Series in Collector Salon &rarr;</span>
                       </Link>
                     </div>
                   )}
@@ -305,7 +306,19 @@ export default async function HomePage() {
                       currentExhibition?.curatorNote}
                   </p>
                   {currentExhibition && (
-                    <div className="pt-3">
+                    <div className="pt-3 flex flex-wrap items-center gap-3">
+                      <Button
+                        asChild
+                        className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-xs uppercase tracking-wider px-5 py-2.5 shadow-md shadow-[#d1a86e]/15"
+                      >
+                        <Link
+                          href="/account?tab=exhibitions"
+                          className="flex items-center gap-2"
+                        >
+                          <Sparkles className="w-3.5 h-3.5" />
+                          <span>RSVP in Collector Salon</span>
+                        </Link>
+                      </Button>
                       <Button
                         asChild
                         variant="outline"
@@ -315,7 +328,7 @@ export default async function HomePage() {
                           href={`/exhibitions/${currentExhibition.slug}`}
                           className="flex items-center gap-2"
                         >
-                          <span>View Exhibition Catalog</span>
+                          <span>Exhibition Dossier</span>
                           <ArrowRight className="w-3.5 h-3.5 text-[#d1a86e]" />
                         </Link>
                       </Button>

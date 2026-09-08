@@ -40,8 +40,8 @@ export function CollectorNav({ user, inquiriesCount = 0 }: CollectorNavProps) {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-[#0d0e12]/95 backdrop-blur-xl border-b border-[#22242f] px-4 sm:px-8 py-3.5 shadow-lg shadow-black/40">
-      <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-40 bg-[#0d0e12]/95 backdrop-blur-xl border-b border-[#22242f] px-4 sm:px-6 md:pl-20 md:pr-8 lg:pl-24 lg:pr-10 xl:pl-28 xl:pr-12 py-3.5 shadow-lg shadow-black/40">
+      <div className="w-full flex items-center justify-between gap-4">
         {/* Left: Brand Identity & Portal Pill */}
         <div className="flex items-center gap-3.5">
           <Link

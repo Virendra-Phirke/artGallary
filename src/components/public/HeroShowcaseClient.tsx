@@ -86,13 +86,14 @@ export function HeroShowcaseClient({
               <Button
                 asChild
                 size="lg"
-                className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] shadow-xl shadow-[#d1a86e]/15"
+                className="rounded-full bg-gradient-to-r from-[#d1a86e] via-[#e2c18d] to-[#b98e54] text-[#0d0e12] px-8 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] shadow-xl shadow-[#d1a86e]/25 hover:shadow-[#d1a86e]/40 hover:scale-[1.02] transition-all"
               >
                 <Link
-                  href={primaryCtaUrl}
+                  href="/account"
                   className="flex items-center justify-center gap-2.5"
                 >
-                  <span>{primaryCtaText}</span>
+                  <Sparkles className="w-4 h-4 text-[#0d0e12]" />
+                  <span>Enter Collector Salon</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </Button>
@@ -102,7 +103,7 @@ export function HeroShowcaseClient({
                   asChild
                   variant="secondary"
                   size="lg"
-                  className="rounded-full border-[#262833] bg-[#18191e] hover:bg-[#22232a] text-white px-6 py-3.5 text-xs font-medium uppercase tracking-[0.2em]"
+                  className="rounded-full border-[#2b2e3c] bg-[#14151a]/90 hover:bg-[#1f212a] hover:border-[#d1a86e]/50 text-white px-6 py-3.5 text-xs font-medium uppercase tracking-[0.2em] backdrop-blur-md transition-all shadow-lg"
                 >
                   <Link
                     href={`/ar/${activeArtwork.slug}`}
