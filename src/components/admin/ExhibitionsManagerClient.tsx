@@ -245,39 +245,39 @@ export function ExhibitionsManagerClient({
   return (
     <div className="space-y-8 w-full">
       {/* Header - Solid Tier 1 Master Block */}
-      <div className="bg-[#121319] p-6 sm:p-8 rounded-3xl shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-[#121319] p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
+          <span className="text-[9px] sm:text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
             Institutional Presence
           </span>
-          <h1 className="font-serif text-3xl text-white mt-1">Exhibitions CMS</h1>
-          <p className="text-xs text-zinc-400 mt-1">
+          <h1 className="font-serif text-2xl sm:text-3xl text-white mt-0.5 sm:mt-1">Exhibitions CMS</h1>
+          <p className="text-[11px] sm:text-xs text-zinc-400 mt-0.5 sm:mt-1">
             Curate solo and group exhibitions, manage dates, locations, and exhibited artwork sets.
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2">
           <Link
             href="/admin/settings?tab=exhibitions"
-            className="bg-[#1a1b26] hover:bg-[#222432] text-xs text-[#d1a86e] px-3.5 py-2 rounded-xl shadow-sm transition-colors flex items-center gap-1.5"
+            className="bg-[#1a1b26] hover:bg-[#222432] text-[11px] sm:text-xs text-[#d1a86e] px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl shadow-sm transition-colors flex items-center gap-1.5"
           >
             <Calendar className="w-3.5 h-3.5" />
-            <span>Edit Page Header &amp; Intro</span>
+            <span className="truncate">Page Intro</span>
           </Link>
           <Link
             href="/exhibitions"
             target="_blank"
-            className="bg-[#1a1b26] hover:bg-[#222432] text-xs text-zinc-300 hover:text-white px-3.5 py-2 rounded-xl shadow-sm transition-colors flex items-center gap-1.5"
+            className="bg-[#1a1b26] hover:bg-[#222432] text-[11px] sm:text-xs text-zinc-300 hover:text-white px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl shadow-sm transition-colors flex items-center gap-1.5"
           >
             <ExternalLink className="w-3.5 h-3.5" />
-            <span>Preview Storefront</span>
+            <span className="truncate">Live View</span>
           </Link>
           <button
             onClick={openNew}
-            className="bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-xs px-4 py-2 rounded-xl shadow-md shadow-[#d1a86e]/20 transition-colors flex items-center gap-1.5 cursor-pointer"
+            className="bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-[11px] sm:text-xs px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl shadow-md shadow-[#d1a86e]/20 transition-colors flex items-center gap-1.5 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
-            <span>New Exhibition</span>
+            <span className="truncate">New Exhibition</span>
           </button>
         </div>
       </div>
@@ -362,11 +362,11 @@ export function ExhibitionsManagerClient({
           No exhibitions found matching your search or filter criteria.
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 min-[500px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-5">
           {paginatedExhibitions.map((exh) => (
             <div
               key={exh.id}
-              className="rounded-3xl bg-[#1a1b26] overflow-hidden shadow-md shadow-black/30 flex flex-col justify-between hover:bg-[#1e202d] transition-all"
+              className="rounded-2xl sm:rounded-3xl bg-[#1a1b26] overflow-hidden shadow-md shadow-black/30 flex flex-col justify-between hover:bg-[#1e202d] transition-all"
             >
               {/* Cover Image */}
               <div className="relative aspect-[16/9] bg-black/40">
@@ -375,7 +375,7 @@ export function ExhibitionsManagerClient({
                     src={exh.coverImageUrl}
                     alt={exh.title}
                     fill
-                    sizes="(max-width: 768px) 100vw, 50vw"
+                    sizes="(max-width: 768px) 100vw, 33vw"
                     className="object-cover"
                   />
                 ) : (
@@ -383,9 +383,9 @@ export function ExhibitionsManagerClient({
                     <Calendar className="w-8 h-8 text-zinc-700" />
                   </div>
                 )}
-                <div className="absolute top-3 left-3 flex items-center gap-1.5">
+                <div className="absolute top-2 left-2 flex items-center gap-1">
                   <span
-                    className={`text-[9px] uppercase font-mono font-bold px-2.5 py-1 rounded-full shadow-md ${
+                    className={`text-[8px] sm:text-[9px] uppercase font-mono font-bold px-2 py-0.5 rounded-full shadow-md ${
                       exh.isPublished
                         ? "bg-[#14231b] text-emerald-300"
                         : "bg-[#222432] text-zinc-400"
@@ -394,7 +394,7 @@ export function ExhibitionsManagerClient({
                     {exh.isPublished ? "Published" : "Draft"}
                   </span>
                   <span
-                    className={`text-[9px] uppercase font-mono font-bold px-2.5 py-1 rounded-full shadow-md ${
+                    className={`text-[8px] sm:text-[9px] uppercase font-mono font-bold px-2 py-0.5 rounded-full shadow-md ${
                       exh.status === "current"
                         ? "bg-[#251e16] text-[#d1a86e]"
                         : exh.status === "upcoming"
@@ -407,27 +407,27 @@ export function ExhibitionsManagerClient({
                 </div>
 
                 {/* Actions Overlay */}
-                <div className="absolute top-3 right-3">
+                <div className="absolute top-2 right-2">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="p-1.5 bg-black/60 hover:bg-black/80 rounded-xl backdrop-blur-sm transition-colors cursor-pointer">
-                        <MoreVertical className="w-4 h-4 text-white" />
+                      <button className="p-1 sm:p-1.5 bg-black/60 hover:bg-black/80 rounded-lg sm:rounded-xl backdrop-blur-sm transition-colors cursor-pointer">
+                        <MoreVertical className="w-3.5 h-3.5 text-white" />
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuContent align="end" className="w-44">
                       <DropdownMenuItem onClick={() => openEdit(exh)}>
-                        <Edit className="w-4 h-4 mr-2" />
+                        <Edit className="w-3.5 h-3.5 mr-2" />
                         Edit Exhibition
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => togglePublish(exh)}>
                         {exh.isPublished ? (
                           <>
-                            <EyeOff className="w-4 h-4 mr-2" />
+                            <EyeOff className="w-3.5 h-3.5 mr-2" />
                             Unpublish
                           </>
                         ) : (
                           <>
-                            <Eye className="w-4 h-4 mr-2" />
+                            <Eye className="w-3.5 h-3.5 mr-2" />
                             Publish
                           </>
                         )}
@@ -437,7 +437,7 @@ export function ExhibitionsManagerClient({
                         onClick={() => handleDelete(exh.id, exh.title)}
                         className="text-red-400 focus:text-red-400"
                       >
-                        <Trash2 className="w-4 h-4 mr-2" />
+                        <Trash2 className="w-3.5 h-3.5 mr-2" />
                         Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -446,42 +446,42 @@ export function ExhibitionsManagerClient({
               </div>
 
               {/* Content */}
-              <div className="p-5 space-y-3">
-                <div className="flex items-center justify-between">
-                  <h2 className="font-serif text-xl text-white">{exh.title}</h2>
+              <div className="p-3.5 sm:p-5 space-y-2 sm:space-y-3">
+                <div className="flex items-center justify-between gap-1">
+                  <h2 className="font-serif text-sm sm:text-xl text-white font-medium truncate">{exh.title}</h2>
                   <Link
                     href={`/exhibitions/${exh.slug}`}
                     target="_blank"
-                    className="p-1 text-zinc-400 hover:text-white transition-colors"
+                    className="p-1 text-zinc-400 hover:text-white transition-colors shrink-0"
                     title="View Public Page"
                   >
-                    <ExternalLink className="w-4 h-4 text-[#d1a86e]" />
+                    <ExternalLink className="w-3.5 h-3.5 text-[#d1a86e]" />
                   </Link>
                 </div>
                 {exh.subtitle && (
-                  <p className="text-xs text-[#d1a86e] font-medium">{exh.subtitle}</p>
+                  <p className="text-[11px] sm:text-xs text-[#d1a86e] font-medium truncate">{exh.subtitle}</p>
                 )}
 
-                <div className="flex items-center gap-4 text-xs text-zinc-400">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-[11px] sm:text-xs text-zinc-400">
                   <div className="flex items-center gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-[#d1a86e]" />
-                    <span>{exh.location}</span>
+                    <MapPin className="w-3.5 h-3.5 text-[#d1a86e] shrink-0" />
+                    <span className="truncate">{exh.location}</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5 text-[#d1a86e]" />
-                    <span>
+                    <Calendar className="w-3.5 h-3.5 text-[#d1a86e] shrink-0" />
+                    <span className="truncate">
                       {new Date(exh.startDate).toLocaleDateString()} — {new Date(exh.endDate).toLocaleDateString()}
                     </span>
                   </div>
                 </div>
 
                 {exh.description && (
-                  <p className="text-xs text-zinc-400 line-clamp-2">{exh.description}</p>
+                  <p className="text-[10px] sm:text-xs text-zinc-400 line-clamp-2 leading-relaxed">{exh.description}</p>
                 )}
 
-                <div className="pt-2 flex items-center justify-between text-xs text-zinc-500">
+                <div className="pt-1 sm:pt-2 flex items-center justify-between text-[10px] sm:text-xs text-zinc-500">
                   <span>{exh.artworkSlugs.length} featured works</span>
-                  <span className="font-mono text-[10px]">/{exh.slug}</span>
+                  <span className="font-mono text-[9px] sm:text-[10px]">/{exh.slug}</span>
                 </div>
               </div>
             </div>

@@ -38,17 +38,17 @@ export function OverviewTab() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left: Spotlight Original Canvas (Tier 1 Master Block) */}
         {spotlightArtwork && (
-          <div className="lg:col-span-7 bg-[#121319] rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl shadow-black/40 relative overflow-hidden">
+          <div className="lg:col-span-7 bg-[#121319] rounded-2xl sm:rounded-3xl p-4 sm:p-8 space-y-4 sm:space-y-6 shadow-xl shadow-black/40 relative overflow-hidden">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-bold">
+              <span className="text-[9px] sm:text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-bold">
                 Atelier Spotlight Original
               </span>
-              <Badge variant="gold" className="text-[10px] uppercase font-mono border-0">
+              <Badge variant="gold" className="text-[9px] sm:text-[10px] uppercase font-mono border-0">
                 {spotlightArtwork.collectionName || "Solitary Series"}
               </Badge>
             </div>
 
-            <div className="relative aspect-[16/9] w-full rounded-2xl overflow-hidden bg-[#0d0e12] group shadow-inner">
+            <div className="relative aspect-[16/9] w-full rounded-xl sm:rounded-2xl overflow-hidden bg-[#0d0e12] group shadow-inner">
               <ProgressiveImage
                 src={spotlightArtwork.coverImageUrl}
                 alt={spotlightArtwork.title}
@@ -59,20 +59,20 @@ export function OverviewTab() {
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
-              <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between">
+              <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 flex items-end justify-between">
                 <div>
-                  <h3 className="font-serif text-2xl sm:text-3xl text-white font-medium">
+                  <h3 className="font-serif text-lg sm:text-3xl text-white font-medium">
                     {spotlightArtwork.title}
                   </h3>
-                  <p className="text-xs text-[#d1a86e] mt-0.5">
+                  <p className="text-[10px] sm:text-xs text-[#d1a86e] mt-0.5">
                     {spotlightArtwork.medium} &bull; {spotlightArtwork.year}
                   </p>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] uppercase text-zinc-400 font-mono block">
-                    Estimated Valuation
+                  <span className="text-[9px] sm:text-[10px] uppercase text-zinc-400 font-mono block">
+                    Valuation
                   </span>
-                  <span className="text-lg sm:text-xl font-mono text-white font-semibold">
+                  <span className="text-sm sm:text-xl font-mono text-white font-semibold">
                     {formatCurrency(spotlightArtwork.price, spotlightArtwork.currency)}
                   </span>
                 </div>
@@ -83,39 +83,39 @@ export function OverviewTab() {
               {spotlightArtwork.description}
             </p>
 
-            <div className="flex flex-wrap items-center gap-3 pt-1">
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 sm:gap-3 pt-1">
               <Button
                 onClick={() => setInspectArtwork(spotlightArtwork)}
-                className="h-10 px-5 rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-xs font-semibold uppercase tracking-wider shadow-md shadow-[#d1a86e]/15 cursor-pointer transition-all active:scale-[0.98]"
+                className="h-9 sm:h-10 px-3 sm:px-5 rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-[11px] sm:text-xs font-semibold uppercase tracking-wider shadow-md shadow-[#d1a86e]/15 cursor-pointer transition-all active:scale-[0.98]"
               >
-                <Eye className="w-3.5 h-3.5 mr-2" />
-                <span>Inspect Details</span>
+                <Eye className="w-3.5 h-3.5 mr-1.5 sm:mr-2 shrink-0" />
+                <span className="truncate">Inspect</span>
               </Button>
 
               <Button
                 onClick={() => toggleCartArtwork(spotlightArtwork.id)}
                 className={cn(
-                  "h-10 px-5 rounded-full text-xs font-semibold uppercase tracking-wider shadow-md transition-all cursor-pointer active:scale-[0.98]",
+                  "h-9 sm:h-10 px-3 sm:px-5 rounded-full text-[11px] sm:text-xs font-semibold uppercase tracking-wider shadow-md transition-all cursor-pointer active:scale-[0.98]",
                   cartArtworkIds.includes(spotlightArtwork.id)
                     ? "bg-[#252838] text-[#d1a86e]"
                     : "bg-[#1c1d28] hover:bg-[#252736] text-zinc-200 hover:text-white"
                 )}
               >
-                <ShoppingBag className="w-3.5 h-3.5 mr-2 text-[#d1a86e]" />
-                <span>
+                <ShoppingBag className="w-3.5 h-3.5 mr-1.5 sm:mr-2 text-[#d1a86e] shrink-0" />
+                <span className="truncate">
                   {cartArtworkIds.includes(spotlightArtwork.id)
                     ? "In Dossier"
-                    : "+ Add to Dossier"}
+                    : "+ Dossier"}
                 </span>
               </Button>
 
               <Button
                 asChild
-                className="h-10 px-5 rounded-full bg-[#1c1d28] hover:bg-[#252736] text-white text-xs font-medium uppercase tracking-wider shadow-md transition-all active:scale-[0.98]"
+                className="col-span-2 sm:col-auto h-9 sm:h-10 px-4 sm:px-5 rounded-full bg-[#1c1d28] hover:bg-[#252736] text-white text-[11px] sm:text-xs font-medium uppercase tracking-wider shadow-md transition-all active:scale-[0.98]"
               >
-                <Link href={`/ar/${spotlightArtwork.slug}`} className="flex items-center gap-2">
-                  <Sparkles className="w-3.5 h-3.5 text-[#d1a86e]" />
-                  <span>View in Your Space (AR)</span>
+                <Link href={`/ar/${spotlightArtwork.slug}`} className="flex items-center justify-center gap-1.5 sm:gap-2">
+                  <Sparkles className="w-3.5 h-3.5 text-[#d1a86e] shrink-0" />
+                  <span>View in Space (AR)</span>
                 </Link>
               </Button>
             </div>
@@ -200,32 +200,32 @@ export function OverviewTab() {
 
       {/* Curatorial Cycles & Series Preview (Tier 1 Master Block) */}
       {collections.length > 0 && (
-        <div className="p-6 sm:p-8 rounded-3xl bg-[#121319] space-y-6 shadow-xl shadow-black/40">
+        <div className="p-4 sm:p-8 rounded-2xl sm:rounded-3xl bg-[#121319] space-y-4 sm:space-y-6 shadow-xl shadow-black/40">
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-[10px] tracking-[0.2em] text-[#d1a86e] uppercase font-bold">
+              <span className="text-[9px] sm:text-[10px] tracking-[0.2em] text-[#d1a86e] uppercase font-bold">
                 Atelier Suites
               </span>
-              <h2 className="font-serif text-xl sm:text-2xl text-white">Curatorial Cycles &amp; Series</h2>
+              <h2 className="font-serif text-lg sm:text-2xl text-white">Curatorial Cycles &amp; Series</h2>
             </div>
             <button
               onClick={() => setActiveTab("collections")}
-              className="text-xs text-[#d1a86e] hover:underline uppercase tracking-wider flex items-center gap-1 cursor-pointer"
+              className="text-[11px] sm:text-xs text-[#d1a86e] hover:underline uppercase tracking-wider flex items-center gap-1 cursor-pointer"
             >
-              <span>Explore All Series ({collections.length})</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <span>Explore All ({collections.length})</span>
+              <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
             {collections.slice(0, 3).map((col) => (
               <div
                 key={col.id}
                 onClick={() => setActiveTab("collections")}
-                className="group p-5 rounded-2xl bg-[#1a1b26] hover:bg-[#202230] transition-all duration-300 space-y-4 cursor-pointer flex flex-col justify-between shadow-md"
+                className="group p-3.5 sm:p-5 rounded-xl sm:rounded-2xl bg-[#1a1b26] hover:bg-[#202230] transition-all duration-300 space-y-3 cursor-pointer flex flex-col justify-between shadow-md"
               >
                 {col.coverImageUrl && (
-                  <div className="relative aspect-[16/10] w-full rounded-xl overflow-hidden bg-[#0d0e12]">
+                  <div className="relative aspect-[16/10] w-full rounded-lg sm:rounded-xl overflow-hidden bg-[#0d0e12]">
                     <ProgressiveImage
                       src={col.coverImageUrl}
                       alt={col.title}
@@ -236,19 +236,19 @@ export function OverviewTab() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                   </div>
                 )}
-                <div className="space-y-1.5">
-                  <h4 className="font-serif text-lg text-white group-hover:text-[#d1a86e] transition-colors">
+                <div className="space-y-1">
+                  <h4 className="font-serif text-sm sm:text-lg text-white group-hover:text-[#d1a86e] transition-colors line-clamp-1">
                     {col.title}
                   </h4>
-                  <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
+                  <p className="text-[11px] sm:text-xs text-zinc-400 line-clamp-2 leading-relaxed">
                     {col.curatorialStatement || col.description}
                   </p>
                 </div>
-                <div className="pt-2 flex items-center justify-between text-xs text-zinc-500">
-                  <span className="font-mono text-[11px] px-2.5 py-1 rounded-lg bg-[#121319] text-zinc-300">
+                <div className="pt-1 sm:pt-2 flex items-center justify-between text-xs text-zinc-500">
+                  <span className="font-mono text-[10px] sm:text-[11px] px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-[#121319] text-zinc-300">
                     {col.artworkSlugs?.length || 1} Works
                   </span>
-                  <span className="text-[#d1a86e] group-hover:translate-x-0.5 transition-transform flex items-center gap-1 text-[11px] font-medium uppercase tracking-wider">
+                  <span className="text-[#d1a86e] group-hover:translate-x-0.5 transition-transform flex items-center gap-1 text-[10px] sm:text-[11px] font-medium uppercase tracking-wider">
                     View Suite &rarr;
                   </span>
                 </div>
@@ -259,20 +259,20 @@ export function OverviewTab() {
       )}
 
       {/* Recent Studio Inquiries (Tier 1 Master Block with Tier 2 Contained Cards) */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-[#121319] space-y-6 shadow-xl shadow-black/40">
+      <div className="p-4 sm:p-8 rounded-2xl sm:rounded-3xl bg-[#121319] space-y-4 sm:space-y-6 shadow-xl shadow-black/40">
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-[10px] tracking-[0.2em] text-[#d1a86e] uppercase font-bold">
+            <span className="text-[9px] sm:text-[10px] tracking-[0.2em] text-[#d1a86e] uppercase font-bold">
               Provenance &amp; Correspondence
             </span>
-            <h2 className="font-serif text-xl sm:text-2xl text-white">Recent Studio Inquiries</h2>
+            <h2 className="font-serif text-lg sm:text-2xl text-white">Recent Studio Inquiries</h2>
           </div>
           <button
             onClick={() => setActiveTab("inquiries")}
-            className="text-xs text-[#d1a86e] hover:underline uppercase tracking-wider flex items-center gap-1 cursor-pointer"
+            className="text-[11px] sm:text-xs text-[#d1a86e] hover:underline uppercase tracking-wider flex items-center gap-1 cursor-pointer"
           >
-            <span>View Full Ledger ({userInquiries.length})</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <span>Full Ledger ({userInquiries.length})</span>
+            <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
           </button>
         </div>
 

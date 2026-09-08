@@ -108,20 +108,20 @@ function CollectorDashboardContent() {
   return (
     <div className="w-full space-y-8 animate-in fade-in duration-300">
       {/* 1. HERO TAB BANNER WITH CURATORIAL CHIPS */}
-      <div className="relative rounded-3xl overflow-hidden bg-[#121319] p-6 sm:p-8 lg:p-10 shadow-xl shadow-black/40 space-y-6">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2.5">
-            <div className="flex flex-wrap items-center gap-2.5">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1c1e2b] text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-bold">
+      <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-[#121319] p-4 sm:p-8 lg:p-10 shadow-xl shadow-black/40 space-y-4 sm:space-y-6">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
+          <div className="space-y-2 sm:space-y-2.5">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-[#1c1e2b] text-[9px] sm:text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-bold">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#d1a86e] animate-pulse" />
                 {currentMeta.tag}
               </span>
-              <span className="text-[10px] text-zinc-400 font-mono tracking-wider uppercase">
-                {user ? `Verified Collector (${user.name})` : "Guest Salon Access"}
+              <span className="text-[9px] sm:text-[10px] text-zinc-400 font-mono tracking-wider uppercase">
+                {user ? `Verified (${user.name})` : "Guest Salon Access"}
               </span>
             </div>
 
-            <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-white font-normal tracking-tight">
+            <h1 className="font-serif text-2xl sm:text-4xl lg:text-5xl text-white font-normal tracking-tight">
               {currentMeta.title}
             </h1>
 
@@ -130,24 +130,24 @@ function CollectorDashboardContent() {
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Button
               onClick={() => setActiveTab("ar")}
-              className="rounded-full bg-[#1c1d28] hover:bg-[#252736] text-white text-xs font-semibold uppercase tracking-wider px-5 h-10 shadow-md cursor-pointer transition-all active:scale-[0.98]"
+              className="rounded-full bg-[#1c1d28] hover:bg-[#252736] text-white text-[11px] sm:text-xs font-semibold uppercase tracking-wider px-4 sm:px-5 h-8 sm:h-10 shadow-md cursor-pointer transition-all active:scale-[0.98]"
             >
-              <Sparkles className="w-3.5 h-3.5 mr-2 text-[#d1a86e]" />
-              <span>Launch AR Studio</span>
+              <Sparkles className="w-3 sm:w-3.5 h-3 sm:h-3.5 mr-1.5 sm:mr-2 text-[#d1a86e]" />
+              <span>AR Showroom</span>
             </Button>
 
             {user?.role === "ADMIN" && (
               <Button
                 asChild
-                className="rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] font-semibold text-xs uppercase tracking-wider px-5 h-10 shadow-md shadow-[#d1a86e]/15 transition-all active:scale-[0.98]"
+                className="rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] font-semibold text-[11px] sm:text-xs uppercase tracking-wider px-4 sm:px-5 h-8 sm:h-10 shadow-md shadow-[#d1a86e]/15 transition-all active:scale-[0.98]"
               >
                 <Link href="/admin/dashboard" className="flex items-center gap-1.5">
-                  <Shield className="w-3.5 h-3.5 text-[#0d0e12]" />
-                  <span>Studio CMS</span>
-                  <ArrowRight className="w-3.5 h-3.5 text-[#0d0e12]" />
+                  <Shield className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-[#0d0e12]" />
+                  <span>CMS</span>
+                  <ArrowRight className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-[#0d0e12]" />
                 </Link>
               </Button>
             )}
@@ -155,30 +155,30 @@ function CollectorDashboardContent() {
         </div>
 
         {/* Curatorial Status Bar as a distinct nested block */}
-        <div className="relative z-10 p-4 sm:p-5 rounded-2xl bg-[#171822] flex flex-wrap items-center justify-between gap-3 shadow-inner">
-          <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#222432] text-xs text-zinc-300">
+        <div className="relative z-10 p-3 sm:p-5 rounded-xl sm:rounded-2xl bg-[#171822] flex flex-wrap items-center justify-between gap-2.5 sm:gap-3 shadow-inner">
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 sm:gap-2.5 w-full sm:w-auto">
+            <span className="inline-flex items-center justify-center sm:justify-start gap-1.5 px-2.5 py-1.5 sm:px-3 rounded-lg sm:rounded-xl bg-[#222432] text-[11px] sm:text-xs text-zinc-300">
               <span className="text-[#d1a86e] font-semibold font-mono">{artworks.length}</span> Originals
             </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#222432] text-xs text-zinc-300">
-              <span className="text-[#d1a86e] font-semibold font-mono">{collections.length}</span> Curatorial Series
+            <span className="inline-flex items-center justify-center sm:justify-start gap-1.5 px-2.5 py-1.5 sm:px-3 rounded-lg sm:rounded-xl bg-[#222432] text-[11px] sm:text-xs text-zinc-300">
+              <span className="text-[#d1a86e] font-semibold font-mono">{collections.length}</span> Series
             </span>
             <button
               onClick={() => setIsCartOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#222432] hover:bg-[#2a2d3e] text-xs text-zinc-300 hover:text-white transition-all cursor-pointer"
+              className="inline-flex items-center justify-center sm:justify-start gap-1.5 px-2.5 py-1.5 sm:px-3 rounded-lg sm:rounded-xl bg-[#222432] hover:bg-[#2a2d3e] text-[11px] sm:text-xs text-zinc-300 hover:text-white transition-all cursor-pointer"
             >
               <ShoppingBag className="w-3 h-3 text-[#d1a86e]" />
               <span className="text-[#d1a86e] font-semibold font-mono">{cartArtworkIds.length}</span> in Dossier
             </button>
             <button
               onClick={() => setActiveTab("inquiries")}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#222432] hover:bg-[#2a2d3e] text-xs text-zinc-300 hover:text-white transition-all cursor-pointer"
+              className="inline-flex items-center justify-center sm:justify-start gap-1.5 px-2.5 py-1.5 sm:px-3 rounded-lg sm:rounded-xl bg-[#222432] hover:bg-[#2a2d3e] text-[11px] sm:text-xs text-zinc-300 hover:text-white transition-all cursor-pointer"
             >
-              <span className="text-[#d1a86e] font-semibold font-mono">{userInquiries.length}</span> Ledger Inquiries
+              <span className="text-[#d1a86e] font-semibold font-mono">{userInquiries.length}</span> Ledger
             </button>
           </div>
 
-          <div className="text-[11px] text-zinc-500 font-mono hidden sm:flex items-center gap-2">
+          <div className="text-[11px] text-zinc-500 font-mono hidden lg:flex items-center gap-2">
             <span>Room:</span>
             <span className="text-[#d1a86e] uppercase tracking-wider">{currentMeta.title}</span>
           </div>

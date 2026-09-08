@@ -391,37 +391,37 @@ export function InquiriesManagerClient({
       </div>
 
       {/* Primary Section Switcher Tabs */}
-      <div className="p-1.5 bg-[#121319] rounded-2xl flex items-center gap-2 shadow-md w-fit">
+      <div className="p-1 sm:p-1.5 bg-[#121319] rounded-2xl grid grid-cols-2 sm:flex sm:items-center gap-1 sm:gap-2 shadow-md w-full sm:w-fit">
         <button
           onClick={() => setActiveTab("inquiries")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer border-none ${
+          className={`flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-[11px] sm:text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer border-none ${
             activeTab === "inquiries"
               ? "bg-[#d1a86e] text-[#0d0e12] shadow-lg shadow-black/30"
               : "text-zinc-400 hover:text-white hover:bg-[#1a1b26]"
           }`}
         >
-          <MessageSquare className="w-4 h-4" />
-          <span>Collector Inquiries</span>
-          <span className={`text-[10px] px-2 py-0.5 rounded-full ${activeTab === "inquiries" ? "bg-black/20 text-black font-bold" : "bg-[#1a1b26] text-zinc-300"}`}>
+          <MessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+          <span className="truncate">Inquiries</span>
+          <span className={`text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full ${activeTab === "inquiries" ? "bg-black/20 text-black font-bold" : "bg-[#1a1b26] text-zinc-300"}`}>
             {inquiries.length}
           </span>
         </button>
 
         <button
           onClick={() => setActiveTab("sent_emails")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer border-none ${
+          className={`flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-[11px] sm:text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer border-none ${
             activeTab === "sent_emails"
               ? "bg-[#d1a86e] text-[#0d0e12] shadow-lg shadow-black/30"
               : "text-zinc-400 hover:text-white hover:bg-[#1a1b26]"
           }`}
         >
-          <Send className="w-4 h-4" />
-          <span>Sent Dispatches &amp; Email History</span>
-          <span className={`text-[10px] px-2 py-0.5 rounded-full ${activeTab === "sent_emails" ? "bg-black/20 text-black font-bold" : "bg-[#1a1b26] text-zinc-300"}`}>
+          <Send className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+          <span className="truncate">Dispatches</span>
+          <span className={`text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full ${activeTab === "sent_emails" ? "bg-black/20 text-black font-bold" : "bg-[#1a1b26] text-zinc-300"}`}>
             {sentEmails.length}
           </span>
           {unnotifiedArtwork && (
-            <span className="flex h-2 w-2 relative">
+            <span className="flex h-2 w-2 relative shrink-0">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#d1a86e] opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-[#d1a86e]"></span>
             </span>
@@ -433,28 +433,28 @@ export function InquiriesManagerClient({
       {/* TAB 1: INQUIRIES LEDGER                                              */}
       {/* ==================================================================== */}
       {activeTab === "inquiries" && (
-        <div className="space-y-6">
-          {/* Telemetry Row */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
-            <Card className="p-5 sm:p-6 bg-[#121319] rounded-3xl shadow-xl shadow-black/40 space-y-1 border-none">
-              <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">Total Inquiries</span>
-              <div className="font-serif text-2xl text-white">{inquiries.length}</div>
-              <span className="text-[11px] text-zinc-400">All registered correspondence</span>
+        <div className="space-y-4 sm:space-y-6">
+          {/* Telemetry Row - 2 Columns on Mobile, 4 Columns on Desktop */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 w-full">
+            <Card className="p-3.5 sm:p-5 lg:p-6 bg-[#121319] rounded-2xl sm:rounded-3xl shadow-xl shadow-black/40 space-y-0.5 sm:space-y-1 border-none">
+              <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-zinc-500 font-medium truncate block">Total</span>
+              <div className="font-serif text-xl sm:text-2xl text-white">{inquiries.length}</div>
+              <span className="text-[10px] sm:text-[11px] text-zinc-400 truncate block">All correspondence</span>
             </Card>
-            <Card className="p-5 sm:p-6 bg-[#121319] rounded-3xl shadow-xl shadow-black/40 space-y-1 border-none">
-              <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">Unreplied / New</span>
-              <div className="font-serif text-2xl text-amber-400">{countNew}</div>
-              <span className="text-[11px] text-amber-400/80 font-medium">Action required</span>
+            <Card className="p-3.5 sm:p-5 lg:p-6 bg-[#121319] rounded-2xl sm:rounded-3xl shadow-xl shadow-black/40 space-y-0.5 sm:space-y-1 border-none">
+              <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-zinc-500 font-medium truncate block">New</span>
+              <div className="font-serif text-xl sm:text-2xl text-amber-400">{countNew}</div>
+              <span className="text-[10px] sm:text-[11px] text-amber-400/80 font-medium truncate block">Action required</span>
             </Card>
-            <Card className="p-5 sm:p-6 bg-[#121319] rounded-3xl shadow-xl shadow-black/40 space-y-1 border-none">
-              <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">In Review (Read)</span>
-              <div className="font-serif text-2xl text-blue-400">{countRead}</div>
-              <span className="text-[11px] text-zinc-400">Dossier inspected</span>
+            <Card className="p-3.5 sm:p-5 lg:p-6 bg-[#121319] rounded-2xl sm:rounded-3xl shadow-xl shadow-black/40 space-y-0.5 sm:space-y-1 border-none">
+              <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-zinc-500 font-medium truncate block">In Review</span>
+              <div className="font-serif text-xl sm:text-2xl text-blue-400">{countRead}</div>
+              <span className="text-[10px] sm:text-[11px] text-zinc-400 truncate block">Dossier inspected</span>
             </Card>
-            <Card className="p-5 sm:p-6 bg-[#121319] rounded-3xl shadow-xl shadow-black/40 space-y-1 border-none">
-              <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">Replied / Closed</span>
-              <div className="font-serif text-2xl text-emerald-400">{countReplied + countClosed}</div>
-              <span className="text-[11px] text-emerald-400/80 font-medium">Acquisitions processed</span>
+            <Card className="p-3.5 sm:p-5 lg:p-6 bg-[#121319] rounded-2xl sm:rounded-3xl shadow-xl shadow-black/40 space-y-0.5 sm:space-y-1 border-none">
+              <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-zinc-500 font-medium truncate block">Processed</span>
+              <div className="font-serif text-xl sm:text-2xl text-emerald-400">{countReplied + countClosed}</div>
+              <span className="text-[10px] sm:text-[11px] text-emerald-400/80 font-medium truncate block">Acquisitions closed</span>
             </Card>
           </div>
 

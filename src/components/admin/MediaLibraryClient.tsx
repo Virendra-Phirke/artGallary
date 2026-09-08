@@ -454,71 +454,71 @@ export function MediaLibraryClient() {
         </div>
       )}
 
-      {/* Storage Architecture Overview Bar */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="p-5 bg-[#121319] rounded-2xl shadow-xl shadow-black/40 flex items-center gap-4 border-none">
-          <div className="w-12 h-12 rounded-xl bg-[#1a1b26] flex items-center justify-center text-cyan-400 border-none shadow-sm">
-            <Sparkles className="w-5 h-5" />
+      {/* Provider Status Telemetry - 3 Columns on tablet/mobile, compact blocks */}
+      <div className="grid grid-cols-1 min-[520px]:grid-cols-3 gap-2.5 sm:gap-4">
+        <div className="p-3.5 sm:p-5 bg-[#121319] rounded-2xl shadow-xl shadow-black/40 flex items-center gap-3 border-none">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[#1a1b26] flex items-center justify-center text-cyan-400 border-none shadow-sm shrink-0">
+            <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
-          <div>
-            <div className="text-[11px] text-zinc-500 uppercase tracking-wider font-semibold">ImageKit CDN</div>
-            <div className="text-sm font-medium text-white flex items-center gap-1.5">
-              <span>Dynamic Transformations</span>
+          <div className="min-w-0 flex-1">
+            <div className="text-[10px] sm:text-[11px] text-zinc-500 uppercase tracking-wider font-semibold truncate">ImageKit CDN</div>
+            <div className="text-xs sm:text-sm font-medium text-white flex items-center gap-1.5 truncate">
+              <span>Edge Transform</span>
               {activeProviderName === "imagekit" && (
-                <span className="px-2 py-0.5 bg-cyan-500/20 text-cyan-300 text-[9px] rounded-lg uppercase font-bold border-none">Default</span>
+                <span className="px-1.5 py-0.5 bg-cyan-500/20 text-cyan-300 text-[8px] sm:text-[9px] rounded-lg uppercase font-bold border-none">Active</span>
               )}
             </div>
           </div>
         </div>
 
-        <div className="p-5 bg-[#121319] rounded-2xl shadow-xl shadow-black/40 flex items-center gap-4 border-none">
-          <div className="w-12 h-12 rounded-xl bg-[#1a1b26] flex items-center justify-center text-amber-400 border-none shadow-sm">
-            <Cloud className="w-5 h-5" />
+        <div className="p-3.5 sm:p-5 bg-[#121319] rounded-2xl shadow-xl shadow-black/40 flex items-center gap-3 border-none">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[#1a1b26] flex items-center justify-center text-amber-400 border-none shadow-sm shrink-0">
+            <Cloud className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
-          <div>
-            <div className="text-[11px] text-zinc-500 uppercase tracking-wider font-semibold">Cloudflare R2</div>
-            <div className="text-sm font-medium text-white flex items-center gap-1.5">
-              <span>Object Storage &amp; WebP</span>
+          <div className="min-w-0 flex-1">
+            <div className="text-[10px] sm:text-[11px] text-zinc-500 uppercase tracking-wider font-semibold truncate">Cloudflare R2</div>
+            <div className="text-xs sm:text-sm font-medium text-white flex items-center gap-1.5 truncate">
+              <span>Object Storage</span>
               {activeProviderName === "cloudflare" && (
-                <span className="px-2 py-0.5 bg-amber-500/20 text-amber-300 text-[9px] rounded-lg uppercase font-bold border-none">Default</span>
+                <span className="px-1.5 py-0.5 bg-amber-500/20 text-amber-300 text-[8px] sm:text-[9px] rounded-lg uppercase font-bold border-none">Default</span>
               )}
             </div>
           </div>
         </div>
 
-        <div className="p-5 bg-[#121319] rounded-2xl shadow-xl shadow-black/40 flex items-center gap-4 border-none">
-          <div className="w-12 h-12 rounded-xl bg-[#1a1b26] flex items-center justify-center text-emerald-400 border-none shadow-sm">
-            <CheckCircle2 className="w-5 h-5" />
+        <div className="p-3.5 sm:p-5 bg-[#121319] rounded-2xl shadow-xl shadow-black/40 flex items-center gap-3 border-none">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[#1a1b26] flex items-center justify-center text-emerald-400 border-none shadow-sm shrink-0">
+            <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
-          <div>
-            <div className="text-[11px] text-zinc-500 uppercase tracking-wider font-semibold">Neon DB Persistence</div>
-            <div className="text-sm font-medium text-white">
-              {items.length} Registered Media Assets
+          <div className="min-w-0 flex-1">
+            <div className="text-[10px] sm:text-[11px] text-zinc-500 uppercase tracking-wider font-semibold truncate">Neon DB</div>
+            <div className="text-xs sm:text-sm font-medium text-white truncate">
+              {items.length} Assets
             </div>
           </div>
         </div>
       </div>
 
       {/* Filter Tabs */}
-      <div className="p-1.5 bg-[#121319] rounded-2xl flex items-center justify-between gap-4 shadow-md border-none">
-        <div className="flex items-center gap-2">
-          <Filter className="w-3.5 h-3.5 text-zinc-500 ml-2" />
-          <span className="text-xs text-zinc-500 font-medium">Filter Provider:</span>
+      <div className="p-1.5 bg-[#121319] rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-md border-none">
+        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pb-1 sm:pb-0">
+          <Filter className="w-3.5 h-3.5 text-zinc-500 ml-2 shrink-0" />
+          <span className="text-[11px] sm:text-xs text-zinc-500 font-medium shrink-0">Provider:</span>
           {(["all", "imagekit", "cloudflare"] as const).map((prov) => (
             <button
               key={prov}
               onClick={() => setFilterProvider(prov)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs transition-colors capitalize border-none cursor-pointer ${
+              className={`px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-xl text-[11px] sm:text-xs transition-colors capitalize border-none cursor-pointer shrink-0 ${
                 filterProvider === prov
                   ? "bg-[#d1a86e] text-black font-semibold shadow-sm"
                   : "text-zinc-400 hover:text-white hover:bg-[#1a1b26]"
               }`}
             >
-              {prov === "all" ? `All Assets (${items.length})` : prov === "imagekit" ? "ImageKit" : "Cloudflare R2"}
+              {prov === "all" ? `All (${items.length})` : prov === "imagekit" ? "ImageKit" : "Cloudflare R2"}
             </button>
           ))}
         </div>
-        <span className="text-xs text-zinc-500 font-mono pr-3">Showing {filteredItems.length} assets</span>
+        <span className="text-[11px] sm:text-xs text-zinc-500 font-mono pr-3 hidden sm:inline">Showing {filteredItems.length} assets</span>
       </div>
 
       {/* Grid of Media Assets */}
@@ -539,7 +539,7 @@ export function MediaLibraryClient() {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 2xl:grid-cols-6 gap-5">
+        <div className="grid grid-cols-2 min-[480px]:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 2xl:grid-cols-6 gap-2.5 sm:gap-4">
           {paginatedItems.map((item) => {
             const isSelected = selectedIds.has(item.id);
             return (

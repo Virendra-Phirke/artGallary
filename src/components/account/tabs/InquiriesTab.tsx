@@ -26,14 +26,14 @@ export function InquiriesTab() {
   const endItem = Math.min(currentPage * pageSize, userInquiries.length);
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-200">
-      <div className="bg-[#121319] rounded-3xl p-6 sm:p-8 shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-200">
+      <div className="bg-[#121319] rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-bold">
+          <span className="text-[9px] sm:text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-bold">
             Studio Ledger
           </span>
-          <h2 className="font-serif text-3xl sm:text-4xl text-white mt-1">
-            Your Acquisition Inquiries
+          <h2 className="font-serif text-2xl sm:text-4xl text-white mt-0.5">
+            Your Inquiries
           </h2>
           <p className="text-xs sm:text-sm text-zinc-400 max-w-xl font-light leading-relaxed mt-1">
             Direct correspondence recorded with Elena Vance's studio team.
@@ -42,91 +42,91 @@ export function InquiriesTab() {
 
         <Button
           asChild
-          className="h-10 px-5 rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-xs font-semibold uppercase tracking-wider shadow-md shadow-[#d1a86e]/15 self-start sm:self-auto cursor-pointer transition-all active:scale-[0.98]"
+          className="h-8 sm:h-10 px-4 sm:px-5 rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-[11px] sm:text-xs font-semibold uppercase tracking-wider shadow-md shadow-[#d1a86e]/15 self-start sm:self-auto cursor-pointer transition-all active:scale-[0.98]"
         >
           <Link href="/contact">
             <Mail className="w-3.5 h-3.5 mr-1.5" />
-            <span>Start New Inquiry</span>
+            <span>New Inquiry</span>
           </Link>
         </Button>
       </div>
 
       {!user ? (
-        <div className="p-10 sm:p-12 text-center bg-[#121319] rounded-3xl space-y-4 max-w-xl mx-auto my-6 shadow-xl shadow-black/40">
-          <div className="w-14 h-14 rounded-2xl bg-[#1c1e2b] flex items-center justify-center text-[#d1a86e] mx-auto shadow-inner">
-            <Mail className="w-6 h-6" />
+        <div className="p-6 sm:p-12 text-center bg-[#121319] rounded-2xl sm:rounded-3xl space-y-4 max-w-xl mx-auto my-4 sm:my-6 shadow-xl shadow-black/40">
+          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-[#1c1e2b] flex items-center justify-center text-[#d1a86e] mx-auto shadow-inner">
+            <Mail className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
-          <h3 className="font-serif text-2xl text-white">Acquisition Ledger Locked</h3>
+          <h3 className="font-serif text-xl sm:text-2xl text-white">Acquisition Ledger Locked</h3>
           <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed font-light">
             Sign in to your collector account to review active inquiries, curatorial correspondence, and acquisition status.
           </p>
-          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Button asChild className="h-10 px-5 rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-xs font-semibold uppercase tracking-wider shadow-md shadow-[#d1a86e]/15 transition-all active:scale-[0.98]">
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
+            <Button asChild className="h-9 sm:h-10 px-5 rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-xs font-semibold uppercase tracking-wider shadow-md shadow-[#d1a86e]/15 transition-all active:scale-[0.98]">
               <Link href="/login?redirect=/account?tab=inquiries">
-                <span>Sign In to Access Ledger</span>
+                <span>Sign In</span>
               </Link>
             </Button>
-            <Button asChild className="h-10 px-5 rounded-full bg-[#1c1d28] hover:bg-[#252736] text-zinc-200 hover:text-white text-xs uppercase tracking-wider transition-all active:scale-[0.98] shadow-md">
+            <Button asChild className="h-9 sm:h-10 px-5 rounded-full bg-[#1c1d28] hover:bg-[#252736] text-zinc-200 hover:text-white text-xs uppercase tracking-wider transition-all active:scale-[0.98] shadow-md">
               <Link href="/register?redirect=/account?tab=inquiries">
-                <span>Register Account</span>
+                <span>Register</span>
               </Link>
             </Button>
           </div>
         </div>
       ) : userInquiries.length === 0 ? (
-        <div className="p-12 text-center bg-[#121319] rounded-3xl space-y-4 shadow-xl shadow-black/40">
-          <Mail className="w-10 h-10 text-zinc-600 mx-auto" />
-          <h3 className="font-serif text-2xl text-white">No active inquiries recorded</h3>
+        <div className="p-8 sm:p-12 text-center bg-[#121319] rounded-2xl sm:rounded-3xl space-y-3 sm:space-y-4 shadow-xl shadow-black/40">
+          <Mail className="w-8 h-8 sm:w-10 sm:h-10 text-zinc-600 mx-auto" />
+          <h3 className="font-serif text-xl sm:text-2xl text-white">No active inquiries recorded</h3>
           <p className="text-xs sm:text-sm text-zinc-400 max-w-md mx-auto leading-relaxed font-light">
             When you inquire about acquiring an original painting or scheduling a private viewing, your studio correspondence will be tracked here in your private ledger.
           </p>
-          <Button asChild className="rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-xs uppercase tracking-wider font-semibold shadow-md shadow-[#d1a86e]/15 px-6 h-10">
+          <Button asChild className="rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-xs uppercase tracking-wider font-semibold shadow-md shadow-[#d1a86e]/15 px-5 sm:px-6 h-9 sm:h-10">
             <Link href="/account?tab=gallery">Browse Gallery to Inquire</Link>
           </Button>
         </div>
       ) : (
-        <div className="space-y-6">
-          {/* Curatorial Ledger Summary Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="p-5 sm:p-6 rounded-2xl bg-[#121319] space-y-1 shadow-md">
-              <span className="text-[10px] uppercase font-mono tracking-widest text-zinc-500">
-                Total Inquiries
+        <div className="space-y-4 sm:space-y-6">
+          {/* Curatorial Ledger Summary Cards - 3 Column Micro Grid */}
+          <div className="grid grid-cols-3 gap-2 sm:gap-4">
+            <div className="p-3 sm:p-6 rounded-xl sm:rounded-2xl bg-[#121319] space-y-0.5 sm:space-y-1 shadow-md">
+              <span className="text-[8px] sm:text-[10px] uppercase font-mono tracking-wider sm:tracking-widest text-zinc-500 block truncate">
+                Total
               </span>
-              <div className="font-serif text-2xl sm:text-3xl text-white font-medium">
+              <div className="font-serif text-lg sm:text-3xl text-white font-medium">
                 {userInquiries.length}
               </div>
-              <p className="text-[11px] text-zinc-500">Logged studio transmissions</p>
+              <p className="text-[9px] sm:text-[11px] text-zinc-500 truncate hidden xs:block">Transmissions</p>
             </div>
 
-            <div className="p-5 sm:p-6 rounded-2xl bg-[#121319] space-y-1 shadow-md">
-              <span className="text-[10px] uppercase font-mono tracking-widest text-zinc-500">
-                Studio Responses
+            <div className="p-3 sm:p-6 rounded-xl sm:rounded-2xl bg-[#121319] space-y-0.5 sm:space-y-1 shadow-md">
+              <span className="text-[8px] sm:text-[10px] uppercase font-mono tracking-wider sm:tracking-widest text-zinc-500 block truncate">
+                Replies
               </span>
-              <div className="font-serif text-2xl sm:text-3xl text-emerald-400 font-medium">
+              <div className="font-serif text-lg sm:text-3xl text-emerald-400 font-medium">
                 {userInquiries.filter((i) => i.status === "replied").length}
               </div>
-              <p className="text-[11px] text-zinc-500">Curatorial replies received</p>
+              <p className="text-[9px] sm:text-[11px] text-zinc-500 truncate hidden xs:block">Received</p>
             </div>
 
-            <div className="p-5 sm:p-6 rounded-2xl bg-[#121319] space-y-1 shadow-md">
-              <span className="text-[10px] uppercase font-mono tracking-widest text-zinc-500">
-                Liaison Status
+            <div className="p-3 sm:p-6 rounded-xl sm:rounded-2xl bg-[#121319] space-y-0.5 sm:space-y-1 shadow-md">
+              <span className="text-[8px] sm:text-[10px] uppercase font-mono tracking-wider sm:tracking-widest text-zinc-500 block truncate">
+                Liaison
               </span>
-              <div className="font-serif text-2xl sm:text-3xl text-[#d1a86e] font-medium flex items-center gap-2">
+              <div className="font-serif text-lg sm:text-3xl text-[#d1a86e] font-medium flex items-center gap-1.5">
                 <span>Active</span>
-                <span className="w-2 h-2 rounded-full bg-[#d1a86e] animate-ping" />
+                <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#d1a86e] animate-ping" />
               </div>
-              <p className="text-[11px] text-zinc-500">Guaranteed 24hr response</p>
+              <p className="text-[9px] sm:text-[11px] text-zinc-500 truncate hidden xs:block">24hr Response</p>
             </div>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {paginatedInquiries.map((inq) => (
               <div
                 key={inq.id}
-                className="p-6 sm:p-8 bg-[#1a1b26] rounded-3xl space-y-5 shadow-xl shadow-black/40"
+                className="p-4 sm:p-8 bg-[#1a1b26] rounded-2xl sm:rounded-3xl space-y-3 sm:space-y-5 shadow-xl shadow-black/40"
               >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3">
                   <div className="flex items-center gap-3">
                     <Badge
                       variant={

@@ -62,39 +62,39 @@ export function HeroShowcaseClient({
 
   return (
     <>
-      <section className="relative min-h-[92vh] flex items-center justify-center pt-28 pb-16 px-6 sm:px-10 md:px-14 lg:px-16 overflow-hidden">
+      <section className="relative min-h-[92vh] flex items-center justify-center pt-20 sm:pt-28 pb-12 sm:pb-16 px-3.5 sm:px-10 md:px-14 lg:px-16 overflow-hidden">
         {/* Subtle Ambient Light Glow */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#d1a86e]/8 rounded-full blur-[160px] pointer-events-none" />
 
-        <div className="max-w-[1800px] mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-12 items-center">
+        <div className="max-w-[1800px] mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-center">
           {/* Left Hero Narrative */}
-          <div className="lg:col-span-6 space-y-6 md:space-y-8 z-10">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#18191e] border border-[#262833] text-[11px] tracking-[0.25em] text-[#d1a86e] uppercase">
+          <div className="lg:col-span-6 space-y-4 sm:space-y-6 md:space-y-8 z-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-[#18191e] text-[10px] sm:text-[11px] tracking-[0.25em] text-[#d1a86e] uppercase">
               <span className="w-1.5 h-1.5 rounded-full bg-[#d1a86e] animate-pulse" />
               <span>{heroBadge}</span>
             </div>
 
-            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.08] text-white tracking-tight font-medium">
+            <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.1] sm:leading-[1.08] text-white tracking-tight font-medium">
               {heroTitle}
             </h1>
 
-            <p className="text-sm md:text-base text-[#a6aabf] max-w-lg leading-relaxed font-light">
+            <p className="text-xs sm:text-sm md:text-base text-[#a6aabf] max-w-lg leading-relaxed font-light">
               {heroDescription}
             </p>
 
-            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+            <div className="pt-1 sm:pt-2 grid grid-cols-2 sm:flex sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
               <Button
                 asChild
                 size="lg"
-                className="rounded-full bg-gradient-to-r from-[#d1a86e] via-[#e2c18d] to-[#b98e54] text-[#0d0e12] px-8 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] shadow-xl shadow-[#d1a86e]/25 hover:shadow-[#d1a86e]/40 hover:scale-[1.02] transition-all"
+                className="rounded-full bg-gradient-to-r from-[#d1a86e] via-[#e2c18d] to-[#b98e54] text-[#0d0e12] px-4 sm:px-8 py-2.5 sm:py-3.5 text-[11px] sm:text-xs font-semibold uppercase tracking-wider sm:tracking-[0.2em] shadow-xl shadow-[#d1a86e]/25 hover:shadow-[#d1a86e]/40 transition-all h-10 sm:h-12"
               >
                 <Link
                   href="/account"
-                  className="flex items-center justify-center gap-2.5"
+                  className="flex items-center justify-center gap-1.5 sm:gap-2.5"
                 >
-                  <Sparkles className="w-4 h-4 text-[#0d0e12]" />
-                  <span>Enter Collector Salon</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#0d0e12] shrink-0" />
+                  <span className="truncate">Collector Salon</span>
+                  <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 hidden xs:inline" />
                 </Link>
               </Button>
 
@@ -103,36 +103,36 @@ export function HeroShowcaseClient({
                   asChild
                   variant="secondary"
                   size="lg"
-                  className="rounded-full border-[#2b2e3c] bg-[#14151a]/90 hover:bg-[#1f212a] hover:border-[#d1a86e]/50 text-white px-6 py-3.5 text-xs font-medium uppercase tracking-[0.2em] backdrop-blur-md transition-all shadow-lg"
+                  className="rounded-full bg-[#14151a]/90 hover:bg-[#1f212a] text-white px-4 sm:px-6 py-2.5 sm:py-3.5 text-[11px] sm:text-xs font-medium uppercase tracking-wider sm:tracking-[0.2em] backdrop-blur-md transition-all shadow-lg h-10 sm:h-12"
                 >
                   <Link
                     href={`/ar/${activeArtwork.slug}`}
-                    className="flex items-center justify-center gap-2"
+                    className="flex items-center justify-center gap-1.5 sm:gap-2"
                   >
-                    <Sparkles className="w-4 h-4 text-[#d1a86e]" />
-                    <span>View in Your Space (AR)</span>
+                    <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#d1a86e] shrink-0" />
+                    <span className="truncate">View in AR</span>
                   </Link>
                 </Button>
               )}
             </div>
 
-            {/* Curatorial Highlights Metrics */}
-            <div className="pt-8 border-t border-[#1c1d25] grid grid-cols-3 gap-3 sm:gap-6 text-left">
+            {/* Curatorial Highlights Metrics - 3 columns */}
+            <div className="pt-4 sm:pt-8 grid grid-cols-3 gap-2 sm:gap-6 text-left">
               <div>
-                <span className="block font-serif text-xl sm:text-2xl text-white">20+</span>
-                <span className="text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest uppercase text-zinc-500">
+                <span className="block font-serif text-lg sm:text-2xl text-white">20+</span>
+                <span className="text-[8px] sm:text-[10px] tracking-wider sm:tracking-widest uppercase text-zinc-500">
                   Oil Glaze Layers
                 </span>
               </div>
               <div>
-                <span className="block font-serif text-xl sm:text-2xl text-white">1:1</span>
-                <span className="text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest uppercase text-zinc-500">
+                <span className="block font-serif text-lg sm:text-2xl text-white">1:1</span>
+                <span className="text-[8px] sm:text-[10px] tracking-wider sm:tracking-widest uppercase text-zinc-500">
                   Spatial Scale AR
                 </span>
               </div>
               <div>
-                <span className="block font-serif text-xl sm:text-2xl text-white">Paris</span>
-                <span className="text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest uppercase text-zinc-500">
+                <span className="block font-serif text-lg sm:text-2xl text-white">Paris</span>
+                <span className="text-[8px] sm:text-[10px] tracking-wider sm:tracking-widest uppercase text-zinc-500">
                   Atelier &amp; Studio
                 </span>
               </div>
@@ -140,10 +140,10 @@ export function HeroShowcaseClient({
           </div>
 
           {/* Right Hero: Dynamic Masterpiece Plaque & Carousel */}
-          <div className="lg:col-span-6 relative flex flex-col items-center z-10">
+          <div className="lg:col-span-6 relative flex flex-col items-center z-10 w-full">
             <div className="relative group w-full max-w-lg">
               {/* Frame & Canvas Presentation */}
-              <div className="relative aspect-[4/3] rounded-xl overflow-hidden border border-[#262833] bg-[#14151a] shadow-2xl shadow-black/90 group">
+              <div className="relative aspect-[4/3] rounded-xl sm:rounded-2xl overflow-hidden bg-[#14151a] shadow-2xl shadow-black/90 group">
                 <ProgressiveImage
                   src={displayImage}
                   alt={activeArtwork?.altText || heroTitle}
@@ -157,7 +157,7 @@ export function HeroShowcaseClient({
 
                 {/* Status Indicator */}
                 {activeArtwork?.status && (
-                  <div className="absolute top-4 left-4 z-10">
+                  <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10">
                     <Badge
                       variant={
                         activeArtwork.status === "published"
@@ -166,7 +166,7 @@ export function HeroShowcaseClient({
                           ? "warning"
                           : "secondary"
                       }
-                      className="backdrop-blur-md bg-black/60 border border-white/10"
+                      className="backdrop-blur-md bg-black/60 border-0 text-[8px] sm:text-[10px]"
                     >
                       {activeArtwork.status === "published"
                         ? "Available"
@@ -176,12 +176,12 @@ export function HeroShowcaseClient({
                 )}
 
                 {/* Interactive Overlay on Hover */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 sm:p-6">
                   {activeArtwork && (
                     <div className="flex items-center justify-between gap-3">
                       <button
                         onClick={() => setQuickViewArtwork(activeArtwork)}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-xs uppercase tracking-wider text-white transition-colors"
+                        className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md text-xs uppercase tracking-wider text-white transition-colors"
                       >
                         <Eye className="w-3.5 h-3.5 text-[#d1a86e]" />
                         <span>Inspect Details</span>
@@ -191,7 +191,7 @@ export function HeroShowcaseClient({
                         href={`/artwork/${activeArtwork.slug}`}
                         className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-[#d1a86e] hover:text-[#e2c18d] transition-colors"
                       >
-                        <span>Examine Provenance</span>
+                        <span>Examine</span>
                         <ArrowRight className="w-3.5 h-3.5" />
                       </Link>
                     </div>
@@ -201,39 +201,39 @@ export function HeroShowcaseClient({
 
               {/* Masterpiece Specification Plaque */}
               {activeArtwork && (
-                <div className="mt-4 p-4 rounded-xl bg-[#14151a]/95 backdrop-blur-md border border-[#262833] flex items-center justify-between shadow-xl">
-                  <div className="space-y-0.5">
+                <div className="mt-3 sm:mt-4 p-3 sm:p-4 rounded-xl bg-[#14151a]/95 backdrop-blur-md flex items-center justify-between shadow-xl">
+                  <div className="space-y-0.5 min-w-0 pr-2">
                     <div className="flex items-center gap-2">
-                      <h2 className="font-serif text-base sm:text-lg text-white font-medium">
+                      <h2 className="font-serif text-sm sm:text-lg text-white font-medium truncate">
                         {activeArtwork.title}
                       </h2>
                       {activeArtwork.price && (
-                        <span className="text-xs text-[#d1a86e] font-mono">
+                        <span className="text-[11px] sm:text-xs text-[#d1a86e] font-mono shrink-0">
                           {formatCurrency(activeArtwork.price, activeArtwork.currency)}
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-[#8e92a4]">
+                    <p className="text-[10px] sm:text-xs text-[#8e92a4] truncate">
                       {activeArtwork.year} • {formatDimensions(activeArtwork.widthCm, activeArtwork.heightCm)} • {activeArtwork.medium}
                     </p>
                   </div>
 
-                  <div className="flex items-center gap-2 shrink-0">
+                  <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                     <button
                       onClick={() => setQuickViewArtwork(activeArtwork)}
-                      className="p-2 rounded-full bg-[#1c1d25] hover:bg-[#262833] border border-[#262833] text-zinc-300 hover:text-white transition-colors"
+                      className="p-1.5 sm:p-2 rounded-full bg-[#1c1d25] hover:bg-[#262833] text-zinc-300 hover:text-white transition-colors"
                       title="Quick inspection"
                       aria-label="Inspect artwork details"
                     >
-                      <Eye className="w-4 h-4" />
+                      <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </button>
 
                     <Link
                       href={`/ar/${activeArtwork.slug}`}
-                      className="flex items-center gap-1.5 text-xs tracking-wider uppercase text-[#d1a86e] hover:text-white transition-colors bg-[#1a1c23] px-3.5 py-2 rounded-full border border-[#262833]"
+                      className="flex items-center gap-1 text-[10px] sm:text-xs tracking-wider uppercase text-[#d1a86e] hover:text-white transition-colors bg-[#1a1c23] px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-full"
                     >
-                      <Sparkles className="w-3.5 h-3.5" />
-                      <span className="hidden sm:inline">Try AR</span>
+                      <Sparkles className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
+                      <span>AR</span>
                     </Link>
                   </div>
                 </div>

@@ -170,15 +170,15 @@ export function AdminVerticalDock({
 
   return (
     <TooltipProvider>
-      {/* 1. Invisible Left-Edge Hit Sensor Zone */}
+      {/* 1. Invisible Left-Edge Hit Sensor Zone (Desktop Only) */}
       <div
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className="fixed left-0 top-0 bottom-0 w-4 md:w-5 z-40 pointer-events-auto"
+        className="hidden md:block fixed left-0 top-0 bottom-0 w-4 md:w-5 z-40 pointer-events-auto"
         aria-hidden="true"
       />
 
-      {/* 2. Visual Peek Tab Indicator when Hidden */}
+      {/* 2. Visual Peek Tab Indicator when Hidden (Desktop Only) */}
       <AnimatePresence>
         {!isVisible && (
           <motion.div
@@ -187,7 +187,7 @@ export function AdminVerticalDock({
             exit={{ opacity: 0, x: -10 }}
             transition={{ duration: 0.2 }}
             onMouseEnter={handleMouseEnter}
-            className="fixed left-0 top-1/2 -translate-y-1/2 z-40 flex items-center group cursor-pointer"
+            className="hidden md:flex fixed left-0 top-1/2 -translate-y-1/2 z-40 items-center group cursor-pointer"
             title="Hover to reveal navigation dock"
           >
             <div className="h-16 w-2 bg-[#d1a86e]/30 group-hover:bg-[#d1a86e] rounded-r-md transition-all duration-200 group-hover:w-3 shadow-lg shadow-black/50 flex items-center justify-center">
@@ -197,7 +197,7 @@ export function AdminVerticalDock({
         )}
       </AnimatePresence>
 
-      {/* 3. Floating Vertical Dock Container */}
+      {/* 3. Floating Vertical Dock Container (Desktop Only) */}
       <motion.nav
         aria-label="Admin Navigation Dock"
         initial={false}
@@ -213,7 +213,7 @@ export function AdminVerticalDock({
         }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className="fixed left-3 top-1/2 -translate-y-1/2 z-50 flex flex-col items-center select-none"
+        className="hidden md:flex fixed left-3 top-1/2 -translate-y-1/2 z-50 flex-col items-center select-none"
       >
         <Dock
           orientation="vertical"

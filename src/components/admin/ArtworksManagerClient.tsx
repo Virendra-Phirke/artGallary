@@ -179,29 +179,29 @@ export function ArtworksManagerClient({
   return (
     <div className="space-y-6">
       {/* Header Plaque - Solid Tier 1 Master Block */}
-      <div className="bg-[#121319] p-6 sm:p-8 rounded-3xl shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-[#121319] p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
-            Catalog Management
+          <span className="text-[9px] sm:text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
+            Catalog Inventory
           </span>
-          <h1 className="font-serif text-3xl text-white mt-1">Artworks CMS</h1>
-          <p className="text-xs text-zinc-400 mt-1">
-            Manage inventory, publish new canvases, configure WebAR dimensions, and monitor readiness.
+          <h1 className="font-serif text-2xl sm:text-3xl text-white mt-0.5 sm:mt-1">Artworks CMS</h1>
+          <p className="text-[11px] sm:text-xs text-zinc-400 mt-0.5 sm:mt-1">
+            Manage your masterworks, calibrate 1:1 physical spatial dimensions, and publish canvases.
           </p>
         </div>
 
-        <div className="flex items-center gap-3 self-start sm:self-auto flex-wrap">
+        <div className="flex items-center gap-2 self-start sm:self-auto flex-wrap">
           <Link
             href="/admin/media"
-            className="bg-[#1a1b26] hover:bg-[#222432] text-xs text-zinc-300 hover:text-white px-3.5 py-2 rounded-xl shadow-sm transition-colors flex items-center gap-1.5"
+            className="bg-[#1a1b26] hover:bg-[#222432] text-[11px] sm:text-xs text-zinc-300 hover:text-white px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl shadow-sm transition-colors flex items-center gap-1.5"
           >
             <Layers className="w-3.5 h-3.5 text-[#d1a86e]" />
-            <span>Media Library</span>
+            <span>Media</span>
           </Link>
 
           <Link
             href="/admin/artworks/new"
-            className="bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-xs px-4 py-2 rounded-xl shadow-md shadow-[#d1a86e]/20 transition-colors flex items-center gap-2"
+            className="bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-[11px] sm:text-xs px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl shadow-md shadow-[#d1a86e]/20 transition-colors flex items-center gap-1.5"
           >
             <Plus className="w-4 h-4" />
             <span>New Artwork</span>
@@ -531,7 +531,7 @@ export function ArtworksManagerClient({
 
       {/* 2. VISUAL IMAGE GRID VIEW */}
       {viewLayout === "grid" && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2.5 sm:gap-4 lg:gap-5">
           {filtered.length === 0 ? (
             <div className="col-span-full py-16 text-center text-zinc-500 bg-[#121319] rounded-3xl shadow-xl shadow-black/40">
               No artworks found matching your filter criteria.
@@ -540,7 +540,7 @@ export function ArtworksManagerClient({
             paginatedArtworks.map((art) => (
               <div
                 key={art.id}
-                className="group rounded-3xl bg-[#1a1b26] overflow-hidden hover:bg-[#202230] transition-all flex flex-col shadow-md shadow-black/30"
+                className="group rounded-2xl sm:rounded-3xl bg-[#1a1b26] overflow-hidden hover:bg-[#202230] transition-all flex flex-col shadow-md shadow-black/30"
               >
                 {/* Visual Image Preview */}
                 <div className="relative aspect-[4/3] w-full bg-black/50 overflow-hidden">
@@ -554,12 +554,12 @@ export function ArtworksManagerClient({
                     className="object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   {/* Status & AR Badges */}
-                  <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+                  <div className="absolute top-2 left-2 flex items-center gap-1">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <button type="button" className="focus:outline-none">
                           <span
-                            className={`text-[9px] font-mono font-bold px-2.5 py-1 rounded-full shadow-md cursor-pointer inline-flex items-center gap-1 ${
+                            className={`text-[8px] sm:text-[9px] font-mono font-bold px-2 py-0.5 rounded-full shadow-md cursor-pointer inline-flex items-center gap-1 ${
                               art.status === "published"
                                 ? "bg-[#14231b] text-emerald-300"
                                 : art.status === "sold"
@@ -596,51 +596,51 @@ export function ArtworksManagerClient({
                     </DropdownMenu>
                   </div>
 
-                  <div className="absolute top-2.5 right-2.5">
+                  <div className="absolute top-2 right-2">
                     {art.arConfig?.arReadinessStatus === "ready" ? (
-                      <span className="text-[8px] uppercase tracking-wider px-2.5 py-1 rounded-full bg-[#14231b] text-emerald-300 font-mono shadow-md">
+                      <span className="text-[7px] sm:text-[8px] uppercase tracking-wider px-1.5 sm:px-2 py-0.5 rounded-full bg-[#14231b] text-emerald-300 font-mono shadow-md">
                         AR READY
                       </span>
                     ) : (
-                      <span className="text-[8px] uppercase tracking-wider px-2.5 py-1 rounded-full bg-[#2a1d14] text-amber-300 font-mono shadow-md">
-                        AR ATTENTION
+                      <span className="text-[7px] sm:text-[8px] uppercase tracking-wider px-1.5 sm:px-2 py-0.5 rounded-full bg-[#2a1d14] text-amber-300 font-mono shadow-md">
+                        AR REQ
                       </span>
                     )}
                   </div>
 
                   {/* Price Tag Overlay */}
-                  <div className="absolute bottom-2.5 right-2.5 px-3 py-1 rounded-xl bg-black/80 backdrop-blur-md text-xs font-semibold text-[#d1a86e] font-mono shadow-md">
+                  <div className="absolute bottom-2 right-2 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl bg-black/80 backdrop-blur-md text-[10px] sm:text-xs font-semibold text-[#d1a86e] font-mono shadow-md">
                     {formatCurrency(art.price, art.currency)}
                   </div>
                 </div>
 
                 {/* Card Body */}
-                <div className="p-5 space-y-2 flex-1 flex flex-col justify-between">
+                <div className="p-3 sm:p-4 space-y-1.5 flex-1 flex flex-col justify-between">
                   <div>
-                    <div className="flex items-baseline justify-between gap-2">
-                      <h3 className="font-serif text-base text-white font-medium truncate group-hover:text-[#d1a86e] transition-colors">
+                    <div className="flex items-baseline justify-between gap-1.5">
+                      <h3 className="font-serif text-xs sm:text-sm text-white font-medium truncate group-hover:text-[#d1a86e] transition-colors">
                         {art.title}
                       </h3>
-                      <span className="text-[10px] text-zinc-500 font-mono shrink-0">
+                      <span className="text-[9px] text-zinc-500 font-mono shrink-0">
                         {art.year}
                       </span>
                     </div>
-                    <p className="text-xs text-zinc-400 line-clamp-1 mt-0.5">
+                    <p className="text-[10px] sm:text-xs text-zinc-400 line-clamp-1 mt-0.5">
                       {art.medium}
                     </p>
-                    <p className="text-[11px] text-zinc-500 font-mono mt-0.5">
+                    <p className="text-[9px] sm:text-[11px] text-zinc-500 font-mono mt-0.5">
                       {formatDimensions(art.widthCm, art.heightCm, art.depthCm)}
                     </p>
                   </div>
 
                   {/* Action Bar */}
-                  <div className="pt-3 flex items-center justify-between">
-                    <div className="flex items-center gap-1">
+                  <div className="pt-2 flex items-center justify-between">
+                    <div className="flex items-center gap-0.5 sm:gap-1">
                       <Button
                         asChild
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-zinc-800"
+                        className="h-7 w-7 text-zinc-400 hover:text-white"
                         title="Live Preview"
                       >
                         <Link href={`/artwork/${art.slug}`} target="_blank">
@@ -651,7 +651,7 @@ export function ArtworksManagerClient({
                         asChild
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-[#d1a86e] hover:text-[#e2c18d] hover:bg-zinc-800"
+                        className="h-7 w-7 text-[#d1a86e] hover:text-[#e2c18d]"
                         title="Spatial WebAR"
                       >
                         <Link href={`/ar/${art.slug}`} target="_blank">
@@ -662,7 +662,7 @@ export function ArtworksManagerClient({
                         asChild
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-zinc-800"
+                        className="h-7 w-7 text-zinc-300 hover:text-white"
                         title="Edit Full Spec"
                       >
                         <Link href={`/admin/artworks/${art.id}`}>
@@ -676,7 +676,7 @@ export function ArtworksManagerClient({
                       variant="ghost"
                       size="icon"
                       onClick={() => setArtworkToDelete(art)}
-                      className="h-8 w-8 text-zinc-500 hover:text-rose-400 hover:bg-rose-950/40"
+                      className="h-7 w-7 text-zinc-500 hover:text-rose-400"
                       title="Permanently Delete Artwork"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -689,125 +689,83 @@ export function ArtworksManagerClient({
         </div>
       )}
 
-      {/* 3. MOBILE CARD LIST VIEW (shown when screen < 768px in table mode) */}
+      {/* 3. MOBILE 2-COLUMN GRID VIEW (shown when screen < 768px in table mode) */}
       {viewLayout === "table" && (
-        <div className="md:hidden space-y-3">
+        <div className="md:hidden grid grid-cols-2 gap-2.5 sm:gap-3.5">
           {filtered.length === 0 ? (
-            <div className="p-8 text-center text-zinc-500 text-xs bg-[#121319] rounded-2xl">
+            <div className="col-span-full p-8 text-center text-zinc-500 text-xs bg-[#121319] rounded-2xl">
               No artworks found matching your filter criteria.
             </div>
           ) : (
             paginatedArtworks.map((art) => (
-              <div key={art.id} className="p-5 bg-[#1a1b26] rounded-2xl space-y-3 shadow-md shadow-black/30">
-                <div className="flex items-start gap-3">
-                  <div className="relative w-16 h-14 rounded-xl overflow-hidden bg-black/40 shrink-0">
+              <div key={art.id} className="p-3 bg-[#1a1b26] rounded-2xl space-y-2.5 shadow-md shadow-black/30 flex flex-col justify-between">
+                <div>
+                  <div className="relative aspect-[4/3] w-full rounded-xl overflow-hidden bg-black/40">
                     <ProgressiveImage
                       src={art.coverImageUrl}
                       alt={art.altText || art.title}
                       fill
-                      optimizeWidth={140}
-                      optimizeQuality={75}
-                      sizes="64px"
+                      optimizeWidth={280}
+                      optimizeQuality={80}
+                      sizes="180px"
                       className="object-cover"
                     />
+                    <div className="absolute top-1.5 left-1.5">
+                      <span
+                        className={`text-[8px] font-mono font-bold px-1.5 py-0.5 rounded-full ${
+                          art.status === "published"
+                            ? "bg-[#14231b] text-emerald-300"
+                            : art.status === "sold"
+                            ? "bg-[#251e16] text-[#d1a86e]"
+                            : "bg-[#222432] text-zinc-300"
+                        }`}
+                      >
+                        {art.status}
+                      </span>
+                    </div>
+                    <div className="absolute bottom-1.5 right-1.5 px-2 py-0.5 rounded-lg bg-black/80 text-[10px] font-mono font-semibold text-[#d1a86e]">
+                      {formatCurrency(art.price, art.currency)}
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0 space-y-0.5">
-                    <span className="font-serif text-sm text-white font-medium block truncate">
+                  <div className="pt-2 space-y-0.5">
+                    <span className="font-serif text-xs text-white font-medium block truncate">
                       {art.title}
                     </span>
-                    <p className="text-[11px] text-zinc-400 truncate">
+                    <p className="text-[10px] text-zinc-400 truncate">
                       {art.medium} ({art.year})
-                    </p>
-                    <p className="text-xs font-semibold text-[#d1a86e] font-mono">
-                      {formatCurrency(art.price, art.currency)}
                     </p>
                   </div>
                 </div>
 
-                <div className="pt-2 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <button
-                          type="button"
-                          className="inline-flex items-center gap-1 focus:outline-none"
-                        >
-                          <span
-                            className={`cursor-pointer text-[10px] font-mono font-bold px-2.5 py-1 rounded-full ${
-                              art.status === "published"
-                                ? "bg-[#14231b] text-emerald-300"
-                                : art.status === "sold"
-                                ? "bg-[#251e16] text-[#d1a86e]"
-                                : "bg-[#222432] text-zinc-300"
-                            }`}
-                          >
-                            <span>{art.status}</span>
-                            <ChevronDown className="w-2.5 h-2.5 opacity-70" />
-                          </span>
-                        </button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="start">
-                        <DropdownMenuLabel>Change Status</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        {(
-                          [
-                            "published",
-                            "draft",
-                            "reserved",
-                            "sold",
-                            "archived",
-                          ] as const
-                        ).map((st) => (
-                          <DropdownMenuItem
-                            key={st}
-                            onClick={() => handleQuickStatusChange(art, st)}
-                            className="capitalize font-mono text-xs"
-                          >
-                            {st}
-                          </DropdownMenuItem>
-                        ))}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-
-                    {art.arConfig?.arReadinessStatus === "ready" ? (
-                      <span className="text-[9px] py-0.5 px-2 rounded-full bg-[#14231b] text-emerald-300 font-mono">
-                        AR READY
-                      </span>
-                    ) : (
-                      <span className="text-[9px] py-0.5 px-2 rounded-full bg-[#2a1d14] text-amber-300 font-mono">
-                        ATTENTION
-                      </span>
-                    )}
-                  </div>
-
+                <div className="pt-1 flex items-center justify-between border-t border-transparent">
                   <div className="flex items-center gap-1">
-                    <Button asChild variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-white">
+                    <Button asChild variant="ghost" size="icon" className="h-7 w-7 text-zinc-400 hover:text-white">
                       <Link href={`/artwork/${art.slug}`} target="_blank" title="Preview">
                         <Eye className="w-3.5 h-3.5" />
                       </Link>
                     </Button>
-                    <Button asChild variant="ghost" size="icon" className="h-8 w-8 text-[#d1a86e] hover:text-[#e2c18d]">
+                    <Button asChild variant="ghost" size="icon" className="h-7 w-7 text-[#d1a86e] hover:text-[#e2c18d]">
                       <Link href={`/ar/${art.slug}`} target="_blank" title="AR">
                         <Sparkles className="w-3.5 h-3.5" />
                       </Link>
                     </Button>
-                    <Button asChild variant="secondary" size="sm" className="h-8 px-2.5 text-xs">
-                      <Link href={`/admin/artworks/${art.id}`}>
-                        <Edit className="w-3.5 h-3.5 mr-1" />
-                        <span>Edit</span>
+                    <Button asChild variant="ghost" size="icon" className="h-7 w-7 text-zinc-300 hover:text-white">
+                      <Link href={`/admin/artworks/${art.id}`} title="Edit">
+                        <Edit className="w-3.5 h-3.5" />
                       </Link>
                     </Button>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setArtworkToDelete(art)}
-                      className="h-8 w-8 text-zinc-500 hover:text-rose-400"
-                      title="Delete"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </Button>
                   </div>
+
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setArtworkToDelete(art)}
+                    className="h-7 w-7 text-zinc-500 hover:text-rose-400"
+                    title="Delete"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </Button>
                 </div>
               </div>
             ))

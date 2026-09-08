@@ -61,56 +61,56 @@ export function FeaturedArtworksClient({
 
   return (
     <>
-      <section className="max-w-[1800px] mx-auto px-6 sm:px-10 md:px-14 lg:px-16">
+      <section className="max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 border-b border-[#1c1d25] pb-6 gap-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 sm:mb-8 pb-4 sm:pb-6 gap-4 sm:gap-6">
           <div>
-            <span className="text-xs tracking-[0.25em] text-[#d1a86e] uppercase font-medium">
+            <span className="text-[10px] sm:text-xs tracking-[0.25em] text-[#d1a86e] uppercase font-medium">
               {sectionSubtitle}
             </span>
-            <h2 className="font-serif text-3xl md:text-5xl text-white mt-1">
+            <h2 className="font-serif text-2xl sm:text-3xl md:text-5xl text-white mt-1">
               {sectionTitle}
             </h2>
           </div>
 
           {/* Quick Categories Filter */}
-          <div className="flex items-center space-x-2 overflow-x-auto pb-2 md:pb-0">
+          <div className="flex items-center space-x-1.5 sm:space-x-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
             <button
               onClick={() => setActiveCategory("all")}
-              className={`px-3.5 py-1.5 rounded-full text-xs tracking-wider uppercase transition-colors cursor-pointer ${
+              className={`px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[11px] sm:text-xs tracking-wider uppercase transition-colors cursor-pointer shrink-0 ${
                 activeCategory === "all"
                   ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
-                  : "bg-[#14151a] text-zinc-400 hover:text-white border border-[#262833]"
+                  : "bg-[#14151a] text-zinc-400 hover:text-white"
               }`}
             >
               All Works
             </button>
             <button
               onClick={() => setActiveCategory("available")}
-              className={`px-3.5 py-1.5 rounded-full text-xs tracking-wider uppercase transition-colors cursor-pointer ${
+              className={`px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[11px] sm:text-xs tracking-wider uppercase transition-colors cursor-pointer shrink-0 ${
                 activeCategory === "available"
                   ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
-                  : "bg-[#14151a] text-zinc-400 hover:text-white border border-[#262833]"
+                  : "bg-[#14151a] text-zinc-400 hover:text-white"
               }`}
             >
               Available
             </button>
             <button
               onClick={() => setActiveCategory("monumental")}
-              className={`px-3.5 py-1.5 rounded-full text-xs tracking-wider uppercase transition-colors cursor-pointer ${
+              className={`px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[11px] sm:text-xs tracking-wider uppercase transition-colors cursor-pointer shrink-0 ${
                 activeCategory === "monumental"
                   ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
-                  : "bg-[#14151a] text-zinc-400 hover:text-white border border-[#262833]"
+                  : "bg-[#14151a] text-zinc-400 hover:text-white"
               }`}
             >
               Monumental
             </button>
             <button
               onClick={() => setActiveCategory("mineral")}
-              className={`px-3.5 py-1.5 rounded-full text-xs tracking-wider uppercase transition-colors cursor-pointer ${
+              className={`px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[11px] sm:text-xs tracking-wider uppercase transition-colors cursor-pointer shrink-0 ${
                 activeCategory === "mineral"
                   ? "bg-[#d1a86e] text-[#0d0e12] font-semibold"
-                  : "bg-[#14151a] text-zinc-400 hover:text-white border border-[#262833]"
+                  : "bg-[#14151a] text-zinc-400 hover:text-white"
               }`}
             >
               Mineral &amp; Lapis
@@ -118,16 +118,16 @@ export function FeaturedArtworksClient({
           </div>
         </div>
 
-        {/* Artwork Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8 md:gap-8">
+        {/* Artwork Grid - 2 columns on mobile */}
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2.5 sm:gap-6 md:gap-8">
           {(filteredArtworks.length > 0 ? filteredArtworks.slice(0, 6) : artworks.slice(0, 6)).map(
             (art, idx) => (
               <div
                 key={art.id}
-                className="group flex flex-col space-y-4 bg-[#14151a]/40 p-4 rounded-2xl border border-[#262833]/60 hover:border-[#d1a86e]/40 transition-all duration-300 hover:shadow-2xl hover:shadow-black/60"
+                className="group flex flex-col space-y-2.5 sm:space-y-4 bg-[#14151a] p-2.5 sm:p-4 rounded-xl sm:rounded-2xl transition-all duration-300 shadow-xl shadow-black/40 hover:shadow-2xl"
               >
                 {/* Canvas Box */}
-                <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-[#101116] border border-[#262833]">
+                <div className="relative aspect-[4/3] rounded-lg sm:rounded-xl overflow-hidden bg-[#101116]">
                   <ProgressiveImage
                     src={art.coverImageUrl}
                     alt={art.altText || art.title}
@@ -135,12 +135,12 @@ export function FeaturedArtworksClient({
                     priority={idx < 3}
                     optimizeWidth={700}
                     optimizeQuality={85}
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 33vw"
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
 
                   {/* Status Badge */}
-                  <div className="absolute top-3 left-3 z-10">
+                  <div className="absolute top-2 left-2 sm:top-3 sm:left-3 z-10">
                     <Badge
                       variant={
                         art.status === "published"
@@ -149,71 +149,71 @@ export function FeaturedArtworksClient({
                           ? "warning"
                           : "secondary"
                       }
-                      className="backdrop-blur-md bg-black/60 border border-white/10"
+                      className="backdrop-blur-md bg-black/70 border-0 text-[8px] sm:text-[10px] px-1.5 sm:px-2.5 py-0.5"
                     >
                       {art.status === "published" ? "Available" : art.status}
                     </Badge>
                   </div>
 
                   {/* Year / Medium Tag */}
-                  <div className="absolute top-3 right-3 z-10 text-[10px] uppercase font-mono px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-zinc-300 border border-white/10">
+                  <div className="absolute top-2 right-2 sm:top-3 sm:right-3 z-10 text-[8px] sm:text-[10px] uppercase font-mono px-1.5 sm:px-2.5 py-0.5 rounded-full bg-black/70 backdrop-blur-md text-zinc-300">
                     {art.year}
                   </div>
 
                   {/* Hover Quick Action Buttons */}
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3 p-4">
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2 sm:gap-3 p-2 sm:p-4">
                     <button
                       onClick={() => setInspectArtwork(art)}
-                      className="p-3 bg-white text-black rounded-full hover:bg-zinc-200 transition-colors shadow-xl"
-                      title="Inspect High-Res Details"
+                      className="p-2 sm:p-3 bg-white text-black rounded-full hover:bg-zinc-200 transition-colors shadow-xl"
+                      title="Inspect Details"
                       aria-label={`Inspect ${art.title}`}
                     >
-                      <Eye className="w-4 h-4" />
+                      <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </button>
 
                     <Link
                       href={`/ar/${art.slug}`}
-                      className="p-3 bg-[#d1a86e] text-[#0d0e12] rounded-full hover:bg-[#e2c18d] transition-colors shadow-xl flex items-center justify-center"
+                      className="p-2 sm:p-3 bg-[#d1a86e] text-[#0d0e12] rounded-full hover:bg-[#e2c18d] transition-colors shadow-xl flex items-center justify-center"
                       title="View in Your Space (AR)"
                       aria-label={`View ${art.title} in AR`}
                     >
-                      <Sparkles className="w-4 h-4" />
+                      <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </Link>
                   </div>
                 </div>
 
                 {/* Museum Exhibition Plaque */}
-                <div className="space-y-2 pt-1">
-                  <div className="flex items-baseline justify-between gap-3">
+                <div className="space-y-1 sm:space-y-2 pt-0.5">
+                  <div className="flex items-baseline justify-between gap-1.5">
                     <Link
                       href={`/artwork/${art.slug}`}
-                      className="font-serif text-xl text-white group-hover:text-[#d1a86e] transition-colors line-clamp-1 font-medium"
+                      className="font-serif text-xs sm:text-xl text-white group-hover:text-[#d1a86e] transition-colors line-clamp-1 font-medium"
                     >
                       {art.title}
                     </Link>
                     {art.price && (
-                      <span className="text-sm text-[#d1a86e] font-mono font-medium shrink-0">
+                      <span className="text-[10px] sm:text-sm text-[#d1a86e] font-mono font-medium shrink-0">
                         {formatCurrency(art.price, art.currency)}
                       </span>
                     )}
                   </div>
 
-                  <p className="text-xs text-[#8e92a4] line-clamp-1">
+                  <p className="text-[10px] sm:text-xs text-[#8e92a4] line-clamp-1">
                     {art.medium}
                   </p>
 
-                  <div className="flex items-center justify-between text-[11px] text-zinc-400 pt-2 border-t border-[#1c1d25]">
-                    <span className="flex items-center gap-1">
-                      <Ruler className="w-3 h-3 text-[#d1a86e]" />
-                      {formatDimensions(art.widthCm, art.heightCm)}
+                  <div className="flex items-center justify-between text-[9px] sm:text-[11px] text-zinc-400 pt-1.5">
+                    <span className="flex items-center gap-1 font-mono truncate">
+                      <Ruler className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#d1a86e] shrink-0" />
+                      <span className="truncate">{formatDimensions(art.widthCm, art.heightCm)}</span>
                     </span>
 
                     <Link
                       href={`/ar/${art.slug}`}
-                      className="inline-flex items-center gap-1 text-[11px] uppercase tracking-wider text-[#d1a86e] hover:text-[#e2c18d] transition-colors"
+                      className="inline-flex items-center gap-1 text-[9px] sm:text-[11px] uppercase tracking-wider text-[#d1a86e] hover:text-[#e2c18d] transition-colors shrink-0 ml-1"
                     >
-                      <Sparkles className="w-3 h-3" />
-                      <span>AR Preview</span>
+                      <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                      <span>AR</span>
                     </Link>
                   </div>
                 </div>

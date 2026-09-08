@@ -103,11 +103,11 @@ export function Header({ settings }: HeaderProps) {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-[#0d0e12]/92 backdrop-blur-md border-b border-[#262833]/80 py-3.5 shadow-xl shadow-black/20"
-          : "bg-gradient-to-b from-[#0d0e12]/85 to-transparent py-5 md:py-6"
+          ? "bg-[#0d0e12]/95 backdrop-blur-md py-3 sm:py-3.5 shadow-xl shadow-black/40"
+          : "bg-gradient-to-b from-[#0d0e12]/90 to-transparent py-4 sm:py-5 md:py-6"
       }`}
     >
-      <div className="max-w-[1800px] mx-auto px-5 sm:px-8 md:px-12 lg:px-16 flex items-center justify-between">
+      <div className="max-w-[1800px] mx-auto px-3.5 sm:px-8 md:px-12 lg:px-16 flex items-center justify-between">
         {/* Gallery Brand Title */}
         <Link
           href="/"
@@ -154,7 +154,7 @@ export function Header({ settings }: HeaderProps) {
 
         {/* Right Desktop CTA & Auth Dropdown */}
         <div className="hidden md:flex items-center space-x-3">
-          <Button asChild variant="outline" size="sm" className="rounded-full h-8 px-3.5 border-[#d1a86e]/40 hover:border-[#d1a86e] hover:bg-[#d1a86e]/10 text-[#d1a86e] text-xs uppercase tracking-wider">
+          <Button asChild variant="ghost" size="sm" className="rounded-full h-8 px-3.5 bg-[#1c1e2b] hover:bg-[#252838] text-[#d1a86e] text-xs uppercase tracking-wider">
             <Link href="/account" className="flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Collector Salon</span>
@@ -178,7 +178,7 @@ export function Header({ settings }: HeaderProps) {
                 <DropdownMenuTrigger asChild>
                   <button
                     type="button"
-                    className="flex items-center gap-2 p-1 pl-1.5 pr-2.5 rounded-full bg-[#14151a] border border-[#262833] hover:border-[#383a48] transition-all focus:outline-none"
+                    className="flex items-center gap-2 p-1 pl-1.5 pr-2.5 rounded-full bg-[#14151a] hover:bg-[#1e2028] transition-all focus:outline-none shadow-sm"
                   >
                     <Avatar size="sm" className="h-6 w-6">
                       <AvatarFallback className="text-[11px] text-[#d1a86e] font-serif">
@@ -262,7 +262,7 @@ export function Header({ settings }: HeaderProps) {
 
         {/* Mobile Navigation Trigger with shadcn Sheet */}
         <div className="flex items-center gap-2 md:hidden">
-          <Button asChild variant="outline" size="sm" className="h-7 px-2.5 text-[10px] rounded-full border-[#d1a86e]/40 text-[#d1a86e]">
+          <Button asChild variant="ghost" size="sm" className="h-7 px-2.5 text-[10px] rounded-full bg-[#1c1e2b] text-[#d1a86e]">
             <Link href="/account">
               <Sparkles className="w-3 h-3 mr-1" />
               <span>Salon</span>
@@ -274,20 +274,20 @@ export function Header({ settings }: HeaderProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-9 w-9 text-white hover:bg-[#1a1c23]"
+                className="h-8 w-8 text-white hover:bg-[#1a1c23]"
                 aria-label="Open navigation menu"
               >
-                <Menu className="w-5 h-5" />
+                <Menu className="w-4 h-4" />
               </Button>
             </SheetTrigger>
 
             <SheetContent
               side="right"
-              className="w-[85vw] max-w-sm bg-[#0d0e12] border-l border-[#262833] p-6 flex flex-col justify-between"
+              className="w-[85vw] max-w-sm bg-[#0d0e12] border-0 p-5 sm:p-6 flex flex-col justify-between shadow-2xl shadow-black"
             >
-              <div className="space-y-6">
-                <SheetHeader className="text-left border-b border-[#1c1d25] pb-4">
-                  <SheetTitle className="font-serif text-xl tracking-[0.15em] text-white uppercase font-light">
+              <div className="space-y-5 sm:space-y-6">
+                <SheetHeader className="text-left pb-3 sm:pb-4">
+                  <SheetTitle className="font-serif text-lg sm:text-xl tracking-[0.15em] text-white uppercase font-light">
                     {brandTitle}
                   </SheetTitle>
                   <span className="text-[9px] tracking-[0.3em] text-[#d1a86e] uppercase font-semibold">
@@ -322,7 +322,7 @@ export function Header({ settings }: HeaderProps) {
                 </nav>
 
                 {/* AR Studio CTA */}
-                <div className="p-4 bg-[#14151a] border border-[#262833] rounded-xl space-y-2">
+                <div className="p-3.5 sm:p-4 bg-[#14151a] rounded-xl space-y-2 shadow-md">
                   <div className="flex items-center gap-2 text-xs font-semibold text-white">
                     <Sparkles className="w-4 h-4 text-[#d1a86e]" />
                     <span>WebAR Showroom</span>
@@ -333,7 +333,7 @@ export function Header({ settings }: HeaderProps) {
                   <Button
                     asChild
                     size="sm"
-                    className="w-full text-xs uppercase tracking-wider"
+                    className="w-full text-xs uppercase tracking-wider rounded-full bg-[#d1a86e] text-[#0d0e12] hover:bg-[#dfba82]"
                   >
                     <Link
                       href="/gallery"
@@ -346,7 +346,7 @@ export function Header({ settings }: HeaderProps) {
               </div>
 
               {/* User Session Footer */}
-              <div className="pt-4 border-t border-[#1c1d25] space-y-3">
+              <div className="pt-3 sm:pt-4 space-y-3">
                 {user ? (
                   <div className="space-y-3">
                     <div className="flex items-center gap-3 p-2 rounded-lg bg-[#14151a]">

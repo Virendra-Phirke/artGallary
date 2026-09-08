@@ -344,11 +344,11 @@ export function GalleryCatalog({
           </Button>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6 md:gap-8 animate-in fade-in-50 duration-300">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2.5 sm:gap-6 md:gap-8 animate-in fade-in-50 duration-300">
           {artworks.map((art, index) => (
             <Card
               key={art.id}
-              className="group flex flex-col overflow-hidden hover:border-[#383b4b] transition-all bg-[#14151a] border-[#22242f] shadow-xl"
+              className="group flex flex-col overflow-hidden hover:border-[#383b4b] transition-all bg-[#14151a] border-[#22242f] shadow-xl rounded-2xl sm:rounded-3xl"
             >
               {/* Image Frame */}
               <div className="relative aspect-[4/3] bg-black/40 overflow-hidden">
@@ -357,14 +357,14 @@ export function GalleryCatalog({
                   alt={art.altText || art.title}
                   fill
                   priority={index < 3}
-                  optimizeWidth={700}
+                  optimizeWidth={500}
                   optimizeQuality={80}
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
 
                 {/* Status Badge */}
-                <div className="absolute top-3 left-3 z-10">
+                <div className="absolute top-2 left-2 sm:top-3 sm:left-3 z-10">
                   <Badge
                     variant={
                       art.status === "published"
@@ -373,23 +373,23 @@ export function GalleryCatalog({
                         ? "warning"
                         : "secondary"
                     }
-                    className="text-[10px] tracking-wider uppercase backdrop-blur-md"
+                    className="text-[8px] sm:text-[10px] tracking-wider uppercase backdrop-blur-md px-1.5 sm:px-2.5 py-0.5"
                   >
                     {art.status}
                   </Badge>
                 </div>
 
                 {/* Hover Quick Actions */}
-                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 p-4">
-                  <Button asChild size="icon" className="rounded-full bg-white text-black hover:bg-zinc-200 shadow-xl">
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 sm:gap-3 p-2 sm:p-4">
+                  <Button asChild size="icon" className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-white text-black hover:bg-zinc-200 shadow-xl">
                     <Link href={`/artwork/${art.slug}`} title="Examine Details">
-                      <Eye className="w-4 h-4" />
+                      <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </Link>
                   </Button>
                   {art.arConfig?.isArEnabled && (
-                    <Button asChild size="icon" className="rounded-full bg-[#d1a86e] text-black hover:bg-[#e2c18d] shadow-xl">
+                    <Button asChild size="icon" className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-[#d1a86e] text-black hover:bg-[#e2c18d] shadow-xl">
                       <Link href={`/ar/${art.slug}`} title="View in Your Space (AR)">
-                        <Sparkles className="w-4 h-4" />
+                        <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </Link>
                     </Button>
                   )}
@@ -397,34 +397,34 @@ export function GalleryCatalog({
               </div>
 
               {/* Information Body */}
-              <div className="p-5 flex flex-col flex-1 justify-between space-y-4">
+              <div className="p-3 sm:p-5 flex flex-col flex-1 justify-between space-y-2 sm:space-y-4">
                 <div>
-                  <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start justify-between gap-1.5 sm:gap-3">
                     <Link
                       href={`/artwork/${art.slug}`}
-                      className="font-serif text-lg sm:text-xl text-white hover:text-[#d1a86e] transition-colors leading-snug"
+                      className="font-serif text-xs sm:text-lg text-white hover:text-[#d1a86e] transition-colors leading-snug truncate"
                     >
                       {art.title}
                     </Link>
-                    <span className="text-sm font-semibold text-[#d1a86e] shrink-0">
+                    <span className="text-[11px] sm:text-sm font-semibold text-[#d1a86e] shrink-0 font-mono">
                       {formatCurrency(art.price, art.currency)}
                     </span>
                   </div>
 
-                  <p className="text-xs text-zinc-400 mt-1.5 line-clamp-2 leading-relaxed">
+                  <p className="text-[10px] sm:text-xs text-zinc-400 mt-0.5 sm:mt-1.5 line-clamp-1 sm:line-clamp-2 leading-relaxed">
                     {art.description}
                   </p>
                 </div>
 
-                <div className="pt-3 border-t border-[#1f212b] flex items-center justify-between text-xs text-zinc-500">
-                  <span className="text-[11px] font-mono">
+                <div className="pt-2 sm:pt-3 border-t border-[#1f212b] flex items-center justify-between text-[10px] sm:text-xs text-zinc-500">
+                  <span className="text-[9px] sm:text-[11px] font-mono truncate">
                     {formatDimensions(art.widthCm, art.heightCm)}
                   </span>
                   <Link
                     href={`/ar/${art.slug}`}
-                    className="flex items-center gap-1 text-[#d1a86e] hover:underline uppercase text-[10px] tracking-wider font-semibold"
+                    className="flex items-center gap-1 text-[#d1a86e] hover:underline uppercase text-[9px] sm:text-[10px] tracking-wider font-semibold shrink-0"
                   >
-                    <Sparkles className="w-3 h-3" />
+                    <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                     <span>View in AR</span>
                   </Link>
                 </div>
@@ -434,12 +434,12 @@ export function GalleryCatalog({
         </div>
       )}
 
-      {/* Bottom Shadcn Pagination & Page Size Toolbar */}
+      {/* Bottom Pagination & Page Size Toolbar */}
       {pagination.totalPages > 1 && (
         <div className="pt-6 border-t border-[#1f212b] flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="text-xs text-zinc-500 font-mono order-2 md:order-1">
-            Page <span className="text-white font-medium">{pagination.page}</span> of{" "}
-            <span className="text-white font-medium">{pagination.totalPages}</span>
+            Page <span className="text-white font-semibold">{pagination.page}</span> of{" "}
+            <span className="text-white font-semibold">{pagination.totalPages}</span> ({pagination.totalCount} total)
           </div>
 
           <div className="order-1 md:order-2">
@@ -458,13 +458,12 @@ export function GalleryCatalog({
 
                 {paginationRange.map((item, idx) => (
                   <PaginationItem key={idx}>
-                    {item === "..." ? (
+                    {item === "ellipsis" ? (
                       <PaginationEllipsis />
                     ) : (
                       <PaginationLink
-                        isActive={item === pagination.page}
-                        onClick={() => handlePageChange(Number(item))}
-                        disabled={isLoading}
+                        isActive={pagination.page === item}
+                        onClick={() => handlePageChange(item as number)}
                         className="cursor-pointer"
                       >
                         {item}
@@ -489,7 +488,7 @@ export function GalleryCatalog({
 
           <div className="flex items-center gap-2 order-3">
             <span className="text-zinc-500 font-mono text-[11px] uppercase tracking-wider">Per Page:</span>
-            <div className="flex items-center rounded-md border border-[#262833] bg-[#14151a] p-0.5">
+            <div className="flex items-center rounded-xl bg-[#14151a] p-0.5">
               {PAGE_SIZE_OPTIONS.map((size) => (
                 <button
                   key={size}
@@ -497,7 +496,7 @@ export function GalleryCatalog({
                   onClick={() => handlePageSizeChange(size)}
                   disabled={isLoading}
                   className={cn(
-                    "px-2.5 py-0.5 text-xs font-mono rounded transition-colors cursor-pointer",
+                    "px-2.5 py-0.5 text-xs font-mono rounded-lg transition-colors cursor-pointer",
                     pagination.limit === size
                       ? "bg-[#d1a86e] text-black font-semibold shadow-sm"
                       : "text-zinc-400 hover:text-white"
