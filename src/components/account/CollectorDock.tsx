@@ -417,7 +417,8 @@ export function CollectorDock({
               exit={{ opacity: 0 }}
               transition={{ duration: 0.22, ease: "easeOut" }}
               onClick={() => setIsMobileOpen(false)}
-              className="md:hidden fixed inset-0 bg-black/80 backdrop-blur-md z-50 pointer-events-auto"
+              className="md:hidden fixed inset-0 bg-black/85 backdrop-blur-md z-[100] pointer-events-auto"
+              style={{ backgroundColor: "rgba(0, 0, 0, 0.85)" }}
               aria-hidden="true"
             />
 
@@ -427,7 +428,8 @@ export function CollectorDock({
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 320 }}
-              className="md:hidden fixed inset-y-0 left-0 w-[82%] max-w-[290px] bg-[#0d0e14] border-r border-white/10 z-50 p-4 sm:p-5 flex flex-col justify-between shadow-2xl shadow-black overflow-y-auto"
+              className="md:hidden fixed inset-y-0 left-0 w-[82%] max-w-[290px] bg-[#0d0e14] border-r border-white/10 z-[101] p-4 sm:p-5 flex flex-col justify-between shadow-2xl shadow-black overflow-y-auto"
+              style={{ backgroundColor: "#0d0e14", opacity: 1 }}
               aria-label="Mobile Navigation Sidebar"
             >
               {/* Top Cluster & Navigation */}

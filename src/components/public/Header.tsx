@@ -101,7 +101,7 @@ export function Header({ settings }: HeaderProps) {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 w-full max-w-full overflow-hidden ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 w-full max-w-full ${
         scrolled
           ? "bg-[#0d0e12]/95 backdrop-blur-md py-2.5 sm:py-3.5 shadow-xl shadow-black/40"
           : "bg-gradient-to-b from-[#0d0e12]/90 to-transparent py-3 sm:py-5 md:py-6"
@@ -283,7 +283,8 @@ export function Header({ settings }: HeaderProps) {
 
             <SheetContent
               side="right"
-              className="w-[85vw] max-w-sm bg-[#0d0e12] border-0 p-5 sm:p-6 flex flex-col justify-between shadow-2xl shadow-black"
+              className="w-[85vw] max-w-sm bg-[#0d0e12] border-l border-[#262833] p-5 sm:p-6 flex flex-col justify-between shadow-2xl shadow-black overflow-y-auto"
+              style={{ backgroundColor: "#0d0e12", opacity: 1 }}
             >
               <div className="space-y-5 sm:space-y-6">
                 <SheetHeader className="text-left pb-3 sm:pb-4">

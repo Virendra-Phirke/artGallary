@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -112,6 +113,7 @@ export function DialogPortal({ children }: { children: React.ReactNode }) {
 
 export function DialogOverlay({
   className,
+  style,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   const { setOpen } = useDialog();
@@ -120,9 +122,10 @@ export function DialogOverlay({
       aria-hidden="true"
       onClick={() => setOpen(false)}
       className={cn(
-        "fixed inset-0 z-50 bg-black/80 backdrop-blur-sm transition-opacity duration-200 animate-in fade-in-0",
+        "fixed inset-0 z-[100] bg-black/85 backdrop-blur-sm transition-opacity duration-200 animate-in fade-in-0",
         className
       )}
+      style={{ backgroundColor: "rgba(0, 0, 0, 0.85)", ...style }}
       {...props}
     />
   );
@@ -131,9 +134,15 @@ export function DialogOverlay({
 export function DialogContent({
   className,
   children,
+  style,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   const { open, setOpen } = useDialog();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -151,18 +160,19 @@ export function DialogContent({
     };
   }, [open, setOpen]);
 
-  if (!open) return null;
+  if (!open || !mounted) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-auto">
       <DialogOverlay />
       <div
         role="dialog"
         aria-modal="true"
         className={cn(
-          "relative z-50 w-full max-w-lg rounded-2xl border border-[#262833] bg-[#14151a] p-6 text-[#f4f4f6] shadow-2xl duration-200 animate-in fade-in-0 zoom-in-95 max-h-[90vh] overflow-y-auto",
+          "relative z-[101] w-full max-w-lg rounded-2xl border border-[#262833] bg-[#14151a] p-6 text-[#f4f4f6] shadow-2xl duration-200 animate-in fade-in-0 zoom-in-95 max-h-[90vh] overflow-y-auto",
           className
         )}
+        style={{ backgroundColor: "#14151a", opacity: 1, ...style }}
         {...props}
       >
         {children}
@@ -175,7 +185,8 @@ export function DialogContent({
           <span className="sr-only">Close</span>
         </button>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
