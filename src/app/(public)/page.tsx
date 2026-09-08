@@ -55,7 +55,7 @@ export default async function HomePage() {
     .sort((a, b) => a.displayOrder - b.displayOrder);
 
   return (
-    <div className="space-y-24 sm:space-y-32 md:space-y-40 pb-24">
+    <div className="space-y-16 sm:space-y-28 md:space-y-36 pb-20">
       {sortedSections.map((sec) => {
         // 1. HERO SHOWCASE
         if (sec.sectionKey === "hero") {
@@ -104,54 +104,59 @@ export default async function HomePage() {
           return (
             <section
               key={sec.id}
-              className="bg-[#101116] border-y border-[#1c1d25] py-20 sm:py-28"
+              className="bg-[#0e0f14] py-14 sm:py-24"
             >
-              <div className="max-w-[1800px] mx-auto px-6 sm:px-10 md:px-14 lg:px-16 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
-                <div className="lg:col-span-5 space-y-6">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#18191e] border border-[#262833] text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase">
+              <div className="max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
+                <div className="lg:col-span-5 space-y-4 sm:space-y-6">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#181924] text-[9px] sm:text-[10px] tracking-[0.22em] text-[#d1a86e] uppercase">
                     <Layers className="w-3 h-3" />
                     <span>{sec.subtitle || "Featured Series Spotlight"}</span>
                   </div>
 
-                  <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-white font-medium">
+                  <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl text-white font-medium">
                     {sec.title || featuredCollection?.title}
                   </h2>
 
-                  <p className="text-sm md:text-base text-[#a6aabf] leading-relaxed font-light">
+                  <p className="text-xs sm:text-sm md:text-base text-[#a6aabf] leading-relaxed font-light">
                     {sec.contentJson?.description ||
                       featuredCollection?.curatorialStatement ||
                       featuredCollection?.description}
                   </p>
 
                   {featuredCollection && (
-                    <div className="pt-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                    <div className="pt-2 sm:pt-4 grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-4">
                       <Button
                         asChild
-                        className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-xs tracking-[0.18em] uppercase px-7 py-3 shadow-lg shadow-[#d1a86e]/15"
+                        className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-[11px] sm:text-xs tracking-wider uppercase h-10 sm:h-11 px-4 sm:px-7 shadow-lg shadow-[#d1a86e]/15 active:scale-[0.98]"
                       >
                         <Link
                           href={`/collections/${featuredCollection.slug}`}
-                          className="flex items-center gap-2"
+                          className="flex items-center justify-center gap-1.5"
                         >
-                          <span>Explore Full Series</span>
-                          <ArrowRight className="w-4 h-4" />
+                          <span className="truncate">Explore Series</span>
+                          <ArrowRight className="w-3.5 h-3.5 shrink-0" />
                         </Link>
                       </Button>
 
-                      <Link
-                        href="/account?tab=collections"
-                        className="text-xs uppercase tracking-[0.18em] text-zinc-400 hover:text-[#d1a86e] transition-colors inline-flex items-center gap-1.5"
+                      <Button
+                        asChild
+                        className="rounded-full bg-[#161720] hover:bg-[#1f212c] text-zinc-300 hover:text-white text-[11px] sm:text-xs uppercase tracking-wider h-10 sm:h-11 px-3 sm:px-5 active:scale-[0.98]"
                       >
-                        <Sparkles className="w-3 h-3 text-[#d1a86e]" />
-                        <span>All Series in Collector Salon &rarr;</span>
-                      </Link>
+                        <Link
+                          href="/account?tab=collections"
+                          className="flex items-center justify-center gap-1.5"
+                        >
+                          <Sparkles className="w-3 h-3 text-[#d1a86e] shrink-0" />
+                          <span className="truncate">All Series</span>
+                        </Link>
+                      </Button>
                     </div>
                   )}
                 </div>
 
                 {colImage && (
                   <div className="lg:col-span-7 relative">
-                    <div className="relative aspect-[16/10] rounded-2xl overflow-hidden border border-[#262833] shadow-2xl bg-[#14151a]">
+                    <div className="relative aspect-[16/10] rounded-2xl overflow-hidden shadow-2xl bg-[#14151a]">
                       <ProgressiveImage
                         src={colImage}
                         alt={
@@ -165,8 +170,8 @@ export default async function HomePage() {
                         sizes="(max-width: 1024px) 100vw, 60vw"
                         className="object-cover"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-6">
-                        <span className="text-xs font-mono uppercase tracking-widest text-[#d1a86e]">
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-4 sm:p-6">
+                        <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-[#d1a86e]">
                           {featuredCollection?.title} Series
                         </span>
                       </div>
@@ -230,11 +235,11 @@ export default async function HomePage() {
           const exhImageUrl =
             sec.contentJson?.imageUrl || currentExhibition?.coverImageUrl;
           return (
-            <section key={sec.id} className="max-w-[1800px] mx-auto px-6 sm:px-10 md:px-14 lg:px-16">
-              <div className="border-t border-[#1c1d25] pt-16 sm:pt-24 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+            <section key={sec.id} className="max-w-[1800px] mx-auto px-3.5 sm:px-10 md:px-14 lg:px-16">
+              <div className="pt-8 sm:pt-20 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
                 {exhImageUrl && (
                   <div className="lg:col-span-7">
-                    <div className="relative aspect-[16/9] rounded-2xl overflow-hidden border border-[#262833] shadow-2xl bg-[#14151a]">
+                    <div className="relative aspect-[16/9] rounded-2xl overflow-hidden shadow-2xl bg-[#14151a]">
                       <ProgressiveImage
                         src={exhImageUrl}
                         alt={
@@ -248,10 +253,10 @@ export default async function HomePage() {
                         sizes="(max-width: 1024px) 100vw, 60vw"
                         className="object-cover"
                       />
-                      <div className="absolute top-4 left-4">
+                      <div className="absolute top-3 left-3 sm:top-4 sm:left-4">
                         <Badge
                           variant="success"
-                          className="backdrop-blur-md bg-black/60 border border-white/10"
+                          className="backdrop-blur-md bg-black/70 border-0 text-[10px] sm:text-xs"
                         >
                           {currentExhibition?.status === "current"
                             ? "Currently Open"
@@ -262,11 +267,11 @@ export default async function HomePage() {
                   </div>
                 )}
 
-                <div className="lg:col-span-5 space-y-5">
-                  <span className="text-[11px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
+                <div className="lg:col-span-5 space-y-4 sm:space-y-5">
+                  <span className="text-[10px] sm:text-[11px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
                     {sec.subtitle || "Current Solo Exhibition"}
                   </span>
-                  <h3 className="font-serif text-3xl sm:text-4xl text-white font-medium">
+                  <h3 className="font-serif text-2xl sm:text-4xl text-white font-medium">
                     {sec.title || currentExhibition?.title}
                   </h3>
                   {currentExhibition?.subtitle && (
@@ -275,7 +280,7 @@ export default async function HomePage() {
                     </p>
                   )}
                   {currentExhibition?.location && (
-                    <div className="flex items-center gap-2 text-xs text-zinc-300 pt-1">
+                    <div className="flex items-center gap-2 text-xs text-zinc-300 pt-0.5">
                       <MapPin className="w-3.5 h-3.5 text-[#d1a86e] shrink-0" />
                       <span>{currentExhibition.location}</span>
                     </div>
@@ -300,36 +305,35 @@ export default async function HomePage() {
                       </span>
                     </div>
                   )}
-                  <p className="text-sm text-[#a6aabf] leading-relaxed pt-2">
+                  <p className="text-xs sm:text-sm text-[#a6aabf] leading-relaxed pt-1">
                     {sec.contentJson?.description ||
                       currentExhibition?.description ||
                       currentExhibition?.curatorNote}
                   </p>
                   {currentExhibition && (
-                    <div className="pt-3 flex flex-wrap items-center gap-3">
+                    <div className="pt-2 grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3">
                       <Button
                         asChild
-                        className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-xs uppercase tracking-wider px-5 py-2.5 shadow-md shadow-[#d1a86e]/15"
+                        className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-[11px] sm:text-xs uppercase tracking-wider h-10 sm:h-11 px-3 sm:px-5 shadow-md shadow-[#d1a86e]/15 active:scale-[0.98]"
                       >
                         <Link
                           href="/account?tab=exhibitions"
-                          className="flex items-center gap-2"
+                          className="flex items-center justify-center gap-1.5"
                         >
-                          <Sparkles className="w-3.5 h-3.5" />
-                          <span>RSVP in Collector Salon</span>
+                          <Sparkles className="w-3.5 h-3.5 shrink-0" />
+                          <span className="truncate">RSVP Salon</span>
                         </Link>
                       </Button>
                       <Button
                         asChild
-                        variant="outline"
-                        className="rounded-full border-[#262833] bg-[#14151a] hover:bg-[#1a1c23] hover:border-[#d1a86e]/40 text-white text-xs uppercase tracking-wider"
+                        className="rounded-full bg-[#161720] hover:bg-[#1f212c] text-white text-[11px] sm:text-xs uppercase tracking-wider h-10 sm:h-11 px-3 sm:px-5 active:scale-[0.98]"
                       >
                         <Link
                           href={`/exhibitions/${currentExhibition.slug}`}
-                          className="flex items-center gap-2"
+                          className="flex items-center justify-center gap-1.5"
                         >
-                          <span>Exhibition Dossier</span>
-                          <ArrowRight className="w-3.5 h-3.5 text-[#d1a86e]" />
+                          <span className="truncate">Dossier</span>
+                          <ArrowRight className="w-3.5 h-3.5 text-[#d1a86e] shrink-0" />
                         </Link>
                       </Button>
                     </div>
@@ -345,49 +349,48 @@ export default async function HomePage() {
           return (
             <section
               key={sec.id}
-              className="max-w-5xl mx-auto px-6 md:px-12 text-center"
+              className="max-w-5xl mx-auto px-3.5 sm:px-10 md:px-12 text-center"
             >
-              <div className="rounded-3xl border border-[#262833] bg-gradient-to-b from-[#14151a] to-[#101116] p-8 sm:p-12 md:p-16 space-y-6 shadow-2xl relative overflow-hidden">
+              <div className="rounded-3xl bg-gradient-to-b from-[#14151a] to-[#101116] p-6 sm:p-12 md:p-16 space-y-5 sm:space-y-6 shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-[#d1a86e]/8 rounded-full blur-[140px] pointer-events-none" />
 
-                <div className="inline-flex items-center gap-2 text-xs tracking-widest text-[#d1a86e] uppercase font-semibold">
-                  <Mail className="w-4 h-4" />
+                <div className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs tracking-widest text-[#d1a86e] uppercase font-semibold">
+                  <Mail className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   <span>{sec.subtitle || "Inquiries & Acquisitions"}</span>
                 </div>
 
-                <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-white font-medium">
+                <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl text-white font-medium">
                   {sec.title || "Direct Studio Acquisitions"}
                 </h2>
 
-                <p className="text-sm md:text-base text-[#a6aabf] max-w-xl mx-auto leading-relaxed font-light">
+                <p className="text-xs sm:text-sm md:text-base text-[#a6aabf] max-w-xl mx-auto leading-relaxed font-light">
                   {sec.contentJson?.description ||
                     "Inquire about acquiring original works, scheduling a private studio viewing in Paris, or commissioning bespoke architectural artworks directly with Elena Vance."}
                 </p>
 
-                <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+                <div className="pt-2 sm:pt-4 grid grid-cols-2 gap-2 sm:flex sm:items-center sm:justify-center sm:gap-4">
                   <Button
                     asChild
                     size="lg"
-                    className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] px-8 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] shadow-xl shadow-[#d1a86e]/15"
+                    className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] h-10 sm:h-12 px-4 sm:px-8 text-[11px] sm:text-xs font-semibold uppercase tracking-wider sm:tracking-[0.2em] shadow-xl shadow-[#d1a86e]/15 active:scale-[0.98]"
                   >
                     <Link
                       href={sec.contentJson?.ctaUrl || "/contact"}
-                      className="inline-flex items-center gap-2.5"
+                      className="inline-flex items-center justify-center gap-1.5 sm:gap-2.5"
                     >
-                      <span>
-                        {sec.contentJson?.ctaText || "Inquire with Studio"}
+                      <span className="truncate">
+                        {sec.contentJson?.ctaText || "Inquire Studio"}
                       </span>
-                      <ArrowRight className="w-4 h-4" />
+                      <ArrowRight className="w-3.5 h-3.5 shrink-0" />
                     </Link>
                   </Button>
 
                   <Button
                     asChild
-                    variant="outline"
                     size="lg"
-                    className="rounded-full border-[#262833] bg-[#14151a] hover:bg-[#1a1c23] text-zinc-300 hover:text-white px-7 py-3.5 text-xs uppercase tracking-wider"
+                    className="rounded-full bg-[#1a1b24] hover:bg-[#232432] text-zinc-300 hover:text-white h-10 sm:h-12 px-4 sm:px-7 text-[11px] sm:text-xs uppercase tracking-wider active:scale-[0.98]"
                   >
-                    <Link href="/about">About the Artist</Link>
+                    <Link href="/about" className="truncate">About Artist</Link>
                   </Button>
                 </div>
               </div>
