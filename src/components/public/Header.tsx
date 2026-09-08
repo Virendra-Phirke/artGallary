@@ -163,73 +163,99 @@ export function Header({ settings }: HeaderProps) {
           )}
 
           {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  type="button"
-                  className="flex items-center gap-2 p-1 pl-1.5 pr-2.5 rounded-full bg-[#14151a] border border-[#262833] hover:border-[#383a48] transition-all focus:outline-none"
-                >
-                  <Avatar size="sm" className="h-6 w-6">
-                    <AvatarFallback className="text-[11px] text-[#d1a86e] font-serif">
-                      {user.name?.[0]?.toUpperCase() || "A"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="text-xs text-zinc-300 font-medium max-w-[90px] truncate">
-                    {user.name}
-                  </span>
-                  <ChevronDown className="w-3 h-3 text-zinc-500" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 p-2">
-                <DropdownMenuLabel className="px-2 py-1.5">
-                  <div className="flex flex-col space-y-0.5">
-                    <span className="text-xs font-semibold text-white truncate">
+            <div className="flex items-center gap-2.5">
+              <Button
+                asChild
+                size="sm"
+                className="rounded-full h-8 px-3.5 bg-gradient-to-r from-[#d1a86e] to-[#b38947] text-[#0d0e12] font-semibold text-xs hover:opacity-95 shadow-md shadow-[#d1a86e]/20 tracking-wide"
+              >
+                <Link href="/account" className="flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Collector Portal</span>
+                </Link>
+              </Button>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    className="flex items-center gap-2 p-1 pl-1.5 pr-2.5 rounded-full bg-[#14151a] border border-[#262833] hover:border-[#383a48] transition-all focus:outline-none"
+                  >
+                    <Avatar size="sm" className="h-6 w-6">
+                      <AvatarFallback className="text-[11px] text-[#d1a86e] font-serif">
+                        {user.name?.[0]?.toUpperCase() || "A"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="text-xs text-zinc-300 font-medium max-w-[90px] truncate">
                       {user.name}
                     </span>
-                    <span className="text-[11px] text-zinc-500 font-mono truncate">
-                      {user.email}
-                    </span>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
+                    <ChevronDown className="w-3 h-3 text-zinc-500" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 p-2">
+                  <DropdownMenuLabel className="px-2 py-1.5">
+                    <div className="flex flex-col space-y-0.5">
+                      <span className="text-xs font-semibold text-white truncate">
+                        {user.name}
+                      </span>
+                      <span className="text-[11px] text-zinc-500 font-mono truncate">
+                        {user.email}
+                      </span>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
 
-                {user.role === "ADMIN" && (
                   <DropdownMenuItem asChild>
                     <Link
-                      href="/admin/dashboard"
-                      className="flex items-center gap-2 text-amber-300 hover:text-amber-200 cursor-pointer"
+                      href="/account"
+                      className="flex items-center gap-2 cursor-pointer font-medium text-[#d1a86e]"
                     >
-                      <Shield className="w-3.5 h-3.5 text-amber-400" />
-                      <span>Studio Admin CMS</span>
+                      <Sparkles className="w-3.5 h-3.5 text-[#d1a86e]" />
+                      <span>Collector Portal</span>
                     </Link>
                   </DropdownMenuItem>
-                )}
 
-                <DropdownMenuItem asChild>
-                  <Link
-                    href="/account"
-                    className="flex items-center gap-2 cursor-pointer"
+                  <DropdownMenuItem asChild>
+                    <Link
+                      href="/account?tab=inquiries"
+                      className="flex items-center gap-2 cursor-pointer"
+                    >
+                      <Layers className="w-3.5 h-3.5 text-zinc-400" />
+                      <span>My Inquiries Ledger</span>
+                    </Link>
+                  </DropdownMenuItem>
+
+                  {user.role === "ADMIN" && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild>
+                        <Link
+                          href="/admin/dashboard"
+                          className="flex items-center gap-2 text-amber-300 hover:text-amber-200 cursor-pointer"
+                        >
+                          <Shield className="w-3.5 h-3.5 text-amber-400" />
+                          <span>Studio Admin CMS</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
+                  )}
+
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={handleSignOut}
+                    className="text-red-400 hover:text-red-300 hover:bg-red-950/40 cursor-pointer"
                   >
-                    <User className="w-3.5 h-3.5 text-zinc-400" />
-                    <span>My Inquiries & Profile</span>
-                  </Link>
-                </DropdownMenuItem>
-
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={handleSignOut}
-                  className="text-red-400 hover:text-red-300 hover:bg-red-950/40 cursor-pointer"
-                >
-                  <LogOut className="w-3.5 h-3.5 mr-2" />
-                  <span>Sign Out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                    <LogOut className="w-3.5 h-3.5 mr-2" />
+                    <span>Sign Out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           ) : (
             <Button asChild variant="ghost" size="sm" className="rounded-full text-xs uppercase tracking-wider text-zinc-400 hover:text-white">
               <Link href="/login">
                 <User className="w-3.5 h-3.5 mr-1.5" />
-                <span>Sign In</span>
+                <span>Collector Sign In</span>
               </Link>
             </Button>
           )}
@@ -364,16 +390,16 @@ export function Header({ settings }: HeaderProps) {
                       )}
                       <Button
                         asChild
-                        variant="secondary"
                         size="sm"
-                        className={`h-8 text-[11px] ${user.role !== "ADMIN" ? "col-span-2" : ""}`}
+                        className={`h-8 text-[11px] bg-[#d1a86e] text-[#0d0e12] font-semibold hover:opacity-90 ${user.role !== "ADMIN" ? "col-span-2" : ""}`}
                       >
                         <Link
                           href="/account"
                           onClick={() => setMobileMenuOpen(false)}
+                          className="flex items-center justify-center gap-1.5"
                         >
-                          <User className="w-3.5 h-3.5 mr-1" />
-                          <span>Account</span>
+                          <Sparkles className="w-3.5 h-3.5" />
+                          <span>Collector Portal</span>
                         </Link>
                       </Button>
                     </div>

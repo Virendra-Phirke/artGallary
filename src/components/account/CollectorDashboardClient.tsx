@@ -149,89 +149,93 @@ export function CollectorDashboardClient({
 
   const spotlightArtwork = artworks[0];
 
+  const tabMetadata: Record<CollectorTab, { title: string; subtitle: string; tag: string }> = {
+    overview: {
+      tag: "Private Salon",
+      title: "Collector Overview",
+      subtitle: "Acquisition portfolio, curatorial invitations, and active requests.",
+    },
+    gallery: {
+      tag: "Permanent Collection",
+      title: "Private Catalogue",
+      subtitle: "Direct access to original paintings, archival editions, and acquisition inquiries.",
+    },
+    collections: {
+      tag: "Curatorial Cycles",
+      title: "Curated Series & Suites",
+      subtitle: "Thematic bodies of work directly from the artist atelier.",
+    },
+    exhibitions: {
+      tag: "Vernissages & Salons",
+      title: "Exhibitions & Retrospectives",
+      subtitle: "Upcoming museum retrospectives, gallery booths, and VIP opening receptions.",
+    },
+    inquiries: {
+      tag: "Acquisition Ledger",
+      title: "Private Inquiries",
+      subtitle: "Direct correspondence ledger between you and the curatorial team.",
+    },
+    ar: {
+      tag: "Architectural Studio",
+      title: "Spatial AR Showroom",
+      subtitle: "Real-scale artwork placement in curated room spaces with ambient wall controls.",
+    },
+    profile: {
+      tag: "Account & Dispatch",
+      title: "Collector Profile",
+      subtitle: "Account credentials and private vernissage dispatch preferences.",
+    },
+  };
+
+  const currentTabInfo = tabMetadata[activeTab] || tabMetadata.overview;
+
   return (
-    <div className="space-y-10 pb-32">
-      {/* 1. TOP HEADER & COLLECTOR SALON BADGE */}
-      <div className="border-b border-[#262833] pb-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="space-y-1">
+    <div className="space-y-10 pb-36">
+      {/* 1. EDITORIAL HUB BANNER */}
+      <div className="border-b border-[#22242f] pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div className="space-y-1.5">
           <div className="flex items-center gap-2">
             <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-bold">
-              Private Collector Salon
+              {currentTabInfo.tag}
             </span>
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[10px] text-zinc-400 uppercase tracking-widest font-mono">
-              Verified Client
+            <span className="text-zinc-600">•</span>
+            <span className="text-[10px] text-zinc-400 uppercase tracking-wider font-mono">
+              Collector Portal
             </span>
           </div>
 
-          <h1 className="font-serif text-3xl sm:text-4xl text-white font-medium">
-            {user.name}
+          <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl text-white font-medium">
+            {currentTabInfo.title}
           </h1>
-          <p className="text-xs text-[#8e92a4]">{user.email}</p>
+          <p className="text-xs sm:text-sm text-[#8e92a4] max-w-2xl">
+            {currentTabInfo.subtitle}
+          </p>
         </div>
 
-        {/* Top Actions */}
-        <div className="flex flex-wrap items-center gap-3">
+        {/* Quick Hub State Indicators */}
+        <div className="flex items-center gap-3">
           {savedArtworkIds.length > 0 && (
             <button
               onClick={() => {
                 setActiveTab("gallery");
                 setGalleryCategory("saved");
               }}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#181920] border border-[#262833] text-xs text-zinc-300 hover:text-white transition-colors"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#15161f] border border-[#2b2e3c] text-xs text-zinc-300 hover:text-white transition-colors"
             >
               <Heart className="w-3.5 h-3.5 text-[#d1a86e] fill-[#d1a86e]" />
-              <span>{savedArtworkIds.length} Saved</span>
+              <span>{savedArtworkIds.length} Bookmarked Works</span>
             </button>
           )}
 
-          {user.role === "ADMIN" && (
-            <Button
-              asChild
-              variant="outline"
-              className="border-amber-800/80 bg-amber-950/40 hover:bg-amber-900/60 text-amber-200 text-xs font-semibold uppercase tracking-wider rounded-full"
+          {activeTab !== "overview" && (
+            <button
+              onClick={() => handleTabChange("overview")}
+              className="text-xs text-zinc-400 hover:text-white px-3 py-1.5 rounded-full bg-[#15161f] border border-[#2b2e3c] hover:border-[#3d4052] transition-colors"
             >
-              <Link href="/admin/dashboard" className="flex items-center gap-2">
-                <Shield className="w-4 h-4 text-[#d1a86e]" />
-                <span>Open Studio CMS</span>
-              </Link>
-            </Button>
+              Overview
+            </button>
           )}
-
-          <Button
-            onClick={handleSignOut}
-            variant="ghost"
-            className="text-xs text-zinc-400 hover:text-white rounded-full hover:bg-zinc-800/60"
-          >
-            <LogOut className="w-3.5 h-3.5 mr-1.5" />
-            <span>Sign Out</span>
-          </Button>
         </div>
-      </div>
-
-      {/* 2. DESKTOP TAB NAVIGATION STRIP */}
-      <div className="flex items-center gap-1 overflow-x-auto border-b border-[#1c1d25] pb-2 text-xs scrollbar-none">
-        {[
-          { id: "overview", label: "Overview" },
-          { id: "gallery", label: "Gallery Catalog" },
-          { id: "collections", label: "Collections & Series" },
-          { id: "exhibitions", label: "Exhibitions & Vernissages" },
-          { id: "inquiries", label: `Inquiries (${userInquiries.length})` },
-          { id: "ar", label: "Spatial AR Showroom" },
-          { id: "profile", label: "Collector Profile" },
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => handleTabChange(tab.id as CollectorTab)}
-            className={`px-4 py-2 rounded-xl transition-all whitespace-nowrap uppercase tracking-wider text-[11px] font-medium ${
-              activeTab === tab.id
-                ? "bg-[#d1a86e] text-[#0d0e12] font-semibold shadow-md shadow-[#d1a86e]/15"
-                : "text-zinc-400 hover:text-white hover:bg-[#181920]"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
       </div>
 
       {/* =========================================================================

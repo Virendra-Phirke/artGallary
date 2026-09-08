@@ -75,18 +75,29 @@ export function CollectorServicesSection() {
         {/* Footer Contact Banner */}
         <div className="pt-4 border-t border-[#1c1d25] flex flex-col sm:flex-row items-center justify-between gap-4">
           <span className="text-xs text-zinc-400">
-            Inquire for private foundation viewing appointments or private commissions.
+            Inquire for private foundation viewing appointments or enter the private salon.
           </span>
-          <Button
-            asChild
-            variant="outline"
-            className="rounded-full border-[#262833] bg-[#14151a] hover:bg-[#1a1c23] text-[#d1a86e] hover:text-white text-xs uppercase tracking-wider px-6 py-2.5"
-          >
-            <Link href="/contact" className="flex items-center gap-2">
-              <span>Studio Inquiries</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </Button>
+          <div className="flex flex-wrap items-center gap-3">
+            <Button
+              asChild
+              variant="outline"
+              className="rounded-full border-[#262833] bg-[#14151a] hover:bg-[#1a1c23] text-zinc-300 hover:text-white text-xs uppercase tracking-wider px-5 py-2"
+            >
+              <Link href="/contact" className="flex items-center gap-2">
+                <span>Studio Inquiries</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </Button>
+            <Button
+              asChild
+              className="rounded-full bg-[#d1a86e] text-[#0d0e12] hover:bg-[#b38947] text-xs font-semibold uppercase tracking-wider px-5 py-2"
+            >
+              <Link href="/account" className="flex items-center gap-2">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Enter Collector Portal</span>
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
     </section>
