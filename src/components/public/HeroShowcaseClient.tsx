@@ -62,14 +62,14 @@ export function HeroShowcaseClient({
 
   return (
     <>
-      <section className="relative min-h-[92vh] flex items-center justify-center pt-20 sm:pt-28 pb-12 sm:pb-16 px-3.5 sm:px-10 md:px-14 lg:px-16 overflow-hidden w-full max-w-full">
+      <section className="relative min-h-[92vh] flex items-center justify-center pt-28 xs:pt-32 sm:pt-36 pb-12 sm:pb-16 px-3.5 sm:px-10 md:px-14 lg:px-16 overflow-hidden w-full max-w-full">
         {/* Subtle Ambient Light Glow */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] sm:w-[700px] h-[280px] sm:h-[700px] bg-[#d1a86e]/8 rounded-full blur-[120px] sm:blur-[160px] pointer-events-none" />
 
         <div className="max-w-[1800px] mx-auto w-full min-w-0 grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-center">
           {/* Left Hero Narrative */}
-          <div className="lg:col-span-6 space-y-4 sm:space-y-6 md:space-y-8 z-10 w-full min-w-0">
-            <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-[#18191e] text-[9px] xs:text-[10px] sm:text-[11px] tracking-[0.18em] sm:tracking-[0.25em] text-[#d1a86e] uppercase max-w-full">
+          <div className="lg:col-span-6 space-y-3.5 sm:space-y-6 md:space-y-8 z-10 w-full min-w-0">
+            <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 rounded-full bg-[#18191e] text-[9px] xs:text-[10px] sm:text-[11px] tracking-[0.18em] sm:tracking-[0.25em] text-[#d1a86e] uppercase max-w-full">
               <span className="w-1.5 h-1.5 rounded-full bg-[#d1a86e] animate-pulse shrink-0" />
               <span className="truncate">{heroBadge}</span>
             </div>
@@ -82,18 +82,18 @@ export function HeroShowcaseClient({
               {heroDescription}
             </p>
 
-            <div className="pt-1 sm:pt-2 grid grid-cols-2 gap-2 sm:flex sm:flex-row items-stretch sm:items-center sm:gap-4 w-full min-w-0">
+            <div className="pt-1 sm:pt-2 flex flex-wrap items-center gap-2 sm:gap-3 w-full min-w-0">
               <Button
                 asChild
-                className="rounded-full bg-gradient-to-r from-[#d1a86e] via-[#e2c18d] to-[#b98e54] text-[#0d0e12] px-3 sm:px-8 py-2 sm:py-3.5 text-[10px] sm:text-xs font-semibold uppercase tracking-wider sm:tracking-[0.2em] shadow-xl shadow-[#d1a86e]/25 hover:shadow-[#d1a86e]/40 transition-all h-8.5 sm:h-11 active:scale-[0.98] min-w-0"
+                className="rounded-full bg-gradient-to-r from-[#d1a86e] via-[#e2c18d] to-[#b98e54] text-[#0d0e12] px-3.5 sm:px-6 py-1.5 sm:py-2.5 text-[10px] sm:text-xs font-semibold uppercase tracking-wider sm:tracking-[0.18em] shadow-md shadow-[#d1a86e]/20 hover:shadow-[#d1a86e]/30 transition-all h-7.5 sm:h-9 active:scale-[0.98] w-auto inline-flex shrink-0"
               >
                 <Link
                   href="/account"
-                  className="flex items-center justify-center gap-1 sm:gap-2.5 min-w-0"
+                  className="flex items-center justify-center gap-1.5"
                 >
-                  <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-[#0d0e12] shrink-0" />
-                  <span className="truncate">Collector Salon</span>
-                  <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 shrink-0 hidden xs:inline" />
+                  <Sparkles className="w-3 h-3 text-[#0d0e12] shrink-0" />
+                  <span className="truncate">{primaryCtaText || "Collector Salon"}</span>
+                  <ArrowRight className="w-3 h-3 shrink-0" />
                 </Link>
               </Button>
 
@@ -101,13 +101,13 @@ export function HeroShowcaseClient({
                 <Button
                   asChild
                   variant="secondary"
-                  className="rounded-full bg-[#14151a]/90 hover:bg-[#1f212a] text-white px-3 sm:px-6 py-2 sm:py-3.5 text-[10px] sm:text-xs font-medium uppercase tracking-wider sm:tracking-[0.2em] backdrop-blur-md transition-all shadow-lg h-8.5 sm:h-11 active:scale-[0.98] min-w-0"
+                  className="rounded-full bg-[#14151a]/90 hover:bg-[#1f212a] text-white px-3 sm:px-5 py-1.5 sm:py-2.5 text-[10px] sm:text-xs font-medium uppercase tracking-wider sm:tracking-[0.18em] backdrop-blur-md transition-all shadow-sm h-7.5 sm:h-9 active:scale-[0.98] w-auto inline-flex shrink-0"
                 >
                   <Link
                     href={`/ar/${activeArtwork.slug}`}
-                    className="flex items-center justify-center gap-1 sm:gap-2 min-w-0"
+                    className="flex items-center justify-center gap-1.5"
                   >
-                    <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-[#d1a86e] shrink-0" />
+                    <Sparkles className="w-3 h-3 text-[#d1a86e] shrink-0" />
                     <span className="truncate">View in AR</span>
                   </Link>
                 </Button>

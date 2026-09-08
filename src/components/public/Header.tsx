@@ -261,10 +261,10 @@ export function Header({ settings }: HeaderProps) {
         </div>
 
         {/* Mobile Navigation Trigger with shadcn Sheet */}
-        <div className="flex items-center gap-2 md:hidden">
-          <Button asChild variant="ghost" size="sm" className="h-7 px-2.5 text-[10px] rounded-full bg-[#1c1e2b] text-[#d1a86e]">
-            <Link href="/account">
-              <Sparkles className="w-3 h-3 mr-1" />
+        <div className="flex items-center gap-1.5 xs:gap-2 md:hidden shrink-0">
+          <Button asChild variant="ghost" size="sm" className="h-6.5 px-2 xs:px-2.5 text-[9px] xs:text-[10px] rounded-full bg-[#1c1e2b] hover:bg-[#252838] text-[#d1a86e]">
+            <Link href="/account" className="flex items-center">
+              <Sparkles className="w-2.5 h-2.5 mr-1 text-[#d1a86e]" />
               <span>Salon</span>
             </Link>
           </Button>
@@ -274,10 +274,10 @@ export function Header({ settings }: HeaderProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-white hover:bg-[#1a1c23]"
+                className="h-7 w-7 text-white hover:bg-[#1a1c23]"
                 aria-label="Open navigation menu"
               >
-                <Menu className="w-4 h-4" />
+                <Menu className="w-3.5 h-3.5" />
               </Button>
             </SheetTrigger>
 

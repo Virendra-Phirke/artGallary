@@ -124,30 +124,30 @@ export default async function HomePage() {
                   </p>
 
                   {featuredCollection && (
-                    <div className="pt-2 sm:pt-4 grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-4">
+                    <div className="pt-2 sm:pt-4 flex flex-wrap items-center gap-2 sm:gap-3">
                       <Button
                         asChild
-                        className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-[10px] sm:text-xs tracking-wider uppercase h-8 sm:h-10 px-3 sm:px-6 shadow-lg shadow-[#d1a86e]/15 active:scale-[0.98]"
+                        className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-[10px] sm:text-xs tracking-wider uppercase h-7.5 sm:h-9 px-3.5 sm:px-5 shadow-md shadow-[#d1a86e]/15 active:scale-[0.98] w-auto inline-flex"
                       >
                         <Link
                           href={`/collections/${featuredCollection.slug}`}
                           className="flex items-center justify-center gap-1.5"
                         >
-                          <span className="truncate">Explore Series</span>
-                          <ArrowRight className="w-3.5 h-3.5 shrink-0" />
+                          <span>Explore Series</span>
+                          <ArrowRight className="w-3 h-3 shrink-0" />
                         </Link>
                       </Button>
 
                       <Button
                         asChild
-                        className="rounded-full bg-[#161720] hover:bg-[#1f212c] text-zinc-300 hover:text-white text-[10px] sm:text-xs uppercase tracking-wider h-8 sm:h-10 px-3 sm:px-5 active:scale-[0.98]"
+                        className="rounded-full bg-[#161720] hover:bg-[#1f212c] text-zinc-300 hover:text-white text-[10px] sm:text-xs uppercase tracking-wider h-7.5 sm:h-9 px-3 sm:px-4 active:scale-[0.98] w-auto inline-flex"
                       >
                         <Link
                           href="/account?tab=collections"
                           className="flex items-center justify-center gap-1.5"
                         >
-                          <Sparkles className="w-3 h-3 text-[#d1a86e] shrink-0" />
-                          <span className="truncate">All Series</span>
+                          <Sparkles className="w-2.5 h-2.5 text-[#d1a86e] shrink-0" />
+                          <span>All Series</span>
                         </Link>
                       </Button>
                     </div>
@@ -311,29 +311,29 @@ export default async function HomePage() {
                       currentExhibition?.curatorNote}
                   </p>
                   {currentExhibition && (
-                    <div className="pt-2 grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3">
+                    <div className="pt-2 flex flex-wrap items-center gap-2 sm:gap-3">
                       <Button
                         asChild
-                        className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-[10px] sm:text-xs uppercase tracking-wider h-8 sm:h-10 px-3 sm:px-5 shadow-md shadow-[#d1a86e]/15 active:scale-[0.98]"
+                        className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] font-semibold text-[10px] sm:text-xs uppercase tracking-wider h-7.5 sm:h-9 px-3.5 sm:px-5 shadow-md shadow-[#d1a86e]/15 active:scale-[0.98] w-auto inline-flex"
                       >
                         <Link
                           href="/account?tab=exhibitions"
                           className="flex items-center justify-center gap-1.5"
                         >
-                          <Sparkles className="w-3.5 h-3.5 shrink-0" />
-                          <span className="truncate">RSVP Salon</span>
+                          <Sparkles className="w-3 h-3 shrink-0" />
+                          <span>RSVP Salon</span>
                         </Link>
                       </Button>
                       <Button
                         asChild
-                        className="rounded-full bg-[#161720] hover:bg-[#1f212c] text-white text-[10px] sm:text-xs uppercase tracking-wider h-8 sm:h-10 px-3 sm:px-5 active:scale-[0.98]"
+                        className="rounded-full bg-[#161720] hover:bg-[#1f212c] text-white text-[10px] sm:text-xs uppercase tracking-wider h-7.5 sm:h-9 px-3 sm:px-4 active:scale-[0.98] w-auto inline-flex"
                       >
                         <Link
                           href={`/exhibitions/${currentExhibition.slug}`}
                           className="flex items-center justify-center gap-1.5"
                         >
-                          <span className="truncate">Dossier</span>
-                          <ArrowRight className="w-3.5 h-3.5 text-[#d1a86e] shrink-0" />
+                          <span>Dossier</span>
+                          <ArrowRight className="w-3 h-3 text-[#d1a86e] shrink-0" />
                         </Link>
                       </Button>
                     </div>
@@ -368,29 +368,27 @@ export default async function HomePage() {
                     "Inquire about acquiring original works, scheduling a private studio viewing in Paris, or commissioning bespoke architectural artworks directly with Elena Vance."}
                 </p>
 
-                <div className="pt-2 sm:pt-4 grid grid-cols-2 gap-2 sm:flex sm:items-center sm:justify-center sm:gap-4">
+                <div className="pt-2 sm:pt-4 flex flex-wrap items-center justify-center gap-2 sm:gap-4">
                   <Button
                     asChild
-                    size="lg"
-                    className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] h-8.5 sm:h-11 px-3.5 sm:px-8 text-[10px] sm:text-xs font-semibold uppercase tracking-wider sm:tracking-[0.2em] shadow-xl shadow-[#d1a86e]/15 active:scale-[0.98]"
+                    className="rounded-full bg-[#d1a86e] hover:bg-[#e2c18d] text-[#0d0e12] h-7.5 sm:h-9.5 px-4 sm:px-7 text-[10px] sm:text-xs font-semibold uppercase tracking-wider sm:tracking-[0.18em] shadow-lg shadow-[#d1a86e]/15 active:scale-[0.98] w-auto inline-flex"
                   >
                     <Link
                       href={sec.contentJson?.ctaUrl || "/contact"}
-                      className="inline-flex items-center justify-center gap-1.5 sm:gap-2.5"
+                      className="inline-flex items-center justify-center gap-1.5"
                     >
-                      <span className="truncate">
+                      <span>
                         {sec.contentJson?.ctaText || "Inquire Studio"}
                       </span>
-                      <ArrowRight className="w-3.5 h-3.5 shrink-0" />
+                      <ArrowRight className="w-3 h-3 shrink-0" />
                     </Link>
                   </Button>
 
                   <Button
                     asChild
-                    size="lg"
-                    className="rounded-full bg-[#1a1b24] hover:bg-[#232432] text-zinc-300 hover:text-white h-8.5 sm:h-11 px-3 sm:px-7 text-[10px] sm:text-xs uppercase tracking-wider active:scale-[0.98]"
+                    className="rounded-full bg-[#1a1b24] hover:bg-[#232432] text-zinc-300 hover:text-white h-7.5 sm:h-9.5 px-3.5 sm:px-6 text-[10px] sm:text-xs uppercase tracking-wider active:scale-[0.98] w-auto inline-flex"
                   >
-                    <Link href="/about" className="truncate">About Artist</Link>
+                    <Link href="/about">About Artist</Link>
                   </Button>
                 </div>
               </div>

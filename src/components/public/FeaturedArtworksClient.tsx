@@ -227,13 +227,13 @@ export function FeaturedArtworksClient({
           <Button
             asChild
             variant="outline"
-            className="rounded-full border-[#383a48] bg-gradient-to-b from-[#181920] to-[#121318] hover:border-[#d1a86e] hover:bg-[#1a1c24] text-white px-4 sm:px-9 py-2.5 sm:py-4 text-[10px] sm:text-xs uppercase tracking-wider sm:tracking-[0.22em] shadow-2xl shadow-black/80 hover:shadow-[#d1a86e]/10 transition-all active:scale-[0.98] max-w-full inline-flex"
+            className="rounded-full border-[#383a48] bg-gradient-to-b from-[#181920] to-[#121318] hover:border-[#d1a86e] hover:bg-[#1a1c24] text-white h-8 sm:h-10 px-3.5 sm:px-7 text-[10px] sm:text-xs uppercase tracking-wider sm:tracking-[0.2em] shadow-xl shadow-black/80 hover:shadow-[#d1a86e]/10 transition-all active:scale-[0.98] w-auto inline-flex"
           >
-            <Link href="/account?tab=gallery" className="inline-flex items-center gap-1.5 sm:gap-2.5">
-              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#d1a86e] shrink-0" />
-              <span className="hidden sm:inline">Enter Collector Salon for Complete Catalogue</span>
-              <span className="inline sm:hidden">Complete Catalogue in Salon</span>
-              <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#d1a86e] shrink-0" />
+            <Link href="/account?tab=gallery" className="inline-flex items-center gap-1.5 sm:gap-2">
+              <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#d1a86e] shrink-0" />
+              <span className="hidden sm:inline">Explore Full Catalogue in Salon</span>
+              <span className="inline sm:hidden">Full Catalogue in Salon</span>
+              <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#d1a86e] shrink-0" />
             </Link>
           </Button>
         </div>

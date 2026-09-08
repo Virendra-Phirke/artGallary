@@ -77,23 +77,23 @@ export function CollectorServicesSection() {
           <span className="text-[11px] sm:text-xs text-zinc-400 font-light">
             Inquire for private foundation viewing appointments or enter the private salon.
           </span>
-          <div className="w-full sm:w-auto grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <Button
               asChild
-              className="rounded-full bg-[#161720] hover:bg-[#202230] text-zinc-300 hover:text-white text-[10px] sm:text-xs uppercase tracking-wider h-8 sm:h-9 px-3 sm:px-5 active:scale-[0.98]"
+              className="rounded-full bg-[#161720] hover:bg-[#202230] text-zinc-300 hover:text-white text-[10px] sm:text-xs uppercase tracking-wider h-7.5 sm:h-8.5 px-3.5 sm:px-4 active:scale-[0.98] w-auto inline-flex"
             >
               <Link href="/contact" className="flex items-center justify-center gap-1.5">
-                <span className="truncate">Inquiries</span>
-                <ArrowRight className="w-3.5 h-3.5 shrink-0" />
+                <span>Inquiries</span>
+                <ArrowRight className="w-3 h-3 shrink-0" />
               </Link>
             </Button>
             <Button
               asChild
-              className="rounded-full bg-[#d1a86e] text-[#0d0e12] hover:bg-[#b38947] text-[10px] sm:text-xs font-semibold uppercase tracking-wider h-8 sm:h-9 px-3 sm:px-5 shadow-md shadow-[#d1a86e]/15 active:scale-[0.98]"
+              className="rounded-full bg-[#d1a86e] text-[#0d0e12] hover:bg-[#b38947] text-[10px] sm:text-xs font-semibold uppercase tracking-wider h-7.5 sm:h-8.5 px-3.5 sm:px-4 shadow-md shadow-[#d1a86e]/15 active:scale-[0.98] w-auto inline-flex"
             >
               <Link href="/account" className="flex items-center justify-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 shrink-0" />
-                <span className="truncate">Collector Salon</span>
+                <Sparkles className="w-3 h-3 shrink-0" />
+                <span>Collector Salon</span>
               </Link>
             </Button>
           </div>
