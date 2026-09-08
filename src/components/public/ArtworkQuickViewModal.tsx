@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import {
   X,
@@ -39,6 +40,11 @@ export function ArtworkQuickViewModal({
   isSaved = false,
 }: ArtworkQuickViewModalProps) {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -58,7 +64,7 @@ export function ArtworkQuickViewModal({
     setSelectedImageIndex(0);
   }, [artwork?.id]);
 
-  if (!isOpen || !artwork) return null;
+  if (!isOpen || !artwork || !mounted) return null;
 
   const allImages = [
     artwork.coverImageUrl,
@@ -67,12 +73,12 @@ export function ArtworkQuickViewModal({
 
   const currentImage = allImages[selectedImageIndex] || artwork.coverImageUrl;
 
-  return (
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
       aria-label={`Quick view: ${artwork.title}`}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-10 bg-black/85 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-[110] flex items-center justify-center p-3.5 sm:p-6 md:p-10 bg-black/85 backdrop-blur-md animate-in fade-in duration-200 pointer-events-auto"
       onClick={onClose}
     >
       <div
@@ -291,6 +297,7 @@ export function ArtworkQuickViewModal({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

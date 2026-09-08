@@ -105,8 +105,10 @@ export function DropdownMenuContent({
   const { open, setOpen, containerRef, contentRef } = useDropdownMenu();
   const [mounted, setMounted] = React.useState(false);
   const [coords, setCoords] = React.useState<{
-    top: number;
+    top?: number;
+    bottom?: number;
     left: number;
+    maxHeight: number;
     placement: "top" | "bottom";
   } | null>(null);
 
@@ -127,20 +129,24 @@ export function DropdownMenuContent({
       return null;
     }
 
-    const menuWidth = contentRef.current?.offsetWidth || 175;
-    const menuHeight = contentRef.current?.offsetHeight || 210;
-
     const spaceBelow = window.innerHeight - rect.bottom;
     const spaceAbove = rect.top;
-    const placeTop = spaceBelow < menuHeight + 16 && spaceAbove > spaceBelow;
+    // Prefer placing below unless there's not enough room below AND more room above
+    const placeTop = spaceBelow < 280 && spaceAbove > spaceBelow;
 
-    let top: number;
+    let top: number | undefined;
+    let bottom: number | undefined;
+    let maxHeight: number;
+
     if (placeTop) {
-      top = Math.max(8, rect.top - menuHeight - 6);
+      bottom = window.innerHeight - rect.top + 6;
+      maxHeight = Math.max(140, rect.top - 16);
     } else {
-      top = Math.min(window.innerHeight - menuHeight - 8, rect.bottom + 6);
+      top = rect.bottom + 6;
+      maxHeight = Math.max(140, window.innerHeight - rect.bottom - 16);
     }
 
+    const menuWidth = contentRef.current?.offsetWidth || 256;
     let left: number;
     if (align === "start") {
       left = rect.left;
@@ -150,25 +156,33 @@ export function DropdownMenuContent({
       left = rect.left + (rect.width - menuWidth) / 2;
     }
 
-    // Keep dropdown inside screen boundaries
+    // Keep dropdown inside screen boundaries with 8px margin
     left = Math.max(8, Math.min(left, window.innerWidth - menuWidth - 8));
 
-    return { top, left, placement: placeTop ? ("top" as const) : ("bottom" as const) };
+    return {
+      top,
+      bottom,
+      left,
+      maxHeight: Math.min(520, maxHeight),
+      placement: placeTop ? ("top" as const) : ("bottom" as const),
+    };
   }, [align, containerRef, contentRef, setOpen]);
 
   React.useLayoutEffect(() => {
     if (open) {
-      const initial = calculatePosition();
-      if (initial) setCoords(initial);
-
       const handleUpdate = () => {
         const next = calculatePosition();
         if (next) setCoords(next);
       };
 
+      handleUpdate();
+      // Re-measure after DOM paint with actual measured width & height
+      const frameId = requestAnimationFrame(handleUpdate);
+
       window.addEventListener("resize", handleUpdate);
       window.addEventListener("scroll", handleUpdate, true);
       return () => {
+        cancelAnimationFrame(frameId);
         window.removeEventListener("resize", handleUpdate);
         window.removeEventListener("scroll", handleUpdate, true);
       };
@@ -185,12 +199,15 @@ export function DropdownMenuContent({
       ref={contentRef}
       style={{
         position: "fixed",
-        top: `${coords.top}px`,
+        ...(coords.top !== undefined ? { top: `${coords.top}px` } : {}),
+        ...(coords.bottom !== undefined ? { bottom: `${coords.bottom}px` } : {}),
         left: `${coords.left}px`,
+        maxHeight: `${coords.maxHeight}px`,
         zIndex: 9999,
+        backgroundColor: "#121319",
       }}
       className={cn(
-        "min-w-[170px] max-h-[320px] overflow-y-auto rounded-xl border border-[#262833] bg-[#14151a] p-1.5 text-xs text-[#f4f4f6] shadow-2xl shadow-black/95",
+        "min-w-[170px] max-w-[calc(100vw-16px)] overflow-y-auto rounded-xl border border-[#262833] bg-[#121319] p-1.5 text-xs text-[#f4f4f6] shadow-2xl shadow-black/95 overscroll-contain",
         coords.placement === "top"
           ? "animate-in fade-in-0 slide-in-from-bottom-2 duration-150"
           : "animate-in fade-in-0 slide-in-from-top-2 duration-150",
@@ -209,8 +226,9 @@ export function DropdownMenuItem({
   className,
   asChild,
   onClick,
+  closeOnClick = true,
   ...props
-}: React.HTMLAttributes<HTMLDivElement> & { asChild?: boolean }) {
+}: React.HTMLAttributes<HTMLDivElement> & { asChild?: boolean; closeOnClick?: boolean }) {
   const { setOpen } = useDropdownMenu();
 
   if (asChild && React.isValidElement(children)) {
@@ -219,7 +237,7 @@ export function DropdownMenuItem({
       onClick: (e: React.MouseEvent) => {
         child.props.onClick?.(e);
         onClick?.(e as any);
-        setOpen(false);
+        if (closeOnClick) setOpen(false);
       },
       className: cn(
         "flex w-full cursor-pointer select-none items-center gap-2 rounded-lg px-2.5 py-2 text-xs text-zinc-300 transition-colors hover:bg-[#1f212b] hover:text-white",
@@ -234,7 +252,7 @@ export function DropdownMenuItem({
       role="menuitem"
       onClick={(e) => {
         onClick?.(e);
-        setOpen(false);
+        if (closeOnClick) setOpen(false);
       }}
       className={cn(
         "flex w-full cursor-pointer select-none items-center gap-2 rounded-lg px-2.5 py-2 text-xs text-zinc-300 transition-colors hover:bg-[#1f212b] hover:text-white",

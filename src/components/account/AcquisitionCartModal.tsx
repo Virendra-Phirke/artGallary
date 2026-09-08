@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import {
   X,
@@ -50,13 +51,18 @@ export function AcquisitionCartModal({
   const [submitting, setSubmitting] = useState(false);
   const [submittedInquiryId, setSubmittedInquiryId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Form states
   const [phone, setPhone] = useState("");
   const [destination, setDestination] = useState("");
   const [notes, setNotes] = useState("");
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
   // Selected artworks from the cart IDs
   const cartArtworks = artworks.filter((a) => cartArtworkIds.includes(a.id));
@@ -131,12 +137,12 @@ ${notes || "Please advise on availability, crating protocol, and private viewing
     onClose();
   };
 
-  return (
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
       aria-label="Acquisition Portfolio Dossier"
-      className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-6 md:p-10 bg-black/85 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-[110] flex items-center justify-center p-2.5 sm:p-6 md:p-10 bg-black/85 backdrop-blur-md animate-in fade-in duration-200 pointer-events-auto"
       onClick={handleResetAndClose}
     >
       <div
@@ -481,6 +487,7 @@ ${notes || "Please advise on availability, crating protocol, and private viewing
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

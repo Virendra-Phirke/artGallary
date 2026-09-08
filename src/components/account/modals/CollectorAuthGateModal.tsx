@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { Heart, ShieldCheck, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,14 +9,19 @@ import { useCollector } from "@/components/account/context/CollectorContext";
 
 export function CollectorAuthGateModal() {
   const { loginPromptReason, setLoginPromptReason } = useCollector();
+  const [mounted, setMounted] = useState(false);
 
-  if (!loginPromptReason) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  return (
+  if (!loginPromptReason || !mounted) return null;
+
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3.5 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-[110] flex items-center justify-center p-3.5 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200 pointer-events-auto"
       onClick={() => setLoginPromptReason(null)}
     >
       <div
@@ -88,6 +94,7 @@ export function CollectorAuthGateModal() {
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

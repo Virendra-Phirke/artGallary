@@ -135,13 +135,13 @@ export function CatalogueTab() {
             </h2>
           </div>
 
-          <div className="flex flex-row items-center gap-2 sm:gap-3 w-full lg:w-auto">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full lg:w-auto">
             {/* Search Input */}
-            <div className="relative flex-1 sm:w-64 md:w-72">
+            <div className="relative flex-1 min-w-0 sm:w-64 md:w-72">
               <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-zinc-500 absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
-                placeholder="Search paintings..."
+                placeholder="Search artworks..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full h-8.5 sm:h-9.5 bg-[#1c1d28] rounded-full pl-8 sm:pl-9 pr-7 text-xs text-white placeholder:text-zinc-500 focus:outline-none transition-colors shadow-inner"
@@ -163,27 +163,27 @@ export function CatalogueTab() {
                 <button
                   type="button"
                   className={cn(
-                    "inline-flex items-center gap-1.5 h-8.5 sm:h-9.5 px-3 sm:px-4 rounded-full text-[10px] sm:text-xs uppercase tracking-wider font-semibold cursor-pointer transition-all shadow-sm shrink-0 border",
+                    "inline-flex items-center justify-center gap-1.5 h-8.5 sm:h-9.5 px-3 sm:px-4 rounded-full text-[10px] sm:text-xs uppercase tracking-wider font-semibold cursor-pointer transition-all shadow-sm shrink-0 border",
                     category !== "all" || sortBy !== "featured"
                       ? "bg-[#222432] text-[#d1a86e] border-[#d1a86e]/40 shadow-md shadow-[#d1a86e]/10"
                       : "bg-[#1c1d28] hover:bg-[#252736] text-zinc-200 hover:text-white border-transparent"
                   )}
                   aria-label="Filter and Sort options"
                 >
-                  <SlidersHorizontal className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#d1a86e]" />
-                  <span className="truncate max-w-[90px] xs:max-w-[130px] sm:max-w-[160px]">
+                  <SlidersHorizontal className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#d1a86e] shrink-0" />
+                  <span className="truncate max-w-[85px] xs:max-w-[120px] sm:max-w-[150px]">
                     {CATEGORY_OPTIONS.find((c) => c.id === category)?.label || "Filter"}
                   </span>
-                  <span className="text-[9px] sm:text-[10px] font-mono px-1 sm:px-1.5 py-0.2 rounded-full bg-[#121319] text-[#d1a86e]">
+                  <span className="text-[9px] sm:text-[10px] font-mono px-1 sm:px-1.5 py-0.2 rounded-full bg-[#121319] text-[#d1a86e] shrink-0">
                     {counts[category]}
                   </span>
-                  <ChevronDown className="w-3 h-3 text-zinc-400 ml-0.5" />
+                  <ChevronDown className="w-3 h-3 text-zinc-400 ml-0.5 shrink-0" />
                 </button>
               </DropdownMenuTrigger>
 
               <DropdownMenuContent
                 align="end"
-                className="w-64 p-2 bg-[#121319] border border-[#262833] rounded-2xl shadow-2xl shadow-black/95 text-xs text-white z-[110]"
+                className="w-72 max-w-[calc(100vw-32px)] p-2.5 bg-[#121319] border border-[#262833] rounded-2xl shadow-2xl shadow-black/95 text-xs text-white z-[110]"
               >
                 <div className="flex items-center justify-between px-2.5 py-1.5 text-[9px] tracking-[0.2em] uppercase font-bold text-[#d1a86e]">
                   <span>Filter by Category</span>
@@ -194,6 +194,7 @@ export function CatalogueTab() {
                   {CATEGORY_OPTIONS.map((cat) => (
                     <DropdownMenuItem
                       key={cat.id}
+                      closeOnClick={false}
                       onClick={() => setCategory(cat.id as any)}
                       className={cn(
                         "flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs cursor-pointer transition-colors",
@@ -234,6 +235,7 @@ export function CatalogueTab() {
                   {SORT_OPTIONS.map((opt) => (
                     <DropdownMenuItem
                       key={opt.id}
+                      closeOnClick={false}
                       onClick={() => setSortBy(opt.id as any)}
                       className={cn(
                         "flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs cursor-pointer transition-colors",
@@ -254,21 +256,30 @@ export function CatalogueTab() {
                   ))}
                 </div>
 
-                {(category !== "all" || sortBy !== "featured") && (
-                  <>
-                    <DropdownMenuSeparator className="my-1.5 bg-[#222432]" />
+                <DropdownMenuSeparator className="my-1.5 bg-[#222432]" />
+
+                <div className="flex items-center justify-between gap-2 pt-1 px-1">
+                  {category !== "all" || sortBy !== "featured" ? (
                     <button
                       type="button"
                       onClick={() => {
                         setCategory("all");
                         setSortBy("featured");
                       }}
-                      className="w-full text-center py-1.5 text-[10px] uppercase tracking-wider text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                      className="text-[10px] uppercase tracking-wider text-zinc-400 hover:text-white transition-colors cursor-pointer py-1 px-1.5"
                     >
-                      Reset Filter &amp; Sort
+                      Reset Filters
                     </button>
-                  </>
-                )}
+                  ) : (
+                    <span className="text-[10px] text-zinc-500 font-mono px-1">Default filters</span>
+                  )}
+                  <DropdownMenuItem
+                    closeOnClick={true}
+                    className="w-auto px-3.5 py-1 bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] hover:text-[#0d0e12] font-semibold rounded-full text-[10px] uppercase tracking-wider justify-center cursor-pointer transition-colors shadow-sm"
+                  >
+                    Apply
+                  </DropdownMenuItem>
+                </div>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
