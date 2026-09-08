@@ -139,7 +139,7 @@ export function ArtworkCard({ artwork, className = "" }: ArtworkCardProps) {
       <button
         onClick={() => toggleCartArtwork(artwork.id)}
         className={cn(
-          "w-full h-8 sm:h-10 px-2 sm:px-4 rounded-full text-[10px] sm:text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-1.5 sm:gap-2 transition-all mt-1.5 sm:mt-2 cursor-pointer active:scale-[0.98] shadow-md",
+          "w-full h-7.5 sm:h-8.5 px-2 sm:px-3.5 rounded-full text-[9px] sm:text-[11px] font-semibold uppercase tracking-wider flex items-center justify-center gap-1.5 sm:gap-2 transition-all mt-1.5 sm:mt-2 cursor-pointer active:scale-[0.98] shadow-sm",
           isInCart
             ? "bg-[#252838] text-[#d1a86e]"
             : "bg-[#1c1d28] hover:bg-[#252736] text-zinc-200 hover:text-white"

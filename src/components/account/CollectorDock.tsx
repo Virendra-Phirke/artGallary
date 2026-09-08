@@ -383,28 +383,6 @@ export function CollectorDock({
         </Dock>
       </motion.nav>
 
-      {/* 4. Floating Mobile Trigger Button (< 768px) */}
-      <div className="md:hidden fixed bottom-4 right-4 z-40">
-        <button
-          onClick={() => setIsMobileOpen((prev) => !prev)}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-[#151620]/95 backdrop-blur-md border border-white/15 active:scale-95 shadow-2xl shadow-black/90 text-white font-medium text-[11px] tracking-wider uppercase transition-all cursor-pointer group"
-          aria-label={isMobileOpen ? "Close Collector Navigation" : "Open Collector Navigation"}
-        >
-          {isMobileOpen ? (
-            <X className="w-3.5 h-3.5 text-[#d1a86e] transition-transform group-hover:rotate-90" />
-          ) : (
-            <Menu className="w-3.5 h-3.5 text-[#d1a86e]" />
-          )}
-          <span className="text-[11px] font-semibold text-zinc-200 group-hover:text-white">
-            {isMobileOpen ? "Close" : "Menu"}
-          </span>
-          {inquiriesCount > 0 && (
-            <span className="flex h-3.5 min-w-3.5 px-1 items-center justify-center rounded-full bg-[#d1a86e] text-[8px] font-bold text-[#0d0e12]">
-              {inquiriesCount}
-            </span>
-          )}
-        </button>
-      </div>
 
       {/* 5. Mobile Sliding Sidebar Drawer & Backdrop */}
       <AnimatePresence>

@@ -83,26 +83,26 @@ export function OverviewTab() {
               {spotlightArtwork.description}
             </p>
 
-            <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 sm:gap-3 pt-1">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2.5 pt-1">
               <Button
                 onClick={() => setInspectArtwork(spotlightArtwork)}
-                className="h-9 sm:h-10 px-3 sm:px-5 rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-[11px] sm:text-xs font-semibold uppercase tracking-wider shadow-md shadow-[#d1a86e]/15 cursor-pointer transition-all active:scale-[0.98]"
+                className="h-7.5 sm:h-8.5 px-3 sm:px-4 rounded-full bg-[#d1a86e] hover:bg-[#dfba82] text-[#0d0e12] text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider shadow-sm shadow-[#d1a86e]/15 cursor-pointer transition-all active:scale-[0.98] w-auto inline-flex shrink-0"
               >
-                <Eye className="w-3.5 h-3.5 mr-1.5 sm:mr-2 shrink-0" />
-                <span className="truncate">Inspect</span>
+                <Eye className="w-3 h-3 mr-1.5 shrink-0" />
+                <span>Inspect</span>
               </Button>
 
               <Button
                 onClick={() => toggleCartArtwork(spotlightArtwork.id)}
                 className={cn(
-                  "h-9 sm:h-10 px-3 sm:px-5 rounded-full text-[11px] sm:text-xs font-semibold uppercase tracking-wider shadow-md transition-all cursor-pointer active:scale-[0.98]",
+                  "h-7.5 sm:h-8.5 px-3 sm:px-4 rounded-full text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider shadow-sm transition-all cursor-pointer active:scale-[0.98] w-auto inline-flex shrink-0",
                   cartArtworkIds.includes(spotlightArtwork.id)
                     ? "bg-[#252838] text-[#d1a86e]"
                     : "bg-[#1c1d28] hover:bg-[#252736] text-zinc-200 hover:text-white"
                 )}
               >
-                <ShoppingBag className="w-3.5 h-3.5 mr-1.5 sm:mr-2 text-[#d1a86e] shrink-0" />
-                <span className="truncate">
+                <ShoppingBag className="w-3 h-3 mr-1.5 text-[#d1a86e] shrink-0" />
+                <span>
                   {cartArtworkIds.includes(spotlightArtwork.id)
                     ? "In Dossier"
                     : "+ Dossier"}
@@ -111,10 +111,10 @@ export function OverviewTab() {
 
               <Button
                 asChild
-                className="col-span-2 sm:col-auto h-9 sm:h-10 px-4 sm:px-5 rounded-full bg-[#1c1d28] hover:bg-[#252736] text-white text-[11px] sm:text-xs font-medium uppercase tracking-wider shadow-md transition-all active:scale-[0.98]"
+                className="h-7.5 sm:h-8.5 px-3 sm:px-4 rounded-full bg-[#1c1d28] hover:bg-[#252736] text-white text-[10px] sm:text-[11px] font-medium uppercase tracking-wider shadow-sm transition-all active:scale-[0.98] w-auto inline-flex shrink-0"
               >
-                <Link href={`/ar/${spotlightArtwork.slug}`} className="flex items-center justify-center gap-1.5 sm:gap-2">
-                  <Sparkles className="w-3.5 h-3.5 text-[#d1a86e] shrink-0" />
+                <Link href={`/ar/${spotlightArtwork.slug}`} className="flex items-center justify-center gap-1.5">
+                  <Sparkles className="w-3 h-3 text-[#d1a86e] shrink-0" />
                   <span>View in Space (AR)</span>
                 </Link>
               </Button>
@@ -157,10 +157,10 @@ export function OverviewTab() {
             <div>
               <Button
                 asChild
-                className="w-full h-10 rounded-full bg-[#1c1d28] hover:bg-[#252736] text-[#d1a86e] hover:text-white text-xs uppercase tracking-wider font-semibold shadow-md transition-all active:scale-[0.98]"
+                className="w-full h-8 sm:h-9 rounded-full bg-[#1c1d28] hover:bg-[#252736] text-[#d1a86e] hover:text-white text-[10px] sm:text-xs uppercase tracking-wider font-semibold shadow-sm transition-all active:scale-[0.98]"
               >
-                <Link href="/contact" className="flex items-center justify-center gap-2">
-                  <Mail className="w-3.5 h-3.5" />
+                <Link href="/contact" className="flex items-center justify-center gap-1.5 sm:gap-2">
+                  <Mail className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                   <span>Start Acquisition Inquiry</span>
                 </Link>
               </Button>
@@ -186,7 +186,7 @@ export function OverviewTab() {
               <div className="pt-1">
                 <Button
                   asChild
-                  className="w-full h-10 rounded-full bg-[#1c1d28] hover:bg-[#252736] text-zinc-200 hover:text-white text-xs uppercase tracking-wider font-semibold shadow-md transition-all active:scale-[0.98]"
+                  className="w-full h-8 sm:h-9 rounded-full bg-[#1c1d28] hover:bg-[#252736] text-zinc-200 hover:text-white text-[10px] sm:text-xs uppercase tracking-wider font-semibold shadow-sm transition-all active:scale-[0.98]"
                 >
                   <Link href="/login?redirect=/account">
                     <span>Sign In for VIP Dispatches</span>
