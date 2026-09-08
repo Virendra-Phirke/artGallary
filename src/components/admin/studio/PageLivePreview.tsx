@@ -192,7 +192,7 @@ export function PageLivePreview({
                         <div className="md:col-span-7 space-y-4">
                           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#18191e] border border-[#262833] text-[10px] tracking-[0.2em] text-[#d1a86e] uppercase">
                             <span className="w-1.5 h-1.5 rounded-full bg-[#d1a86e] animate-pulse" />
-                            <span>{sec.contentJson?.badge || sec.subtitle || "Spring 2026 Retrospective"}</span>
+                            <span>{sec.subtitle || sec.contentJson?.badge || "Spring 2026 Collection"}</span>
                           </div>
                           <h2 className="font-serif text-3xl md:text-5xl text-white font-medium leading-[1.1]">
                             {sec.title || "The Architecture of Luminous Stillness"}
