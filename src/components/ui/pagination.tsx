@@ -54,7 +54,7 @@ const PaginationLink = ({
       "cursor-pointer transition-colors text-xs font-mono",
       isActive
         ? "bg-[#d1a86e] text-black hover:bg-[#d1a86e] border-transparent shadow-md shadow-[#d1a86e]/20"
-        : "border-[#262833] bg-[#14151a] text-zinc-400 hover:text-white hover:border-[#3a3d4d] hover:bg-[#1a1c23]",
+        : "border-transparent bg-transparent text-zinc-400 hover:text-white hover:bg-[#1a1b26]",
       className
     )}
     {...props}

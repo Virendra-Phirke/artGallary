@@ -45,7 +45,7 @@ export function CollectorPaginationBar({
 
   return (
     <div
-      className={`p-4 bg-[#121319] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl shadow-black/40 ${className}`}
+      className={`p-4 bg-transparent rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 ${className}`}
     >
       <div className="text-xs text-zinc-400 font-mono">
         Showing <span className="text-white font-semibold">{startItem}–{endItem}</span> of{" "}

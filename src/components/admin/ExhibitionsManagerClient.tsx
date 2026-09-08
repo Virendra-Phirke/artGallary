@@ -491,7 +491,7 @@ export function ExhibitionsManagerClient({
 
       {/* Pagination and Per-Page Control Bar */}
       {filteredExhibitions.length > 0 && (
-        <div className="p-5 bg-[#121319] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl shadow-black/40">
+        <div className="p-5 bg-transparent rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="text-xs text-zinc-400 font-mono">
             Showing <span className="text-white font-semibold">{startItem}–{endItem}</span> of{" "}
             <span className="text-[#d1a86e] font-semibold">{filteredExhibitions.length}</span> exhibitions

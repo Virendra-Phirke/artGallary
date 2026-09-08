@@ -571,7 +571,7 @@ export function InquiriesManagerClient({
 
           {/* Inquiries Pagination and Per-Page Control Bar */}
           {filteredInquiries.length > 0 && (
-            <div className="p-5 bg-[#121319] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl shadow-black/40 border-none">
+            <div className="p-5 bg-transparent rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="text-xs text-zinc-400 font-mono">
                 Showing <span className="text-white font-semibold">{inquiryStartItem}–{inquiryEndItem}</span> of{" "}
                 <span className="text-[#d1a86e] font-semibold">{filteredInquiries.length}</span> inquiries
@@ -1175,7 +1175,7 @@ export function InquiriesManagerClient({
 
           {/* Sent Emails Pagination and Per-Page Control Bar */}
           {filteredEmails.length > 0 && (
-            <div className="p-5 bg-[#121319] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl shadow-black/40 border-none">
+            <div className="p-5 bg-transparent rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="text-xs text-zinc-400 font-mono">
                 Showing <span className="text-white font-semibold">{emailStartItem}–{emailEndItem}</span> of{" "}
                 <span className="text-[#d1a86e] font-semibold">{filteredEmails.length}</span> dispatches
