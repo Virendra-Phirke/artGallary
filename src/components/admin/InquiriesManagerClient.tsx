@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { MockInquiry, MockArtwork } from "@/db/mockData";
 import { SentEmailRecord, ActiveSubscriber } from "@/db/repository";
 import { EmailCampaign, EmailJob } from "@/db/schema/campaigns";
@@ -12,34 +11,21 @@ import {
   Clock,
   CheckCircle2,
   AlertTriangle,
-  AlertCircle,
   MessageSquare,
-  Shield,
   BarChart3,
   ArrowUpRight,
   Send,
   Eye,
   X,
-  ExternalLink,
   RefreshCw,
   Search,
-  Sparkles,
-  CheckSquare,
-  Square,
-  Users,
   Check,
-  Calendar,
-  Layers,
-  Globe,
-  Radio,
   Filter,
   ChevronDown,
   Palette,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -93,42 +79,6 @@ export function InquiriesManagerClient({
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [previewEmail, setPreviewEmail] = useState<SentEmailRecord | null>(null);
 
-  // Broadcast Studio State
-  const unnotifiedArtwork = artworks.find((a) => !a.notifiedSubscribersAt);
-  const [selectedArtworkId, setSelectedArtworkId] = useState<string>(
-    unnotifiedArtwork?.id || artworks[0]?.id || ""
-  );
-  const [selectedSubscriberEmails, setSelectedSubscriberEmails] = useState<string[]>(
-    initialSubscribers.map((s) => s.email)
-  );
-  const [subscriberSearchQuery, setSubscriberSearchQuery] = useState<string>("");
-  const [isBroadcasting, setIsBroadcasting] = useState(false);
-  const [broadcastStatus, setBroadcastStatus] = useState<{
-    type: "success" | "error" | "info";
-    message: string;
-  } | null>(null);
-
-  // Scheduling State
-  const [sendTiming, setSendTiming] = useState<"now" | "schedule">("now");
-  const [scheduledDate, setScheduledDate] = useState<string>(() => {
-    const d = new Date();
-    d.setDate(d.getDate() + 1);
-    return d.toISOString().split("T")[0];
-  });
-  const [scheduledTime, setScheduledTime] = useState<string>("18:00");
-  const [timezone, setTimezone] = useState<string>("Asia/Kolkata");
-
-  useEffect(() => {
-    try {
-      const userTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      if (userTz) setTimezone(userTz);
-    } catch {
-      // Keep default
-    }
-  }, []);
-
-  const selectedArtwork = artworks.find((a) => a.id === selectedArtworkId);
-
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
@@ -148,123 +98,10 @@ export function InquiriesManagerClient({
         if (cData.campaigns) setCampaigns(cData.campaigns);
         if (cData.recentJobs) setEmailJobs(cData.recentJobs);
       }
-
-      const broadcastRes = await fetch("/api/admin/marketing/broadcast");
-      if (broadcastRes.ok) {
-        const bData = await broadcastRes.json();
-        if (bData.subscribers) setSubscribers(bData.subscribers);
-        if (bData.artworks) setArtworks(bData.artworks);
-      }
     } catch (err) {
       console.error("Failed to refresh ledger data:", err);
     } finally {
       setIsRefreshing(false);
-    }
-  };
-
-  // Recipient Selection Logic
-  const filteredSubscribers = subscribers.filter((sub) => {
-    if (!subscriberSearchQuery.trim()) return true;
-    const q = subscriberSearchQuery.toLowerCase();
-    const matchEmail = sub.email.toLowerCase().includes(q);
-    const matchName = (sub.name || "").toLowerCase().includes(q);
-    return matchEmail || matchName;
-  });
-
-  const isAllSelected =
-    subscribers.length > 0 &&
-    subscribers.every((s) => selectedSubscriberEmails.includes(s.email));
-
-  const handleSelectAllToggle = () => {
-    if (isAllSelected) {
-      setSelectedSubscriberEmails([]);
-    } else {
-      setSelectedSubscriberEmails(subscribers.map((s) => s.email));
-    }
-  };
-
-  const handleToggleSubscriber = (email: string) => {
-    setSelectedSubscriberEmails((prev) =>
-      prev.includes(email) ? prev.filter((e) => e !== email) : [...prev, email]
-    );
-  };
-
-  // Trigger Broadcast / Schedule Campaign
-  const handleSendBroadcast = async () => {
-    if (!selectedArtworkId) {
-      setBroadcastStatus({
-        type: "error",
-        message: "Please select an artwork to broadcast.",
-      });
-      return;
-    }
-
-    if (selectedSubscriberEmails.length === 0) {
-      setBroadcastStatus({
-        type: "error",
-        message: "Please select at least one collector recipient.",
-      });
-      return;
-    }
-
-    setIsBroadcasting(true);
-    setBroadcastStatus(null);
-
-    try {
-      let finalScheduledAt: string | null = null;
-      if (sendTiming === "schedule") {
-        const [hours, minutes] = scheduledTime.split(":").map(Number);
-        const [year, month, day] = scheduledDate.split("-").map(Number);
-        const targetDate = new Date(Date.UTC(year, month - 1, day, hours, minutes));
-        finalScheduledAt = targetDate.toISOString();
-      }
-
-      const res = await fetch("/api/admin/marketing/campaigns", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: `Release: ${selectedArtwork?.title || "Masterwork"}`,
-          subject: `Masterwork Release: “${selectedArtwork?.title || "New Canvas"}” by Elena Vance`,
-          artworkId: selectedArtworkId,
-          selectedSubscriberEmails,
-          scheduledAt: finalScheduledAt,
-          timezone,
-        }),
-      });
-
-      const data = await res.json();
-      if (res.ok && data.success) {
-        setBroadcastStatus({
-          type: "success",
-          message: data.message || `✓ Campaign processed for ${selectedSubscriberEmails.length} collector(s)!`,
-        });
-
-        // Mark artwork as notified locally if sent immediately
-        if (sendTiming === "now") {
-          setArtworks((prev) =>
-            prev.map((a) =>
-              a.id === selectedArtworkId
-                ? { ...a, notifiedSubscribersAt: new Date().toISOString() }
-                : a
-            )
-          );
-        }
-
-        // Auto-refresh sent emails & campaigns ledger
-        await handleRefresh();
-      } else {
-        setBroadcastStatus({
-          type: "error",
-          message: data.error || "Failed to process campaign dispatch.",
-        });
-      }
-    } catch (err: any) {
-      setBroadcastStatus({
-        type: "error",
-        message: err.message || "Network error while dispatching campaign.",
-      });
-    } finally {
-      setIsBroadcasting(false);
     }
   };
 
@@ -363,81 +200,74 @@ export function InquiriesManagerClient({
   const countFailed = sentEmails.filter((e) => e.status === "failed").length;
 
   return (
-    <div className="space-y-8 w-full">
-      {/* Header Plaque */}
-      <div className="p-6 sm:p-8 bg-[#121319] rounded-3xl shadow-xl shadow-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <span className="text-[10px] tracking-[0.25em] text-[#d1a86e] uppercase font-semibold">
-            Collector Relations &amp; Ledger
-          </span>
-          <h1 className="font-serif text-3xl text-white mt-1">
-            Collector Inquiries &amp; Acquisitions
-          </h1>
-          <p className="text-xs text-zinc-400 mt-1">
-            Review incoming acquisition requests, broadcast release announcements to interested collectors, and audit email dispatches.
-          </p>
+    <div className="space-y-4 sm:space-y-5 w-full">
+      {/* Top Controls: Switcher Tabs + Compact Refresh & Telemetry */}
+      <div className="flex items-center justify-between gap-2.5 flex-wrap">
+        <div className="p-1 sm:p-1.5 bg-[#121319] rounded-2xl flex items-center gap-1 sm:gap-1.5 shadow-md">
+          <button
+            onClick={() => setActiveTab("inquiries")}
+            className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer border-none ${
+              activeTab === "inquiries"
+                ? "bg-[#d1a86e] text-[#0d0e12] shadow-sm"
+                : "text-zinc-400 hover:text-white hover:bg-[#1a1b26]"
+            }`}
+          >
+            <MessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+            <span>Inquiries</span>
+            <span
+              className={`text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full ${
+                activeTab === "inquiries"
+                  ? "bg-black/20 text-black font-bold"
+                  : "bg-[#1a1b26] text-zinc-300"
+              }`}
+            >
+              {inquiries.length}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("sent_emails")}
+            className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer border-none ${
+              activeTab === "sent_emails"
+                ? "bg-[#d1a86e] text-[#0d0e12] shadow-sm"
+                : "text-zinc-400 hover:text-white hover:bg-[#1a1b26]"
+            }`}
+          >
+            <Send className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+            <span>Dispatches</span>
+            <span
+              className={`text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full ${
+                activeTab === "sent_emails"
+                  ? "bg-black/20 text-black font-bold"
+                  : "bg-[#1a1b26] text-zinc-300"
+              }`}
+            >
+              {sentEmails.length}
+            </span>
+          </button>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex items-center gap-2">
           <Button
             size="sm"
             variant="ghost"
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="bg-[#1a1b26] hover:bg-[#222432] text-zinc-300 hover:text-white text-xs gap-1.5 h-9 px-4 rounded-xl border-none cursor-pointer"
+            className="bg-[#121319] hover:bg-[#1a1b26] text-zinc-300 hover:text-white text-xs gap-1.5 h-8 px-3 rounded-xl border border-white/5 cursor-pointer shadow-sm"
           >
             <RefreshCw className={`w-3.5 h-3.5 text-[#d1a86e] ${isRefreshing ? "animate-spin" : ""}`} />
-            <span>{isRefreshing ? "Refreshing..." : "Refresh Ledger"}</span>
+            <span>{isRefreshing ? "Refreshing..." : "Refresh"}</span>
           </Button>
 
           <Link
             href="/admin/analytics"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#1a1b26] hover:bg-[#222432] text-zinc-300 hover:text-white text-xs transition-colors border-none"
+            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-xl bg-[#121319] hover:bg-[#1a1b26] text-zinc-300 hover:text-white text-xs transition-colors border border-white/5 shadow-sm"
           >
             <BarChart3 className="w-3.5 h-3.5 text-[#d1a86e]" />
-            <span>Acquisition Telemetry</span>
+            <span className="hidden sm:inline">Telemetry</span>
             <ArrowUpRight className="w-3 h-3 text-zinc-500" />
           </Link>
         </div>
-      </div>
-
-      {/* Primary Section Switcher Tabs */}
-      <div className="p-1 sm:p-1.5 bg-[#121319] rounded-2xl grid grid-cols-2 sm:flex sm:items-center gap-1 sm:gap-2 shadow-md w-full sm:w-fit">
-        <button
-          onClick={() => setActiveTab("inquiries")}
-          className={`flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-[11px] sm:text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer border-none ${
-            activeTab === "inquiries"
-              ? "bg-[#d1a86e] text-[#0d0e12] shadow-lg shadow-black/30"
-              : "text-zinc-400 hover:text-white hover:bg-[#1a1b26]"
-          }`}
-        >
-          <MessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-          <span className="truncate">Inquiries</span>
-          <span className={`text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full ${activeTab === "inquiries" ? "bg-black/20 text-black font-bold" : "bg-[#1a1b26] text-zinc-300"}`}>
-            {inquiries.length}
-          </span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("sent_emails")}
-          className={`flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-[11px] sm:text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer border-none ${
-            activeTab === "sent_emails"
-              ? "bg-[#d1a86e] text-[#0d0e12] shadow-lg shadow-black/30"
-              : "text-zinc-400 hover:text-white hover:bg-[#1a1b26]"
-          }`}
-        >
-          <Send className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-          <span className="truncate">Dispatches</span>
-          <span className={`text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full ${activeTab === "sent_emails" ? "bg-black/20 text-black font-bold" : "bg-[#1a1b26] text-zinc-300"}`}>
-            {sentEmails.length}
-          </span>
-          {unnotifiedArtwork && (
-            <span className="flex h-2 w-2 relative shrink-0">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#d1a86e] opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#d1a86e]"></span>
-            </span>
-          )}
-        </button>
       </div>
 
       {/* ==================================================================== */}
@@ -473,11 +303,12 @@ export function InquiriesManagerClient({
           <div className="p-2 sm:p-2.5 bg-[#121319] rounded-2xl shadow-md flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500" />
-              <Input
+              <input
+                type="text"
                 value={inquirySearchQuery}
                 onChange={(e) => setInquirySearchQuery(e.target.value)}
                 placeholder="Search collector inquiries by name, email, canvas..."
-                className="pl-9 h-8 sm:h-9 bg-[#1a1b26] text-xs text-white placeholder:text-zinc-500 rounded-xl border-none focus-visible:ring-1 focus-visible:ring-[#d1a86e]"
+                className="w-full pl-9 pr-3 h-8 sm:h-9 bg-[#1a1b26] text-xs text-white placeholder:text-zinc-500 rounded-xl border-none focus:ring-1 focus:ring-[#d1a86e] focus:outline-none"
               />
             </div>
 
@@ -718,364 +549,60 @@ export function InquiriesManagerClient({
       {/* TAB 2: SENT DISPATCHES & EMAIL HISTORY                               */}
       {/* ==================================================================== */}
       {activeTab === "sent_emails" && (
-        <div className="space-y-6">
-          {/* ============================================================== */}
-          {/* BROADCAST RELEASE STUDIO (SUGGESTION & RECIPIENT SELECTION)     */}
-          {/* ============================================================== */}
-          <Card className="bg-[#121319] rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl shadow-black/40 relative overflow-hidden border-none">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] tracking-[0.2em] uppercase font-semibold text-[#d1a86e] bg-[#d1a86e]/10 px-2.5 py-1 rounded-xl flex items-center gap-1.5 border-none">
-                    <Sparkles className="w-3 h-3" />
-                    <span>Broadcast Release Studio</span>
-                  </span>
-                  {unnotifiedArtwork && (
-                    <span className="text-[10px] uppercase tracking-wider text-amber-300 font-medium">
-                      • Recommendation Ready
-                    </span>
-                  )}
-                </div>
-                <h2 className="font-serif text-xl text-white">
-                  Send Release Announcement to Collectors
-                </h2>
-                <p className="text-xs text-zinc-400">
-                  Select a published artwork, choose recipients with manual controls, and dispatch immediately or schedule with QStash.
-                </p>
+        <div className="space-y-4 sm:space-y-5">
+          {/* Email Telemetry Row - 2 columns on mobile, 4 on desktop */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3.5 w-full">
+            <Card className="p-3 sm:p-4 bg-[#121319] rounded-xl sm:rounded-2xl shadow-md border border-white/5 space-y-0.5">
+              <span className="text-[10px] sm:text-[11px] uppercase tracking-wider text-zinc-400 font-medium truncate block">
+                Total Attempts
+              </span>
+              <div className="font-serif text-xl sm:text-2xl text-white font-semibold">
+                {sentEmails.length}
               </div>
-
-              {/* Verified Sender & QStash Queue Pill */}
-              <div className="flex flex-wrap items-center gap-2">
-                <div className="text-[11px] bg-[#1a1b26] rounded-xl px-3.5 py-2 flex items-center gap-2 text-zinc-300 border-none shadow-sm">
-                  <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="font-mono text-zinc-200 text-xs">quizmas@quizmastor.tech</span>
-                </div>
-
-                <div className="text-[11px] bg-[#1a1b26] rounded-xl px-3.5 py-2 flex items-center gap-1.5 text-zinc-300 border-none shadow-sm">
-                  <Layers className="w-3.5 h-3.5 text-[#d1a86e]" />
-                  <span>QStash Queue Active</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Broadcast Status Feedback Message */}
-            {broadcastStatus && (
-              <div
-                className={`p-4 rounded-2xl text-xs flex items-center justify-between gap-3 border-none shadow-md ${
-                  broadcastStatus.type === "success"
-                    ? "bg-emerald-950/80 text-emerald-200"
-                    : "bg-red-950/80 text-red-200"
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  {broadcastStatus.type === "success" ? (
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                  ) : (
-                    <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
-                  )}
-                  <span>{broadcastStatus.message}</span>
-                </div>
-                <button
-                  onClick={() => setBroadcastStatus(null)}
-                  className="text-zinc-400 hover:text-white text-xs cursor-pointer border-none"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            )}
-
-            {/* Step 1: Artwork Selection */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-              <div className="lg:col-span-5 space-y-4">
-                <div>
-                  <label className="block text-[11px] uppercase tracking-wider text-zinc-400 font-semibold mb-1.5">
-                    1. Select Published Canvas to Broadcast
-                  </label>
-                  {artworks.length === 0 ? (
-                    <div className="p-4 bg-[#1a1b26] rounded-2xl text-xs text-zinc-400 border-none">
-                      No published artworks found. Please publish an artwork first.
-                    </div>
-                  ) : (
-                    <select
-                      value={selectedArtworkId}
-                      onChange={(e) => setSelectedArtworkId(e.target.value)}
-                      className="w-full bg-[#1a1b26] rounded-xl px-3.5 py-2.5 text-xs text-white border-none focus:ring-1 focus:ring-[#d1a86e] focus:outline-none cursor-pointer"
-                    >
-                      {artworks.map((art) => (
-                        <option key={art.id} value={art.id}>
-                          {art.title} ({art.status})
-                          {art.notifiedSubscribersAt ? " — (Notified)" : " — (✨ Ready to Broadcast)"}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                </div>
-
-                {/* Selected Artwork Card Preview */}
-                {selectedArtwork && (
-                  <div className="p-4 bg-[#1a1b26] rounded-2xl flex gap-4 items-center shadow-md border-none">
-                    {selectedArtwork.coverImageUrl ? (
-                      <div className="relative w-16 h-16 rounded-xl overflow-hidden shrink-0 shadow-sm">
-                        <Image
-                          src={selectedArtwork.coverImageUrl}
-                          alt={selectedArtwork.title}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                    ) : (
-                      <div className="w-16 h-16 rounded-xl bg-[#121319] flex items-center justify-center text-zinc-500 text-xs shrink-0">
-                        No image
-                      </div>
-                    )}
-
-                    <div className="min-w-0 flex-1 space-y-1">
-                      <div className="flex items-center gap-2">
-                        <h4 className="font-serif text-sm font-semibold text-white truncate">
-                          {selectedArtwork.title}
-                        </h4>
-                        {selectedArtwork.notifiedSubscribersAt ? (
-                          <span className="text-[9px] uppercase tracking-wider text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded-lg border-none">
-                            Sent {new Date(selectedArtwork.notifiedSubscribersAt).toLocaleDateString()}
-                          </span>
-                        ) : (
-                          <span className="text-[9px] uppercase tracking-wider text-amber-300 bg-amber-950/80 px-2 py-0.5 rounded-lg border-none animate-pulse">
-                            New / Unnotified
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-[11px] text-zinc-400 truncate">
-                        {selectedArtwork.medium} • {selectedArtwork.year}
-                      </p>
-                      <div className="flex items-center gap-3 text-[11px] text-zinc-400">
-                        <span>{selectedArtwork.widthCm} × {selectedArtwork.heightCm} cm</span>
-                        {selectedArtwork.price && (
-                          <span className="text-[#d1a86e] font-semibold">
-                            ${Number(selectedArtwork.price).toLocaleString()}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Scheduling Controls */}
-                <div className="p-4 bg-[#1a1b26] rounded-2xl space-y-3 shadow-md border-none">
-                  <span className="text-[10px] uppercase tracking-wider text-zinc-400 font-semibold block">
-                    Schedule &amp; Timing
-                  </span>
-
-                  <div className="flex items-center gap-4 text-xs">
-                    <label className="flex items-center gap-2 cursor-pointer text-zinc-300">
-                      <input
-                        type="radio"
-                        name="sendTiming"
-                        checked={sendTiming === "now"}
-                        onChange={() => setSendTiming("now")}
-                        className="accent-[#d1a86e]"
-                      />
-                      <span>Send Immediately</span>
-                    </label>
-
-                    <label className="flex items-center gap-2 cursor-pointer text-zinc-300">
-                      <input
-                        type="radio"
-                        name="sendTiming"
-                        checked={sendTiming === "schedule"}
-                        onChange={() => setSendTiming("schedule")}
-                        className="accent-[#d1a86e]"
-                      />
-                      <span>Schedule for Later</span>
-                    </label>
-                  </div>
-
-                  {sendTiming === "schedule" && (
-                    <div className="grid grid-cols-2 gap-2 pt-2">
-                      <div>
-                        <label className="block text-[9px] uppercase text-zinc-500 mb-1">Date</label>
-                        <input
-                          type="date"
-                          value={scheduledDate}
-                          onChange={(e) => setScheduledDate(e.target.value)}
-                          className="w-full bg-[#121319] rounded-xl px-3 py-2 text-xs text-white border-none focus:ring-1 focus:ring-[#d1a86e] focus:outline-none"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[9px] uppercase text-zinc-500 mb-1">Time</label>
-                        <input
-                          type="time"
-                          value={scheduledTime}
-                          onChange={(e) => setScheduledTime(e.target.value)}
-                          className="w-full bg-[#121319] rounded-xl px-3 py-2 text-xs text-white border-none focus:ring-1 focus:ring-[#d1a86e] focus:outline-none"
-                        />
-                      </div>
-                      <div className="col-span-2 pt-1 text-[10px] text-zinc-400 flex items-center gap-1">
-                        <Globe className="w-3 h-3 text-[#d1a86e]" />
-                        <span>Timezone: {timezone}</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Step 2: Recipient Selection */}
-              <div className="lg:col-span-7 space-y-3">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                  <label className="text-[11px] uppercase tracking-wider text-zinc-400 font-semibold flex items-center gap-2">
-                    <span>2. Select Interested Collectors</span>
-                    <span className="text-[10px] text-[#d1a86e] bg-[#d1a86e]/10 px-2.5 py-1 rounded-lg font-mono font-bold border-none">
-                      {selectedSubscriberEmails.length} of {subscribers.length} Selected
-                    </span>
-                  </label>
-
-                  <div className="flex items-center gap-2">
-                    {/* Search inside subscribers */}
-                    <div className="relative">
-                      <Search className="absolute left-2.5 top-2 w-3 h-3 text-zinc-500" />
-                      <input
-                        type="text"
-                        placeholder="Search collectors..."
-                        value={subscriberSearchQuery}
-                        onChange={(e) => setSubscriberSearchQuery(e.target.value)}
-                        className="bg-[#1a1b26] rounded-xl pl-8 pr-3 py-1.5 text-[11px] text-white placeholder-zinc-500 border-none focus:ring-1 focus:ring-[#d1a86e] focus:outline-none w-36 sm:w-44"
-                      />
-                    </div>
-
-                    {/* Master Select All Button */}
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="ghost"
-                      onClick={handleSelectAllToggle}
-                      className="bg-[#1a1b26] hover:bg-[#222432] text-zinc-200 text-[11px] h-8 px-3 gap-1.5 cursor-pointer rounded-xl border-none"
-                    >
-                      {isAllSelected ? (
-                        <>
-                          <Square className="w-3 h-3 text-[#d1a86e]" />
-                          <span>Deselect All</span>
-                        </>
-                      ) : (
-                        <>
-                          <CheckSquare className="w-3 h-3 text-[#d1a86e]" />
-                          <span>Select All</span>
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Subscribers List Scroll Area */}
-                <div className="rounded-2xl bg-[#1a1b26] p-2 max-h-60 overflow-y-auto space-y-1 shadow-inner border-none">
-                  {filteredSubscribers.length === 0 ? (
-                    <div className="p-6 text-center text-xs text-zinc-500">
-                      No matching collectors found in registry.
-                    </div>
-                  ) : (
-                    filteredSubscribers.map((sub) => {
-                      const isSelected = selectedSubscriberEmails.includes(sub.email);
-                      return (
-                        <div
-                          key={sub.email}
-                          onClick={() => handleToggleSubscriber(sub.email)}
-                          className={`p-3 rounded-xl flex items-center justify-between gap-3 cursor-pointer transition-colors border-none ${
-                            isSelected ? "bg-[#222432]" : "hover:bg-[#161720]"
-                          }`}
-                        >
-                          <div className="flex items-center gap-3 min-w-0">
-                            {/* Checkbox */}
-                            <input
-                              type="checkbox"
-                              checked={isSelected}
-                              onChange={() => {}} // Handled by container onClick
-                              className="w-4 h-4 accent-[#d1a86e] cursor-pointer rounded shrink-0 border-none"
-                            />
-
-                            {/* Avatar Monogram */}
-                            <div className="w-7 h-7 rounded-full bg-[#121319] text-[#d1a86e] flex items-center justify-center text-[10px] font-bold shrink-0 shadow-sm">
-                              {(sub.name || sub.email)[0].toUpperCase()}
-                            </div>
-
-                            <div className="min-w-0">
-                              <span className="text-xs text-white font-medium block truncate">
-                                {sub.name || "Private Collector"}
-                              </span>
-                              <span className="text-[11px] text-zinc-400 font-mono block truncate">
-                                {sub.email}
-                              </span>
-                            </div>
-                          </div>
-
-                          <span
-                            className={`text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-lg border-none ${
-                              isSelected
-                                ? "text-emerald-300 bg-emerald-950/80 font-semibold"
-                                : "text-zinc-500 bg-[#121319]"
-                            }`}
-                          >
-                            {isSelected ? "Selected" : "Excluded"}
-                          </span>
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
-
-                {/* Action Bar */}
-                <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <span className="text-[11px] text-zinc-400">
-                    Includes 1-click mobile WebAR placement and RFC 8058 unsubscribe header.
-                  </span>
-
-                  <Button
-                    onClick={handleSendBroadcast}
-                    disabled={isBroadcasting || selectedSubscriberEmails.length === 0 || !selectedArtworkId}
-                    className="bg-[#d1a86e] hover:bg-[#c49a5f] text-black font-semibold text-xs gap-2 h-10 px-5 rounded-xl cursor-pointer shadow-lg shadow-black/40 disabled:opacity-50 border-none"
-                  >
-                    {isBroadcasting ? (
-                      <>
-                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                        <span>Enqueueing to QStash...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-3.5 h-3.5" />
-                        <span>
-                          {sendTiming === "schedule" ? "Schedule Campaign" : "Dispatch Now"} ({selectedSubscriberEmails.length})
-                        </span>
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </Card>
-
-          {/* Email Telemetry Row */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
-            <Card className="p-5 sm:p-6 bg-[#121319] rounded-3xl shadow-xl shadow-black/40 space-y-1 border-none">
-              <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">Total Attempts</span>
-              <div className="font-serif text-2xl text-white">{sentEmails.length}</div>
-              <span className="text-[11px] text-zinc-400">All marketing &amp; transactional dispatches</span>
+              <span className="text-[10px] sm:text-[11px] text-zinc-400 truncate block">
+                All dispatches
+              </span>
             </Card>
-            <Card className="p-5 sm:p-6 bg-[#121319] rounded-3xl shadow-xl shadow-black/40 space-y-1 border-none">
-              <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">Delivered to Inbox</span>
-              <div className="font-serif text-2xl text-emerald-400">{countDelivered}</div>
-              <span className="text-[11px] text-emerald-400/80 font-medium">Successfully accepted by Resend</span>
+
+            <Card className="p-3 sm:p-4 bg-[#121319] rounded-xl sm:rounded-2xl shadow-md border border-white/5 space-y-0.5">
+              <span className="text-[10px] sm:text-[11px] uppercase tracking-wider text-zinc-400 font-medium truncate block">
+                Delivered to Inbox
+              </span>
+              <div className="font-serif text-xl sm:text-2xl text-emerald-400 font-semibold">
+                {countDelivered}
+              </div>
+              <span className="text-[10px] sm:text-[11px] text-emerald-400/80 truncate block">
+                Accepted by Resend
+              </span>
             </Card>
-            <Card className="p-5 sm:p-6 bg-[#121319] rounded-3xl shadow-xl shadow-black/40 space-y-1 border-none">
-              <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">Active Campaigns</span>
-              <div className="font-serif text-2xl text-amber-400">{campaigns.length}</div>
-              <span className="text-[11px] text-amber-400/80 font-medium">Tracked in Neon database</span>
+
+            <Card className="p-3 sm:p-4 bg-[#121319] rounded-xl sm:rounded-2xl shadow-md border border-white/5 space-y-0.5">
+              <span className="text-[10px] sm:text-[11px] uppercase tracking-wider text-zinc-400 font-medium truncate block">
+                Active Campaigns
+              </span>
+              <div className="font-serif text-xl sm:text-2xl text-amber-400 font-semibold">
+                {campaigns.length}
+              </div>
+              <span className="text-[10px] sm:text-[11px] text-amber-400/80 truncate block">
+                Tracked in Neon DB
+              </span>
             </Card>
-            <Card className="p-5 sm:p-6 bg-[#121319] rounded-3xl shadow-xl shadow-black/40 space-y-1 border-none">
-              <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">Failed</span>
-              <div className="font-serif text-2xl text-red-400">{countFailed}</div>
-              <span className="text-[11px] text-red-400/80 font-medium">Permanent delivery errors</span>
+
+            <Card className="p-3 sm:p-4 bg-[#121319] rounded-xl sm:rounded-2xl shadow-md border border-white/5 space-y-0.5">
+              <span className="text-[10px] sm:text-[11px] uppercase tracking-wider text-zinc-400 font-medium truncate block">
+                Failed
+              </span>
+              <div className="font-serif text-xl sm:text-2xl text-red-400 font-semibold">
+                {countFailed}
+              </div>
+              <span className="text-[10px] sm:text-[11px] text-red-400/80 truncate block">
+                Permanent errors
+              </span>
             </Card>
           </div>
 
           {/* Search & Filter Controls - Compact Dropdown Bar */}
-          <div className="p-3 sm:p-4 bg-[#121319] rounded-2xl shadow-xl shadow-black/40 border-none flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+          <div className="p-2.5 sm:p-3 bg-[#121319] rounded-xl sm:rounded-2xl shadow-md border border-white/5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
             {/* Search input */}
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500" />
@@ -1203,100 +730,90 @@ export function InquiriesManagerClient({
             </div>
           </div>
 
-          {/* Sent Emails List */}
-          <div className="space-y-3">
+          {/* Sent Emails List - Proper Small List */}
+          <div className="bg-[#121319] rounded-xl sm:rounded-2xl border border-white/5 divide-y divide-white/5 overflow-hidden shadow-xl">
             {filteredEmails.length === 0 ? (
-              <div className="p-12 text-center bg-[#121319] rounded-3xl text-xs text-zinc-500 shadow-md">
+              <div className="p-8 text-center text-xs text-zinc-500">
                 No email dispatch records matching your criteria.
               </div>
             ) : (
               paginatedEmails.map((email) => (
-                <Card
+                <div
                   key={email.id}
-                  className="p-5 sm:p-6 bg-[#1a1b26] rounded-2xl space-y-3 shadow-md border-none"
+                  className="p-3 sm:p-3.5 hover:bg-white/[0.02] transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-2.5"
                 >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div className="flex flex-wrap items-center gap-2">
-                      {/* Status Badge */}
+                  <div className="space-y-1 min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                       {email.status === "delivered" && (
-                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-950/80 text-emerald-300 border-none">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wider bg-emerald-950/80 text-emerald-300">
                           <CheckCircle2 className="w-3 h-3" />
-                          <span>Delivered to Inbox</span>
+                          <span>Delivered</span>
                         </span>
                       )}
                       {email.status === "sandbox_restricted" && (
-                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-950/80 text-amber-300 border-none">
-                          <AlertTriangle className="w-3 h-3" />
-                          <span>Sandbox Held</span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wider bg-amber-950/80 text-amber-300">
+                          <Clock className="w-3 h-3" />
+                          <span>Held</span>
                         </span>
                       )}
                       {email.status === "failed" && (
-                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-red-950/80 text-red-300 border-none">
-                          <AlertCircle className="w-3 h-3" />
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wider bg-red-950/80 text-red-300">
+                          <AlertTriangle className="w-3 h-3" />
                           <span>Failed</span>
                         </span>
                       )}
                       {email.status === "simulated" && (
-                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-950/80 text-blue-300 border-none">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wider bg-blue-950/80 text-blue-300">
                           <span>Simulated</span>
                         </span>
                       )}
 
-                      <span className="text-[11px] text-zinc-400 uppercase tracking-wider bg-[#121319] px-2.5 py-1 rounded-lg border-none">
+                      <span className="text-[10px] text-zinc-400 bg-[#1a1b26] px-2 py-0.5 rounded-md font-mono">
                         {email.emailType.replace(/_/g, " ")}
+                      </span>
+
+                      <span className="text-[10px] text-zinc-400 font-mono ml-auto sm:ml-0">
+                        {new Date(email.createdAt).toLocaleDateString(undefined, {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
                       </span>
                     </div>
 
-                    <span className="text-[11px] text-zinc-500 font-mono">
-                      {new Date(email.createdAt).toLocaleString()}
-                    </span>
-                  </div>
+                    <h4 className="font-serif text-xs sm:text-sm text-white font-medium truncate">
+                      {email.subject}
+                    </h4>
 
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
-                    <div className="space-y-1">
-                      <div className="text-sm font-semibold text-white">
-                        {email.subject}
-                      </div>
-                      <div className="text-xs text-zinc-400 flex flex-wrap items-center gap-2">
-                        <span>Recipient:</span>
-                        <strong className="text-zinc-200 font-mono bg-[#121319] px-2 py-0.5 rounded-lg border-none">
-                          {email.recipientEmail}
-                        </strong>
-                        {email.recipientName && (
-                          <span className="text-zinc-500">({email.recipientName})</span>
-                        )}
-                      </div>
+                    <div className="text-[11px] text-zinc-400 font-mono flex items-center gap-1.5 truncate">
+                      <Mail className="w-3 h-3 text-zinc-500 shrink-0" />
+                      <span className="text-zinc-300 truncate">{email.recipientEmail}</span>
+                      {email.recipientName && (
+                        <span className="text-zinc-400 truncate">({email.recipientName})</span>
+                      )}
                     </div>
 
-                    {email.htmlContent && (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => setPreviewEmail(email)}
-                        className="bg-[#121319] hover:bg-[#222432] text-zinc-200 text-xs gap-1.5 shrink-0 cursor-pointer rounded-xl border-none"
-                      >
-                        <Eye className="w-3.5 h-3.5 text-[#d1a86e]" />
-                        <span>Preview HTML</span>
-                      </Button>
+                    {email.errorMessage && (
+                      <p className="text-[10px] text-red-400 font-mono line-clamp-1">
+                        {email.errorMessage}
+                      </p>
                     )}
                   </div>
 
-                  {/* Diagnostic details if held or failed */}
-                  {email.errorMessage && (
-                    <div className="p-3.5 bg-amber-950/30 rounded-xl text-xs text-amber-300/90 leading-relaxed font-mono border-none">
-                      {email.errorMessage}
-                    </div>
+                  {email.htmlContent && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setPreviewEmail(email)}
+                      className="self-end sm:self-center shrink-0 inline-flex items-center gap-1.5 h-7 px-2.5 rounded-lg bg-[#1a1b26] hover:bg-[#222432] text-zinc-300 hover:text-white text-[11px] font-medium transition-colors cursor-pointer border-none"
+                    >
+                      <Eye className="w-3 h-3 text-[#d1a86e]" />
+                      <span>Preview HTML</span>
+                    </Button>
                   )}
-
-                  {email.resendId && (
-                    <div className="text-[10px] text-zinc-500 font-mono flex items-center gap-1.5 pt-1">
-                      <span>Resend API Message ID:</span>
-                      <span className="text-zinc-400 bg-[#121319] px-2 py-0.5 rounded-lg border-none">
-                        {email.resendId}
-                      </span>
-                    </div>
-                  )}
-                </Card>
+                </div>
               ))
             )}
           </div>
