@@ -1330,7 +1330,7 @@ export function PageLivePreview({
                     sec.contentJson?.businessHours || siteSettings.businessHours || "Tuesday – Saturday, 10:00 – 18:00 CET (By Appointment)";
                   const contactDesc =
                     sec.contentJson?.description ||
-                    "For private acquisitions, curatorial exhibition loans, bespoke commissions, and private salon viewings, please correspond directly with Madame Vance's Paris liaison desk.";
+                    "For private acquisitions, curatorial exhibition loans, bespoke commissions, and private atelier viewings, please correspond directly with Madame Vance's Paris liaison desk.";
 
                   return (
                     <React.Fragment key={sec.id}>

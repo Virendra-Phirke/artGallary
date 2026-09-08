@@ -520,7 +520,7 @@ export default async function HomePage() {
                   <p className="text-xs sm:text-sm md:text-base text-[#a6aabf] leading-relaxed font-light">
                     {sec.contentJson?.description ||
                       cfg?.description ||
-                      "For private acquisitions, curatorial exhibition loans, bespoke commissions, and private salon viewings, please correspond directly with Madame Vance's Paris liaison desk."}
+                      "For private acquisitions, curatorial exhibition loans, bespoke commissions, and private atelier viewings, please correspond directly with Madame Vance's Paris liaison desk."}
                   </p>
                 </div>
 

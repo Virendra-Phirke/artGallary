@@ -333,7 +333,7 @@ export const INITIAL_HOMEPAGE_SECTIONS: MockHomepageSection[] = [
     subtitle: "Curatorial Liaison & Direct Correspondence",
     contentJson: {
       heading: "Direct Studio Acquisitions",
-      description: "For private acquisitions, curatorial loan requests, bespoke commissions, and private salon viewings, please correspond directly with our studio liaison desk.",
+      description: "For private acquisitions, curatorial loan requests, bespoke commissions, and private atelier viewings, please correspond directly with our studio liaison desk.",
       ctaText: "Inquire with Curator",
       ctaUrl: "/#contact",
     },

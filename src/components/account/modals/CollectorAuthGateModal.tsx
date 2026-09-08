@@ -30,7 +30,7 @@ export function CollectorAuthGateModal() {
           tag: "Private Collector Shortlist",
           title: "Sign In to Save Paintings",
           description:
-            "Sign in or register a complimentary collector account to curate your personal shortlist, synchronize liked works across devices, and request private salon viewings.",
+            "Sign in or register a complimentary collector account to curate your personal shortlist, synchronize liked works across devices, and request private atelier viewings.",
           features: [
             "Private portfolio curation & bookmarking",
             "Priority alerts before shortlisted works are reserved",
@@ -56,7 +56,7 @@ export function CollectorAuthGateModal() {
           tag: "Curatorial Liaison Correspondence",
           title: "Sign In to Contact Atelier",
           description:
-            "To correspond directly with Madame Vance's Paris atelier desk and inquire about original acquisitions, bespoke commissions, or salon viewings, please sign in with your collector credentials.",
+            "To correspond directly with Madame Vance's Paris atelier desk and inquire about original acquisitions, bespoke commissions, or private studio viewings, please sign in with your collector credentials.",
           features: [
             "Direct access to Elena Vance's Paris curatorial liaison",
             "Guaranteed priority response within 2 business hours",

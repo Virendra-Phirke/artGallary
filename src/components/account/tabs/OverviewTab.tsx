@@ -287,7 +287,7 @@ export function OverviewTab() {
             /* EMPTY DOSSIER STATE WITH CURATORIAL SUGGESTIONS */
             <div className="space-y-5">
               <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed font-light">
-                Assemble a private dossier of Elena Vance’s original canvases to request fine-art transit, framing quotes, or private salon viewing reservations.
+                Assemble a private dossier of Elena Vance’s original canvases to request fine-art transit, framing quotes, or private atelier viewing reservations.
               </p>
 
               {/* Curatorial Quick-Picks */}
