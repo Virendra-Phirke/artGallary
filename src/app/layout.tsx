@@ -7,6 +7,7 @@ import {
   Inter,
 } from "next/font/google";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next";
 import { DevErrorGuard } from "@/components/DevErrorGuard";
 import "./globals.css";
 
@@ -100,6 +101,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-[#0d0e12] text-[#f4f4f6] w-full max-w-full overflow-x-hidden">
         <DevErrorGuard />
         {children}
+        <Analytics />
       </body>
     </html>
   );
