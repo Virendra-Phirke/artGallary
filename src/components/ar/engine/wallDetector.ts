@@ -27,6 +27,33 @@ const DEFAULT_WALL_CLEARANCE_M = 0.018; // 1.8cm clearance
 const MAX_VERTICAL_DEVIATION_DOT = 0.42; // |normal.y| < 0.42 means tilt is within ~25° of true vertical
 
 /**
+ * Computes a rotation quaternion that orients a plane (whose default normal is local +Z)
+ * flush against a wall whose outward normal (pointing from the wall towards the room/user)
+ * is `outwardNormal`. The top of the plane (local +Y) remains aligned with world Up.
+ */
+export function computeWallQuaternion(
+  outwardNormal: THREE.Vector3,
+  up = new THREE.Vector3(0, 1, 0)
+): THREE.Quaternion {
+  const zAxis = outwardNormal.clone().normalize();
+  let upRef = up.clone().normalize();
+
+  // If normal is nearly collinear with up vector, choose an alternative reference
+  if (Math.abs(zAxis.dot(upRef)) > 0.99) {
+    upRef = new THREE.Vector3(0, 0, 1);
+  }
+
+  // Right-handed coordinate basis:
+  // xAxis = upRef × zAxis
+  // yAxis = zAxis × xAxis
+  const xAxis = new THREE.Vector3().crossVectors(upRef, zAxis).normalize();
+  const yAxis = new THREE.Vector3().crossVectors(zAxis, xAxis).normalize();
+
+  const basisMatrix = new THREE.Matrix4().makeBasis(xAxis, yAxis, zAxis);
+  return new THREE.Quaternion().setFromRotationMatrix(basisMatrix);
+}
+
+/**
  * Analyzes a WebXR hit-test pose matrix to determine if it hit a vertical wall surface,
  * calculates the outward wall normal, and computes wall-flush position and orientation.
  */
@@ -95,15 +122,9 @@ export function analyzeHitForWall(
   }
 
   // Compute wall-aligned rotation:
-  // Painting's front is local +Z. We want +Z to point along horizontalNormal (facing user).
-  // Painting's top is local +Y. We want +Y to point along world Up (0, 1, 0).
-  const lookTarget = hitPosition.clone().add(horizontalNormal);
-  const rotationMatrix = new THREE.Matrix4().lookAt(
-    hitPosition,
-    lookTarget,
-    new THREE.Vector3(0, 1, 0)
-  );
-  const artworkQuaternion = new THREE.Quaternion().setFromRotationMatrix(rotationMatrix);
+  // Painting's front is local +Z. +Z points along horizontalNormal (facing user).
+  // Painting's top is local +Y. +Y points along world Up (0, 1, 0).
+  const artworkQuaternion = computeWallQuaternion(horizontalNormal, new THREE.Vector3(0, 1, 0));
 
   // Calculate final placement position
   const placementPosition = hitPosition.clone();
@@ -189,9 +210,7 @@ export function createHeuristicWallPlacement(
   position.y = galleryElevationM;
 
   // Compute rotation facing camera
-  const lookTarget = position.clone().add(wallNormal);
-  const rotMatrix = new THREE.Matrix4().lookAt(position, lookTarget, new THREE.Vector3(0, 1, 0));
-  const quaternion = new THREE.Quaternion().setFromRotationMatrix(rotMatrix);
+  const quaternion = computeWallQuaternion(wallNormal, new THREE.Vector3(0, 1, 0));
 
   return {
     position,

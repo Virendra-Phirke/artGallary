@@ -7,7 +7,7 @@ import { ArPermissionScreen } from "./ui/ArPermissionScreen";
 import { RoomFallbackViewer } from "./ui/RoomFallbackViewer";
 import { ArControlsOverlay } from "./ui/ArControlsOverlay";
 import { ArErrorBanner } from "./ui/ArErrorBanner";
-import { createArtworkMesh, FrameStyle } from "./engine/artworkMesh";
+import { createArtworkMesh, loadArtworkTexture, FrameStyle } from "./engine/artworkMesh";
 import { GestureController, GestureTransform } from "./engine/gestureController";
 import { detectARCapabilities, ARCapabilities } from "./engine/arCapability";
 import { startARSession, stopARSession, createXRAnchor, ARSessionContext } from "./engine/arSession";
@@ -446,6 +446,8 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
       },
       frameStyle,
       frameEnabled,
+      title: artwork.title,
+      medium: artwork.medium,
     });
     artworkPkgRef.current = artworkPkg;
     artworkPkg.group.visible = false;
@@ -457,9 +459,7 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
     scene.add(reticlePkg.group);
 
     // Load high-resolution artwork texture
-    const textureLoader = new THREE.TextureLoader();
-    textureLoader.setCrossOrigin("anonymous");
-    textureLoader.load(artwork.coverImageUrl, (tex) => {
+    loadArtworkTexture(artwork.coverImageUrl, (tex) => {
       artworkPkg.updateTexture(tex);
     });
 
@@ -472,9 +472,13 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
         defaultScale: artwork.arConfig?.defaultScale ?? 1.0,
         elevationLock: elevationLocked,
         onTransformChange: (t: GestureTransform) => {
-          if (artworkPkg.group && artworkPkg.group.visible) {
-            artworkPkg.group.scale.set(t.scale, t.scale, t.scale);
-            artworkPkg.group.rotation.z = t.rotationZ;
+          if (artworkPkg.contentGroup && artworkPkg.group.visible) {
+            artworkPkg.contentGroup.scale.set(t.scale, t.scale, t.scale);
+            artworkPkg.contentGroup.rotation.z = t.rotationZ;
+            if (lastWallPlacementRef.current) {
+              artworkPkg.group.position.y =
+                lastWallPlacementRef.current.position.y + t.offsetY;
+            }
             setCurrentScale(t.scale);
             setElevationOffsetM(t.offsetY);
           }
@@ -653,14 +657,14 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
       },
       frameStyle,
       frameEnabled,
+      title: artwork.title,
+      medium: artwork.medium,
     });
     artworkPkgRef.current = artworkPkg;
     artworkPkg.group.visible = false;
     scene.add(artworkPkg.group);
 
-    const textureLoader = new THREE.TextureLoader();
-    textureLoader.setCrossOrigin("anonymous");
-    textureLoader.load(artwork.coverImageUrl, (tex) => {
+    loadArtworkTexture(artwork.coverImageUrl, (tex) => {
       artworkPkg.updateTexture(tex);
     });
 
@@ -673,11 +677,11 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
         defaultScale: artwork.arConfig?.defaultScale ?? 1.0,
         elevationLock: elevationLocked,
         onTransformChange: (t: GestureTransform) => {
-          if (artworkPkg.group && artworkPkg.group.visible) {
-            artworkPkg.group.scale.set(t.scale, t.scale, t.scale);
-            artworkPkg.group.rotation.z = t.rotationZ;
-            artworkPkg.group.position.x = t.offsetX;
-            artworkPkg.group.position.y = t.offsetY;
+          if (artworkPkg.contentGroup && artworkPkg.group.visible) {
+            artworkPkg.contentGroup.scale.set(t.scale, t.scale, t.scale);
+            artworkPkg.contentGroup.rotation.z = t.rotationZ;
+            artworkPkg.contentGroup.position.x = t.offsetX;
+            artworkPkg.contentGroup.position.y = t.offsetY;
             setCurrentScale(t.scale);
             setElevationOffsetM(t.offsetY);
           }
@@ -729,6 +733,14 @@ export function ArStudioViewer({ artwork }: ArStudioViewerProps) {
       gestureControllerRef.current.reset();
       setCurrentScale(1.0);
       setElevationOffsetM(0);
+    }
+    if (artworkPkgRef.current) {
+      artworkPkgRef.current.contentGroup.scale.set(1, 1, 1);
+      artworkPkgRef.current.contentGroup.rotation.z = 0;
+      artworkPkgRef.current.contentGroup.position.set(0, 0, 0);
+      if (lastWallPlacementRef.current) {
+        artworkPkgRef.current.group.position.copy(lastWallPlacementRef.current.position);
+      }
     }
   };
 

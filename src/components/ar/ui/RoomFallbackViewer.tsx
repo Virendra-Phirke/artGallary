@@ -14,7 +14,7 @@ import {
   Info,
   Layers,
 } from "lucide-react";
-import { FrameStyle, createArtworkMesh } from "../engine/artworkMesh";
+import { FrameStyle, createArtworkMesh, loadArtworkTexture } from "../engine/artworkMesh";
 import { formatDimensions } from "@/lib/utils";
 
 interface RoomFallbackViewerProps {
@@ -147,20 +147,19 @@ export function RoomFallbackViewer({
       },
       frameStyle: frameType,
       frameEnabled,
+      title: artwork.title,
+      medium: artwork.medium,
     });
 
     artworkPkg.group.position.set(0, 1.5, 0.02); // 1.5m eye-level hang height
     scene.add(artworkPkg.group);
 
     // Load texture
-    const textureLoader = new THREE.TextureLoader();
-    textureLoader.setCrossOrigin("anonymous");
-    textureLoader.load(
+    loadArtworkTexture(
       artwork.coverImageUrl,
       (tex) => {
         artworkPkg.updateTexture(tex);
       },
-      undefined,
       (err) => {
         console.warn("Failed to load texture for 3D room:", err);
       }
